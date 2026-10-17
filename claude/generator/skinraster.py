@@ -95,10 +95,10 @@ def skin_texture(rs,colors):
             e=np.zeros((h,w),bool)
             for dy,dx in ((0,1),(1,0),(0,-1),(-1,0)):e|=idb!=np.roll(np.roll(idb,dy,0),dx,1)
             dist=ndimage.distance_transform_edt(~e)
-            wpx=L['width']*scale;cell=L['width']*2.6
+            # zusammenhängende Abschnitte: Zellen von etwa sechs Abnutzungsbreiten, Breite je Zelle 60–100 %
+            wpx=L['width']*scale;cell=L['width']*6.0
             nz=_hsh(np.floor(WX/cell)*0.37+np.floor(WY/cell)*1.91+np.floor(WZ/cell)*3.7)
-            nz2=_hsh(np.floor(WX/(cell*0.45))*1.13+np.floor(WY/(cell*0.45))*2.71+np.floor(WZ/(cell*0.45))*0.59)
-            wm=m&(dist<wpx*(0.35+0.9*nz2))&(nz>1-L['coverage'])
+            wm=m&(dist<wpx*(0.6+0.4*nz))&(nz>1-L['coverage'])
             tn=np.stack([_rgb(x) for x in tones(L['color'],'paint')])
             out[wm]=tn[fidx[wm].astype(np.int16)]
         return out

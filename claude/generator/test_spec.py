@@ -179,7 +179,7 @@ class SkinGeometry(unittest.TestCase):
         polys,w=skins.layout([('digit','0'),('digit','7')],20)
         self.assertEqual(len(polys),6+3);self.assertGreater(w,20)
         for poly,_ in polys:self.assertTrue(all(-1<=y<=21 for _,y in poly))
-        d=sheetmodels.load('KD02');rs=skins.resolve(d['m'],'rennstreifen','KD02',d['num'])
+        d=sheetmodels.load('KD02');rs=skins.resolve(d['m'],'rennstreifen','KD02',d['num'],d['palette'])
         g=[L for L in rs['layers'] if L['type']=='glyphs'][0]
         x0,y0,x1,y1=g['rect'];lft=[dd for dd in g['decals'] if dd[0]=='z+'];rgt=[dd for dd in g['decals'] if dd[0]=='z-']
         self.assertEqual(len(lft),len(rgt))
@@ -190,7 +190,41 @@ class SkinGeometry(unittest.TestCase):
     def test_pick_is_stable_and_distinct(self):
         import skins
         for s in ('KC01','KH10'):
-            d=sheetmodels.load(s);a=skins.pick(s,d['m'],d['num']);b=skins.pick(s,d['m'],d['num'])
+            d=sheetmodels.load(s);a=skins.pick(s,d['m'],d['num'],d['palette']);b=skins.pick(s,d['m'],d['num'],d['palette'])
             self.assertEqual(a,b);self.assertEqual(len(set(a)),5)
+
+LAYER_FIELDS={'side_block':['parts','slot','poly_yz_m'],'bands':['parts','dir','t0_m','width_m','period_m','count','slots','window_yz_m'],
+ 'gradient':['parts','dir','t0_m','t1_m','steps','slots'],'rings':['parts','axis','center_yz_m','r0_m','width_m','gap_m','count','slots'],
+ 'finish':['parts','slot','target'],'edge_wear':['parts','width_mm','coverage','color'],
+ 'glyphs':['part','items','content','height_m','bounds_m','decals'],'trim':['kind','attach','slot','count','parts']}
+class SkinFrame(unittest.TestCase):
+    """Pflichtfelder je Lagentyp (das Schema prüft nur type/block) und Umrechnung Modell -> Toolgen-Rahmen."""
+    def test_layer_fields(self):
+        for s in sheetmodels.SHEETS:
+            for it in load(s)['skin']['items']:
+                for L in it['layers']:
+                    with self.subTest(sheet=s,skin=it['id'],type=L['type']):
+                        self.assertEqual([k for k in LAYER_FIELDS[L['type']] if k not in L],[])
+                        if L['type']=='trim':
+                            for tp in L['parts']:self.assertEqual(sorted(tp),['bounds_m','profile_yz_m','x_m'])
+    def test_frame(self):
+        import skins
+        s='KD02';sp=load(s);d=sheetmodels.load(s)
+        u=sp['units']['model_unit_m'];o=sp['anchors']['Socket_Hand']['model']
+        M=sp['axes']['matrix_model_to_target']
+        P=lambda q:[u*sum(M[r][c]*(q[c]-o[c]) for c in range(3)) for r in range(3)]
+        it=[i for i in sp['skin']['items'] if i['id']=='rennstreifen'][0]
+        rs=skins.resolve(d['m'],'rennstreifen',s,d['num'],d['palette'])
+        gm=[L for L in rs['layers'] if L['type']=='glyphs'][0];gs=[L for L in it['layers'] if L['type']=='glyphs'][0]
+        pl,val,pts,_=gm['decals'][0];exp=P((pts[0][0],pts[0][1],val))
+        for k in range(3):self.assertAlmostEqual(gs['decals'][0]['points_m'][0][k],exp[k],delta=2e-4)
+        self.assertEqual(gs['decals'][0]['surface'],'left');self.assertGreater(gs['decals'][0]['points_m'][0][0],0)  # links = +X
+        # Seitenband: Modell y (unten) -> Toolgen −Z; t0 im Zielrahmen = u·(t_model − Socket_Hand·dir)
+        bm=[L for L in rs['layers'] if L['type']=='bands' and L['dir']==(0.0,1.0,0.0)][0]
+        bs=[L for L in it['layers'] if L['type']=='bands' and L['dir']==[0.0,0.0,-1.0]][0]
+        self.assertAlmostEqual(bs['t0_m'],u*(bm['t0']-o[1]),delta=2e-4)
+        # ein Punkt im Band liegt im Zielrahmen ebenfalls im Band
+        q=(o[0],bm['t0']+bm['width']/2,o[2]);pm=P(q);t=sum(pm[k]*bs['dir'][k] for k in range(3))
+        self.assertTrue(bs['t0_m']<=t<=bs['t0_m']+bs['width_m'],(t,bs['t0_m']))
 
 if __name__=='__main__':unittest.main()

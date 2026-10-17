@@ -278,10 +278,10 @@ def skin_spec(sheet,full,d,palette,F,ids,unit):
     def yz(x,y):p=F.p((x,y,o[2]));return [p[1],p[2]]
     def xm(z):return r4(unit*(z-o[2]))
     def L_(v):return r4(v*unit)
-    sids=SK.pick(sheet,full,d['num'])
+    sids=SK.pick(sheet,full,d['num'],d['palette'])
     items=[]
     for sid in sids:
-        rs=SK.resolve(full,sid,sheet,d['num']);used=SK.slots_used(rs)
+        rs=SK.resolve(full,sid,sheet,d['num'],d['palette']);used=SK.slots_used(rs)
         cols={}
         for p in palette:
             cs=SK.slot_colors(rs,p['channels'],p['swatches'])
@@ -312,6 +312,10 @@ def skin_spec(sheet,full,d,palette,F,ids,unit):
                          parts=[dict(profile_yz_m=[yz(*q) for q in tp['prof']],x_m=sorted([xm(tp['z0']),xm(tp['z1'])]),
                                      bounds_m=F.bb(([min(q[0] for q in tp['prof']),min(q[1] for q in tp['prof']),tp['z0']],
                                                     [max(q[0] for q in tp['prof']),max(q[1] for q in tp['prof']),tp['z1']]))) for tp in L['parts']])
+            rq=L.get('requested');got=L.get('slots',[L.get('slot')])
+            if rq is not None and list(rq if isinstance(rq,list) else [rq])!=list(got):
+                e['requested']=rq;e['requested_reason']=f'Kontrastregel: Abstand zur Körperfarbe {rs["body_color"]} unter {SK.MIN_CONTRAST} (RGB 0..1)'
+            if t=='glyphs':e['slots']=L['slots']
             layers.append(e)
         items.append(dict(id=sid,name=rs['name'],hero=sid==sids[0],blocks=SK.summary(rs),
                           description_de=SK.DESC[sid][0],description_en=SK.DESC[sid][1],

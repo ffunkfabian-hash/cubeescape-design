@@ -21,7 +21,7 @@ BLOCKS={'farbflaechen':'Farbflächen','glyphen':'Glyphen/Zahlen','streifen':'Str
         'material':'Gold/Chrom + Abnutzung','schmuck':'Schmuckteile'}
 LAYER_BLOCK={'side_block':'farbflaechen','bands':'streifen','gradient':'streifen','rings':'streifen','glyphs':'glyphen',
              'finish':'material','edge_wear':'material','trim':'schmuck'}
-BARE_METAL='#B9C0C8'      # Farbe der Kantenabnutzung (blankes Metall)
+BARE_METAL='#9AA2AC'      # Farbe der Kantenabnutzung (blankes Metall, gedämpft)
 # Rückfall, wenn ein Kanal an der Waffe nicht belegt ist: Farbfeld der Blatt-Palette (hell, mittel, dunkel, Akzent)
 SWATCH_FALLBACK={'MT_Primary':0,'MT_Secondary':1,'MT_Metal':1,'MT_Detail':2,'MT_Accent':3,'MT_Energy':3,'MT_Emission':3}
 
@@ -37,64 +37,64 @@ CATALOG=[
               dict(type='bands',dir=(0,1,0),at=0.36,width=0.12,count=1,slots=['MT_Accent']),
               dict(type='bands',dir=(0,1,0),at=0.52,width=0.035,count=1,slots=['SK_Accent2']),
               dict(type='glyphs',items='num',height=0.30,at=(0.28,0.66),slots=['SK_Accent2']),
-              dict(type='edge_wear',target='body',width=0.022,coverage=0.25)]),
+              dict(type='edge_wear',target='body',width=0.014,coverage=0.17)]),
  dict(id='goldglyphe',name='Goldglyphe',accents={'SK_Accent1':(GOLD,'polished_gold'),'SK_Accent2':('#8A6420','paint')},
       layers=[dict(type='side_block',poly=[(-0.1,-0.1),(1.1,-0.1),(1.1,1.1),(-0.1,1.1)],slot='MT_Detail'),
               dict(type='finish',target='metal',slot='SK_Accent1'),
               dict(type='bands',dir=(0,1,0),at=0.18,width=0.03,count=1,slots=['SK_Accent1']),
               dict(type='glyphs',items='runes6',height=0.20,at=(0.55,0.45),slots=['SK_Accent1']),
               dict(type='trim',kind='fins',count=3,slot='SK_Accent1',at=0.85),
-              dict(type='edge_wear',target='body',width=0.02,coverage=0.35)]),
+              dict(type='edge_wear',target='body',width=0.013,coverage=0.24)]),
  dict(id='warnblock',name='Warnblock',accents={'SK_Accent1':(HAZARD,'paint'),'SK_Accent2':(INK,'paint')},
       layers=[dict(type='bands',dir=(1,-1,0),at=0.0,width=0.045,period=0.09,count=40,slots=['SK_Accent1','SK_Accent2'],
                    window=[(0.74,-0.1),(1.1,-0.1),(1.1,1.1),(0.74,1.1)]),
               dict(type='side_block',poly=[(-0.1,-0.1),(0.22,-0.1),(0.22,1.1),(-0.1,1.1)],slot='MT_Secondary'),
               dict(type='glyphs',items='chevron+num',height=0.26,at=(0.48,0.55),slots=['SK_Accent2']),
-              dict(type='edge_wear',target='body',width=0.03,coverage=0.6)]),
+              dict(type='edge_wear',target='body',width=0.019,coverage=0.42)]),
  dict(id='zweiton',name='Zweiton-Diagonale',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(WHITE,'paint')},
       layers=[dict(type='side_block',poly=[(0.40,-0.1),(1.1,-0.1),(1.1,1.1),(0.62,1.1)],slot='MT_Detail'),
               dict(type='bands',along=((0.40,-0.1),(0.62,1.1)),width=0.025,slots=['MT_Accent']),
               dict(type='finish',target='metal',slot='SK_Accent1'),
               dict(type='glyphs',items='cube',height=0.36,at=(0.22,0.5),slots=['SK_Accent2','MT_Accent','SK_Accent1']),
-              dict(type='edge_wear',target='body',width=0.018,coverage=0.2)]),
+              dict(type='edge_wear',target='body',width=0.012,coverage=0.14)]),
  dict(id='stufenblock',name='Stufenblock',accents={'SK_Accent1':(GOLD,'polished_gold'),'SK_Accent2':(INK,'paint')},
       layers=[dict(type='side_block',poly=[(-0.1,0.62),(0.34,0.62),(0.34,0.40),(0.68,0.40),(0.68,0.18),(1.1,0.18),(1.1,1.1),(-0.1,1.1)],slot='MT_Detail'),
               dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='glyphs',items='num',height=0.22,at=(0.80,0.62),slots=['MT_Primary']),
+              dict(type='glyphs',items='num',height=0.22,at=(0.80,0.62),slots=['MT_Primary'],on='MT_Detail'),
               dict(type='trim',kind='ribs',count=4,slot='SK_Accent1',at=(0.18,0.35)),
-              dict(type='edge_wear',target='body',width=0.02,coverage=0.3)]),
+              dict(type='edge_wear',target='body',width=0.013,coverage=0.21)]),
  dict(id='zielringe',name='Zielringe',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(WHITE,'paint')},
       layers=[dict(type='rings',center=(0.42,0.48),r0=0.10,width=0.11,gap=0.11,count=4,slots=['MT_Accent','SK_Accent2']),
               dict(type='finish',target='metal',slot='SK_Accent1'),
               dict(type='glyphs',items='runes4',height=0.14,at=(0.80,0.30),slots=['MT_Accent']),
-              dict(type='edge_wear',target='body',width=0.018,coverage=0.2)]),
+              dict(type='edge_wear',target='body',width=0.012,coverage=0.14)]),
  dict(id='glutverlauf',name='Glutverlauf',accents={'SK_Accent1':('#3A3F47','polished_chrome'),'SK_Accent2':(NEON,'neon')},
       layers=[dict(type='gradient',dir=(1,0,0),start=0.30,end=0.95,steps=5,slots=['MT_Primary','MT_Accent']),
               dict(type='bands',dir=(0,1,0),at=0.66,width=0.03,period=0.07,count=2,slots=['SK_Accent2']),
               dict(type='trim',kind='ribs',count=5,slot='SK_Accent1',at=(0.12,0.40)),
-              dict(type='edge_wear',target='body',width=0.018,coverage=0.25)]),
+              dict(type='edge_wear',target='body',width=0.012,coverage=0.17)]),
  dict(id='chromrippe',name='Chromrippe',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(INK,'paint')},
       layers=[dict(type='side_block',poly=[(-0.1,-0.1),(1.1,-0.1),(1.1,1.1),(-0.1,1.1)],slot='MT_Detail'),
               dict(type='finish',target='metal',slot='SK_Accent1'),
               dict(type='bands',dir=(0,1,0),at=0.84,width=0.08,count=1,slots=['MT_Accent']),
               dict(type='trim',kind='ribs',count=6,slot='SK_Accent1',at=(0.45,0.40)),
               dict(type='trim',kind='fins',count=2,slot='SK_Accent1',at=0.85),
-              dict(type='edge_wear',target='body',width=0.024,coverage=0.4)]),
+              dict(type='edge_wear',target='body',width=0.016,coverage=0.28)]),
  dict(id='glyphenband',name='Glyphenband',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(NEON,'neon')},
       layers=[dict(type='finish',target='metal',slot='SK_Accent1'),
               dict(type='glyphs',items='runes7',height=0.16,at=(0.55,0.42),slots=['SK_Accent2'],band='MT_Detail'),
-              dict(type='edge_wear',target='body',width=0.018,coverage=0.2)]),
+              dict(type='edge_wear',target='body',width=0.012,coverage=0.14)]),
 ]
 BY_ID={s['id']:s for s in CATALOG}
 
-def pick(sheet,full=None,num=None):
+def pick(sheet,full=None,num=None,palette=None):
     """fünf Skins je Blatt; der erste ist der Hauptskin (Isometrie, Orthos, Farbvarianten). Reihenfolge: Drehung des Katalogs
     je Blatt (Schritt 2 über 9 Skins), dann – wenn das Modell gegeben ist – Skins, deren Lagen alle Platz finden, zuerst."""
     fam='CDFGH'.index(sheet[1]);n=int(sheet[2:])
     st=(n+fam*5)%len(CATALOG)   # gleichmäßig über die 50 Blätter, Probeblätter verschieden
     order=[CATALOG[(st+2*j)%len(CATALOG)]['id'] for j in range(len(CATALOG))]
     if full is not None:
-        miss={sid:sum(1 for t in resolve(full,sid,sheet,num)['notes'] if not t.startswith('finish')) for sid in order}
+        miss={sid:sum(1 for t in resolve(full,sid,sheet,num,palette)['notes'] if not t.startswith(('finish','Kontrast'))) for sid in order}
         order=sorted(order,key=lambda sid:miss[sid])
     return order[:5]
 
@@ -280,15 +280,53 @@ def area_poly(p):return abs(sum(p[i][0]*p[(i+1)%len(p)][1]-p[(i+1)%len(p)][0]*p[
 
 # ---------- Auflösen
 _CACHE={}
-def resolve(full,sid,sheet,num):
-    key=(id(full),len(full.parts),sid,sheet,num)
-    if key not in _CACHE:_CACHE[key]=_resolve(full,sid,sheet,num)
+def resolve(full,sid,sheet,num,palette):
+    """palette: die vier Farbfelder des Blatts (d['palette']) – für die Kontrastregel und unbelegte Kanäle"""
+    key=(id(full),len(full.parts),sid,sheet,num,tuple(palette))
+    if key not in _CACHE:_CACHE[key]=_resolve(full,sid,sheet,num,palette)
     return _CACHE[key]
-def _resolve(full,sid,sheet,num):
+
+# Kontrastregel: Lagen, die sich vom Körper abheben sollen (Streifen, Ringe, Teilflächen, Glyphen), weichen auf den nächsten
+# Slot aus, wenn ihre Basisfarbe der Körperfarbe zu ähnlich ist (RGB-Abstand < MIN_CONTRAST, Werte 0..1).
+MIN_CONTRAST=0.3
+CONTRAST_FALLBACK={'MT_Accent':['MT_Detail','MT_Secondary','MT_Primary','SK_Accent2','SK_Accent1'],
+                   'MT_Detail':['MT_Accent','MT_Secondary','MT_Primary','SK_Accent2'],
+                   'MT_Secondary':['MT_Detail','MT_Accent','MT_Primary','SK_Accent2'],
+                   'MT_Primary':['MT_Secondary','MT_Detail','MT_Accent','SK_Accent2']}
+def _dist(a,b):
+    A=[int(a[i:i+2],16)/255 for i in (1,3,5)];B=[int(b[i:i+2],16)/255 for i in (1,3,5)]
+    return math.sqrt(sum((A[k]-B[k])**2 for k in range(3)))
+_BASE={}
+def base_slots(full,palette,accents):
+    """Basisfarbe je Slot (Kanalfarbe der Basis-Palette, unbelegt: Farbfeld) und Körperfarbe"""
+    key=(id(full),tuple(palette))
+    if key not in _BASE:
+        from xlroles import channel_palettes
+        from eng import Model as _M
+        gm=_M();gm.parts=[P for P in full.parts if not P.get('sight')]
+        _BASE[key]=channel_palettes(full,gm,palette,'',CHANNELS)[0][0]['channels']
+    ch=_BASE[key]
+    out={c:(ch[c] or palette[SWATCH_FALLBACK[c]].upper()) for c in CHANNELS}
+    for a,(c,_) in accents.items():out[a]=c
+    return out
+def _resolve(full,sid,sheet,num,palette):
     """Katalog-Skin sid für das Modell full (Visier eingeschlossen; Skins gelten nur für die Waffe ohne Visier).
     Rückgabe: dict(id,name,accents,layers[...],notes[...]) in Modelleinheiten."""
     S=BY_ID[sid];F=Frame(full)
-    out=dict(id=sid,name=S['name'],accents=S['accents'],layers=[],notes=[],frame=dict(lo=F.lo,hi=F.hi))
+    bs=base_slots(full,palette,S['accents'])
+    acc={}
+    for i in F.body:acc[full.parts[i]['col'].upper()]=acc.get(full.parts[i]['col'].upper(),0)+part_area(full.parts[i])
+    body=max(acc,key=acc.get) if acc else '#808080'
+    def fix(slot,against=None,avoid=()):
+        """Slot mit genug Abstand zur Körperfarbe (bzw. against) und nicht gleich den Farben in avoid"""
+        ref=against or body
+        def ok(s_):return _dist(bs[s_],ref)>=MIN_CONTRAST and all(_dist(bs[s_],bs[a])>=MIN_CONTRAST*0.5 for a in avoid)
+        if slot not in CONTRAST_FALLBACK or ok(slot):return slot
+        for alt in CONTRAST_FALLBACK[slot]:
+            if ok(alt):
+                out['notes'].append(f'Kontrast: {slot} -> {alt}');return alt
+        return slot
+    out=dict(id=sid,name=S['name'],accents=S['accents'],layers=[],notes=[],frame=dict(lo=F.lo,hi=F.hi),body_color=body)
     taken=[]
     def uvpoly(poly):return [F.xy(u,v) for u,v in poly]
     for Lr in S['layers']:
@@ -298,24 +336,29 @@ def _resolve(full,sid,sheet,num):
             if not ps:out['notes'].append(f"finish {Lr['target']}: keine Teile");continue
             out['layers'].append(dict(type=t,parts=ps,slot=Lr['slot'],target=Lr['target']))
         elif t=='side_block':
-            out['layers'].append(dict(type=t,parts=F.body,poly=uvpoly(Lr['poly']),slot=Lr['slot']))
+            full_=min(u for u,_ in Lr['poly'])<=0 and max(u for u,_ in Lr['poly'])>=1 and min(v for _,v in Lr['poly'])<=0 and max(v for _,v in Lr['poly'])>=1
+            sl=Lr['slot'] if full_ else fix(Lr['slot'])   # ganzer Körper umgefärbt: gewollt, keine Kontrastregel
+            out['layers'].append(dict(type=t,parts=F.body,poly=uvpoly(Lr['poly']),slot=sl,requested=Lr['slot']))
         elif t=='bands':
             if 'along' in Lr:   # Linie entlang einer Kante (Farbteilung): Richtung senkrecht zur Linie in der Seitenebene
                 (a,b)=[F.xy(*p) for p in Lr['along']];dx,dy=b[0]-a[0],b[1]-a[1];d=_unit((dy,-dx,0))
                 t0=a[0]*d[0]+a[1]*d[1];w=Lr['width']*F.L
-                out['layers'].append(dict(type=t,parts=F.body,dir=d,t0=t0-w/2,width=w,period=w,count=1,slots=Lr['slots'],window=None))
+                prev=[L['slot'] for L in out['layers'] if L['type']=='side_block']
+                out['layers'].append(dict(type=t,parts=F.body,dir=d,t0=t0-w/2,width=w,period=w,count=1,slots=[fix(x,avoid=prev) for x in Lr['slots']],
+                                          window=None,requested=Lr['slots']))
                 continue
             d=_unit(Lr['dir']);e0,e1=F.extent(d);E=e1-e0
             w=Lr['width']*E;per=Lr.get('period',Lr['width'])*E
             out['layers'].append(dict(type=t,parts=F.body,dir=d,t0=e0+Lr['at']*E,width=w,period=per,count=Lr['count'],
-                                      slots=Lr['slots'],window=uvpoly(Lr['window']) if Lr.get('window') else None))
+                                      slots=[fix(x) for x in Lr['slots']],window=uvpoly(Lr['window']) if Lr.get('window') else None,requested=Lr['slots']))
         elif t=='gradient':
             d=_unit(Lr['dir']);e0,e1=F.extent(d);E=e1-e0
-            out['layers'].append(dict(type=t,parts=F.body,dir=d,t0=e0+Lr['start']*E,t1=e0+Lr['end']*E,steps=Lr['steps'],slots=Lr['slots']))
+            out['layers'].append(dict(type=t,parts=F.body,dir=d,t0=e0+Lr['start']*E,t1=e0+Lr['end']*E,steps=Lr['steps'],
+                                      slots=[Lr['slots'][0],fix(Lr['slots'][1],against=bs[Lr['slots'][0]])],requested=Lr['slots']))
         elif t=='rings':
             c=F.xy(*Lr['center']);u=F.base
             out['layers'].append(dict(type=t,parts=F.body,center=c,r0=Lr['r0']*u,width=Lr['width']*u,gap=Lr['gap']*u,
-                                      count=Lr['count'],slots=Lr['slots']))
+                                      count=Lr['count'],slots=[fix(x) for x in Lr['slots']],requested=Lr['slots']))
         elif t=='edge_wear':
             out['layers'].append(dict(type=t,parts=F.target(Lr['target']),width=Lr['width']*F.base,coverage=Lr['coverage'],color=BARE_METAL))
         elif t=='glyphs':
@@ -325,18 +368,18 @@ def _resolve(full,sid,sheet,num):
             if not pl:out['notes'].append(f"glyphs {Lr['items']}: kein freier Platz auf einer Seitenfläche");continue
             i,(x0,y0,x1,y1),sc=pl;taken.append((x0,y0,x1,y1))
             P=full.parts[i];_,z0,z1=side_face(P)
-            decs=[]
+            decs=[];gsl=[fix(x,against=bs[Lr['on']] if Lr.get('on') else None) for x in Lr['slots']]
             for poly,ci in polys:
                 pts=[(x0+px*sc,y0+py*sc) for px,py in poly]
-                slot=Lr['slots'][min(ci,len(Lr['slots'])-1)]
+                slot=gsl[min(ci,len(gsl)-1)]
                 decs.append(('z+',z1,pts,slot))
                 decs.append(('z-',z0,[(x0+x1-px,py) for px,py in pts],slot))   # rechte Seite gespiegelt: liest sich richtig
             content=' '.join(str(v) for _,v in items)
-            out['layers'].append(dict(type=t,part=i,items=Lr['items'],content=content,rect=(x0,y0,x1,y1),height=h*sc,decals=decs))
+            out['layers'].append(dict(type=t,part=i,items=Lr['items'],content=content,rect=(x0,y0,x1,y1),height=h*sc,decals=decs,slots=gsl,requested=Lr['slots']))
             if Lr.get('band'):   # dunkles Band hinter der Glyphenzeile (über alle Körperteile)
                 pad=(y1-y0)*0.32;d=(0.0,1.0,0.0)
                 out['layers'].insert(len(out['layers'])-1,dict(type='bands',parts=F.body,dir=d,t0=y0-pad,width=(y1-y0)+2*pad,
-                                     period=(y1-y0)+2*pad,count=1,slots=[Lr['band']],window=None))
+                                     period=(y1-y0)+2*pad,count=1,slots=[fix(Lr['band'])],window=None,requested=[Lr['band']]))
         elif t=='trim':
             r=_trim(F,Lr,taken)
             if not r:out['notes'].append(f"trim {Lr['kind']}: kein freier Platz");continue

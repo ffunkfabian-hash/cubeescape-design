@@ -1870,6 +1870,9 @@
         "slot": "SK_Accent1",
         "points_m": [[-0.0352, 0.1208, 0.0625], [-0.0352, 0.1332, 0.0716], [-0.0352, 0.1316, 0.074], [-0.0352, 0.1192, 0.0649]]
        }
+      ],
+      "slots": [
+       "SK_Accent1"
       ]
      },
      {
@@ -1918,9 +1921,9 @@
        "p04",
        "p05"
       ],
-      "width_mm": 3.0574,
-      "coverage": 0.35,
-      "color": "#B9C0C8"
+      "width_mm": 1.9873,
+      "coverage": 0.24,
+      "color": "#9AA2AC"
      }
     ],
     "notes": []
@@ -1948,15 +1951,15 @@
      }
     },
     "slots_used": [
-     "MT_Accent",
+     "MT_Secondary",
      "MT_Detail",
      "SK_Accent1",
      "SK_Accent2"
     ],
     "colors": {
      "base": {
-      "MT_Accent": {
-       "color": "#C6B07B",
+      "MT_Secondary": {
+       "color": "#988C7B",
        "finish": "paint",
        "source": "channel"
       },
@@ -1977,7 +1980,7 @@
       }
      },
      "standard": {
-      "MT_Accent": {
+      "MT_Secondary": {
        "color": "#A3A7AD",
        "finish": "paint",
        "source": "channel"
@@ -1999,7 +2002,7 @@
       }
      },
      "arktis": {
-      "MT_Accent": {
+      "MT_Secondary": {
        "color": "#AEBBCA",
        "finish": "paint",
        "source": "channel"
@@ -2021,7 +2024,7 @@
       }
      },
      "nacht": {
-      "MT_Accent": {
+      "MT_Secondary": {
        "color": "#2C2F35",
        "finish": "paint",
        "source": "channel"
@@ -2073,9 +2076,13 @@
       "period_m": 0.0119,
       "count": 1,
       "slots": [
+       "MT_Secondary"
+      ],
+      "window_yz_m": null,
+      "requested": [
        "MT_Accent"
       ],
-      "window_yz_m": null
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #D6C6A0 unter 0.3 (RGB 0..1)"
      },
      {
       "type": "finish",
@@ -2113,12 +2120,12 @@
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, 0.1363, 0.1387], [0.0352, 0.1215, 0.1302], [0.0352, 0.1215, 0.1131], [0.0352, 0.1363, 0.1216]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, 0.1028, 0.1387], [-0.0352, 0.1175, 0.1302], [-0.0352, 0.1175, 0.1131], [-0.0352, 0.1028, 0.1216]]
        },
        {
@@ -2131,6 +2138,17 @@
         "slot": "SK_Accent1",
         "points_m": [[-0.0352, 0.1199, 0.1302], [-0.0352, 0.1347, 0.1387], [-0.0352, 0.1347, 0.1216], [-0.0352, 0.1199, 0.1131]]
        }
+      ],
+      "requested": [
+       "SK_Accent2",
+       "MT_Accent",
+       "SK_Accent1"
+      ],
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #D6C6A0 unter 0.3 (RGB 0..1)",
+      "slots": [
+       "SK_Accent2",
+       "MT_Detail",
+       "SK_Accent1"
       ]
      },
      {
@@ -2143,12 +2161,15 @@
        "p04",
        "p05"
       ],
-      "width_mm": 2.7517,
-      "coverage": 0.2,
-      "color": "#B9C0C8"
+      "width_mm": 1.8345,
+      "coverage": 0.14,
+      "color": "#9AA2AC"
      }
     ],
-    "notes": []
+    "notes": [
+     "Kontrast: MT_Accent -> MT_Secondary",
+     "Kontrast: MT_Accent -> MT_Detail"
+    ]
    },
    {
     "id": "zielringe",
@@ -2172,14 +2193,14 @@
      }
     },
     "slots_used": [
-     "MT_Accent",
+     "MT_Detail",
      "SK_Accent1",
      "SK_Accent2"
     ],
     "colors": {
      "base": {
-      "MT_Accent": {
-       "color": "#C6B07B",
+      "MT_Detail": {
+       "color": "#2E2A24",
        "finish": "paint",
        "source": "channel"
       },
@@ -2195,7 +2216,7 @@
       }
      },
      "standard": {
-      "MT_Accent": {
+      "MT_Detail": {
        "color": "#A3A7AD",
        "finish": "paint",
        "source": "channel"
@@ -2212,7 +2233,7 @@
       }
      },
      "arktis": {
-      "MT_Accent": {
+      "MT_Detail": {
        "color": "#AEBBCA",
        "finish": "paint",
        "source": "channel"
@@ -2229,7 +2250,7 @@
       }
      },
      "nacht": {
-      "MT_Accent": {
+      "MT_Detail": {
        "color": "#2C2F35",
        "finish": "paint",
        "source": "channel"
@@ -2264,9 +2285,14 @@
       "gap_m": 0.0168,
       "count": 4,
       "slots": [
+       "MT_Detail",
+       "SK_Accent2"
+      ],
+      "requested": [
        "MT_Accent",
        "SK_Accent2"
-      ]
+      ],
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #D6C6A0 unter 0.3 (RGB 0..1)"
      },
      {
       "type": "finish",
@@ -2294,114 +2320,121 @@
       "decals": [
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0224, 0.1276], [0.0352, -0.019, 0.1062], [0.0352, -0.0215, 0.1062], [0.0352, -0.025, 0.1276]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0787, 0.1276], [-0.0352, -0.0821, 0.1062], [-0.0352, -0.0795, 0.1062], [-0.0352, -0.0761, 0.1276]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0178, 0.1188], [0.0352, -0.0268, 0.1188], [0.0352, -0.0272, 0.1214], [0.0352, -0.0182, 0.1214]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0833, 0.1188], [-0.0352, -0.0743, 0.1188], [-0.0352, -0.0739, 0.1214], [-0.0352, -0.0829, 0.1214]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0166, 0.1113], [0.0352, -0.0256, 0.1113], [0.0352, -0.026, 0.1139], [0.0352, -0.017, 0.1139]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0845, 0.1113], [-0.0352, -0.0755, 0.1113], [-0.0352, -0.0751, 0.1139], [-0.0352, -0.0841, 0.1139]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0373, 0.1276], [0.0352, -0.0351, 0.1137], [0.0352, -0.0376, 0.1137], [0.0352, -0.0398, 0.1276]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0638, 0.1276], [-0.0352, -0.066, 0.1137], [-0.0352, -0.0635, 0.1137], [-0.0352, -0.0612, 0.1276]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0354, 0.1127], [0.0352, -0.0426, 0.1057], [0.0352, -0.0446, 0.1077], [0.0352, -0.0373, 0.1147]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0657, 0.1127], [-0.0352, -0.0585, 0.1057], [-0.0352, -0.0565, 0.1077], [-0.0352, -0.0638, 0.1147]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0456, 0.1276], [0.0352, -0.0439, 0.1169], [0.0352, -0.0465, 0.1169], [0.0352, -0.0482, 0.1276]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0555, 0.1276], [-0.0352, -0.0572, 0.1169], [-0.0352, -0.0546, 0.1169], [-0.0352, -0.0529, 0.1276]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0604, 0.1276], [0.0352, -0.0543, 0.1174], [0.0352, -0.0565, 0.1164], [0.0352, -0.0626, 0.1265]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0407, 0.1276], [-0.0352, -0.0468, 0.1174], [-0.0352, -0.0446, 0.1164], [-0.0352, -0.0385, 0.1265]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0602, 0.1265], [0.0352, -0.0631, 0.1164], [0.0352, -0.0656, 0.1174], [0.0352, -0.0627, 0.1276]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0409, 0.1265], [-0.0352, -0.038, 0.1164], [-0.0352, -0.0355, 0.1174], [-0.0352, -0.0384, 0.1276]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0581, 0.1142], [0.0352, -0.0569, 0.1062], [0.0352, -0.0594, 0.1062], [0.0352, -0.0607, 0.1142]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.043, 0.1142], [-0.0352, -0.0442, 0.1062], [-0.0352, -0.0417, 0.1062], [-0.0352, -0.0404, 0.1142]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0755, 0.1276], [0.0352, -0.0721, 0.1062], [0.0352, -0.0746, 0.1062], [0.0352, -0.078, 0.1276]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0256, 0.1276], [-0.0352, -0.029, 0.1062], [-0.0352, -0.0265, 0.1062], [-0.0352, -0.023, 0.1276]]
        },
        {
         "surface": "left",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[0.0352, -0.0764, 0.1206], [0.0352, -0.0852, 0.126], [0.0352, -0.0842, 0.1281], [0.0352, -0.0753, 0.1228]]
        },
        {
         "surface": "right",
-        "slot": "MT_Accent",
+        "slot": "MT_Detail",
         "points_m": [[-0.0352, -0.0247, 0.1206], [-0.0352, -0.0158, 0.126], [-0.0352, -0.0169, 0.1281], [-0.0352, -0.0258, 0.1228]]
        }
+      ],
+      "requested": [
+       "MT_Accent"
+      ],
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #D6C6A0 unter 0.3 (RGB 0..1)",
+      "slots": [
+       "MT_Detail"
       ]
      },
      {
@@ -2414,12 +2447,15 @@
        "p04",
        "p05"
       ],
-      "width_mm": 2.7517,
-      "coverage": 0.2,
-      "color": "#B9C0C8"
+      "width_mm": 1.8345,
+      "coverage": 0.14,
+      "color": "#9AA2AC"
      }
     ],
-    "notes": []
+    "notes": [
+     "Kontrast: MT_Accent -> MT_Detail",
+     "Kontrast: MT_Accent -> MT_Detail"
+    ]
    },
    {
     "id": "chromrippe",
@@ -2444,17 +2480,11 @@
      }
     },
     "slots_used": [
-     "MT_Accent",
      "MT_Detail",
      "SK_Accent1"
     ],
     "colors": {
      "base": {
-      "MT_Accent": {
-       "color": "#C6B07B",
-       "finish": "paint",
-       "source": "channel"
-      },
       "MT_Detail": {
        "color": "#2E2A24",
        "finish": "paint",
@@ -2467,11 +2497,6 @@
       }
      },
      "standard": {
-      "MT_Accent": {
-       "color": "#A3A7AD",
-       "finish": "paint",
-       "source": "channel"
-      },
       "MT_Detail": {
        "color": "#A3A7AD",
        "finish": "paint",
@@ -2484,11 +2509,6 @@
       }
      },
      "arktis": {
-      "MT_Accent": {
-       "color": "#AEBBCA",
-       "finish": "paint",
-       "source": "channel"
-      },
       "MT_Detail": {
        "color": "#AEBBCA",
        "finish": "paint",
@@ -2501,11 +2521,6 @@
       }
      },
      "nacht": {
-      "MT_Accent": {
-       "color": "#2C2F35",
-       "finish": "paint",
-       "source": "channel"
-      },
       "MT_Detail": {
        "color": "#2C2F35",
        "finish": "paint",
@@ -2559,9 +2574,13 @@
       "period_m": 0.0169,
       "count": 1,
       "slots": [
+       "MT_Detail"
+      ],
+      "window_yz_m": null,
+      "requested": [
        "MT_Accent"
       ],
-      "window_yz_m": null
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #D6C6A0 unter 0.3 (RGB 0..1)"
      },
      {
       "type": "trim",
@@ -2709,12 +2728,14 @@
        "p04",
        "p05"
       ],
-      "width_mm": 3.6689,
-      "coverage": 0.4,
-      "color": "#B9C0C8"
+      "width_mm": 2.4459,
+      "coverage": 0.28,
+      "color": "#9AA2AC"
      }
     ],
-    "notes": []
+    "notes": [
+     "Kontrast: MT_Accent -> MT_Detail"
+    ]
    },
    {
     "id": "rennstreifen",
@@ -2738,14 +2759,14 @@
      }
     },
     "slots_used": [
-     "MT_Accent",
+     "MT_Detail",
      "SK_Accent1",
      "SK_Accent2"
     ],
     "colors": {
      "base": {
-      "MT_Accent": {
-       "color": "#C6B07B",
+      "MT_Detail": {
+       "color": "#2E2A24",
        "finish": "paint",
        "source": "channel"
       },
@@ -2761,7 +2782,7 @@
       }
      },
      "standard": {
-      "MT_Accent": {
+      "MT_Detail": {
        "color": "#A3A7AD",
        "finish": "paint",
        "source": "channel"
@@ -2778,7 +2799,7 @@
       }
      },
      "arktis": {
-      "MT_Accent": {
+      "MT_Detail": {
        "color": "#AEBBCA",
        "finish": "paint",
        "source": "channel"
@@ -2795,7 +2816,7 @@
       }
      },
      "nacht": {
-      "MT_Accent": {
+      "MT_Detail": {
        "color": "#2C2F35",
        "finish": "paint",
        "source": "channel"
@@ -2840,9 +2861,13 @@
       "period_m": 0.0218,
       "count": 2,
       "slots": [
+       "MT_Detail"
+      ],
+      "window_yz_m": null,
+      "requested": [
        "MT_Accent"
       ],
-      "window_yz_m": null
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #D6C6A0 unter 0.3 (RGB 0..1)"
      },
      {
       "type": "bands",
@@ -2860,9 +2885,13 @@
       "period_m": 0.0254,
       "count": 1,
       "slots": [
+       "MT_Detail"
+      ],
+      "window_yz_m": null,
+      "requested": [
        "MT_Accent"
       ],
-      "window_yz_m": null
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #D6C6A0 unter 0.3 (RGB 0..1)"
      },
      {
       "type": "bands",
@@ -3007,6 +3036,9 @@
         "slot": "SK_Accent2",
         "points_m": [[-0.0352, 0.1239, 0.1179], [-0.0352, 0.1258, 0.1157], [-0.0352, 0.1314, 0.1157], [-0.0352, 0.134, 0.1179], [-0.0352, 0.1321, 0.1201], [-0.0352, 0.1265, 0.1201]]
        }
+      ],
+      "slots": [
+       "SK_Accent2"
       ]
      },
      {
@@ -3019,12 +3051,15 @@
        "p04",
        "p05"
       ],
-      "width_mm": 3.3632,
-      "coverage": 0.25,
-      "color": "#B9C0C8"
+      "width_mm": 2.1402,
+      "coverage": 0.17,
+      "color": "#9AA2AC"
      }
     ],
-    "notes": []
+    "notes": [
+     "Kontrast: MT_Accent -> MT_Detail",
+     "Kontrast: MT_Accent -> MT_Detail"
+    ]
    }
   ]
  },

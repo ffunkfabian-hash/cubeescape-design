@@ -224,7 +224,7 @@ def skin_row(rsl,skinned,full,center,cw,ch,fid,name):
             lab=skins.SLOT_DE[sl]+(' · '+skins.FINISH_DE[fin] if fin!='paint' else '')+(' *' if src=='swatch' else '')
             inner+=_chip(24+(k%2)*((cw-40)//2),y0+(k//2)*46,c,fin,lab)
         bl=' · '.join(skins.BLOCKS[b] for b in skins.summary(rs))
-        inner+=f'<text x="24" y="{ch-22}" font-family="Chakra Petch, sans-serif" font-size="18" letter-spacing="1.2" fill="#8FA0B3">{_h.escape(bl.upper())}</text>'
+        inner+=f'<text x="24" y="{ch-22}" font-family="Chakra Petch, sans-serif" font-size="15" letter-spacing="0.8" fill="#8FA0B3">{_h.escape(bl.upper())}</text>'
         lab=f'SKIN/MUSTER {j+1}/5 · {rs["name"].upper()}'+(' · HAUPTSKIN' if j==0 else '')
         out+=panel(inner,cw,ch,lab,fid,f'{name} Skin {rs["name"]}')
     return out
@@ -234,7 +234,7 @@ def sheet(d,variant_letter):
     m,ms=split_sight(full)
     # ---------- Skins (claude-0.3): fünf je Blatt, der erste ist der Hauptskin (Isometrie, Orthos, Farbvarianten)
     sid=f'K{variant_letter}{d["num"]}'
-    rsl=[skins.resolve(full,k,sid,d['num']) for k in skins.pick(sid,full,d['num'])];hero=rsl[0]
+    rsl=[skins.resolve(full,k,sid,d['num'],d['palette']) for k in skins.pick(sid,full,d['num'],d['palette'])];hero=rsl[0]
     cpal,_=channel_palettes(full,m,d['palette'],d['pill'],CHANNELS)
     roles=color_roles(m)
     def skinned(j,rs,mf):
