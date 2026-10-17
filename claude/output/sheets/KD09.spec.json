@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.1"
+  "claude_version": "0.5.2"
  },
  "sheet": {
   "id": "KD09",
@@ -245,6 +245,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1C2027",
@@ -262,6 +263,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "rubber",
+   "toolgen_material": "rubber",
    "emissive": false,
    "sight": false,
    "color": "#1C2027",
@@ -279,6 +281,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#8A93A3",
@@ -296,6 +299,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#EC4FA6",
@@ -313,6 +317,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "rubber",
+   "toolgen_material": "rubber",
    "emissive": false,
    "sight": false,
    "color": "#1C2027",
@@ -330,6 +335,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D8DCE0",
@@ -347,6 +353,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#EC4FA6",
@@ -364,6 +371,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D8DCE0",
@@ -381,6 +389,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1C2027",
@@ -398,6 +407,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#D8DCE0",
@@ -415,6 +425,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#1C2027",
@@ -432,6 +443,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#D8DCE0",
@@ -449,6 +461,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#1C2027",
@@ -466,6 +479,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#1C2027",
@@ -483,6 +497,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#1C2027",
@@ -586,6 +601,10 @@
   "source": "Geometrie dmodels.d09: Rohrvisier auf Stützen",
   "modular": true,
   "mount_side": "left",
+  "type": "precision",
+  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
+  "frame": "standard",
+  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
   "labels": [
    "Visier"
   ],
@@ -607,10 +626,11 @@
      "part": "p14",
      "emissive": true,
      "view_axis_m": [0.0, -1.0, 0.0],
-     "center_m": [0.0881, -0.086, 0.2555]
+     "center_m": [0.0881, -0.086, 0.2555],
+     "face_fraction": 0.366
     }
    ],
-   "source": "Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie"
+   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
   },
   "window_geometry_note": null
  },

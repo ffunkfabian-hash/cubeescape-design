@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.1"
+  "claude_version": "0.5.2"
  },
  "sheet": {
   "id": "KJ02",
@@ -201,6 +201,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A3038",
@@ -218,6 +219,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A3038",
@@ -235,6 +237,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#14171C",
@@ -252,6 +255,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "rubber",
+   "toolgen_material": "rubber",
    "emissive": false,
    "sight": false,
    "color": "#14171C",
@@ -269,6 +273,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#6B7480",
@@ -286,6 +291,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#14171C",
@@ -303,6 +309,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#14171C",
@@ -320,6 +327,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#14171C",
@@ -337,6 +345,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A3038",
@@ -354,6 +363,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#6B7480",
@@ -371,6 +381,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#14171C",
@@ -388,6 +399,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#14171C",
@@ -405,6 +417,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#2A3038",
@@ -508,6 +521,10 @@
   "source": "META sight in j02.py",
   "modular": true,
   "mount_side": "top",
+  "type": "holo",
+  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
+  "frame": "closed",
+  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
   "labels": [
    "Holovisier"
   ],
@@ -520,8 +537,30 @@
    [0.0146, -0.0794, 0.2527]
   ],
   "anchor": "Socket_Sight",
-  "window_geometry": null,
-  "window_geometry_note": "kein Fensterelement im Modell (Fenster nur in Bezeichnung/Text; Leuchtstreifen an den Seiten zählen nicht)"
+  "window_geometry": {
+   "elements": [
+    {
+     "type": "decal",
+     "decal": 32,
+     "part": "p12",
+     "emissive": true,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [0.0146, -0.1283, 0.2288],
+     "face_fraction": 0.34
+    },
+    {
+     "type": "decal",
+     "decal": 33,
+     "part": "p12",
+     "emissive": true,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [-0.0146, -0.1283, 0.2288],
+     "face_fraction": 0.34
+    }
+   ],
+   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
+  },
+  "window_geometry_note": null
  },
  "decals": [
   {

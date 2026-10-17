@@ -29,8 +29,9 @@ Leuchtpunkt quer (KD10, KF10, KG10, KH10, KJ10).
 
 **Korrektur zu claude-0.5:** 19 der 46 Blätter haben ein Fenster quer zur Laufachse: KD01 KH01 KJ01 KD02 KG02 KH02 KJ02 KD03 KJ03 KD04 KG04
 KH04 KF06 KD07 KJ07 KJ09 KC09 KH09 und KJ06. Der Richtungstest von 0.5 hat das nicht gefunden. Er wertet Scheiben auf den Seitenflächen
-als Leuchtstreifen und nicht als Fenster, und offene Ringe ohne Leuchtteil prüft er gar nicht; nur KF10 schlägt an. Der Test wird erst
-nach der Entscheidung erweitert, sonst stünden 19 bekannte Befunde in der Ausnahmeliste.
+als Leuchtstreifen und nicht als Fenster, und offene Ringe ohne Leuchtteil prüft er gar nicht; nur KF10 schlägt an. Seit claude-0.5.2 prüft der Test
+die Funktionsfläche; er fand dabei zusätzlich KC02 (Diopter-Öffnung seitlich) und KH03 (hintere Lochblende seitlich), dazu die Bögen
+KD10 und KF10. Alle 23 stehen als bekannte Befunde im Test (`spec_checks.KNOWN_CROSS_WINDOWS`).
 
 **Toolgen** (`data/tools.json` › `hold.sight_kind`, c926f50) weicht ebenfalls vom Ziel ab: Pistole, Schrotflinte und Raketenwerfer
 `iron`, Impulsgewehr `holo`, Spurgewehr `scope`.
@@ -60,7 +61,14 @@ nach der Entscheidung erweitert, sonst stünden 19 bekannte Befunde in der Ausna
   nicht, und automatisch zuordnen lassen sie sich auch nicht. Eine Zuordnung (`decals[].toolgen_decal`) bräuchte eine Entscheidung je
   Waffe.
 
-## Frage an den Nutzer
+## Entscheidung des Nutzers (17.10.2026)
+
+- Visier-Zielbild: die Visier-Serie VS01–VS09; danach werden alle 60 Waffenblätter auf das passende Visier der Serie umgestellt
+  (eigene Sitzung nach der VS-Sitzung). Der Richtungstest wird nach der Umstellung erweitert.
+- Vokabular wie vorgeschlagen, umgesetzt in claude-0.5.2 ([weapon-spec.md › Visier-Vokabular](weapon-spec.md#visier-vokabular));
+  die Decal-Zuordnung bleibt offen.
+
+## Frage an den Nutzer (beantwortet)
 
 Gelten für Toolgen künftig nur die neuen Visier-Blätter (Paket 2, VS01–VS09) als Visier-Zielbild, während die Visiere auf den 60
 Waffenblättern bleiben, wie sie sind (mit Verweis), oder sollen die Waffenblätter danach auf die neuen Visiere umgestellt werden?

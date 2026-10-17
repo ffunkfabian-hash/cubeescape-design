@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.1"
+  "claude_version": "0.5.2"
  },
  "sheet": {
   "id": "KC08",
@@ -252,6 +252,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A2D34",
@@ -269,6 +270,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "rubber",
+   "toolgen_material": "rubber",
    "emissive": false,
    "sight": false,
    "color": "#1C1E23",
@@ -286,6 +288,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#A78BFA",
@@ -303,6 +306,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#33363E",
@@ -320,6 +324,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#33363E",
@@ -337,6 +342,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1C1E23",
@@ -354,6 +360,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A2D34",
@@ -371,6 +378,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1C1E23",
@@ -388,6 +396,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#1C1E23",
@@ -405,6 +414,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#1C1E23",
@@ -422,6 +432,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#1C1E23",
@@ -439,6 +450,7 @@
    "channel": "MT_Secondary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#B8BEC8",
@@ -456,6 +468,7 @@
    "channel": "MT_Secondary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#B8BEC8",
@@ -473,6 +486,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#C4B5FD",
@@ -576,6 +590,10 @@
   "source": "Kommentar c08.py: Zielfernrohr-Block mit Linse",
   "modular": true,
   "mount_side": "top",
+  "type": "precision",
+  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
+  "frame": "standard",
+  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
   "labels": [
    "Zielvisier"
   ],
@@ -595,10 +613,11 @@
      "part": "p09",
      "emissive": true,
      "view_axis_m": [0.0, -1.0, 0.0],
-     "center_m": [0.0, -0.0821, 0.2786]
+     "center_m": [0.0, -0.0821, 0.2786],
+     "face_fraction": 0.251
     }
    ],
-   "source": "Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie"
+   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
   },
   "window_geometry_note": null
  },

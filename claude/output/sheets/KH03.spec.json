@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.1"
+  "claude_version": "0.5.2"
  },
  "sheet": {
   "id": "KH03",
@@ -230,6 +230,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1A1D21",
@@ -247,6 +248,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#6E747C",
@@ -264,6 +266,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D7DCDF",
@@ -281,6 +284,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "rubber",
+   "toolgen_material": "rubber",
    "emissive": false,
    "sight": false,
    "color": "#1A1D21",
@@ -298,6 +302,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1A1D21",
@@ -315,6 +320,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1A1D21",
@@ -332,6 +338,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D7DCDF",
@@ -349,6 +356,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#1A1D21",
@@ -366,6 +374,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#3A3F46",
@@ -383,6 +392,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#6E747C",
@@ -400,6 +410,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#0F7C80",
@@ -417,6 +428,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#0F7C80",
@@ -434,6 +446,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#0F7C80",
@@ -451,6 +464,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#6E747C",
@@ -468,6 +482,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#1A1D21",
@@ -485,6 +500,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": true,
    "color": "#6E747C",
@@ -502,6 +518,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": true,
    "color": "#6E747C",
@@ -519,6 +536,7 @@
    "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": true,
    "color": "#0F7C80",
@@ -622,6 +640,10 @@
   "source": "Bezeichnung Ringvisier",
   "modular": true,
   "mount_side": "top",
+  "type": "iron",
+  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
+  "frame": "open",
+  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
   "labels": [
    "Ringvisier"
   ],
@@ -636,8 +658,38 @@
    [0.0243, 0.0829, 0.3079]
   ],
   "anchor": "Socket_Sight",
-  "window_geometry": null,
-  "window_geometry_note": "kein Fensterelement im Modell (Fenster nur in Bezeichnung/Text; Leuchtstreifen an den Seiten zählen nicht)"
+  "window_geometry": {
+   "elements": [
+    {
+     "type": "decal",
+     "decal": 61,
+     "part": "p15",
+     "emissive": false,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [0.0086, 0.0657, 0.2563],
+     "face_fraction": 0.089
+    },
+    {
+     "type": "decal",
+     "decal": 62,
+     "part": "p15",
+     "emissive": false,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [-0.0086, 0.0657, 0.2563],
+     "face_fraction": 0.089
+    },
+    {
+     "type": "disc",
+     "decal": null,
+     "part": "p17",
+     "emissive": false,
+     "view_axis_m": [0.0, -1.0, 0.0],
+     "center_m": [0.0, 0.0027, 0.2835]
+    }
+   ],
+   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
+  },
+  "window_geometry_note": null
  },
  "decals": [
   {

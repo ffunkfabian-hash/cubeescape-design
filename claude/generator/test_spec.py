@@ -258,22 +258,47 @@ class Variants(unittest.TestCase):
         with self.assertRaises(ValueError):jlib.inset([(0,0),(10,0),(10,4),(0,4)],3)   # Fase breiter als das Teil
 
 class Direction(unittest.TestCase):
-    """Richtungstest (claude-0.5, Cubegen docs/DEVELOPER.md 9.17): Mündung vorn auf der Laufachse (−Y), Griff um Socket_Hand,
-    Visier oben, Fenster quer zur Laufachse. Gegenbeweis: mit gespiegelter oder vertauschter Achse im Exporter schlägt er an."""
+    """Richtungstest (claude-0.5, Fenster ab 0.5.2 an der Funktionsfläche; Cubegen docs/DEVELOPER.md 9.17): Mündung vorn auf der
+    Laufachse (−Y), Griff um Socket_Hand, Visier oben, Durchsicht jedes Fensters entlang −Y; bekannte Querfenster KNOWN_CROSS_WINDOWS. Gegenbeweis: mit gespiegelter oder vertauschter Achse im Exporter schlägt er an."""
     def test_sheets(self):
         import spec_checks
         for s in sheetmodels.SHEETS:
             pr=spec_checks.direction_problems(load(s))
             with self.subTest(sheet=s):
-                if s in spec_checks.KNOWN_DIRECTION:
-                    self.assertTrue(spec_checks.known_matches(s,pr),f'{s}: Befunde weichen von KNOWN_DIRECTION ab: {pr}')
-                else:self.assertEqual(pr,[])
+                self.assertTrue(spec_checks.known_ok(s,pr),f'{s}: Befunde weichen von KNOWN_CROSS_WINDOWS ab: {pr}')
+        self.assertEqual(len(spec_checks.KNOWN_CROSS_WINDOWS),23)
+        self.assertTrue(set(spec_checks.KNOWN_CROSS_WINDOWS)<=set(sheetmodels.SHEETS))
+    def test_window_cases(self):
+        """Gegenbeweis je Fall an der Funktionsfläche: Seitenscheibe, Scheibe/Ring quer, Leuchtteil oben quer, falsche Achse – und
+        die richtigen Gegenstücke ohne Befund. Ein neues Querfenster auf einem sauberen Blatt macht den Blatttest rot."""
+        import spec_checks as C
+        B=lambda ex:[[0,0,0.1],ex]
+        decals=[dict(bounds_m=B([0.0,0.02,0.11])),dict(bounds_m=B([0.02,0.0,0.11]))]          # flach in X (Seite) / in Y (vorn)
+        parts={'pA':dict(bounds_m=B([0.005,0.04,0.14])),'pB':dict(bounds_m=B([0.04,0.005,0.14])),'pC':dict(bounds_m=B([0.04,0.03,0.105]))}
+        def el(typ,ax,decal=None,part='pA'):return dict(type=typ,decal=decal,part=part,emissive=False,view_axis_m=ax,center_m=[0,0,0.1])
+        quer=lambda es:C.cross_windows(C.window_problems(es,parts,decals,hand_z=0.0))
+        self.assertEqual(quer([el('decal',[-1,0,0],0)]),['d0'])                 # Seitenscheibe
+        self.assertEqual(C.window_problems([el('decal',[0,-1,0],1)],parts,decals,hand_z=0.0),[])   # Scheibe vorn
+        self.assertEqual(quer([el('disc',[-1,0,0],part='pA')]),['pA'])           # Ring/Platte quer
+        self.assertEqual(C.window_problems([el('disc',[0,-1,0],part='pB')],parts,decals,hand_z=0.0),[])
+        self.assertEqual(quer([el('part',[0,0,-1],part='pC')]),['pC'])           # Leuchtteil flach oben
+        pr=C.window_problems([el('decal',[-1,0,0],1)],parts,decals,hand_z=0.0)    # Achse widerspricht der Geometrie
+        self.assertTrue(any(p.startswith('Fensterachse [d1]') for p in pr))
+        sp=load('KC03');self.assertEqual(C.direction_problems(sp),[])            # neues Querfenster auf sauberem Blatt
+        e=sp['sight']['window_geometry']['elements'][0];b=sp['decals'][e['decal']]['bounds_m']
+        b[1][0],b[1][1]=b[0][0],b[0][1]+0.02;e['view_axis_m']=[-1.0,0.0,0.0]
+        self.assertFalse(C.known_ok('KC03',C.direction_problems(sp)))
+        # Exporter: Seitenaufkleber ab PANE_MIN_FRACTION ist Fenster (KD01), kleine Punkte nicht (KJ04)
+        f=lambda s:[x.get('face_fraction') for x in (load(s)['sight']['window_geometry'] or {}).get('elements',[]) if x['type']=='decal']
+        self.assertTrue(any(v and v>=export_spec.PANE_MIN_FRACTION for v in f('KD01')))
+        self.assertEqual(f('KJ04'),[])
     def test_counterproof_mirrored_axes(self):
         import spec_checks
         sample=['KC01','KD02','KF03','KG04','KH05','KJ06','KC07','KD08','KF09','KG10']   # jeder Waffentyp einmal
         bad={'Y gespiegelt (vorn +Y)':[[0,0,1],[1,0,0],[0,-1,0]],'Z gespiegelt (oben −Z)':[[0,0,1],[-1,0,0],[0,1,0]],
              'X/Y vertauscht':[[-1,0,0],[0,0,1],[0,-1,0]]}
-        # je Achse schlägt die zuständige Prüfung an: Y -> Mündung, Z -> Visier oben, X/Y -> Fenster (Blätter mit Fenstergeometrie)
+        # je Achse schlägt die zuständige Prüfung an: Y -> Mündung, Z -> Visier oben, X/Y -> Fenster (Blätter mit richtigem Fenster;
+        # bei bekannten Querfenstern dreht der Tausch die Seitenscheibe in −Y, dort fängt die Mündungsprüfung)
         expect={'Y gespiegelt (vorn +Y)':'Socket_Muzzle nicht vor dem Griff','Z gespiegelt (oben −Z)':'Visier nicht über der Mündungsachse',
                 'X/Y vertauscht':'Fenster'}
         old=export_spec.M2B
@@ -284,7 +309,7 @@ class Direction(unittest.TestCase):
                     sp=json.loads(export_spec.dumps(export_spec.build(s)));pr=spec_checks.direction_problems(sp)
                     with self.subTest(axes=name,sheet=s):
                         self.assertTrue(pr)
-                        if name!='X/Y vertauscht' or sp['sight']['window_geometry']:
+                        if name!='X/Y vertauscht' or (sp['sight']['window_geometry'] and s not in spec_checks.KNOWN_CROSS_WINDOWS):
                             self.assertTrue(any(p.startswith(expect[name]) for p in pr),pr)
         finally:export_spec.M2B=old
         self.assertEqual(spec_checks.direction_problems(load('KC01')),[])
@@ -321,6 +346,29 @@ class MovingParts(unittest.TestCase):
         self.assertEqual(load('KF04')['moving_parts']['items'][0]['match'],'label')         # Pumpgriff
         self.assertIsNone(load('KC02')['moving_parts']['items'][0]['parts'])               # Verschluss nicht gezeichnet
         self.assertEqual(load('KC10')['moving_parts']['items'],[])                          # Bogen
+
+class SightVocabulary(unittest.TestCase):
+    """sight.type/frame und parts[].toolgen_material (claude-0.5.2): kind folgt aus type, Zieltypen im Vokabular, Toolgen-Materialien."""
+    def test_vocabulary(self):
+        import spec_checks
+        for s in sheetmodels.SHEETS:
+            sp=load(s);si=sp['sight']
+            with self.subTest(sheet=s):
+                if not si['present']:self.assertIsNone(si['type']);self.assertIsNone(si['frame']);continue
+                self.assertIn(si['type'],export_spec.SIGHT_TYPES)
+                k,w=export_spec.SIGHT_TYPES[si['type']]
+                self.assertEqual(si['kind'],k)
+                if w:self.assertEqual(si['window'],w)
+                self.assertEqual(si['frame'] is None,si['window']=='none')
+                if si['frame']:self.assertIn(si['frame'],export_spec.SIGHT_FRAMES)
+                for p in sp['parts']:self.assertEqual(p['toolgen_material'],export_spec.TOOLGEN_MATERIAL[p['material']])
+        self.assertTrue({t[5] for t in spec_checks.CE_SIGHTS.values()}<=set(export_spec.SIGHT_TYPES))
+        self.assertEqual(len({t[5] for t in spec_checks.CE_SIGHTS.values()}),8)   # Pistole und Schrotflinte beide reflex
+    def test_toolgen_materials(self):
+        fn=os.path.expanduser('~/Claude/cubeescape-toolgen/data/surface_recipes.json')
+        if not os.path.exists(fn):self.skipTest('Toolgen-Repo nicht vorhanden')
+        with open(fn,encoding='utf-8') as f:mats=json.load(f)['materials']
+        self.assertTrue(set(export_spec.TOOLGEN_MATERIAL.values())<=set(mats))
 
 class RobotFit(unittest.TestCase):
     """robot_fit (claude-0.5.1): Zielzahlen mit Quelle, Pistole und Bogen ausgenommen, Messung am auf Ziellänge skalierten Blatt."""
@@ -361,7 +409,7 @@ class SightTargets(unittest.TestCase):
         fn=spec_checks.ce_equipment_path()
         if not os.path.exists(fn):self.skipTest('Cube-Escape-Repo nicht vorhanden ('+fn+')')
         ce=spec_checks.ce_table(fn)
-        self.assertEqual({nr:(v,d) for nr,v,d,_,_ in spec_checks.CE_SIGHTS.values()},ce,
+        self.assertEqual({nr:(v,d) for nr,v,d,*_ in spec_checks.CE_SIGHTS.values()},ce,
                          'CE-Tabelle „Visiere je Waffe“ geändert – CE_SIGHTS in spec_checks.py nachziehen')
 
 if __name__=='__main__':unittest.main()

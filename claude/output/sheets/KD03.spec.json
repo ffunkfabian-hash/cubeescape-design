@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.1"
+  "claude_version": "0.5.2"
  },
  "sheet": {
   "id": "KD03",
@@ -213,6 +213,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "rubber",
+   "toolgen_material": "rubber",
    "emissive": false,
    "sight": false,
    "color": "#2A2530",
@@ -230,6 +231,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#A855F7",
@@ -247,6 +249,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#9C91AA",
@@ -264,6 +267,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#9C91AA",
@@ -281,6 +285,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A2530",
@@ -298,6 +303,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D9B97A",
@@ -315,6 +321,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D9B97A",
@@ -332,6 +339,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D9B97A",
@@ -349,6 +357,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D9B97A",
@@ -366,6 +375,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A2530",
@@ -383,6 +393,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#D9B97A",
@@ -400,6 +411,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#2A2530",
@@ -417,6 +429,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#2A2530",
@@ -434,6 +447,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#2A2530",
@@ -451,6 +465,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#2A2530",
@@ -468,6 +483,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": true,
    "color": "#D9B97A",
@@ -571,6 +587,10 @@
   "source": "Geometrie dmods.d03: großer Kasten mit Leuchtfenster vorn",
   "modular": true,
   "mount_side": "top",
+  "type": "holo",
+  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
+  "frame": "closed",
+  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
   "labels": [
    "Visier"
   ],
@@ -587,14 +607,33 @@
    "elements": [
     {
      "type": "decal",
+     "decal": 40,
+     "part": "p15",
+     "emissive": true,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [0.0231, -0.0508, 0.2782],
+     "face_fraction": 0.132
+    },
+    {
+     "type": "decal",
+     "decal": 41,
+     "part": "p15",
+     "emissive": true,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [-0.0231, -0.0508, 0.2782],
+     "face_fraction": 0.132
+    },
+    {
+     "type": "decal",
      "decal": 42,
      "part": "p15",
      "emissive": true,
      "view_axis_m": [0.0, -1.0, 0.0],
-     "center_m": [0.0, -0.1949, 0.2782]
+     "center_m": [0.0, -0.1949, 0.2782],
+     "face_fraction": 0.197
     }
    ],
-   "source": "Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie"
+   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
   },
   "window_geometry_note": null
  },

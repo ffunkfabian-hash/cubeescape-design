@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.1"
+  "claude_version": "0.5.2"
  },
  "sheet": {
   "id": "KD02",
@@ -257,6 +257,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "rubber",
+   "toolgen_material": "rubber",
    "emissive": false,
    "sight": false,
    "color": "#1A1C20",
@@ -274,6 +275,7 @@
    "channel": "MT_Secondary",
    "channel_source": "distributed",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#E11D2E",
@@ -291,6 +293,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#8C93A2",
@@ -308,6 +311,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "painted",
+   "toolgen_material": "painted",
    "emissive": false,
    "sight": false,
    "color": "#8C93A2",
@@ -325,6 +329,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#3A3D44",
@@ -342,6 +347,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": false,
    "color": "#1A1C20",
@@ -359,6 +365,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#3A3D44",
@@ -376,6 +383,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#3A3D44",
@@ -393,6 +401,7 @@
    "channel": "MT_Primary",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#3A3D44",
@@ -410,6 +419,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#1A1C20",
@@ -427,6 +437,7 @@
    "channel": "MT_Metal",
    "channel_source": "role",
    "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": false,
    "color": "#1A1C20",
@@ -444,6 +455,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#1A1C20",
@@ -461,6 +473,7 @@
    "channel": "MT_Detail",
    "channel_source": "role",
    "material": "matte",
+   "toolgen_material": "painted_matte",
    "emissive": false,
    "sight": true,
    "color": "#1A1C20",
@@ -564,6 +577,10 @@
   "source": "Bezeichnung Kastenvisier",
   "modular": true,
   "mount_side": "top",
+  "type": "holo",
+  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
+  "frame": "closed",
+  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
   "labels": [
    "Kastenvisier"
   ],
@@ -580,14 +597,33 @@
    "elements": [
     {
      "type": "decal",
+     "decal": 38,
+     "part": "p12",
+     "emissive": false,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [0.0264, -0.0965, 0.3342],
+     "face_fraction": 0.093
+    },
+    {
+     "type": "decal",
+     "decal": 39,
+     "part": "p12",
+     "emissive": false,
+     "view_axis_m": [-1.0, 0.0, 0.0],
+     "center_m": [-0.0264, -0.0965, 0.3342],
+     "face_fraction": 0.093
+    },
+    {
+     "type": "decal",
      "decal": 42,
      "part": "p12",
      "emissive": true,
      "view_axis_m": [0.0, -1.0, 0.0],
-     "center_m": [0.0, -0.2507, 0.3342]
+     "center_m": [0.0, -0.2507, 0.3342],
+     "face_fraction": 0.237
     }
    ],
-   "source": "Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie"
+   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
   },
   "window_geometry_note": null
  },

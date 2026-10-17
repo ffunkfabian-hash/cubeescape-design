@@ -2,6 +2,14 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.5.2
+- Spec (additiv, format_version 1): `sight.type` (neun Typen des Visiertypen-Blatts plus `iron`/`pin`, `kind` folgt daraus),
+  `sight.frame` (Rahmen-Variante), `parts[].toolgen_material` (Toolgen-Materialien); Visier-Hinweise vergleichen jetzt den Zieltyp.
+- Richtungstest an der Funktionsfläche (`spec_checks.window_problems`, wiederverwendbar für VS01–VS09): Seitenscheiben, Öffnungen
+  und Ringe zählen als Fenster; 23 bekannte Querfenster datiert im Test (Fix mit der Umstellung auf VS01–VS09), Gegenbeweis je Fall.
+- Entscheidungen: Visier-Serie VS01–VS09 wird Zielbild, Waffenblätter werden danach umgestellt; Vokabular wie vorgeschlagen; Querfenster
+  „Test jetzt, Fix mit Umstellung“.
+
 ## claude-0.5.1
 - Spec (additiv, format_version 1): `robot_fit` – Größe in der Roboterhand (CE 0.82): Zielzahlen mit Quelle, Blatt auf Ziellänge
   gemessen; Pistole und Bogen ausgenommen; keine Roboter-Konzeptblätter.

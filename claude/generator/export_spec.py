@@ -17,7 +17,7 @@ import skins as SK
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
-CLAUDE_VERSION='0.5.1'
+CLAUDE_VERSION='0.5.2'
 
 # Waffentyp -> Toolgen-Id, Bezugslänge (m), Element.
 # Längen: Toolgen-Weltmodelle, Ausdehnung entlang der Mündungsachse (Blender −Y) aus qa_game.json › bounds_lod0 ›
@@ -67,6 +67,25 @@ SIGHTS={
  'KH07':('holo','glass','Kommentar h07.py: Holo-Rahmen'),'KH08':('scope','lens','Bezeichnung Zielfernrohr'),
  'KH09':('iron','open','Text des Blatts: Klappvisier'),'KH10':('pin','glass','Text des Blatts: Pin-Visier'),
 }
+
+# Visier-Vokabular (claude-0.5.2, Entscheidung des Nutzers 17.10.2026): sight.type = Typ des Visiertypen-Blatts (Cube Escape
+# Docs/Images/EquipmentConcepts/sight_types_1-9.webp) plus iron/pin für Blätter ohne Ziel; kind (Toolgen hold.sight_kind) und das
+# Fenster folgen aus dem Typ. sight.frame = Rahmen-Variante des Visier-Blatts (weapon_sights_1-9.webp › Rahmen Varianten).
+SIGHT_TYPES={   # type -> (kind, Fenster)
+ 'standard':('reflex','glass'),'holo':('holo','glass'),'precision':('scope','lens'),'reflex':('reflex','glass'),
+ 'sniper':('scope','lens'),'machine':('reflex','glass'),'energy':('energy','glass'),'trace':('holo','glass'),'rocket':('holo','glass'),
+ 'iron':('iron',None),'pin':('pin',None)}
+SIGHT_FRAMES=('standard','compact','open','closed','industrial','lightweight')
+def sight_type(kind,tid):
+    """Typ eines bestehenden Blatts aus seiner Kennung: Zielfernrohr am Scharfschützengewehr = sniper, sonst precision."""
+    if kind=='scope':return 'sniper' if tid=='sniper_rifle' else 'precision'
+    return kind
+def sight_frame(window):
+    """Rahmen bestehender Blätter (Regel nach der Sichtprüfung 0.5.1): Scheibe im Kasten/Haube = closed, Röhre = standard,
+    Ring/Lochblende = open, Kimme/Korn ohne Rahmen = null."""
+    return {'glass':'closed','lens':'standard','open':'open'}.get(window)
+# Material der Teile im Wortschatz von Toolgen data/surface_recipes.json › materials (claude-0.5.2)
+TOOLGEN_MATERIAL={'painted':'painted','brushed':'brushed','rubber':'rubber','matte':'painted_matte','lit':'energy_glass'}
 
 HAND_LABELS=('Griff','Pistolengriff','Griffstück')
 SUPPORT_LABELS=('Vordergriff','Pumpgriff')
@@ -241,23 +260,36 @@ def _view_axis(n):
     k=max(range(3),key=lambda a:abs(n[a]));s=-1 if n[k]>0 else 1
     return [r4(s*c)+0.0 for c in n]
 
+PANE_MIN_FRACTION=0.075   # Seitenaufkleber ab diesem Anteil der Teilfläche gilt als Scheibe/Öffnung (Sichtprüfung 0.5.1: Punkte ≤ 0,06)
+def _disc(e):
+    """Scheibe/Ring/Platte: zwei Ausdehnungen ähnlich (≥ 75 %), die dritte höchstens 40 % davon; liefert die Achse oder None."""
+    o=sorted(range(3),key=lambda a:e[a])
+    return o[0] if e[o[0]]<=0.4*e[o[1]] and e[o[1]]>=0.75*e[o[2]] else None
 def window_geometry(window,sight_parts,ids,F,decal_index):
-    """Fenster des Visiers als Geometrie (claude-0.5): Aufkleber vorn/hinten auf Visierteilen (Scheibe, Linse, Leuchtpunkt) und
-    leuchtende Visierteile. Achse aus der Geometrie (Newell-Normale bzw. dünnste Ausdehnung), nicht aus der Flächenbezeichnung."""
+    """Fenster des Visiers als Funktionsfläche (claude-0.5, erweitert 0.5.2; Cubegen docs/DEVELOPER.md 9.17): alle Aufkleber vorn/
+    hinten auf Visierteilen (Scheibe, Linse, Leuchtpunkt), Seitenaufkleber ab PANE_MIN_FRACTION der Teilfläche (Scheibe oder Öffnung
+    auf der Seite), leuchtende Visierteile und Scheiben/Ringe/Platten (type disc). Achse aus der Geometrie (Newell-Normale bzw.
+    dünnste Ausdehnung), nicht aus der Flächenbezeichnung; ob sie entlang −Y liegt, prüft spec_checks."""
     if window in (None,'none'):return None,'kein Fenster (Kimme/Korn bzw. kein Visier)'
     el=[]
     for i,P in sight_parts:
+        b=F.bb(_bb(_verts([P])));e=[b[1][a]-b[0][a] for a in range(3)]
         for k,(plane,val,pts,col,em) in enumerate(P['dec']):
-            if plane[0]!='x':continue
-            q=[F.p(v) for v in _decal3(plane,val,pts)]
-            el.append(dict(type='decal',decal=decal_index[(i,k)],part=ids[i],emissive=bool(em),view_axis_m=_view_axis(_newell(q)),
-                           center_m=[r4(sum(v[a] for v in q)/len(q)) for a in range(3)]))
+            q=[F.p(v) for v in _decal3(plane,val,pts)];n=_newell(q);ax=max(range(3),key=lambda a:abs(n[a]))
+            face=max(1e-12,e[(ax+1)%3]*e[(ax+2)%3]);frac=_area2(pts)*F.u*F.u/face
+            if plane[0]!='x' and frac<PANE_MIN_FRACTION:continue
+            el.append(dict(type='decal',decal=decal_index[(i,k)],part=ids[i],emissive=bool(em),view_axis_m=_view_axis(n),
+                           center_m=[r4(sum(v[a] for v in q)/len(q)) for a in range(3)],face_fraction=round(frac,3)))
+        c=[r4((b[0][a]+b[1][a])/2) for a in range(3)]
         if P['emit']:
-            b=F.bb(_bb(_verts([P])));e=[b[1][a]-b[0][a] for a in range(3)];k=min(range(3),key=lambda a:e[a])
-            el.append(dict(type='part',decal=None,part=ids[i],emissive=True,view_axis_m=[0.0 if a!=k else -1.0 for a in range(3)],
-                           center_m=[r4((b[0][a]+b[1][a])/2) for a in range(3)]))
-    if not el:return None,'kein Fensterelement im Modell (Fenster nur in Bezeichnung/Text; Leuchtstreifen an den Seiten zählen nicht)'
-    return dict(elements=el,source='Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie'),None
+            k=min(range(3),key=lambda a:e[a])
+            el.append(dict(type='part',decal=None,part=ids[i],emissive=True,view_axis_m=[0.0 if a!=k else -1.0 for a in range(3)],center_m=c))
+        elif window in ('open','lens') and _disc(e) is not None:   # Ring/Lochplatte bzw. Linsenring; bei Scheiben-Visieren (glass) keine Öffnung
+            k=_disc(e)
+            el.append(dict(type='disc',decal=None,part=ids[i],emissive=False,view_axis_m=[0.0 if a!=k else -1.0 for a in range(3)],center_m=c))
+    if not el:return None,'kein Fensterelement im Modell (Fenster nur in Bezeichnung/Text)'
+    return dict(elements=el,source='Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; '
+                'Achse aus der Geometrie'),None
 
 def _anchors(d,gun,sight_parts,allparts,ids):
     hand=_pick_hand(gun)
@@ -334,7 +366,7 @@ def build(sheet):
     for i,P in allparts:
         bb=_bb(_verts([P]));ext=[bb[1][k]-bb[0][k] for k in range(3)]
         parts.append(dict(id=ids[i],label=P.get('label'),channel=pch[i][0],channel_source=pch[i][1],
-                          material=MATERIAL_IDS[material_of(P)],emissive=bool(P['emit']),sight=bool(P.get('sight')),
+                          material=MATERIAL_IDS[material_of(P)],toolgen_material=TOOLGEN_MATERIAL[MATERIAL_IDS[material_of(P)]],emissive=bool(P['emit']),sight=bool(P.get('sight')),
                           color=_hex(P['col']),area_m2=round(_area(P)*unit*unit,6),long_axis=AXIS_NAMES[ext.index(max(ext))],
                           bounds_m=F.bb(bb),moving=moving_of.get(i)))
     decals=[];decal_index={}
@@ -349,12 +381,16 @@ def build(sheet):
     if sight_parts:
         sb=_bb(_verts([P for _,P in sight_parts]));gb=_bb(_verts([P for _,P in gun]))
         gz=_center(gb)[2];side='left' if sb[0][2]>gz+5 else 'right' if sb[1][2]<gz-5 else 'top'
+        st=sight_type(kind,tid);assert SIGHT_TYPES[st][0]==kind,(sheet,st,kind)
         sight=dict(present=True,kind=kind,window=window,source=ssrc,modular=True,mount_side=side,
+                   type=st,type_source='aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)',
+                   frame=sight_frame(window),frame_source='Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)',
                    labels=sorted({P.get('label') for _,P in sight_parts if P.get('label')}),parts=[ids[i] for i,_ in sight_parts],
                    bounds_m=F.bb(sb),anchor='Socket_Sight')
         sight['window_geometry'],sight['window_geometry_note']=window_geometry(window,sight_parts,ids,F,decal_index)
     else:
         sight=dict(present=False,kind=None,window=None,source=ssrc,modular=True,mount_side=None,labels=[],parts=[],bounds_m=None,
+                   type=None,type_source='kein Visier',frame=None,frame_source='kein Visier',
                    anchor='Socket_Sight' if 'Socket_Sight' in an else None,window_geometry=None,window_geometry_note='kein Visier')
     def dims(parts_):
         bb=F.bb(_bb(_verts(parts_)));e=[r4(bb[1][k]-bb[0][k]) for k in range(3)]
