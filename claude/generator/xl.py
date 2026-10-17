@@ -14,6 +14,7 @@ from skinraster import skin_texture
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
 ORTHO=[('SEITENANSICHT LINKS',0,0),('SEITENANSICHT RECHTS',180,0),('VORDERANSICHT',-90,0),('RÜCKANSICHT',90,0),('DRAUFSICHT',0,90),('UNTERANSICHT',0,-90)]
 DETAIL_LABELS=['Abzug','Abzugbügel','Bügel','Griff','Pistolengriff','Griffstück','Magazin','Energiemagazin']
+DETAIL_FRAME_EXTRA=['Pfeilauflage']  # Bogen: Pfeilauflage am Griff gehört mit in den Rahmen des Detailfelds
 
 def make_texture(seed=3):
     """Texturen im Objektraum: Muster hängen an Bauteil-Koordinaten (nicht an der Bildrichtung)."""
@@ -82,7 +83,7 @@ def detail_view(m,center,W,H,ow=3.0):
     yw,pt=math.radians(yaw),math.radians(pitch)
     # Rahmen = sichtbarer Teil von Griff/Abzug/Bügel (der Griffkopf steckt im Gehäuse), mittig in der Fläche unter der Überschrift
     TOP,BOT,SIDE,FILL=58,26,40,1.4
-    near=[P for P in m.parts if (P.get('label') or '') in DETAIL_LABELS]
+    near=[P for P in m.parts if (P.get('label') or '') in DETAIL_LABELS+DETAIL_FRAME_EXTRA]
     pr=[tf((q[0]-center[0],q[1]-center[1],q[2]-center[2]),yw,pt) for P in near for f in P['F'] for q in f['v']]
     box=[min(p[0] for p in pr),min(p[1] for p in pr),max(p[0] for p in pr),max(p[1] for p in pr)]
     o=((box[0]+box[2])/2,(box[1]+box[3])/2)
@@ -97,6 +98,9 @@ def detail_view(m,center,W,H,ow=3.0):
             b=vis.get(n)
             if n not in names and b and px[0]<=(b[0]+b[2])/2<=px[2] and (b[1]+b[3])/2>(px[1]+px[3])/2:
                 px=[min(px[0],b[0]),min(px[1],b[1]),max(px[2],b[2]),max(px[3],b[3])]
+        for n in DETAIL_FRAME_EXTRA:
+            b=vis.get(n)
+            if b:px=[min(px[0],b[0]),min(px[1],b[1]),max(px[2],b[2]),max(px[3],b[3])]
         box=[o[0]+(px[0]-W/2)/s0,o[1]+(px[1]-H/2)/s0,o[0]+(px[2]-W/2)/s0,o[1]+(px[3]-H/2)/s0]
         o=((box[0]+box[2])/2,(box[1]+box[3])/2)
     sc=min((W-2*SIDE)/max((box[2]-box[0])*FILL,1),(H-TOP-BOT)/max((box[3]-box[1])*FILL,1),4.5)
