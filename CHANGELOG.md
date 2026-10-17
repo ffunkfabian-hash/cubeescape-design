@@ -2,6 +2,13 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.5
+- Spec (additiv, format_version 1): `moving_parts` und `parts[].moving` (bewegliche Teile wie Toolgens Use-Clip, Wurzel fest, Zuordnung
+  über Bezeichnungen, sonst `null` mit Grund), `sight.window_geometry` (Fenster mit Durchsichtachse aus der Geometrie), `anchors.*.part`.
+- `Socket_Muzzle` am vorderen Ende der Mündungsachse (17 Blätter: Mündungskappe/Pfeilspitze mitgezählt, Rakete im Rohr nicht).
+- Richtungstest mit Gegenbeweis (gespiegelte Achsen), Visier gegen CE-Zielbild als Hinweisliste (`spec_checks.py`); `claude/docs/ENTSCHEIDUNGEN.md`.
+- Bericht: [claude/docs/versions/0.5.md](claude/docs/versions/0.5.md), Format: [claude/docs/weapon-spec.md](claude/docs/weapon-spec.md)
+
 ## claude-0.4.1
 - Golden nur als sha256 (`claude/tests/golden.json`, Blätter und Specs), Test `claude/tests/test_golden.py` (quick: Specs, Determinismus,
   Gegenbeweis; `--full`: Blätter, Determinismus eines Blatts). Blätter waren nicht reproduzierbar: `hash()` in `xl.swatch_svg` (je Prozess

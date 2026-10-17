@@ -1,11 +1,12 @@
 # Weapon-Spec der Konzeptblätter (`KXnn.spec.json`, format_version 1)
 
-Stand 17.10.2026 (claude-0.2, Feld `skin` seit claude-0.3). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
+Stand 17.10.2026 (claude-0.2, Feld `skin` seit claude-0.3, `moving_parts`, Fenstergeometrie und Richtungstest seit claude-0.5). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
 Werten des Blatts als Daten, damit Toolgen (und Cube Escape) sie nicht aus dem Bild lesen müssen. Die Blätter bleiben das
 Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesbare Fassung.
 
 - Erzeugen: `python3 claude/generator/export_spec.py` (alle 50) bzw. `… KC01 KD05`; prüfen: `… --check` (Exit 1 bei veraltet).
-- Test: `python3 claude/generator/test_spec.py` (Schema, Stimmigkeit, Aktualität; ohne numpy, ohne Bildstufe, ~2 s).
+- Test: `python3 claude/generator/test_spec.py` (Schema, Stimmigkeit, Aktualität, Richtung mit Gegenbeweis; ohne numpy, ohne Bildstufe, ~25 s).
+- Befunde und Hinweise lesen: `python3 claude/generator/spec_checks.py` (Richtung, Visier gegen das CE-Zielbild, Fenster ohne Geometrie).
 - Schema: [weapon-spec.schema.json](weapon-spec.schema.json). Quelle der Werte: dieselben Python-Modelle wie das Blatt
   (`sheetmodels.py` lädt sie wie die Bauskripte, ohne zu rendern).
 - **Vertrag:** Felder werden nur ergänzt (gleiche `format_version`); Umbenennen, Entfernen oder andere Bedeutung → `format_version` 2.
@@ -22,11 +23,12 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | `units` | `model_unit_m` (Faktor Modelleinheit → m), `model_length_units`, `reference_length_m`, `rule`, `reference` |
 | `axes` | Modellachsen, Ziel Toolgen/Blender, Matrix, Ursprung `Socket_Hand` |
 | `dimensions_m` | `weapon` (ohne Visier) und `with_sight`: `length` (−Y), `height` (Z), `width` (X), `bounds_m` |
-| `anchors` | `Socket_Hand`, `Socket_SupportHand`, `Socket_Muzzle`, `Socket_CenterOfMass`, `Socket_Sight`: `position_m` (Toolgen-Rahmen), `model` (Modelleinheiten), `source`; nicht ableitbar → `null` mit Grund |
+| `anchors` | `Socket_Hand`, `Socket_SupportHand`, `Socket_Muzzle`, `Socket_CenterOfMass`, `Socket_Sight`: `position_m` (Toolgen-Rahmen), `model` (Modelleinheiten), `source`, `part` (Teil, aus dem der Anker stammt; claude-0.5); nicht ableitbar → `null` mit Grund |
 | `palette` | vier Farbvarianten des Blatts (`base`, `standard`, `arktis`, `nacht`): `swatches` (Blatt), `channels` (7 MT-Slots → sRGB-Hex oder `null`), `other_colors` (weitere Farben im Kanal mit Flächenanteil) |
 | `channels_used` | Kanäle, die Teile oder Aufkleber belegen |
-| `parts[]` | `id` (p00 …, Reihenfolge des Modells), `label` (deutsche Bauteilbezeichnung oder `null`), `channel`, `channel_source`, `material`, `emissive`, `sight`, `color` (Basis), `area_m2`, `long_axis`, `bounds_m` |
-| `sight` | `present`, `kind`, `window`, `source`, `modular` (immer separat), `mount_side`, `labels`, `parts`, `bounds_m`, `anchor` |
+| `parts[]` | `id` (p00 …, Reihenfolge des Modells), `label` (deutsche Bauteilbezeichnung oder `null`), `channel`, `channel_source`, `material`, `emissive`, `sight`, `color` (Basis), `area_m2`, `long_axis`, `bounds_m`, `moving` (Art aus `moving_parts` oder `null`; claude-0.5) |
+| `moving_parts` | (claude-0.5, optional) bewegliche Teile wie Toolgens Use-Clip – siehe [Bewegliche Teile](#bewegliche-teile) |
+| `sight` | `present`, `kind`, `window`, `source`, `modular` (immer separat), `mount_side`, `labels`, `parts`, `bounds_m`, `anchor`, `window_geometry` (Fensterelemente mit Durchsichtachse oder `null`), `window_geometry_note` (Grund bei `null`; beide claude-0.5) |
 | `decals[]` | `part`, `channel`, `surface` (left/right/front/back/top), `emissive`, `color`, `area_m2`, `bounds_m` |
 | `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns` |
 | `skin` | (claude-0.3, optional) fünf Skins je Waffe aus einem Katalog von neun, der erste ist der Hauptskin des Blatts – siehe [Skins](#skins) |
@@ -52,7 +54,9 @@ Farben sind sRGB-Hex `#RRGGBB` wie im Cube-Escape-Design (`Docs/EQUIPMENT.md` �
 - `Socket_Hand`: Mitte des Teils „Griff“/„Pistolengriff“/„Griffstück“, bei mehreren das dem Abzug nächste dahinter (Toolgen: Mitte des Pistolengriffs).
 - `Socket_SupportHand`: Mitte von „Vordergriff“/„Pumpgriff“, sonst eines zweiten Griffs davor, sonst des größten Handschutzes
   (Handschutz/Laufverkleidung/Laufmantel/Laufhülle) vor dem Griff; sonst `null` (meist Pistolen; Toolgen nutzt dort „cup“ am Rahmen).
-- `Socket_Muzzle`: Vorderkante des vordersten Lauf-/Mündungsteils, Querschnittsmitte; Bogen: Pfeilspitze.
+- `Socket_Muzzle`: Vorderkante des vordersten Lauf-/Mündungsteils, Querschnittsmitte; Bogen: Pfeilspitze. Seit claude-0.5 verlängert
+  über unbezeichnete Teile, die die Mündungsachse schneiden und vorn anschließen (Mündungskappe, Leuchtkopf, Pfeilspitze); eine Rakete
+  im Rohr samt Teilen in ihrem Querschnitt ist Geschoss und zählt nicht. Betroffen: 17 Blätter, bis 7,2 cm weiter vorn (KD10).
 - `Socket_CenterOfMass`: Näherung, Hüllquader-Volumen je Teil gewichtet, Visier montiert.
 - `Socket_Sight`: Unterkante Mitte der Visierbaugruppe in montierter Lage; ohne Visier Oberkante der Visierschiene.
 - Toolgen prüft Anker gegen sein eigenes Netz; die Werte hier sind das Zielbild, kein Ersatz für diese Prüfung.
@@ -133,6 +137,46 @@ Waffe; Farben aus den MT_-Kanälen plus zwei feste Skin-Akzente; erst je Familie
   (Finnen weichen auf Rippen aus). Stand claude-0.3: zwei Lagen ohne Platz (KC09 Raketenwerfer, Rohrkörper).
 - **Zeichnung:** `skinraster.py` liest die Toon-Stufe jedes Bildpunkts aus seiner Helligkeit und schattiert die Skinfarbe gleich;
   Gold/Chrom mit eigener Tonleiter und Glanzstreifen (nur Zeichnung), Kantenabnutzung über Kantenabstand und Zellrauschen.
+
+## Bewegliche Teile
+
+`moving_parts` (claude-0.5) beschreibt je Waffe die Teile, die Toolgens Use-Clip bewegt (Toolgen `docs/TECHNIK.md` › Waffen 1–9 ›
+Use-Clip, `weapon_designs.py` `DESIGNS[…]['use_clip']`, Stand c926f50). Die Wurzel bewegt sich nie (`root_moves: false`). Weg, Bilder und
+Vorzeichen legt Toolgen im Clip fest; hier stehen Art, Achse und die Teile des Blatts.
+
+| `kind` | Waffe | Toolgen-Knoten | Bewegung (Toolgen-Rahmen) | Bezeichnungen (`label`) / ähnlich (`similar`) |
+|---|---|---|---|---|
+| `slide` | Pistole | `Anim_Slide` | translate +Y (zurück) | Schlitten / Verschluss |
+| `bolt` | Sturmgewehr, MP, Spurgewehr | `Anim_Bolt` | translate +Y | Verschluss, Ladehebel, Spannhebel |
+| `cell` | Impulsgewehr | `Anim_Cell` | translate +Y (drei Impulse) | Zelle, Pulszelle / Kristallkern, Energiekugel, Pulswürfel |
+| `pump` | Schrotflinte | `Anim_Bolt` | translate +Y | Pumpgriff, Repetierschieber |
+| `lever` | Scharfschützengewehr | `Anim_Bolt` | rotate um Y, dann translate +Y | Kammerstängel, Kammer / Verschluss |
+| `fins` | Fusionsgewehr | `Anim_FinL/R` | rotate um Z (gegenläufig) | Flossen, Finnen |
+| `coil` | Fusionsgewehr | `Anim_Coil` | rotate um Y | Spulenring(e) / Beschleunigerring |
+| `hatch` | Raketenwerfer | `Anim_Hatch` | rotate um X | Ladeklappe, Klappe |
+
+- `items[]`: `kind`, `name_de`, `toolgen_node`, `motions[]` (`type` translate/rotate, `axis` Einheitsvektor), `parts` (Teil-IDs ohne
+  Visierteile) oder `null`, `labels`, `match` (`label` = Bezeichnung wie in Toolgen, `similar` = ähnliches Teil, Toolgen entscheidet;
+  `null` = nicht ableitbar), `source` (bei `null` der Grund). Der Bogen hat keine Einträge (`note`).
+- Zuordnung nur über Bezeichnungen der Modelle. Die `Energiezelle` der Impulsgewehre ist das Magazin (Toolgen `Anim_EnergyCell`, nicht
+  im Use-Clip) und zählt nicht als `cell`; `Kühlrippen` sind Ringe um den Lauf, keine Flossen.
+- Stand claude-0.5: 11 von 60 Einträgen haben Teile (Schlitten 3, Verschluss als ähnliches Teil 1, Pumpgriff 3, ähnliche Zelle 3 von 6,
+  Beschleunigerring 1 von 6); Verschluss der Gewehre, Kammerstängel, Ladeklappe und Flossen sind in keinem Blatt bezeichnet.
+
+## Richtung und Visier-Zielbild
+
+- **Richtungstest** (`spec_checks.direction_problems`, Lehre Cubegen `docs/DEVELOPER.md` 9.17: die Funktionsfläche prüfen, nicht nur
+  Anker oder Bounds): `Socket_Muzzle` vor dem Griff (−Y) und am vorderen Ende der Mündungsachse, im Querschnitt seines Teils;
+  `Socket_Hand` im Griffteil, der unter die Mündungsachse reicht; Visier über der Mündungsachse, `Socket_Sight` über dem Griff an der
+  Unterkante der Baugruppe (links bei `mount_side: left`); jedes Fensterelement mit Durchsicht entlang Y, Aufkleber flach quer zur
+  Laufachse. Gegenbeweis im Test: Exporter mit gespiegelter Y- bzw. Z-Achse oder vertauschtem X/Y schlägt bei jedem Waffentyp an.
+  Bekannter Befund: KF10 (Pin-Ring quer zur Pfeilachse), `KNOWN_DIRECTION`.
+- **`window_geometry`**: Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; `view_axis_m` aus der Geometrie
+  (Newell-Normale bzw. dünnste Ausdehnung), Vorzeichen nach vorn (−Y). Ohne solches Element `null` mit Grund (Stand: 17 Blätter mit
+  Fenster, das nur in Bezeichnung oder Text steht).
+- **Visier-Zielbild:** `spec_checks.CE_SIGHTS` gibt die Tabelle aus Cube Escape `Docs/EQUIPMENT.md` › Visiere je Waffe wieder
+  (Art und Fenster, die dazu passen). Abweichungen sind **Hinweise**, kein Fehler; ob ein Blatt geändert wird, entscheidet der Nutzer.
+  Der Test vergleicht die Tabelle mit der CE-Datei, wenn das Repo lokal liegt (`CE_EQUIPMENT` setzt den Pfad).
 
 ## Für Codex (`codex/`)
 

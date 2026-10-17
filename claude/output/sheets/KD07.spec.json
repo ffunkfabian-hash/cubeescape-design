@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.4"
+  "claude_version": "0.5"
  },
  "sheet": {
   "id": "KD07",
@@ -69,27 +69,32 @@
   "Socket_Hand": {
    "position_m": [0.0, 0.0, 0.0],
    "model": [341.01, 337.29, 0.0],
-   "source": "Mitte von p02 (Griff)"
+   "source": "Mitte von p02 (Griff)",
+   "part": "p02"
   },
   "Socket_SupportHand": {
    "position_m": null,
    "model": null,
-   "source": "nicht ableitbar (kein Vordergriff, zweiter Griff oder Handschutz vor dem Griff)"
+   "source": "nicht ableitbar (kein Vordergriff, zweiter Griff oder Handschutz vor dem Griff)",
+   "part": null
   },
   "Socket_Muzzle": {
    "position_m": [0.0, -0.5716, 0.19],
    "model": [784.0, 190.0, 0.0],
-   "source": "vorderstes bezeichnetes Mündungs-/Laufteil: Vorderkante von p11 (Mündung), Querschnittsmitte"
+   "source": "vorderstes bezeichnetes Mündungs-/Laufteil: Vorderkante von p11 (Mündung), Querschnittsmitte",
+   "part": "p11"
   },
   "Socket_CenterOfMass": {
    "position_m": [0.0, -0.1058, 0.1691],
    "model": [423.04, 206.21, 0.0],
-   "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert"
+   "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert",
+   "part": null
   },
   "Socket_Sight": {
    "position_m": [0.0, 0.0374, 0.3062],
    "model": [312.0, 100.0, 0.0],
-   "source": "Unterkante Mitte der Visierbaugruppe (montierte Lage)"
+   "source": "Unterkante Mitte der Visierbaugruppe (montierte Lage)",
+   "part": null
   }
  },
  "palette": [
@@ -244,7 +249,8 @@
    "bounds_m": [
     [-0.0258, 0.2795, 0.0868],
     [0.0258, 0.3884, 0.1462]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p01",
@@ -260,7 +266,8 @@
    "bounds_m": [
     [-0.0284, 0.1755, 0.1359],
     [0.0284, 0.3884, 0.2535]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p02",
@@ -276,7 +283,8 @@
    "bounds_m": [
     [-0.0258, -0.0497, -0.0765],
     [0.0258, 0.0497, 0.0765]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p03",
@@ -292,7 +300,8 @@
    "bounds_m": [
     [-0.0052, -0.1251, -0.0164],
     [0.0052, -0.0168, 0.0739]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p04",
@@ -308,7 +317,8 @@
    "bounds_m": [
     [-0.009, -0.0864, 0.0094],
     [0.009, -0.0451, 0.0739]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p05",
@@ -324,7 +334,8 @@
    "bounds_m": [
     [-0.0284, 0.0684, -0.0164],
     [0.0284, 0.1355, 0.0765]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p06",
@@ -340,7 +351,8 @@
    "bounds_m": [
     [-0.049, -0.1174, 0.0713],
     [0.049, 0.182, 0.2922]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p07",
@@ -356,7 +368,8 @@
    "bounds_m": [
     [-0.0181, -0.0348, 0.2881],
     [0.0181, 0.1097, 0.3062]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p08",
@@ -372,7 +385,8 @@
    "bounds_m": [
     [-0.031, -0.0426, 0.3062],
     [0.031, 0.1174, 0.3526]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p09",
@@ -388,7 +402,8 @@
    "bounds_m": [
     [-0.0361, -0.5148, 0.0584],
     [0.0361, -0.1277, 0.1126]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p10",
@@ -404,7 +419,8 @@
    "bounds_m": [
     [-0.0439, -0.5432, 0.11],
     [0.0439, -0.1148, 0.2726]
-   ]
+   ],
+   "moving": null
   },
   {
    "id": "p11",
@@ -420,9 +436,48 @@
    "bounds_m": [
     [-0.0387, -0.5716, 0.1229],
     [0.0387, -0.5406, 0.2571]
-   ]
+   ],
+   "moving": null
   }
  ],
+ "moving_parts": {
+  "source": "Toolgen docs/TECHNIK.md › Waffen 1–9 › Use-Clip; scripts/tool_assets/weapon_designs.py DESIGNS[…]['use_clip'] (Toolgen c926f50, 17.10.2026)",
+  "root_moves": false,
+  "frame": "Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse",
+  "items": [
+   {
+    "kind": "fins",
+    "name_de": "Flossen (links/rechts gegenläufig)",
+    "toolgen_node": "Anim_FinL/Anim_FinR",
+    "motions": [
+     {
+      "type": "rotate",
+      "axis": [0, 0, 1]
+     }
+    ],
+    "parts": null,
+    "labels": [],
+    "match": null,
+    "source": "nicht ableitbar: kein Teil mit Bezeichnung Flossen/Finnen im Modell (Mechanik im Gehäuse nicht gezeichnet)"
+   },
+   {
+    "kind": "coil",
+    "name_de": "Spulenring",
+    "toolgen_node": "Anim_Coil",
+    "motions": [
+     {
+      "type": "rotate",
+      "axis": [0, 1, 0]
+     }
+    ],
+    "parts": null,
+    "labels": [],
+    "match": null,
+    "source": "nicht ableitbar: kein Teil mit Bezeichnung Spulenring/Spulenringe/Beschleunigerring im Modell (Mechanik im Gehäuse nicht gezeichnet)"
+   }
+  ],
+  "note": null
+ },
  "sight": {
   "present": true,
   "kind": "reflex",
@@ -440,7 +495,21 @@
    [-0.031, -0.0426, 0.3062],
    [0.031, 0.1174, 0.3526]
   ],
-  "anchor": "Socket_Sight"
+  "anchor": "Socket_Sight",
+  "window_geometry": {
+   "elements": [
+    {
+     "type": "decal",
+     "decal": 22,
+     "part": "p08",
+     "emissive": true,
+     "view_axis_m": [0.0, -1.0, 0.0],
+     "center_m": [0.0, -0.0426, 0.3294]
+    }
+   ],
+   "source": "Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie"
+  },
+  "window_geometry_note": null
  },
  "decals": [
   {

@@ -45,6 +45,7 @@ docs/                    gemeinsam: Regeln und Aufträge
   AUFTRAG.md             vollständiger Auftrag für Codex (inkl. Masterprompt)
   prompt-vorlagen.md     Vorlagen für ChatGPT-Bildgenerator und Codex
 claude/                  nur Claude
+  docs/                  weapon-spec.md (Format), ENTSCHEIDUNGEN.md (Entscheidungen des Nutzers), versions/ (Berichte)
   prompts/               fertige Prompts je Waffe (DE/EN)
   generator/
     eng.py raster.py     Modell-API und Z-Buffer-Toon-Renderer
@@ -55,6 +56,7 @@ claude/                  nur Claude
     jlib.py j01–j10.py   Facetten-Bausteine und Modelle Variante J „Black Ice“
     variants.py          Varianten-Register (Buchstabe, Name, Idee); new_variant.py legt neue Varianten an
     build_*.py           Bauskripte je Variante, build_all.py baut alles; preview.py nimmt die Vorschauen auf
+    export_spec.py       Spec je Blatt (KXnn.spec.json); test_spec.py, spec_checks.py (Richtung, Visier gegen CE-Zielbild)
   output/
     sheets/              KXnn.spec.json (im Repo), fonts/ (Schriften, SIL OFL); Konzeptblätter KXnn.dc.html (KC01 … KJ10) nur lokal/Release
     previews/            WebP-Vorschauen (nur lokal/Release, werden auf dem Mac erzeugt)

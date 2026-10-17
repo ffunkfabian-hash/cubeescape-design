@@ -17,7 +17,7 @@ import skins as SK
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
-CLAUDE_VERSION='0.4'
+CLAUDE_VERSION='0.5'
 
 # Waffentyp -> Toolgen-Id, Bezugslänge (m), Element.
 # Längen: Toolgen-Weltmodelle, Ausdehnung entlang der Mündungsachse (Blender −Y) aus qa_game.json › bounds_lod0 ›
@@ -117,26 +117,120 @@ def _pick_hand(parts):
         return min(pool,key=lambda c:abs(_center(_bb(_verts([c[1]])))[0]-tx))
     return max(cand,key=lambda c:_center(_bb(_verts([c[1]])))[0])
 
+PROJECTILE_LABELS=('Rakete',)   # Geschoss im Rohr: gehört nicht zur Waffe (Toolgen: kein Projektil im Asset)
+def _projectile(gun,tol=1.0):
+    """Teile des Geschosses: bezeichnete Raketen und Teile in ihrem Querschnitt dahinter (Rumpf, Ringe)."""
+    out=set()
+    for i,R in gun:
+        if R.get('label') not in PROJECTILE_LABELS:continue
+        rb=_bb(_verts([R]));out.add(i)
+        for k,P in gun:
+            b=_bb(_verts([P]))
+            if all(rb[0][a]-tol<=b[0][a] and b[1][a]<=rb[1][a]+tol for a in (1,2)) and b[1][0]<=rb[1][0]+tol:out.add(k)
+    return out
+
+def _muzzle_front(gun,front,cc,tol=1.0):
+    """Vorderes Ende der Mündungsachse: verlängert die Vorderkante über unbezeichnete (oder Mündungs-)Teile, die die Achse
+    (Querschnittsmitte cc) schneiden und vorn anschließen – Mündungskappen, Leuchtköpfe, Pfeilspitzen. Geschosse zählen nicht."""
+    proj=_projectile(gun);ext=[]
+    while True:
+        nxt=[(i,b) for i,P in gun for b in [_bb(_verts([P]))]
+             if i not in proj and i not in ext and (P.get('label') is None or P.get('label') in MUZZLE_LABELS)
+             and b[0][1]-tol<=cc[1]<=b[1][1]+tol and b[0][2]-tol<=cc[2]<=b[1][2]+tol and b[0][0]<=front+tol and b[1][0]>front+tol]
+        if not nxt:return front,ext
+        i,b=max(nxt,key=lambda t:t[1][1][0]);ext.append(i);front=b[1][0]
+
+# Bewegliche Teile (Use-Clip) wie in Toolgen 0.7: docs/TECHNIK.md › Waffen 1–9 › Use-Clip und
+# scripts/tool_assets/weapon_designs.py DESIGNS[…]['use_clip'] (Stand Toolgen c926f50, 17.10.2026). Die Wurzel bewegt sich nie.
+# Achsen im Toolgen-Rahmen: translate = Richtung der Bewegung aus der Ruhe (zurück = +Y), rotate = Drehachse (Vorzeichen, Weg und
+# Bilder legt Toolgen im Clip fest). labels: Bezeichnung des Teils im Blatt (match 'label'); similar: ähnliches Teil, Toolgen entscheidet.
+MOTION_SOURCE="Toolgen docs/TECHNIK.md › Waffen 1–9 › Use-Clip; scripts/tool_assets/weapon_designs.py DESIGNS[…]['use_clip'] (Toolgen c926f50, 17.10.2026)"
+MOTIONS={
+ 'slide':dict(node='Anim_Slide',de='Schlitten',motions=[('translate',[0,1,0])],labels=('Schlitten',),similar=('Verschluss',)),
+ 'bolt':dict(node='Anim_Bolt',de='Verschluss',motions=[('translate',[0,1,0])],labels=('Verschluss','Ladehebel','Spannhebel'),similar=()),
+ 'cell':dict(node='Anim_Cell',de='Zelle (Impulse)',motions=[('translate',[0,1,0])],labels=('Zelle','Pulszelle'),
+             similar=('Kristallkern','Energiekugel','Pulswürfel')),
+ 'fins':dict(node='Anim_FinL/Anim_FinR',de='Flossen (links/rechts gegenläufig)',motions=[('rotate',[0,0,1])],labels=('Flossen','Finnen'),similar=()),
+ 'coil':dict(node='Anim_Coil',de='Spulenring',motions=[('rotate',[0,1,0])],labels=('Spulenring','Spulenringe'),similar=('Beschleunigerring',)),
+ 'pump':dict(node='Anim_Bolt',de='Repetierschieber',motions=[('translate',[0,1,0])],labels=('Pumpgriff','Repetierschieber'),similar=()),
+ 'lever':dict(node='Anim_Bolt',de='Kammerstängel (drehen, zurück, vor, drehen)',motions=[('rotate',[0,1,0]),('translate',[0,1,0])],
+              labels=('Kammerstängel','Kammer'),similar=('Verschluss',)),
+ 'hatch':dict(node='Anim_Hatch',de='Ladeklappe',motions=[('rotate',[1,0,0])],labels=('Ladeklappe','Klappe'),similar=()),
+}
+WEAPON_MOTIONS={'pistol':['slide'],'assault_rifle':['bolt'],'pulse_rifle':['cell'],'shotgun':['pump'],'sniper_rifle':['lever'],
+ 'smg':['bolt'],'fusion_rifle':['fins','coil'],'scout_rifle':['bolt'],'rocket_launcher':['hatch'],'bow':[]}
+
+def moving_parts(tid,allparts,ids):
+    """moving_parts (claude-0.5) und je Teil die Art: Zuordnung über die Bezeichnungen des Modells, Visierteile ausgenommen."""
+    items=[];per={}
+    for kind in WEAPON_MOTIONS[tid]:
+        M=MOTIONS[kind];e=dict(kind=kind,name_de=M['de'],toolgen_node=M['node'],motions=[dict(type=t,axis=a) for t,a in M['motions']])
+        for match,labs in (('label',M['labels']),('similar',M['similar'])):
+            hit=[(i,P) for i,P in allparts if not P.get('sight') and P.get('label') in labs]
+            if hit:
+                e.update(parts=[ids[i] for i,_ in hit],labels=sorted({P['label'] for _,P in hit}),match=match,
+                         source=('Bezeichnung ' if match=='label' else f'ähnliches Teil zu „{M["de"]}“ (Toolgen entscheidet): ')
+                                +', '.join(f'„{P["label"]}“ ({ids[i]})' for i,P in hit))
+                for i,_ in hit:per[i]=kind
+                break
+        else:
+            e.update(parts=None,labels=[],match=None,
+                     source=f'nicht ableitbar: kein Teil mit Bezeichnung {"/".join(M["labels"]+M["similar"])} im Modell (Mechanik im Gehäuse nicht gezeichnet)')
+        items.append(e)
+    note=None if items else 'keine Use-Clip-Mechanik: der Bogen gehört nicht zu Toolgens Waffen 1–9'
+    return dict(source=MOTION_SOURCE,root_moves=False,frame='Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse',
+                items=items,note=note),per
+
+def _newell(pts):
+    n=[0.0,0.0,0.0]
+    for k in range(len(pts)):
+        (x0,y0,z0),(x1,y1,z1)=pts[k],pts[(k+1)%len(pts)]
+        n[0]+=(y0-y1)*(z0+z1);n[1]+=(z0-z1)*(x0+x1);n[2]+=(x0-x1)*(y0+y1)
+    L=math.sqrt(sum(c*c for c in n)) or 1.0
+    return [c/L for c in n]
+def _view_axis(n):
+    """Achse ohne Vorzeichen: größte Komponente negativ (Fenster nach vorn −Y), gerundet."""
+    k=max(range(3),key=lambda a:abs(n[a]));s=-1 if n[k]>0 else 1
+    return [r4(s*c)+0.0 for c in n]
+
+def window_geometry(window,sight_parts,ids,F,decal_index):
+    """Fenster des Visiers als Geometrie (claude-0.5): Aufkleber vorn/hinten auf Visierteilen (Scheibe, Linse, Leuchtpunkt) und
+    leuchtende Visierteile. Achse aus der Geometrie (Newell-Normale bzw. dünnste Ausdehnung), nicht aus der Flächenbezeichnung."""
+    if window in (None,'none'):return None,'kein Fenster (Kimme/Korn bzw. kein Visier)'
+    el=[]
+    for i,P in sight_parts:
+        for k,(plane,val,pts,col,em) in enumerate(P['dec']):
+            if plane[0]!='x':continue
+            q=[F.p(v) for v in _decal3(plane,val,pts)]
+            el.append(dict(type='decal',decal=decal_index[(i,k)],part=ids[i],emissive=bool(em),view_axis_m=_view_axis(_newell(q)),
+                           center_m=[r4(sum(v[a] for v in q)/len(q)) for a in range(3)]))
+        if P['emit']:
+            b=F.bb(_bb(_verts([P])));e=[b[1][a]-b[0][a] for a in range(3)];k=min(range(3),key=lambda a:e[a])
+            el.append(dict(type='part',part=ids[i],emissive=True,view_axis_m=[0.0 if a!=k else -1.0 for a in range(3)],
+                           center_m=[r4((b[0][a]+b[1][a])/2) for a in range(3)]))
+    if not el:return None,'kein Fensterelement im Modell (Fenster nur in Bezeichnung/Text; Leuchtstreifen an den Seiten zählen nicht)'
+    return dict(elements=el,source='Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie'),None
+
 def _anchors(d,gun,sight_parts,allparts,ids):
     hand=_pick_hand(gun)
     an={};notes={}
     if hand[0] is not None:
-        hc=_center(_bb(_verts([hand[1]])));an['Socket_Hand']=(hc,f'Mitte von {ids[hand[0]]} ({hand[1]["label"]})')
+        hc=_center(_bb(_verts([hand[1]])));an['Socket_Hand']=(hc,f'Mitte von {ids[hand[0]]} ({hand[1]["label"]})',hand[0])
     else:
         hc=_center(_bb(_verts([P for _,P in gun])));an['Socket_Hand']=(hc,'kein Griff bezeichnet: Mitte der Waffe')
     # Stützhand
     sup=None
     c=[(i,P) for i,P in gun if P.get('label') in SUPPORT_LABELS]
     if c:
-        i,P=min(c,key=lambda t:abs(_center(_bb(_verts([t[1]])))[0]-hc[0]));sup=(_center(_bb(_verts([P]))),f'Mitte von {ids[i]} ({P["label"]})')
+        i,P=min(c,key=lambda t:abs(_center(_bb(_verts([t[1]])))[0]-hc[0]));sup=(_center(_bb(_verts([P]))),f'Mitte von {ids[i]} ({P["label"]})',i)
     else:
         g2=[(i,P) for i,P in gun if P.get('label') in HAND_LABELS and i!=hand[0] and _center(_bb(_verts([P])))[0]>hc[0]+10]
         if g2:
-            i,P=min(g2,key=lambda t:_center(_bb(_verts([t[1]])))[0]);sup=(_center(_bb(_verts([P]))),f'Mitte von {ids[i]} (zweiter Griff)')
+            i,P=min(g2,key=lambda t:_center(_bb(_verts([t[1]])))[0]);sup=(_center(_bb(_verts([P]))),f'Mitte von {ids[i]} (zweiter Griff)',i)
         else:
             gd=[(i,P) for i,P in gun if P.get('label') in GUARD_LABELS and _center(_bb(_verts([P])))[0]>hc[0]]
             if gd:
-                i,P=max(gd,key=lambda t:_area(t[1]));sup=(_center(_bb(_verts([P]))),f'Mitte von {ids[i]} ({P["label"]})')
+                i,P=max(gd,key=lambda t:_area(t[1]));sup=(_center(_bb(_verts([P]))),f'Mitte von {ids[i]} ({P["label"]})',i)
     if sup:an['Socket_SupportHand']=sup
     else:notes['Socket_SupportHand']='nicht ableitbar (kein Vordergriff, zweiter Griff oder Handschutz vor dem Griff)'
     # Mündung
@@ -144,7 +238,9 @@ def _anchors(d,gun,sight_parts,allparts,ids):
     src='vorderstes bezeichnetes Mündungs-/Laufteil'
     if not mz:mz=gun;src='vorderstes Teil (kein Lauf bezeichnet)'
     i,P=max(mz,key=lambda t:_bb(_verts([t[1]]))[1][0]);bb=_bb(_verts([P]));cc=_center(bb)
-    an['Socket_Muzzle']=([bb[1][0],cc[1],cc[2]],f'{src}: Vorderkante von {ids[i]} ({P.get("label") or "ohne Bezeichnung"}), Querschnittsmitte')
+    front,ext=_muzzle_front(gun,bb[1][0],cc)
+    tail=f', verlängert über {", ".join(ids[k] for k in ext)} (ohne Bezeichnung, auf der Mündungsachse)' if ext else ''
+    an['Socket_Muzzle']=([front,cc[1],cc[2]],f'{src}: Vorderkante von {ids[i]} ({P.get("label") or "ohne Bezeichnung"}){tail}, Querschnittsmitte',i)
     # Schwerpunkt: Näherung, Teile mit Volumen ihres Hüllquaders gewichtet (Visier montiert)
     W=0;acc=[0,0,0]
     for _,P in allparts:
@@ -159,7 +255,7 @@ def _anchors(d,gun,sight_parts,allparts,ids):
         rail=[(i,P) for i,P in gun if P.get('label')=='Visierschiene']
         if rail:
             i,P=rail[0];bb=_bb(_verts([P]));cc=_center(bb)
-            an['Socket_Sight']=([cc[0],bb[0][1],cc[2]],f'Oberkante Mitte von {ids[i]} (Visierschiene, kein Visier im Modell)')
+            an['Socket_Sight']=([cc[0],bb[0][1],cc[2]],f'Oberkante Mitte von {ids[i]} (Visierschiene, kein Visier im Modell)',i)
         else:notes['Socket_Sight']='kein Visier und keine Visierschiene im Modell'
     return an,notes
 
@@ -184,6 +280,7 @@ def build(sheet):
     # Kanäle und Paletten je Variante (xlroles.channel_palettes, auch für die Skins)
     palette,pch=channel_palettes(full,gun_m,d['palette'],d['pill'],CHANNELS)
     dch=[[c for c,_ in row] for row in assign_channels(full,color_roles(gun_m),_area,lambda dd:_area2(dd[2]),d['palette'])[1]]
+    moving,moving_of=moving_parts(tid,allparts,ids)
     # Teile
     parts=[]
     for i,P in allparts:
@@ -191,11 +288,11 @@ def build(sheet):
         parts.append(dict(id=ids[i],label=P.get('label'),channel=pch[i][0],channel_source=pch[i][1],
                           material=MATERIAL_IDS[material_of(P)],emissive=bool(P['emit']),sight=bool(P.get('sight')),
                           color=_hex(P['col']),area_m2=round(_area(P)*unit*unit,6),long_axis=AXIS_NAMES[ext.index(max(ext))],
-                          bounds_m=F.bb(bb)))
-    decals=[]
+                          bounds_m=F.bb(bb),moving=moving_of.get(i)))
+    decals=[];decal_index={}
     for i,P in allparts:
         for k,(plane,val,pts,col,em) in enumerate(P['dec']):
-            v3=_decal3(plane,val,pts)
+            v3=_decal3(plane,val,pts);decal_index[(i,k)]=len(decals)
             decals.append(dict(part=ids[i],channel=dch[i][k],surface=SURFACES[plane],emissive=bool(em),color=_hex(col),
                                area_m2=round(_area2(pts)*unit*unit,7),bounds_m=F.bb(_bb(v3))))
     # Visier
@@ -207,15 +304,17 @@ def build(sheet):
         sight=dict(present=True,kind=kind,window=window,source=ssrc,modular=True,mount_side=side,
                    labels=sorted({P.get('label') for _,P in sight_parts if P.get('label')}),parts=[ids[i] for i,_ in sight_parts],
                    bounds_m=F.bb(sb),anchor='Socket_Sight')
+        sight['window_geometry'],sight['window_geometry_note']=window_geometry(window,sight_parts,ids,F,decal_index)
     else:
         sight=dict(present=False,kind=None,window=None,source=ssrc,modular=True,mount_side=None,labels=[],parts=[],bounds_m=None,
-                   anchor='Socket_Sight' if 'Socket_Sight' in an else None)
+                   anchor='Socket_Sight' if 'Socket_Sight' in an else None,window_geometry=None,window_geometry_note='kein Visier')
     def dims(parts_):
         bb=F.bb(_bb(_verts(parts_)));e=[r4(bb[1][k]-bb[0][k]) for k in range(3)]
         return dict(length=e[1],height=e[2],width=e[0],bounds_m=bb)
-    anchors={k:dict(position_m=F.p(p),model=[round(x,2) for x in p],source=s) for k,(p,s) in an.items()}
+    anchors={k:dict(position_m=F.p(v[0]),model=[round(x,2) for x in v[0]],source=v[1],part=ids[v[2]] if len(v)>2 and v[2] is not None else None)
+             for k,v in an.items()}
     for k in ('Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight'):
-        if k not in anchors:anchors[k]=dict(position_m=None,model=None,source=notes.get(k,'nicht ableitbar'))
+        if k not in anchors:anchors[k]=dict(position_m=None,model=None,source=notes.get(k,'nicht ableitbar'),part=None)
     anchors={k:anchors[k] for k in ('Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight')}
     used=[ch for ch in CHANNELS if palette[0]['channels'][ch]]
     return dict(
@@ -234,6 +333,7 @@ def build(sheet):
         palette=palette,
         channels_used=used,
         parts=parts,
+        moving_parts=moving,
         sight=sight,
         decals=decals,
         textures=textures(unit),

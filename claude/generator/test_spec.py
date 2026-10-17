@@ -257,4 +257,80 @@ class Variants(unittest.TestCase):
         self.assertIsNotNone(skins.side_face(m.parts[0]))
         with self.assertRaises(ValueError):jlib.inset([(0,0),(10,0),(10,4),(0,4)],3)   # Fase breiter als das Teil
 
+class Direction(unittest.TestCase):
+    """Richtungstest (claude-0.5, Cubegen docs/DEVELOPER.md 9.17): Mündung vorn auf der Laufachse (−Y), Griff um Socket_Hand,
+    Visier oben, Fenster quer zur Laufachse. Gegenbeweis: mit gespiegelter oder vertauschter Achse im Exporter schlägt er an."""
+    def test_sheets(self):
+        import spec_checks
+        for s in sheetmodels.SHEETS:
+            pr=spec_checks.direction_problems(load(s))
+            with self.subTest(sheet=s):
+                if s in spec_checks.KNOWN_DIRECTION:self.assertTrue(pr,f'{s} ist in KNOWN_DIRECTION, aber ohne Befund – Eintrag entfernen')
+                else:self.assertEqual(pr,[])
+    def test_counterproof_mirrored_axes(self):
+        import spec_checks
+        sample=['KC01','KD02','KF03','KG04','KH05','KJ06','KC07','KD08','KF09','KG10']   # jeder Waffentyp einmal
+        bad={'Y gespiegelt (vorn +Y)':[[0,0,1],[1,0,0],[0,-1,0]],'Z gespiegelt (oben −Z)':[[0,0,1],[-1,0,0],[0,1,0]],
+             'X/Y vertauscht':[[-1,0,0],[0,0,1],[0,-1,0]]}
+        old=export_spec.M2B
+        try:
+            for name,M in bad.items():
+                export_spec.M2B=M
+                for s in sample:
+                    with self.subTest(axes=name,sheet=s):
+                        self.assertTrue(spec_checks.direction_problems(json.loads(export_spec.dumps(export_spec.build(s)))))
+        finally:export_spec.M2B=old
+        self.assertEqual(spec_checks.direction_problems(load('KC01')),[])
+    def test_muzzle_extension(self):
+        """Mündung über unbezeichnete Teile auf der Achse verlängert (Pfeilspitze, Kappe), Rakete im Rohr zählt nicht."""
+        sp=load('KD10');self.assertIn('verlängert über p14',sp['anchors']['Socket_Muzzle']['source'])
+        sp=load('KC09');src=sp['anchors']['Socket_Muzzle']['source']
+        self.assertIn('p24',src);self.assertNotIn('p25',src);self.assertNotIn('p27',src)
+        self.assertEqual(sp['anchors']['Socket_Muzzle']['part'],'p09')
+
+class MovingParts(unittest.TestCase):
+    """moving_parts (claude-0.5): Arten und Achsen wie Toolgens Use-Clip, Wurzel fest, Zuordnung nur über Bezeichnungen."""
+    def test_moving(self):
+        for s in sheetmodels.SHEETS:
+            sp=load(s);mv=sp['moving_parts'];tid=sp['weapon']['toolgen_id']
+            with self.subTest(sheet=s):
+                self.assertIs(mv['root_moves'],False)
+                self.assertEqual([e['kind'] for e in mv['items']],export_spec.WEAPON_MOTIONS[tid])
+                self.assertEqual(mv['note'] is None,bool(mv['items']))
+                per={p['id']:p['moving'] for p in sp['parts']}
+                for e in mv['items']:
+                    M=export_spec.MOTIONS[e['kind']]
+                    self.assertEqual([(m['type'],m['axis']) for m in e['motions']],[(t,a) for t,a in M['motions']])
+                    for m in e['motions']:self.assertEqual(sorted(abs(c) for c in m['axis']),[0,0,1])
+                    if e['parts'] is None:self.assertIsNone(e['match']);self.assertIn('nicht ableitbar',e['source'])
+                    else:
+                        labs=M['labels'] if e['match']=='label' else M['similar']
+                        for q in e['parts']:
+                            p=[p for p in sp['parts'] if p['id']==q][0]
+                            self.assertIn(p['label'],labs);self.assertFalse(p['sight']);self.assertEqual(per[q],e['kind'])
+                self.assertEqual({q for q,k in per.items() if k},{q for e in mv['items'] for q in (e['parts'] or [])})
+    def test_known_labels(self):
+        self.assertEqual(load('KG01')['moving_parts']['items'][0]['parts'],['p06'])        # Schlitten
+        self.assertEqual(load('KF04')['moving_parts']['items'][0]['match'],'label')         # Pumpgriff
+        self.assertIsNone(load('KC02')['moving_parts']['items'][0]['parts'])               # Verschluss nicht gezeichnet
+        self.assertEqual(load('KC10')['moving_parts']['items'],[])                          # Bogen
+
+class SightTargets(unittest.TestCase):
+    """Visier gegen das CE-Zielbild: nur Hinweise (kein Fehler); die Tabelle hier muss zu Cube Escape passen."""
+    def test_hints_are_hints(self):
+        import spec_checks
+        self.assertEqual(set(spec_checks.CE_SIGHTS),{t for t,_,_ in export_spec.WEAPONS.values()}-{'bow'})
+        for s in sheetmodels.SHEETS:
+            h=spec_checks.sight_target_hints(load(s))
+            self.assertIsInstance(h,list);self.assertLessEqual(len(h),1)
+        self.assertEqual(spec_checks.sight_target_hints(load('KC05')),[])                  # Zielfernrohr am Scharfschützengewehr passt
+        self.assertTrue(spec_checks.sight_target_hints(load('KC08')))                      # Spurgewehr: Röhre statt Fenster
+    def test_table_matches_ce(self):
+        import spec_checks
+        fn=spec_checks.ce_equipment_path()
+        if not os.path.exists(fn):self.skipTest('Cube-Escape-Repo nicht vorhanden ('+fn+')')
+        ce=spec_checks.ce_table(fn)
+        self.assertEqual({nr:(v,d) for nr,v,d,_,_ in spec_checks.CE_SIGHTS.values()},ce,
+                         'CE-Tabelle „Visiere je Waffe“ geändert – CE_SIGHTS in spec_checks.py nachziehen')
+
 if __name__=='__main__':unittest.main()

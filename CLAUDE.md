@@ -26,6 +26,8 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   zu öffnen (`open claude/output/index.html`, Knopf in der Abschlussbox); nicht ungefragt öffnen, nicht wiederholt anbieten.
 - Bildstufen (Rendern der Konzeptblätter) laut globaler Regel auf dem Mac mit `heavy_lock`; Cloud-Sitzungen nur schnelle Prüfungen.
 - **Erfahrungen** (Lehren aus Modell-, Raster- und Render-Pipeline, Prompts und Konzeptblättern) stehen in `docs/masterprompt.md` und
-  `docs/prompt-vorlagen.md` (gemeinsam, Änderungen nur auf Wunsch des Nutzers), Claudes zusätzlich in `claude/docs/versions/`; vor dem
+  `docs/prompt-vorlagen.md` (gemeinsam, Änderungen nur auf Wunsch des Nutzers), Claudes zusätzlich in `claude/docs/versions/`;
+  dauerhafte Entscheidungen des Nutzers mit Grund in `claude/docs/ENTSCHEIDUNGEN.md` (Datum | Entscheidung | Grund, neue Zeilen unten,
+  Quelle verlinken statt kopieren; vor Änderungen an Spec, Blättern oder Regeln lesen); vor dem
   Bauen, das ein Schwesterprojekt berührt (Toolgen, Cube Escape, Robogen, Cubegen), dessen Stelle lesen: `~/.claude/CLAUDE.md` ›
   Erfahrungen festhalten und querlesen.
