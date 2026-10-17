@@ -53,7 +53,7 @@ def recolor(m,pal):
     Lb=_lum(bodyc)
     def role(c,emit):
         if emit:return 'acc'
-        if c in votes:return max(votes[c],key=votes[c].get)
+        if c in votes:return 'light' if 'light' in votes[c] else max(votes[c],key=votes[c].get)
         if c==bodyc:return 'light'
         if _sat(c)>=0.5 and cols[c][0]/tot<0.12 and abs(_lum(c)-Lb)>0.05:return 'accd'
         L=_lum(c)
