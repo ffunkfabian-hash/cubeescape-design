@@ -128,4 +128,69 @@ class Channels(unittest.TestCase):
             for _,pal in VARIANTS:
                 self.assertEqual(strip(recolor(g,pal)),strip(recolor(g2,pal)),s)
 
+class SkinSpec(unittest.TestCase):
+    """Feld skin (claude-0.3): fünf Skins je Blatt, Verweise, Farben je Variante, Geometrie der Aufkleber/Schmuckteile."""
+    def test_skins(self):
+        import skins
+        heroes={}
+        for s in sheetmodels.SHEETS:
+            sp=load(s);sk=sp['skin']
+            with self.subTest(sheet=s):
+                ids=[it['id'] for it in sk['items']]
+                self.assertEqual(len(set(ids)),5);self.assertTrue(set(ids)<=set(sk['catalog']))
+                self.assertEqual(sk['hero'],ids[0]);self.assertEqual([it['hero'] for it in sk['items']],[True]+[False]*4)
+                heroes[ids[0]]=heroes.get(ids[0],0)+1
+                parts={p['id']:p for p in sp['parts']}
+                lo,hi=sp['dimensions_m']['weapon']['bounds_m'];ext=max(hi[k]-lo[k] for k in range(3))
+                for it in sk['items']:
+                    used=set(it['slots_used'])
+                    for v in sp['palette']:
+                        cv=it['colors'][v['id']]
+                        self.assertEqual(set(cv),used)
+                        for sl,c in cv.items():
+                            if sl.startswith('MT_'):
+                                self.assertEqual(c['color'],v['channels'][sl] or v['swatches'][skins.SWATCH_FALLBACK[sl]],(it['id'],v['id'],sl))
+                                self.assertEqual(c['source'],'channel' if v['channels'][sl] else 'swatch')
+                            else:self.assertEqual(c['color'],it['accents'][sl]['color'])
+                    for L in it['layers']:
+                        ref=([L['slot']] if 'slot' in L else [])+L.get('slots',[])+[dd['slot'] for dd in L.get('decals',[])]
+                        self.assertTrue(set(ref)<=used,(it['id'],L['type']))
+                        if L['type'] in ('side_block','bands','gradient','rings','finish','edge_wear'):
+                            self.assertTrue(L['parts']);self.assertTrue(set(L['parts'])<=set(parts))
+                            self.assertFalse(any(parts[q]['sight'] or parts[q]['emissive'] for q in L['parts']))
+                        if L['type']=='bands':self.assertGreaterEqual(L['period_m']+1e-9,L['width_m']);self.assertGreater(L['width_m'],0)
+                        if L['type']=='glyphs':
+                            self.assertIn(L['part'],parts)
+                            for dd in L['decals']:   # flach auf der Seitenfläche (X konstant), im Hüllquader der Waffe
+                                xs=[q[0] for q in dd['points_m']];self.assertLess(max(xs)-min(xs),1e-3)
+                                for q in dd['points_m']:
+                                    for k in range(3):self.assertTrue(lo[k]-0.02*ext<=q[k]<=hi[k]+0.02*ext,(it['id'],q))
+                        if L['type']=='trim':
+                            self.assertIn(L['attach'],parts);self.assertTrue(L['parts'])
+                            for tp in L['parts']:
+                                b=tp['bounds_m']
+                                for k in range(3):self.assertTrue(lo[k]-0.12*ext<=b[0][k] and b[1][k]<=hi[k]+0.12*ext,(it['id'],b))
+        # jeder Katalog-Skin ist auf mindestens drei Blättern Hauptskin
+        self.assertEqual(set(heroes),{c['id'] for c in skins.CATALOG});self.assertGreaterEqual(min(heroes.values()),3)
+
+class SkinGeometry(unittest.TestCase):
+    def test_glyph_layout_and_mirror(self):
+        import skins
+        polys,w=skins.layout([('digit','0'),('digit','7')],20)
+        self.assertEqual(len(polys),6+3);self.assertGreater(w,20)
+        for poly,_ in polys:self.assertTrue(all(-1<=y<=21 for _,y in poly))
+        d=sheetmodels.load('KD02');rs=skins.resolve(d['m'],'rennstreifen','KD02',d['num'])
+        g=[L for L in rs['layers'] if L['type']=='glyphs'][0]
+        x0,y0,x1,y1=g['rect'];lft=[dd for dd in g['decals'] if dd[0]=='z+'];rgt=[dd for dd in g['decals'] if dd[0]=='z-']
+        self.assertEqual(len(lft),len(rgt))
+        for a,b in zip(lft,rgt):   # rechte Seite = linke an der Rechteckmitte gespiegelt
+            for (xa,ya),(xb,yb) in zip(a[2],b[2]):self.assertAlmostEqual(xa+xb,x0+x1,6);self.assertAlmostEqual(ya,yb,6)
+        P=d['m'].parts[g['part']];poly=skins.side_face(P)[0]
+        for x,y in ((x0,y0),(x1,y0),(x0,y1),(x1,y1)):self.assertTrue(skins.inside(poly,x,y))
+    def test_pick_is_stable_and_distinct(self):
+        import skins
+        for s in ('KC01','KH10'):
+            d=sheetmodels.load(s);a=skins.pick(s,d['m'],d['num']);b=skins.pick(s,d['m'],d['num'])
+            self.assertEqual(a,b);self.assertEqual(len(set(a)),5)
+
 if __name__=='__main__':unittest.main()

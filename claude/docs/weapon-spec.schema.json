@@ -4,6 +4,38 @@
  "title": "Weapon spec der Konzeptblätter (format_version 1)",
  "description": "Beschreibung: claude/docs/weapon-spec.md. Erzeugt von claude/generator/export_spec.py; geprüft von claude/generator/test_spec.py (eigene Teilmenge von JSON Schema: type, required, properties, items, enum, const, pattern, minimum, minItems, maxItems, additionalProperties nur, wenn gesetzt). Unbekannte Felder sind erlaubt (Erweiterung innerhalb format_version 1); die genauen Kanal- und Ankerlisten prüft test_spec.py.",
  "$defs": {
+  "slot": {"enum": ["MT_Primary", "MT_Secondary", "MT_Accent", "MT_Metal", "MT_Energy", "MT_Emission", "MT_Detail", "SK_Accent1", "SK_Accent2"]},
+  "finish": {"enum": ["paint", "polished_gold", "polished_chrome", "neon"]},
+  "vec2": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+  "poly2": {"type": "array", "items": {"$ref": "#/$defs/vec2"}, "minItems": 3},
+  "partId": {"type": "string", "pattern": "^p[0-9]{2,}$"},
+  "skinLayer": {
+   "type": "object", "required": ["type", "block"],
+   "properties": {
+    "type": {"enum": ["side_block", "bands", "gradient", "rings", "finish", "edge_wear", "glyphs", "trim"]},
+    "block": {"enum": ["farbflaechen", "glyphen", "streifen", "material", "schmuck"]},
+    "parts": {"type": "array"}, "slot": {"$ref": "#/$defs/slot"}, "slots": {"type": "array", "items": {"$ref": "#/$defs/slot"}, "minItems": 1},
+    "dir": {"$ref": "#/$defs/vec3"}, "poly_yz_m": {"$ref": "#/$defs/poly2"}, "center_yz_m": {"$ref": "#/$defs/vec2"},
+    "width_m": {"type": "number", "minimum": 0}, "period_m": {"type": "number", "minimum": 0}, "count": {"type": "integer", "minimum": 1},
+    "steps": {"type": "integer", "minimum": 2}, "coverage": {"type": "number", "minimum": 0}, "width_mm": {"type": "number", "minimum": 0},
+    "color": {"$ref": "#/$defs/hex"}, "kind": {"enum": ["ribs", "fins"]},
+    "decals": {"type": "array", "items": {"type": "object", "required": ["surface", "slot", "points_m"],
+               "properties": {"surface": {"enum": ["left", "right"]}, "slot": {"$ref": "#/$defs/slot"},
+                              "points_m": {"type": "array", "items": {"$ref": "#/$defs/vec3"}, "minItems": 3}}}}
+   }
+  },
+  "skin": {
+   "type": "object", "required": ["id", "name", "hero", "blocks", "description_de", "description_en", "accents", "slots_used", "colors", "layers", "notes"],
+   "properties": {
+    "id": {"type": "string"}, "name": {"type": "string"}, "hero": {"type": "boolean"},
+    "blocks": {"type": "array", "items": {"enum": ["farbflaechen", "glyphen", "streifen", "material", "schmuck"]}, "minItems": 1},
+    "accents": {"type": "object", "required": ["SK_Accent1", "SK_Accent2"]},
+    "slots_used": {"type": "array", "items": {"$ref": "#/$defs/slot"}, "minItems": 1},
+    "colors": {"type": "object", "required": ["base", "standard", "arktis", "nacht"]},
+    "layers": {"type": "array", "items": {"$ref": "#/$defs/skinLayer"}, "minItems": 1},
+    "notes": {"type": "array", "items": {"type": "string"}}
+   }
+  },
   "hex": {"type": "string", "pattern": "^#[0-9A-F]{6}$"},
   "hexOrNull": {"type": ["string", "null"], "pattern": "^#[0-9A-F]{6}$"},
   "channel": {"enum": ["MT_Primary", "MT_Secondary", "MT_Accent", "MT_Metal", "MT_Energy", "MT_Emission", "MT_Detail"]},
@@ -134,6 +166,12 @@
   },
   "textures": {
    "type": "object", "required": ["source", "vocabulary", "painted", "brushed", "rubber", "matte", "lit"]
+  },
+  "skin": {
+   "description": "claude-0.3, optional (ältere Specs ohne): fünf Skins je Waffe, der erste ist der Hauptskin des Blatts; Beschreibung in weapon-spec.md › Skins",
+   "type": "object", "required": ["source", "hero", "catalog", "slots", "finishes", "space", "vocabulary", "new_pattern_types", "items"],
+   "properties": {"hero": {"type": "string"}, "catalog": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+                  "items": {"type": "array", "items": {"$ref": "#/$defs/skin"}, "minItems": 5, "maxItems": 5}}
   },
   "summary": {"type": "object", "required": ["parts", "parts_explicit_channel", "decals", "channels_with_other_colors"]}
  }

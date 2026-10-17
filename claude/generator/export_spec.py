@@ -13,10 +13,11 @@ sys.path.insert(0,E3D)
 import sheetmodels
 from eng import CHANNELS,split_sight
 from xlroles import MATERIAL_IDS,color_roles,material_of,assign_channels,channel_palettes
+import skins as SK
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
-CLAUDE_VERSION='0.2'
+CLAUDE_VERSION='0.3'
 
 # Waffentyp -> Toolgen-Id, Bezugslänge (m), Element.
 # Längen: Toolgen-Weltmodelle, Ausdehnung entlang der Mündungsachse (Blender −Y) aus qa_game.json › bounds_lod0 ›
@@ -235,7 +236,8 @@ def build(sheet):
         sight=sight,
         decals=decals,
         textures=textures(unit),
-        summary=dict(parts=len(parts),parts_explicit_channel=sum(1 for c in pch if c[1]=='explicit'),decals=len(decals),
+        skin=skin_spec(sheet,full,d,palette,F,ids,unit),
+        summary=dict(skins=5,parts=len(parts),parts_explicit_channel=sum(1 for c in pch if c[1]=='explicit'),decals=len(decals),
                      channels_with_other_colors={p['id']:sorted(p['other_colors']) for p in palette if p['other_colors']}),
     )
 
@@ -258,11 +260,79 @@ def textures(unit):
         lit=dict(toolgen_pattern=None,look='leuchtend, Kanalfarbe als Emission, kein Muster'),
     )
 
+NEW_PATTERNS={
+ 'side_block':'Farbfläche: Polygon in der Seitenprojektion (Punkte [Y, Z] in m), durch die ganze Breite (X) extrudiert; Teile im Polygon tragen den Slot',
+ 'bands':'Streifen: t = p · dir (m, Ursprung Socket_Hand); Band k (0 ≤ k < count) bei t0_m + k·period_m ≤ t < … + width_m, Slot slots[k mod n]; optional nur im Fenster window (wie side_block)',
+ 'gradient':'Verlauf: s = (p · dir − t0_m) / (t1_m − t0_m), auf 0..1 begrenzt, in steps Stufen; Farbe gemischt von slots[0] nach slots[1] (Toon-Stufen, keine Kanal-Maske)',
+ 'rings':'konzentrische Ringe um die Achse X durch center [Y, Z]: Abstand r in der Seitenprojektion; Ring k bei r0_m + k·(width_m+gap_m) ≤ r < … + width_m, Slot slots[k mod n]',
+ 'finish':'ganzes Teil im Slot; Oberfläche des Slots (polished_gold/polished_chrome: hochglänzend metallisch, Glanzstreifen im Blatt nur Zeichnung)',
+ 'edge_wear':'Kantenabnutzung: blankes Metall (color) entlang harter Kanten bis width_mm, fleckig mit Anteil coverage (Blender: Pointiness/AO-Maske)',
+ 'glyph_decals':'Glyphen/Zahlen/Embleme als flache Aufkleber: Polygone mit Punkten [X, Y, Z] in m auf der Seitenfläche (left +X, right −X, rechte Seite gespiegelt lesbar)',
+ 'trim':'Schmuckteile als zusätzliche Prismen: Profil [Y, Z] in m, extrudiert über x_m [X0, X1]; ribs (Rippen an der Seite), fins (Finnen oben)',
+}
+def skin_spec(sheet,full,d,palette,F,ids,unit):
+    """Skins des Blatts (skins.py) im Toolgen-Rahmen: fünf je Waffe, der erste ist der Hauptskin des Blatts."""
+    o=F.o
+    def dvec(v):return [r4(sum(M2B[r][c]*v[c] for c in range(3))) for r in range(3)]
+    def tm(t,dv):return r4(unit*(t-sum(o[k]*dv[k] for k in range(3))))
+    def yz(x,y):p=F.p((x,y,o[2]));return [p[1],p[2]]
+    def xm(z):return r4(unit*(z-o[2]))
+    def L_(v):return r4(v*unit)
+    sids=SK.pick(sheet,full,d['num'])
+    items=[]
+    for sid in sids:
+        rs=SK.resolve(full,sid,sheet,d['num']);used=SK.slots_used(rs)
+        cols={}
+        for p in palette:
+            cs=SK.slot_colors(rs,p['channels'],p['swatches'])
+            cols[p['id']]={s_:dict(color=cs[s_][0],finish=cs[s_][1],source=cs[s_][2]) for s_ in used}
+        layers=[]
+        for L in rs['layers']:
+            t=L['type'];e=dict(type=t,block=SK.LAYER_BLOCK[t])
+            if t=='finish':e.update(parts=[ids[i] for i in L['parts']],slot=L['slot'],target=L['target'])
+            elif t=='side_block':e.update(pattern='side_block',parts=[ids[i] for i in L['parts']],slot=L['slot'],poly_yz_m=[yz(*q) for q in L['poly']])
+            elif t=='bands':
+                e.update(pattern='bands',parts=[ids[i] for i in L['parts']],dir=dvec(L['dir']),t0_m=tm(L['t0'],L['dir']),width_m=L_(L['width']),
+                         period_m=L_(L['period']),count=L['count'],slots=L['slots'],window_yz_m=[yz(*q) for q in L['window']] if L.get('window') else None)
+            elif t=='gradient':
+                e.update(pattern='gradient',parts=[ids[i] for i in L['parts']],dir=dvec(L['dir']),t0_m=tm(L['t0'],L['dir']),t1_m=tm(L['t1'],L['dir']),
+                         steps=L['steps'],slots=L['slots'])
+            elif t=='rings':
+                e.update(pattern='rings',parts=[ids[i] for i in L['parts']],axis='X',center_yz_m=yz(*L['center']),r0_m=L_(L['r0']),width_m=L_(L['width']),
+                         gap_m=L_(L['gap']),count=L['count'],slots=L['slots'])
+            elif t=='edge_wear':
+                e.update(pattern='edge_wear',parts=[ids[i] for i in L['parts']],width_mm=r4(L['width']*unit*1000),coverage=L['coverage'],color=L['color'])
+            elif t=='glyphs':
+                x0,y0,x1,y1=L['rect']
+                e.update(pattern='glyph_decals',part=ids[L['part']],items=L['items'],content=L['content'],height_m=L_(L['height']),
+                         bounds_m=F.bb(([x0,y0,full.parts[L['part']]['F'][1]['v'][0][2]],[x1,y1,full.parts[L['part']]['F'][0]['v'][0][2]])),
+                         decals=[dict(surface=SURFACES[pl],slot=sl,points_m=[F.p(q) for q in _decal3(pl,val,pts)]) for pl,val,pts,sl in L['decals']])
+            elif t=='trim':
+                e.update(pattern='trim',kind=L['kind'],slot=L['slot'],attach=ids[L['attach']],count=L['count'],toolgen_similar='lamellae' if L['kind']=='ribs' else None,
+                         parts=[dict(profile_yz_m=[yz(*q) for q in tp['prof']],x_m=sorted([xm(tp['z0']),xm(tp['z1'])]),
+                                     bounds_m=F.bb(([min(q[0] for q in tp['prof']),min(q[1] for q in tp['prof']),tp['z0']],
+                                                    [max(q[0] for q in tp['prof']),max(q[1] for q in tp['prof']),tp['z1']]))) for tp in L['parts']])
+            layers.append(e)
+        items.append(dict(id=sid,name=rs['name'],hero=sid==sids[0],blocks=SK.summary(rs),
+                          description_de=SK.DESC[sid][0],description_en=SK.DESC[sid][1],
+                          accents={a:dict(color=c,finish=f) for a,(c,f) in rs['accents'].items()},
+                          slots_used=used,colors=cols,layers=layers,notes=rs['notes']))
+    return dict(source='claude/generator/skins.py (Katalog, Auflösung), Zeichnung xl.py/skinraster.py (Feld SKIN/MUSTER, Hauptskin in Isometrie, Orthos, Farbvarianten)',
+                hero=sids[0],catalog=[s_['id'] for s_ in SK.CATALOG],
+                slots=dict(channels=list(CHANNELS),accents=list(SK.ACCENTS),
+                           rule='MT_-Kanäle färben mit der Variante um (unbelegter Kanal: Farbfeld der Blatt-Palette, source swatch); SK_Accent1/2 fest je Skin'),
+                finishes=list(SK.FINISHES),space='Objektraum (Toolgen-Rahmen, m), keine UV; Sichtteile ohne Skin',
+                vocabulary='Toolgen data/surface_recipes.json › patterns kennt nur Relief (knurl, grooves, lamellae, seams, brushed, grain); Skin-Muster sind neue Typen (new_pattern_types)',
+                new_pattern_types=NEW_PATTERNS,items=items)
+
 _NUMS=re.compile(r'\[\s*((?:-?[\d.eE+-]+|null)(?:,\s*(?:-?[\d.eE+-]+|null))*)\s*\]')
+_PTS=re.compile(r'\[\s*\[[^\[\]]*\](?:,\s*\[[^\[\]]*\])+\s*\]')
 def dumps(spec):
     """JSON mit Einzug; Zahlenlisten (Koordinaten, Matrixzeilen) bleiben in einer Zeile."""
     txt=json.dumps(spec,ensure_ascii=False,indent=1)
-    return _NUMS.sub(lambda mm:'['+', '.join(x.strip() for x in mm.group(1).split(','))+']',txt)+'\n'
+    txt=_NUMS.sub(lambda mm:'['+', '.join(x.strip() for x in mm.group(1).split(','))+']',txt)
+    # Punktlisten (Polygone der Skins, ab drei Punkten) ebenfalls in einer Zeile
+    return _PTS.sub(lambda mm:'['+', '.join(re.findall(r'\[[^\[\]]*\]',mm.group(0)))+']' if mm.group(0).count('[')>=4 else mm.group(0),txt)+'\n'
 def path(sheet):return os.path.join(OUT,f'{sheet}.spec.json')
 
 def main(argv):

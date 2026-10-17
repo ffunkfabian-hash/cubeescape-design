@@ -313,11 +313,11 @@ def _resolve(full,sid,sheet,num):
             d=_unit(Lr['dir']);e0,e1=F.extent(d);E=e1-e0
             out['layers'].append(dict(type=t,parts=F.body,dir=d,t0=e0+Lr['start']*E,t1=e0+Lr['end']*E,steps=Lr['steps'],slots=Lr['slots']))
         elif t=='rings':
-            c=F.xy(*Lr['center']);u=F.H
+            c=F.xy(*Lr['center']);u=F.base
             out['layers'].append(dict(type=t,parts=F.body,center=c,r0=Lr['r0']*u,width=Lr['width']*u,gap=Lr['gap']*u,
                                       count=Lr['count'],slots=Lr['slots']))
         elif t=='edge_wear':
-            out['layers'].append(dict(type=t,parts=F.target(Lr['target']),width=Lr['width']*F.H,coverage=Lr['coverage'],color=BARE_METAL))
+            out['layers'].append(dict(type=t,parts=F.target(Lr['target']),width=Lr['width']*F.base,coverage=Lr['coverage'],color=BARE_METAL))
         elif t=='glyphs':
             items=glyph_items(Lr['items'],sheet,num);h=Lr['height']*F.base
             polys,w=layout(items,h)
@@ -358,7 +358,7 @@ def _trim(F,Lr,taken):
             parts.append(dict(prof=prof,z0=z0-e,z1=z0+0.6,attach=i))
         return dict(type='trim',kind='ribs',slot=Lr['slot'],parts=parts,attach=i,count=n)
     # Finnen oben, schräg nach hinten; nicht über Visierschiene/Visier und nicht in andere Teile
-    n=Lr['count'];fw=0.03*F.L;fh=0.2*F.H;lean=0.55*fh;stp=fw*2.1;th=max(2.0,0.04*F.L)
+    n=Lr['count'];fw=0.03*F.L;fh=0.2*F.base;lean=0.55*fh;stp=fw*2.1;th=max(2.0,0.04*F.L)
     keep=[]
     for j,Q in enumerate(F.full.parts):
         if Q.get('sight') or (Q.get('label') or '') in ('Visierschiene','Montage','Montageringe'):

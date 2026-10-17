@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.2"
+  "claude_version": "0.3"
  },
  "sheet": {
   "id": "KH09",
@@ -40,11 +40,7 @@
    "left": "+X",
    "unit": "m"
   },
-  "matrix_model_to_target": [
-   [0, 0, 1],
-   [-1, 0, 0],
-   [0, -1, 0]
-  ],
+  "matrix_model_to_target": [[0, 0, 1], [-1, 0, 0], [0, -1, 0]],
   "origin": "Socket_Hand",
   "formula": "p_m = model_unit_m * M · (p_model − Socket_Hand.model)"
  },
@@ -1161,7 +1157,1722 @@
    "look": "leuchtend, Kanalfarbe als Emission, kein Muster"
   }
  },
+ "skin": {
+  "source": "claude/generator/skins.py (Katalog, Auflösung), Zeichnung xl.py/skinraster.py (Feld SKIN/MUSTER, Hauptskin in Isometrie, Orthos, Farbvarianten)",
+  "hero": "warnblock",
+  "catalog": [
+   "rennstreifen",
+   "goldglyphe",
+   "warnblock",
+   "zweiton",
+   "stufenblock",
+   "zielringe",
+   "glutverlauf",
+   "chromrippe",
+   "glyphenband"
+  ],
+  "slots": {
+   "channels": [
+    "MT_Primary",
+    "MT_Secondary",
+    "MT_Accent",
+    "MT_Metal",
+    "MT_Energy",
+    "MT_Emission",
+    "MT_Detail"
+   ],
+   "accents": [
+    "SK_Accent1",
+    "SK_Accent2"
+   ],
+   "rule": "MT_-Kanäle färben mit der Variante um (unbelegter Kanal: Farbfeld der Blatt-Palette, source swatch); SK_Accent1/2 fest je Skin"
+  },
+  "finishes": [
+   "paint",
+   "polished_gold",
+   "polished_chrome",
+   "neon"
+  ],
+  "space": "Objektraum (Toolgen-Rahmen, m), keine UV; Sichtteile ohne Skin",
+  "vocabulary": "Toolgen data/surface_recipes.json › patterns kennt nur Relief (knurl, grooves, lamellae, seams, brushed, grain); Skin-Muster sind neue Typen (new_pattern_types)",
+  "new_pattern_types": {
+   "side_block": "Farbfläche: Polygon in der Seitenprojektion (Punkte [Y, Z] in m), durch die ganze Breite (X) extrudiert; Teile im Polygon tragen den Slot",
+   "bands": "Streifen: t = p · dir (m, Ursprung Socket_Hand); Band k (0 ≤ k < count) bei t0_m + k·period_m ≤ t < … + width_m, Slot slots[k mod n]; optional nur im Fenster window (wie side_block)",
+   "gradient": "Verlauf: s = (p · dir − t0_m) / (t1_m − t0_m), auf 0..1 begrenzt, in steps Stufen; Farbe gemischt von slots[0] nach slots[1] (Toon-Stufen, keine Kanal-Maske)",
+   "rings": "konzentrische Ringe um die Achse X durch center [Y, Z]: Abstand r in der Seitenprojektion; Ring k bei r0_m + k·(width_m+gap_m) ≤ r < … + width_m, Slot slots[k mod n]",
+   "finish": "ganzes Teil im Slot; Oberfläche des Slots (polished_gold/polished_chrome: hochglänzend metallisch, Glanzstreifen im Blatt nur Zeichnung)",
+   "edge_wear": "Kantenabnutzung: blankes Metall (color) entlang harter Kanten bis width_mm, fleckig mit Anteil coverage (Blender: Pointiness/AO-Maske)",
+   "glyph_decals": "Glyphen/Zahlen/Embleme als flache Aufkleber: Polygone mit Punkten [X, Y, Z] in m auf der Seitenfläche (left +X, right −X, rechte Seite gespiegelt lesbar)",
+   "trim": "Schmuckteile als zusätzliche Prismen: Profil [Y, Z] in m, extrudiert über x_m [X0, X1]; ribs (Rippen an der Seite), fins (Finnen oben)"
+  },
+  "items": [
+   {
+    "id": "warnblock",
+    "name": "Warnblock",
+    "hero": true,
+    "blocks": [
+     "farbflaechen",
+     "glyphen",
+     "streifen",
+     "material"
+    ],
+    "description_de": "gelb-schwarze Warnstreifen vorn, Heckblock in Zweitfarbe, Winkel-Emblem mit Nummer, starke Kantenabnutzung",
+    "description_en": "yellow-black hazard stripes at the front, rear block in secondary color, chevron emblem with number, heavy edge wear",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#F2C230",
+      "finish": "paint"
+     },
+     "SK_Accent2": {
+      "color": "#15171A",
+      "finish": "paint"
+     }
+    },
+    "slots_used": [
+     "MT_Secondary",
+     "SK_Accent1",
+     "SK_Accent2"
+    ],
+    "colors": {
+     "base": {
+      "MT_Secondary": {
+       "color": "#B5E02E",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Secondary": {
+       "color": "#A3A7AD",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Secondary": {
+       "color": "#AEBBCA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Secondary": {
+       "color": "#2C2F35",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "dir": [0.0, -0.7071, 0.7071],
+      "t0_m": -0.1828,
+      "width_m": 0.0241,
+      "period_m": 0.0481,
+      "count": 40,
+      "slots": [
+       "SK_Accent1",
+       "SK_Accent2"
+      ],
+      "window_yz_m": [[-0.1533, 0.2094], [-0.3638, 0.2094], [-0.3638, 0.0036], [-0.1533, 0.0036]]
+     },
+     {
+      "type": "side_block",
+      "block": "farbflaechen",
+      "pattern": "side_block",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "slot": "MT_Secondary",
+      "poly_yz_m": [[0.3378, 0.2094], [0.1507, 0.2094], [0.1507, 0.0036], [0.3378, 0.0036]]
+     },
+     {
+      "type": "glyphs",
+      "block": "glyphen",
+      "pattern": "glyph_decals",
+      "part": "p08",
+      "items": "chevron+num",
+      "content": "chevron 0 9",
+      "height_m": 0.0156,
+      "bounds_m": [
+       [-0.0234, 0.0962, 0.0369],
+       [0.0234, 0.1482, 0.0525]
+      ],
+      "decals": [
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1482, 0.0525], [0.0234, 0.1455, 0.0525], [0.0234, 0.1411, 0.0447], [0.0234, 0.1455, 0.0369], [0.0234, 0.1482, 0.0369], [0.0234, 0.1438, 0.0447]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.0962, 0.0525], [-0.0234, 0.0989, 0.0525], [-0.0234, 0.1032, 0.0447], [-0.0234, 0.0989, 0.0369], [-0.0234, 0.0962, 0.0369], [-0.0234, 0.1006, 0.0447]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1439, 0.0525], [0.0234, 0.1412, 0.0525], [0.0234, 0.1369, 0.0447], [0.0234, 0.1412, 0.0369], [0.0234, 0.1439, 0.0369], [0.0234, 0.1395, 0.0447]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1005, 0.0525], [-0.0234, 0.1031, 0.0525], [-0.0234, 0.1075, 0.0447], [-0.0234, 0.1031, 0.0369], [-0.0234, 0.1005, 0.0369], [-0.0234, 0.1049, 0.0447]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1396, 0.0525], [0.0234, 0.1369, 0.0525], [0.0234, 0.1326, 0.0447], [0.0234, 0.1369, 0.0369], [0.0234, 0.1396, 0.0369], [0.0234, 0.1352, 0.0447]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1048, 0.0525], [-0.0234, 0.1074, 0.0525], [-0.0234, 0.1118, 0.0447], [-0.0234, 0.1074, 0.0369], [-0.0234, 0.1048, 0.0369], [-0.0234, 0.1092, 0.0447]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1162, 0.0514], [0.0234, 0.1153, 0.0504], [0.0234, 0.1127, 0.0504], [0.0234, 0.1115, 0.0514], [0.0234, 0.1124, 0.0525], [0.0234, 0.115, 0.0525]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1281, 0.0514], [-0.0234, 0.129, 0.0504], [-0.0234, 0.1317, 0.0504], [-0.0234, 0.1329, 0.0514], [-0.0234, 0.132, 0.0525], [-0.0234, 0.1294, 0.0525]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1111, 0.0509], [0.0234, 0.1123, 0.0499], [0.0234, 0.1129, 0.0462], [0.0234, 0.112, 0.0451], [0.0234, 0.1108, 0.0462], [0.0234, 0.1102, 0.0499]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1333, 0.0509], [-0.0234, 0.1321, 0.0499], [-0.0234, 0.1315, 0.0462], [-0.0234, 0.1324, 0.0451], [-0.0234, 0.1336, 0.0462], [-0.0234, 0.1342, 0.0499]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1122, 0.0442], [0.0234, 0.1134, 0.0431], [0.0234, 0.114, 0.0394], [0.0234, 0.1131, 0.0384], [0.0234, 0.1119, 0.0394], [0.0234, 0.1113, 0.0431]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1322, 0.0442], [-0.0234, 0.131, 0.0431], [-0.0234, 0.1304, 0.0394], [-0.0234, 0.1313, 0.0384], [-0.0234, 0.1325, 0.0394], [-0.0234, 0.1331, 0.0431]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1184, 0.0379], [0.0234, 0.1175, 0.0369], [0.0234, 0.1149, 0.0369], [0.0234, 0.1136, 0.0379], [0.0234, 0.1145, 0.039], [0.0234, 0.1172, 0.039]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.126, 0.0379], [-0.0234, 0.1269, 0.0369], [-0.0234, 0.1295, 0.0369], [-0.0234, 0.1307, 0.0379], [-0.0234, 0.1299, 0.039], [-0.0234, 0.1272, 0.039]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1179, 0.0442], [0.0234, 0.1191, 0.0431], [0.0234, 0.1197, 0.0394], [0.0234, 0.1188, 0.0384], [0.0234, 0.1176, 0.0394], [0.0234, 0.117, 0.0431]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1265, 0.0442], [-0.0234, 0.1253, 0.0431], [-0.0234, 0.1247, 0.0394], [-0.0234, 0.1256, 0.0384], [-0.0234, 0.1268, 0.0394], [-0.0234, 0.1274, 0.0431]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1168, 0.0509], [0.0234, 0.118, 0.0499], [0.0234, 0.1186, 0.0462], [0.0234, 0.1177, 0.0451], [0.0234, 0.1165, 0.0462], [0.0234, 0.1159, 0.0499]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1276, 0.0509], [-0.0234, 0.1264, 0.0499], [-0.0234, 0.1258, 0.0462], [-0.0234, 0.1267, 0.0451], [-0.0234, 0.1279, 0.0462], [-0.0234, 0.1285, 0.0499]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1027, 0.0514], [0.0234, 0.1018, 0.0504], [0.0234, 0.0991, 0.0504], [0.0234, 0.0979, 0.0514], [0.0234, 0.0988, 0.0525], [0.0234, 0.1014, 0.0525]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1417, 0.0514], [-0.0234, 0.1426, 0.0504], [-0.0234, 0.1453, 0.0504], [-0.0234, 0.1465, 0.0514], [-0.0234, 0.1456, 0.0525], [-0.0234, 0.1429, 0.0525]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.0975, 0.0509], [0.0234, 0.0987, 0.0499], [0.0234, 0.0993, 0.0462], [0.0234, 0.0984, 0.0451], [0.0234, 0.0972, 0.0462], [0.0234, 0.0966, 0.0499]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1469, 0.0509], [-0.0234, 0.1457, 0.0499], [-0.0234, 0.1451, 0.0462], [-0.0234, 0.1459, 0.0451], [-0.0234, 0.1472, 0.0462], [-0.0234, 0.1478, 0.0499]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.0986, 0.0442], [0.0234, 0.0998, 0.0431], [0.0234, 0.1004, 0.0394], [0.0234, 0.0995, 0.0384], [0.0234, 0.0983, 0.0394], [0.0234, 0.0977, 0.0431]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1458, 0.0442], [-0.0234, 0.1446, 0.0431], [-0.0234, 0.144, 0.0394], [-0.0234, 0.1449, 0.0384], [-0.0234, 0.1461, 0.0394], [-0.0234, 0.1467, 0.0431]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1048, 0.0379], [0.0234, 0.1039, 0.0369], [0.0234, 0.1013, 0.0369], [0.0234, 0.1001, 0.0379], [0.0234, 0.1009, 0.039], [0.0234, 0.1036, 0.039]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1396, 0.0379], [-0.0234, 0.1404, 0.0369], [-0.0234, 0.1431, 0.0369], [-0.0234, 0.1443, 0.0379], [-0.0234, 0.1434, 0.039], [-0.0234, 0.1408, 0.039]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1032, 0.0509], [0.0234, 0.1044, 0.0499], [0.0234, 0.105, 0.0462], [0.0234, 0.1041, 0.0451], [0.0234, 0.1029, 0.0462], [0.0234, 0.1023, 0.0499]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1412, 0.0509], [-0.0234, 0.14, 0.0499], [-0.0234, 0.1394, 0.0462], [-0.0234, 0.1402, 0.0451], [-0.0234, 0.1415, 0.0462], [-0.0234, 0.1421, 0.0499]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0234, 0.1037, 0.0447], [0.0234, 0.1028, 0.0436], [0.0234, 0.1002, 0.0436], [0.0234, 0.099, 0.0447], [0.0234, 0.0999, 0.0457], [0.0234, 0.1025, 0.0457]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0234, 0.1406, 0.0447], [-0.0234, 0.1415, 0.0436], [-0.0234, 0.1442, 0.0436], [-0.0234, 0.1454, 0.0447], [-0.0234, 0.1445, 0.0457], [-0.0234, 0.1419, 0.0457]]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "width_mm": 5.1452,
+      "coverage": 0.6,
+      "color": "#B9C0C8"
+     }
+    ],
+    "notes": []
+   },
+   {
+    "id": "stufenblock",
+    "name": "Stufenblock",
+    "hero": false,
+    "blocks": [
+     "farbflaechen",
+     "glyphen",
+     "material",
+     "schmuck"
+    ],
+    "description_de": "gestufte Farbblöcke dunkel unter hell, Gold an Metallteilen, goldene Rippen, Segmentnummer",
+    "description_en": "stepped color blocks dark below light, gold metal parts, gold ribs, segment number",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#E2B04A",
+      "finish": "polished_gold"
+     },
+     "SK_Accent2": {
+      "color": "#15171A",
+      "finish": "paint"
+     }
+    },
+    "slots_used": [
+     "MT_Primary",
+     "MT_Detail",
+     "SK_Accent1"
+    ],
+    "colors": {
+     "base": {
+      "MT_Primary": {
+       "color": "#4A5563",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#1C2027",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Primary": {
+       "color": "#ECE6DA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#2B2E33",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Primary": {
+       "color": "#F3F6F9",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#3A4452",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Primary": {
+       "color": "#4A4E57",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#141518",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "side_block",
+      "block": "farbflaechen",
+      "pattern": "side_block",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "slot": "MT_Detail",
+      "poly_yz_m": [[0.3378, 0.086], [0.0806, 0.086], [0.0806, 0.1237], [-0.1182, 0.1237], [-0.1182, 0.1614], [-0.3638, 0.1614], [-0.3638, 0.0036], [0.3378, 0.0036]]
+     },
+     {
+      "type": "finish",
+      "block": "material",
+      "parts": [
+       "p00",
+       "p03",
+       "p15"
+      ],
+      "slot": "SK_Accent1",
+      "target": "metal"
+     },
+     {
+      "type": "glyphs",
+      "block": "glyphen",
+      "pattern": "glyph_decals",
+      "part": "p08",
+      "items": "num",
+      "content": "0 9",
+      "height_m": 0.0226,
+      "bounds_m": [
+       [-0.0234, 0.1009, 0.024],
+       [0.0234, 0.1355, 0.0466]
+      ],
+      "decals": [
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1299, 0.0451], [0.0234, 0.1286, 0.0435], [0.0234, 0.1248, 0.0435], [0.0234, 0.123, 0.0451], [0.0234, 0.1243, 0.0466], [0.0234, 0.1282, 0.0466]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1065, 0.0451], [-0.0234, 0.1077, 0.0435], [-0.0234, 0.1116, 0.0435], [-0.0234, 0.1134, 0.0451], [-0.0234, 0.1121, 0.0466], [-0.0234, 0.1082, 0.0466]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1225, 0.0444], [0.0234, 0.1242, 0.0429], [0.0234, 0.1251, 0.0375], [0.0234, 0.1238, 0.036], [0.0234, 0.122, 0.0375], [0.0234, 0.1212, 0.0429]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1139, 0.0444], [-0.0234, 0.1122, 0.0429], [-0.0234, 0.1113, 0.0375], [-0.0234, 0.1126, 0.036], [-0.0234, 0.1144, 0.0375], [-0.0234, 0.1152, 0.0429]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.124, 0.0346], [0.0234, 0.1258, 0.0331], [0.0234, 0.1267, 0.0277], [0.0234, 0.1254, 0.0262], [0.0234, 0.1236, 0.0277], [0.0234, 0.1227, 0.0331]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1124, 0.0346], [-0.0234, 0.1106, 0.0331], [-0.0234, 0.1097, 0.0277], [-0.0234, 0.111, 0.0262], [-0.0234, 0.1128, 0.0277], [-0.0234, 0.1137, 0.0331]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1331, 0.0255], [0.0234, 0.1318, 0.024], [0.0234, 0.1279, 0.024], [0.0234, 0.1262, 0.0255], [0.0234, 0.1274, 0.027], [0.0234, 0.1313, 0.027]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1033, 0.0255], [-0.0234, 0.1046, 0.024], [-0.0234, 0.1085, 0.024], [-0.0234, 0.1102, 0.0255], [-0.0234, 0.109, 0.027], [-0.0234, 0.1051, 0.027]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1323, 0.0346], [0.0234, 0.1341, 0.0331], [0.0234, 0.1349, 0.0277], [0.0234, 0.1336, 0.0262], [0.0234, 0.1319, 0.0277], [0.0234, 0.131, 0.0331]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1041, 0.0346], [-0.0234, 0.1023, 0.0331], [-0.0234, 0.1015, 0.0277], [-0.0234, 0.1028, 0.0262], [-0.0234, 0.1045, 0.0277], [-0.0234, 0.1054, 0.0331]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1307, 0.0444], [0.0234, 0.1325, 0.0429], [0.0234, 0.1334, 0.0375], [0.0234, 0.1321, 0.036], [0.0234, 0.1303, 0.0375], [0.0234, 0.1294, 0.0429]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1057, 0.0444], [-0.0234, 0.1039, 0.0429], [-0.0234, 0.103, 0.0375], [-0.0234, 0.1043, 0.036], [-0.0234, 0.1061, 0.0375], [-0.0234, 0.107, 0.0429]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1102, 0.0451], [0.0234, 0.109, 0.0435], [0.0234, 0.1051, 0.0435], [0.0234, 0.1033, 0.0451], [0.0234, 0.1046, 0.0466], [0.0234, 0.1085, 0.0466]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1262, 0.0451], [-0.0234, 0.1274, 0.0435], [-0.0234, 0.1313, 0.0435], [-0.0234, 0.1331, 0.0451], [-0.0234, 0.1318, 0.0466], [-0.0234, 0.1279, 0.0466]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1028, 0.0444], [0.0234, 0.1045, 0.0429], [0.0234, 0.1054, 0.0375], [0.0234, 0.1041, 0.036], [0.0234, 0.1023, 0.0375], [0.0234, 0.1015, 0.0429]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1336, 0.0444], [-0.0234, 0.1319, 0.0429], [-0.0234, 0.131, 0.0375], [-0.0234, 0.1323, 0.036], [-0.0234, 0.1341, 0.0375], [-0.0234, 0.1349, 0.0429]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1043, 0.0346], [0.0234, 0.1061, 0.0331], [0.0234, 0.107, 0.0277], [0.0234, 0.1057, 0.0262], [0.0234, 0.1039, 0.0277], [0.0234, 0.103, 0.0331]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1321, 0.0346], [-0.0234, 0.1303, 0.0331], [-0.0234, 0.1294, 0.0277], [-0.0234, 0.1307, 0.0262], [-0.0234, 0.1325, 0.0277], [-0.0234, 0.1334, 0.0331]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1134, 0.0255], [0.0234, 0.1121, 0.024], [0.0234, 0.1082, 0.024], [0.0234, 0.1065, 0.0255], [0.0234, 0.1077, 0.027], [0.0234, 0.1116, 0.027]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.123, 0.0255], [-0.0234, 0.1243, 0.024], [-0.0234, 0.1282, 0.024], [-0.0234, 0.1299, 0.0255], [-0.0234, 0.1286, 0.027], [-0.0234, 0.1248, 0.027]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.111, 0.0444], [0.0234, 0.1128, 0.0429], [0.0234, 0.1137, 0.0375], [0.0234, 0.1124, 0.036], [0.0234, 0.1106, 0.0375], [0.0234, 0.1097, 0.0429]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1254, 0.0444], [-0.0234, 0.1236, 0.0429], [-0.0234, 0.1227, 0.0375], [-0.0234, 0.124, 0.036], [-0.0234, 0.1258, 0.0375], [-0.0234, 0.1267, 0.0429]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Primary",
+        "points_m": [[0.0234, 0.1118, 0.0353], [0.0234, 0.1105, 0.0338], [0.0234, 0.1067, 0.0338], [0.0234, 0.1049, 0.0353], [0.0234, 0.1062, 0.0368], [0.0234, 0.11, 0.0368]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Primary",
+        "points_m": [[-0.0234, 0.1246, 0.0353], [-0.0234, 0.1259, 0.0338], [-0.0234, 0.1297, 0.0338], [-0.0234, 0.1315, 0.0353], [-0.0234, 0.1302, 0.0368], [-0.0234, 0.1264, 0.0368]]
+       }
+      ]
+     },
+     {
+      "type": "trim",
+      "block": "schmuck",
+      "pattern": "trim",
+      "kind": "ribs",
+      "slot": "SK_Accent1",
+      "attach": "p00",
+      "count": 4,
+      "toolgen_similar": "lamellae",
+      "parts": [
+       {
+        "profile_yz_m": [[0.156, 0.1542], [0.147, 0.1542], [0.147, 0.1038], [0.156, 0.1038]],
+        "x_m": [0.0512, 0.0562],
+        "bounds_m": [
+         [0.0512, 0.147, 0.1038],
+         [0.0562, 0.156, 0.1542]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.156, 0.1542], [0.147, 0.1542], [0.147, 0.1038], [0.156, 0.1038]],
+        "x_m": [-0.0562, -0.0512],
+        "bounds_m": [
+         [-0.0562, 0.147, 0.1038],
+         [-0.0512, 0.156, 0.1542]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1353, 0.1542], [0.1263, 0.1542], [0.1263, 0.1038], [0.1353, 0.1038]],
+        "x_m": [0.0512, 0.0562],
+        "bounds_m": [
+         [0.0512, 0.1263, 0.1038],
+         [0.0562, 0.1353, 0.1542]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1353, 0.1542], [0.1263, 0.1542], [0.1263, 0.1038], [0.1353, 0.1038]],
+        "x_m": [-0.0562, -0.0512],
+        "bounds_m": [
+         [-0.0562, 0.1263, 0.1038],
+         [-0.0512, 0.1353, 0.1542]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1146, 0.1542], [0.1056, 0.1542], [0.1056, 0.1038], [0.1146, 0.1038]],
+        "x_m": [0.0512, 0.0562],
+        "bounds_m": [
+         [0.0512, 0.1056, 0.1038],
+         [0.0562, 0.1146, 0.1542]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1146, 0.1542], [0.1056, 0.1542], [0.1056, 0.1038], [0.1146, 0.1038]],
+        "x_m": [-0.0562, -0.0512],
+        "bounds_m": [
+         [-0.0562, 0.1056, 0.1038],
+         [-0.0512, 0.1146, 0.1542]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.0939, 0.1542], [0.0849, 0.1542], [0.0849, 0.1038], [0.0939, 0.1038]],
+        "x_m": [0.0512, 0.0562],
+        "bounds_m": [
+         [0.0512, 0.0849, 0.1038],
+         [0.0562, 0.0939, 0.1542]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.0939, 0.1542], [0.0849, 0.1542], [0.0849, 0.1038], [0.0939, 0.1038]],
+        "x_m": [-0.0562, -0.0512],
+        "bounds_m": [
+         [-0.0562, 0.0849, 0.1038],
+         [-0.0512, 0.0939, 0.1542]
+        ]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "width_mm": 3.4301,
+      "coverage": 0.3,
+      "color": "#B9C0C8"
+     }
+    ],
+    "notes": []
+   },
+   {
+    "id": "glutverlauf",
+    "name": "Glutverlauf",
+    "hero": false,
+    "blocks": [
+     "streifen",
+     "material",
+     "schmuck"
+    ],
+    "description_de": "gestufter Farbverlauf von der Grundfarbe zur Akzentfarbe nach vorn, zwei leuchtende Neonlinien, dunkle Chromrippen",
+    "description_en": "stepped color gradient from base to accent toward the muzzle, two glowing neon lines, dark chrome ribs",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#3A3F47",
+      "finish": "polished_chrome"
+     },
+     "SK_Accent2": {
+      "color": "#6CF2FF",
+      "finish": "neon"
+     }
+    },
+    "slots_used": [
+     "MT_Primary",
+     "MT_Accent",
+     "SK_Accent1",
+     "SK_Accent2"
+    ],
+    "colors": {
+     "base": {
+      "MT_Primary": {
+       "color": "#4A5563",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#C9CFD6",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Primary": {
+       "color": "#ECE6DA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#F3EFE7",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Primary": {
+       "color": "#F3F6F9",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#F7F9FB",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Primary": {
+       "color": "#4A4E57",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#898C92",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "gradient",
+      "block": "streifen",
+      "pattern": "gradient",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "dir": [0.0, -1.0, 0.0],
+      "t0_m": -0.1039,
+      "t1_m": 0.2761,
+      "steps": 5,
+      "slots": [
+       "MT_Primary",
+       "MT_Accent"
+      ]
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "dir": [0.0, 0.0, -1.0],
+      "t0_m": -0.0791,
+      "width_m": 0.0051,
+      "period_m": 0.012,
+      "count": 2,
+      "slots": [
+       "SK_Accent2"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "trim",
+      "block": "schmuck",
+      "pattern": "trim",
+      "kind": "ribs",
+      "slot": "SK_Accent1",
+      "attach": "p08",
+      "count": 5,
+      "toolgen_similar": "lamellae",
+      "parts": [
+       {
+        "profile_yz_m": [[0.1451, 0.0494], [0.1405, 0.0494], [0.1405, 0.0235], [0.1451, 0.0235]],
+        "x_m": [0.0226, 0.0276],
+        "bounds_m": [
+         [0.0226, 0.1405, 0.0235],
+         [0.0276, 0.1451, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1451, 0.0494], [0.1405, 0.0494], [0.1405, 0.0235], [0.1451, 0.0235]],
+        "x_m": [-0.0276, -0.0226],
+        "bounds_m": [
+         [-0.0276, 0.1405, 0.0235],
+         [-0.0226, 0.1451, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1345, 0.0494], [0.1299, 0.0494], [0.1299, 0.0235], [0.1345, 0.0235]],
+        "x_m": [0.0226, 0.0276],
+        "bounds_m": [
+         [0.0226, 0.1299, 0.0235],
+         [0.0276, 0.1345, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1345, 0.0494], [0.1299, 0.0494], [0.1299, 0.0235], [0.1345, 0.0235]],
+        "x_m": [-0.0276, -0.0226],
+        "bounds_m": [
+         [-0.0276, 0.1299, 0.0235],
+         [-0.0226, 0.1345, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1238, 0.0494], [0.1192, 0.0494], [0.1192, 0.0235], [0.1238, 0.0235]],
+        "x_m": [0.0226, 0.0276],
+        "bounds_m": [
+         [0.0226, 0.1192, 0.0235],
+         [0.0276, 0.1238, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1238, 0.0494], [0.1192, 0.0494], [0.1192, 0.0235], [0.1238, 0.0235]],
+        "x_m": [-0.0276, -0.0226],
+        "bounds_m": [
+         [-0.0276, 0.1192, 0.0235],
+         [-0.0226, 0.1238, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1132, 0.0494], [0.1086, 0.0494], [0.1086, 0.0235], [0.1132, 0.0235]],
+        "x_m": [0.0226, 0.0276],
+        "bounds_m": [
+         [0.0226, 0.1086, 0.0235],
+         [0.0276, 0.1132, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1132, 0.0494], [0.1086, 0.0494], [0.1086, 0.0235], [0.1132, 0.0235]],
+        "x_m": [-0.0276, -0.0226],
+        "bounds_m": [
+         [-0.0276, 0.1086, 0.0235],
+         [-0.0226, 0.1132, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1025, 0.0494], [0.0979, 0.0494], [0.0979, 0.0235], [0.1025, 0.0235]],
+        "x_m": [0.0226, 0.0276],
+        "bounds_m": [
+         [0.0226, 0.0979, 0.0235],
+         [0.0276, 0.1025, 0.0494]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.1025, 0.0494], [0.0979, 0.0494], [0.0979, 0.0235], [0.1025, 0.0235]],
+        "x_m": [-0.0276, -0.0226],
+        "bounds_m": [
+         [-0.0276, 0.0979, 0.0235],
+         [-0.0226, 0.1025, 0.0494]
+        ]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "width_mm": 3.0871,
+      "coverage": 0.25,
+      "color": "#B9C0C8"
+     }
+    ],
+    "notes": []
+   },
+   {
+    "id": "glyphenband",
+    "name": "Glyphenband",
+    "hero": false,
+    "blocks": [
+     "glyphen",
+     "streifen",
+     "material"
+    ],
+    "description_de": "dunkles Band mit leuchtender Neon-Runenzeile über die Seite, Chrom an Läufen",
+    "description_en": "dark side band with a glowing neon glyph row, chrome barrels",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#C9D2DC",
+      "finish": "polished_chrome"
+     },
+     "SK_Accent2": {
+      "color": "#6CF2FF",
+      "finish": "neon"
+     }
+    },
+    "slots_used": [
+     "MT_Detail",
+     "SK_Accent1",
+     "SK_Accent2"
+    ],
+    "colors": {
+     "base": {
+      "MT_Detail": {
+       "color": "#1C2027",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Detail": {
+       "color": "#2B2E33",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Detail": {
+       "color": "#3A4452",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Detail": {
+       "color": "#141518",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "finish",
+      "block": "material",
+      "parts": [
+       "p00",
+       "p03",
+       "p15"
+      ],
+      "slot": "SK_Accent1",
+      "target": "metal"
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "dir": [0.0, 0.0, -1.0],
+      "t0_m": -0.0808,
+      "width_m": 0.0189,
+      "period_m": 0.0189,
+      "count": 1,
+      "slots": [
+       "MT_Detail"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "glyphs",
+      "block": "glyphen",
+      "pattern": "glyph_decals",
+      "part": "p07",
+      "items": "runes7",
+      "content": "1 7 4 0 6 3 7",
+      "height_m": 0.0115,
+      "bounds_m": [
+       [-0.0182, -0.0769, 0.0656],
+       [0.0182, -0.008, 0.0771]
+      ],
+      "decals": [
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.012, 0.0771], [0.0182, -0.0101, 0.0656], [0.0182, -0.0115, 0.0656], [0.0182, -0.0134, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0729, 0.0771], [-0.0182, -0.0747, 0.0656], [-0.0182, -0.0734, 0.0656], [-0.0182, -0.0715, 0.0771]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0095, 0.0724], [0.0182, -0.0143, 0.0724], [0.0182, -0.0146, 0.0738], [0.0182, -0.0097, 0.0738]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0754, 0.0724], [-0.0182, -0.0705, 0.0724], [-0.0182, -0.0703, 0.0738], [-0.0182, -0.0752, 0.0738]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0089, 0.0683], [0.0182, -0.0137, 0.0683], [0.0182, -0.0139, 0.0697], [0.0182, -0.0091, 0.0697]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.076, 0.0683], [-0.0182, -0.0712, 0.0683], [-0.0182, -0.071, 0.0697], [-0.0182, -0.0758, 0.0697]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.02, 0.0771], [0.0182, -0.0188, 0.0696], [0.0182, -0.0202, 0.0696], [0.0182, -0.0214, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0649, 0.0771], [-0.0182, -0.0661, 0.0696], [-0.0182, -0.0647, 0.0696], [-0.0182, -0.0635, 0.0771]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.019, 0.0691], [0.0182, -0.0229, 0.0653], [0.0182, -0.0239, 0.0664], [0.0182, -0.02, 0.0701]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0659, 0.0691], [-0.0182, -0.062, 0.0653], [-0.0182, -0.061, 0.0664], [-0.0182, -0.0649, 0.0701]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0245, 0.0771], [0.0182, -0.0236, 0.0713], [0.0182, -0.025, 0.0713], [0.0182, -0.0259, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0604, 0.0771], [-0.0182, -0.0613, 0.0713], [-0.0182, -0.0599, 0.0713], [-0.0182, -0.059, 0.0771]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0324, 0.0771], [0.0182, -0.0291, 0.0716], [0.0182, -0.0303, 0.0711], [0.0182, -0.0336, 0.0765]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0524, 0.0771], [-0.0182, -0.0557, 0.0716], [-0.0182, -0.0546, 0.0711], [-0.0182, -0.0513, 0.0765]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0324, 0.0765], [0.0182, -0.0339, 0.0711], [0.0182, -0.0353, 0.0716], [0.0182, -0.0337, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0525, 0.0765], [-0.0182, -0.051, 0.0711], [-0.0182, -0.0496, 0.0716], [-0.0182, -0.0512, 0.0771]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0312, 0.0699], [0.0182, -0.0305, 0.0656], [0.0182, -0.0319, 0.0656], [0.0182, -0.0326, 0.0699]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0537, 0.0699], [-0.0182, -0.0543, 0.0656], [-0.0182, -0.053, 0.0656], [-0.0182, -0.0523, 0.0699]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0406, 0.0771], [0.0182, -0.0387, 0.0656], [0.0182, -0.0401, 0.0656], [0.0182, -0.042, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0443, 0.0771], [-0.0182, -0.0462, 0.0656], [-0.0182, -0.0448, 0.0656], [-0.0182, -0.0429, 0.0771]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.041, 0.0734], [0.0182, -0.0458, 0.0762], [0.0182, -0.0452, 0.0774], [0.0182, -0.0405, 0.0745]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0438, 0.0734], [-0.0182, -0.0391, 0.0762], [-0.0182, -0.0396, 0.0774], [-0.0182, -0.0444, 0.0745]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0504, 0.0767], [0.0182, -0.051, 0.0657], [0.0182, -0.0524, 0.066], [0.0182, -0.0518, 0.077]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0345, 0.0767], [-0.0182, -0.0339, 0.0657], [-0.0182, -0.0325, 0.066], [-0.0182, -0.0331, 0.077]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0523, 0.0657], [0.0182, -0.0564, 0.0767], [0.0182, -0.0551, 0.077], [0.0182, -0.051, 0.066]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0326, 0.0657], [-0.0182, -0.0285, 0.0767], [-0.0182, -0.0298, 0.077], [-0.0182, -0.0339, 0.066]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0509, 0.0721], [0.0182, -0.0544, 0.0721], [0.0182, -0.0546, 0.0735], [0.0182, -0.0512, 0.0735]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0339, 0.0721], [-0.0182, -0.0305, 0.0721], [-0.0182, -0.0303, 0.0735], [-0.0182, -0.0337, 0.0735]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.061, 0.0757], [0.0182, -0.0659, 0.0757], [0.0182, -0.0661, 0.0771], [0.0182, -0.0613, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0239, 0.0757], [-0.0182, -0.019, 0.0757], [-0.0182, -0.0188, 0.0771], [-0.0182, -0.0236, 0.0771]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0629, 0.0764], [0.0182, -0.0618, 0.0699], [0.0182, -0.0632, 0.0699], [0.0182, -0.0643, 0.0764]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.022, 0.0764], [-0.0182, -0.0231, 0.0699], [-0.0182, -0.0217, 0.0699], [-0.0182, -0.0206, 0.0764]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0598, 0.0653], [0.0182, -0.0653, 0.0694], [0.0182, -0.0646, 0.0704], [0.0182, -0.0591, 0.0664]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0251, 0.0653], [-0.0182, -0.0196, 0.0694], [-0.0182, -0.0203, 0.0704], [-0.0182, -0.0258, 0.0664]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.071, 0.0771], [0.0182, -0.0698, 0.0696], [0.0182, -0.0712, 0.0696], [0.0182, -0.0724, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0139, 0.0771], [-0.0182, -0.0151, 0.0696], [-0.0182, -0.0137, 0.0696], [-0.0182, -0.0125, 0.0771]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.07, 0.0691], [0.0182, -0.0739, 0.0653], [0.0182, -0.0749, 0.0664], [0.0182, -0.071, 0.0701]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0149, 0.0691], [-0.0182, -0.011, 0.0653], [-0.0182, -0.01, 0.0664], [-0.0182, -0.0139, 0.0701]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0182, -0.0755, 0.0771], [0.0182, -0.0746, 0.0713], [0.0182, -0.076, 0.0713], [0.0182, -0.0769, 0.0771]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0182, -0.0094, 0.0771], [-0.0182, -0.0103, 0.0713], [-0.0182, -0.0089, 0.0713], [-0.0182, -0.008, 0.0771]]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "width_mm": 3.0871,
+      "coverage": 0.2,
+      "color": "#B9C0C8"
+     }
+    ],
+    "notes": []
+   },
+   {
+    "id": "goldglyphe",
+    "name": "Goldglyphe",
+    "hero": false,
+    "blocks": [
+     "farbflaechen",
+     "glyphen",
+     "streifen",
+     "material",
+     "schmuck"
+    ],
+    "description_de": "dunkles Gehäuse, poliertes Gold an Läufen und Mündung, goldene Runenzeile und Zierlinie, goldene Finnen, Kantenabnutzung",
+    "description_en": "dark body, polished gold barrels and muzzle, row of gold glyphs and gold pinstripe, gold fins, edge wear",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#E2B04A",
+      "finish": "polished_gold"
+     },
+     "SK_Accent2": {
+      "color": "#8A6420",
+      "finish": "paint"
+     }
+    },
+    "slots_used": [
+     "MT_Detail",
+     "SK_Accent1"
+    ],
+    "colors": {
+     "base": {
+      "MT_Detail": {
+       "color": "#1C2027",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Detail": {
+       "color": "#2B2E33",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Detail": {
+       "color": "#3A4452",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Detail": {
+       "color": "#141518",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "side_block",
+      "block": "farbflaechen",
+      "pattern": "side_block",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "slot": "MT_Detail",
+      "poly_yz_m": [[0.3378, 0.2094], [-0.3638, 0.2094], [-0.3638, 0.0036], [0.3378, 0.0036]]
+     },
+     {
+      "type": "finish",
+      "block": "material",
+      "parts": [
+       "p00",
+       "p03",
+       "p15"
+      ],
+      "slot": "SK_Accent1",
+      "target": "metal"
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "dir": [0.0, 0.0, -1.0],
+      "t0_m": -0.1614,
+      "width_m": 0.0051,
+      "period_m": 0.0051,
+      "count": 1,
+      "slots": [
+       "SK_Accent1"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "glyphs",
+      "block": "glyphen",
+      "pattern": "glyph_decals",
+      "part": "p07",
+      "items": "runes6",
+      "content": "1 7 4 0 6 3",
+      "height_m": 0.012,
+      "bounds_m": [
+       [-0.0182, -0.0711, 0.0649],
+       [0.0182, -0.0098, 0.077]
+      ],
+      "decals": [
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.014, 0.077], [0.0182, -0.0121, 0.0649], [0.0182, -0.0135, 0.0649], [0.0182, -0.0155, 0.077]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0669, 0.077], [-0.0182, -0.0688, 0.0649], [-0.0182, -0.0673, 0.0649], [-0.0182, -0.0654, 0.077]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0114, 0.072], [0.0182, -0.0165, 0.072], [0.0182, -0.0167, 0.0735], [0.0182, -0.0117, 0.0735]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0694, 0.072], [-0.0182, -0.0644, 0.072], [-0.0182, -0.0642, 0.0735], [-0.0182, -0.0692, 0.0735]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0108, 0.0678], [0.0182, -0.0158, 0.0678], [0.0182, -0.016, 0.0693], [0.0182, -0.011, 0.0693]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0701, 0.0678], [-0.0182, -0.0651, 0.0678], [-0.0182, -0.0648, 0.0693], [-0.0182, -0.0699, 0.0693]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0224, 0.077], [0.0182, -0.0211, 0.0692], [0.0182, -0.0226, 0.0692], [0.0182, -0.0238, 0.077]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0585, 0.077], [-0.0182, -0.0598, 0.0692], [-0.0182, -0.0583, 0.0692], [-0.0182, -0.0571, 0.077]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0213, 0.0686], [0.0182, -0.0254, 0.0647], [0.0182, -0.0265, 0.0658], [0.0182, -0.0224, 0.0697]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0596, 0.0686], [-0.0182, -0.0555, 0.0647], [-0.0182, -0.0544, 0.0658], [-0.0182, -0.0585, 0.0697]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0271, 0.077], [0.0182, -0.0261, 0.071], [0.0182, -0.0275, 0.071], [0.0182, -0.0285, 0.077]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0538, 0.077], [-0.0182, -0.0548, 0.071], [-0.0182, -0.0533, 0.071], [-0.0182, -0.0524, 0.077]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0353, 0.0769], [0.0182, -0.0319, 0.0712], [0.0182, -0.0331, 0.0707], [0.0182, -0.0366, 0.0764]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0455, 0.0769], [-0.0182, -0.049, 0.0712], [-0.0182, -0.0478, 0.0707], [-0.0182, -0.0443, 0.0764]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0352, 0.0764], [0.0182, -0.0369, 0.0707], [0.0182, -0.0383, 0.0712], [0.0182, -0.0367, 0.0769]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0456, 0.0764], [-0.0182, -0.044, 0.0707], [-0.0182, -0.0426, 0.0712], [-0.0182, -0.0442, 0.0769]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0341, 0.0695], [0.0182, -0.0334, 0.0649], [0.0182, -0.0348, 0.0649], [0.0182, -0.0355, 0.0695]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0468, 0.0695], [-0.0182, -0.0475, 0.0649], [-0.0182, -0.0461, 0.0649], [-0.0182, -0.0454, 0.0695]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0438, 0.077], [0.0182, -0.0419, 0.0649], [0.0182, -0.0433, 0.0649], [0.0182, -0.0452, 0.077]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0371, 0.077], [-0.0182, -0.039, 0.0649], [-0.0182, -0.0376, 0.0649], [-0.0182, -0.0356, 0.077]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0443, 0.0731], [0.0182, -0.0493, 0.0761], [0.0182, -0.0487, 0.0773], [0.0182, -0.0437, 0.0743]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0366, 0.0731], [-0.0182, -0.0316, 0.0761], [-0.0182, -0.0322, 0.0773], [-0.0182, -0.0372, 0.0743]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0541, 0.0765], [0.0182, -0.0546, 0.0651], [0.0182, -0.0561, 0.0654], [0.0182, -0.0555, 0.0768]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0268, 0.0765], [-0.0182, -0.0262, 0.0651], [-0.0182, -0.0248, 0.0654], [-0.0182, -0.0254, 0.0768]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0561, 0.0651], [0.0182, -0.0603, 0.0765], [0.0182, -0.0589, 0.0768], [0.0182, -0.0547, 0.0654]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0248, 0.0651], [-0.0182, -0.0206, 0.0765], [-0.0182, -0.022, 0.0768], [-0.0182, -0.0262, 0.0654]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0546, 0.0717], [0.0182, -0.0582, 0.0717], [0.0182, -0.0584, 0.0732], [0.0182, -0.0548, 0.0732]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0263, 0.0717], [-0.0182, -0.0227, 0.0717], [-0.0182, -0.0224, 0.0732], [-0.0182, -0.026, 0.0732]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0651, 0.0755], [0.0182, -0.0702, 0.0755], [0.0182, -0.0704, 0.077], [0.0182, -0.0654, 0.077]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0158, 0.0755], [-0.0182, -0.0107, 0.0755], [-0.0182, -0.0105, 0.077], [-0.0182, -0.0155, 0.077]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.067, 0.0762], [0.0182, -0.066, 0.0695], [0.0182, -0.0674, 0.0695], [0.0182, -0.0685, 0.0762]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.0138, 0.0762], [-0.0182, -0.0149, 0.0695], [-0.0182, -0.0135, 0.0695], [-0.0182, -0.0124, 0.0762]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent1",
+        "points_m": [[0.0182, -0.0639, 0.0647], [0.0182, -0.0696, 0.0689], [0.0182, -0.0688, 0.07], [0.0182, -0.0631, 0.0658]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent1",
+        "points_m": [[-0.0182, -0.017, 0.0647], [-0.0182, -0.0113, 0.0689], [-0.0182, -0.0121, 0.07], [-0.0182, -0.0178, 0.0658]]
+       }
+      ]
+     },
+     {
+      "type": "trim",
+      "block": "schmuck",
+      "pattern": "trim",
+      "kind": "fins",
+      "slot": "SK_Accent1",
+      "attach": "p00",
+      "count": 3,
+      "toolgen_similar": null,
+      "parts": [
+       {
+        "profile_yz_m": [[-0.2911, 0.1825], [-0.3086, 0.1825], [-0.2897, 0.2188], [-0.2722, 0.2188]],
+        "x_m": [-0.0117, 0.0117],
+        "bounds_m": [
+         [-0.0117, -0.3086, 0.1825],
+         [0.0117, -0.2722, 0.2188]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.3279, 0.1825], [-0.3454, 0.1825], [-0.3266, 0.2188], [-0.309, 0.2188]],
+        "x_m": [-0.0117, 0.0117],
+        "bounds_m": [
+         [-0.0117, -0.3454, 0.1825],
+         [0.0117, -0.309, 0.2188]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.3647, 0.1825], [-0.3823, 0.1825], [-0.3634, 0.2188], [-0.3459, 0.2188]],
+        "x_m": [-0.0117, 0.0117],
+        "bounds_m": [
+         [-0.0117, -0.3823, 0.1825],
+         [0.0117, -0.3459, 0.2188]
+        ]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p01",
+       "p04",
+       "p06",
+       "p07",
+       "p08"
+      ],
+      "width_mm": 3.4301,
+      "coverage": 0.35,
+      "color": "#B9C0C8"
+     }
+    ],
+    "notes": []
+   }
+  ]
+ },
  "summary": {
+  "skins": 5,
   "parts": 18,
   "parts_explicit_channel": 0,
   "decals": 50,

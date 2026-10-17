@@ -1,6 +1,6 @@
 # Weapon-Spec der Konzeptblätter (`KXnn.spec.json`, format_version 1)
 
-Stand 17.10.2026 (claude-0.2). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
+Stand 17.10.2026 (claude-0.2, Feld `skin` seit claude-0.3). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
 Werten des Blatts als Daten, damit Toolgen (und Cube Escape) sie nicht aus dem Bild lesen müssen. Die Blätter bleiben das
 Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesbare Fassung.
 
@@ -29,6 +29,7 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | `sight` | `present`, `kind`, `window`, `source`, `modular` (immer separat), `mount_side`, `labels`, `parts`, `bounds_m`, `anchor` |
 | `decals[]` | `part`, `channel`, `surface` (left/right/front/back/top), `emissive`, `color`, `area_m2`, `bounds_m` |
 | `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns` |
+| `skin` | (claude-0.3, optional) fünf Skins je Waffe aus einem Katalog von neun, der erste ist der Hauptskin des Blatts – siehe [Skins](#skins) |
 | `summary` | Anzahlen, Kanäle mit Nebenfarben je Variante |
 
 Farben sind sRGB-Hex `#RRGGBB` wie im Cube-Escape-Design (`Docs/EQUIPMENT.md` › Farbkanäle).
@@ -90,7 +91,48 @@ Stand 17.10.2026: alle Zuordnungen heuristisch (0 ausdrücklich); 34 Kanäle in 
   `back` (+Y), `top` (+Z).
 - `textures`: Muster der Materialansicht des Blatts (`xl.make_texture`) in mm: gebürstet → `brushed` entlang `long_axis` des Teils,
   gummiert → `knurl` (Rautenteilung), matt → `grain`, lackiert → Glanzverlauf ohne Relief, leuchtend → ohne Muster.
-  Gestaltete Muster (Farbflächen, Glyphen, Streifen über mehrere Teile) gibt es in Version 1 nicht; sie kämen als neues Feld dazu.
+  Gestaltete Muster (Farbflächen, Glyphen, Streifen über mehrere Teile) stehen im Feld `skin` (claude-0.3).
+
+## Skins
+
+Wunsch des Nutzers (17.10.2026): Die Waffen bekommen über Material und Kanalfarbe eine Gestaltungsebene mit fünf Bausteinen –
+**Farbflächen** über Bauteilgrenzen (zweifarbige Blöcke, diagonale/gestufte Teilungen), **Glyphen/Zahlen/Embleme** als
+Aufkleber-Gruppen, **Streifen, Verläufe, konzentrische Ringe**, **poliertes Gold/Chrom** gegen dunkles Metall mit
+**Kantenabnutzung**, **Schmuckteile** (Rippen, Finnen). Stimmung, kein Nachbau: Ziffern, Runen und Embleme sind eigene
+Formen (`skins.py`, Segmentziffern, acht Runen, Würfel/Winkel/Ring). Entscheidungen des Nutzers: Katalog mit fünf Skins je
+Waffe; Farben aus den MT_-Kanälen plus zwei feste Skin-Akzente; erst je Familie ein Probeblatt (KC01, KD02, KF05, KG07, KH10).
+
+- **Katalog** (`skins.CATALOG`, 9): `rennstreifen`, `goldglyphe`, `warnblock`, `zweiton`, `stufenblock`, `zielringe`,
+  `glutverlauf`, `chromrippe`, `glyphenband`. Je Blatt fünf (`skins.pick`: Drehung des Katalogs je Blatt, Skins, deren Lagen alle
+  Platz finden, zuerst); `skin.hero` = erster = Hauptskin, im Blatt in Isometrie, Orthos und Farbvarianten, alle fünf im Feld
+  **SKIN/MUSTER** (neue untere Reihe, Blatt 4800×4432).
+- **Slots:** die sieben MT_-Kanäle färben mit der Variante um; an der Waffe unbelegte Kanäle nehmen das Farbfeld der Blatt-Palette
+  (`source: swatch`: Primary hell, Secondary/Metal mittel, Detail dunkel, Accent/Energy/Emission Akzent). `SK_Accent1`/`SK_Accent2`
+  sind feste Farben je Skin mit Oberfläche (`finish`): `paint`, `polished_gold`, `polished_chrome`, `neon` (leuchtend).
+  `items[].colors` nennt je Variante (`base`, `standard`, `arktis`, `nacht`) Farbe, Oberfläche und Quelle jedes benutzten Slots.
+- **Raum:** alle Muster im Objektraum (Toolgen-Rahmen, m, Ursprung `Socket_Hand`), keine UV – Blender: Objekt-Koordinaten.
+  Sichtteile und leuchtende Teile tragen keinen Skin.
+- **Lagen** (`items[].layers[]`, in Reihenfolge; spätere überdecken frühere), `block` = Baustein, `pattern` = Mustertyp:
+
+| `type` | Werte | Bedeutung |
+|---|---|---|
+| `side_block` | `parts`, `slot`, `poly_yz_m` | Polygon in der Seitenprojektion ([Y, Z]), durch die Breite (X) extrudiert |
+| `bands` | `parts`, `dir`, `t0_m`, `width_m`, `period_m`, `count`, `slots`, `window_yz_m` | Streifen quer zu `dir` (t = p·dir); Rennstreifen `dir` X, Seitenband Z, Warnstreifen schräg mit Fenster |
+| `gradient` | `parts`, `dir`, `t0_m`, `t1_m`, `steps`, `slots` | gestufter Farbverlauf zwischen zwei Slots (Mischfarbe, keine Kanal-Maske) |
+| `rings` | `parts`, `axis` (X), `center_yz_m`, `r0_m`, `width_m`, `gap_m`, `count`, `slots` | konzentrische Ringe in der Seitenprojektion |
+| `finish` | `parts`, `slot`, `target` | ganze Teile im Slot (meist Metallteile → Gold/Chrom) |
+| `edge_wear` | `parts`, `width_mm`, `coverage`, `color` | blankes Metall an harten Kanten, fleckig (Blender: Pointiness/AO) |
+| `glyphs` | `part`, `items`, `content`, `height_m`, `bounds_m`, `decals[]` (`surface`, `slot`, `points_m`) | Aufkleber auf beiden Seitenflächen, rechte Seite gespiegelt (lesbar) |
+| `trim` | `kind` (`ribs`/`fins`), `attach`, `slot`, `parts[]` (`profile_yz_m`, `x_m`, `bounds_m`) | zusätzliche Prismen auf der Fläche bzw. oben; `toolgen_similar` `lamellae` bei Rippen |
+
+- **Toolgen-Wortschatz:** `data/surface_recipes.json › patterns` kennt nur Relief (`knurl`, `grooves`, `lamellae`, `seams`,
+  `brushed`, `grain`). Die Skin-Muster sind neue Typen, je Spec in `skin.new_pattern_types` beschrieben; Toolgen entscheidet,
+  welche es als Kanal-Masken backt (MT_-Slots je Texel) und welche als feste Farben.
+- **Platz:** Glyphen und Rippen suchen ein freies Rechteck auf einer flachen Seitenfläche (nicht verdeckt, frei von Aufklebern,
+  beide Seiten), Finnen einen freien Platz oben ohne Visierschiene; ohne Platz entfällt die Lage mit Eintrag in `notes`
+  (Finnen weichen auf Rippen aus). Stand claude-0.3: zwei Lagen ohne Platz (KC09 Raketenwerfer, Rohrkörper).
+- **Zeichnung:** `skinraster.py` liest die Toon-Stufe jedes Bildpunkts aus seiner Helligkeit und schattiert die Skinfarbe gleich;
+  Gold/Chrom mit eigener Tonleiter und Glanzstreifen (nur Zeichnung), Kantenabnutzung über Kantenabstand und Zellrauschen.
 
 ## Für Codex (`codex/`)
 
