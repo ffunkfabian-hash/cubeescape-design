@@ -6,7 +6,7 @@ diesem Modell gerendert und sind damit garantiert deckungsgleich.
 
 Verbindliche Gestaltungsregeln: [`docs/masterprompt.md`](docs/masterprompt.md) (Concept-Art-Qualitäts-Masterprompt).
 
-## Inhalt eines Konzeptblatts (4800 × 3400)
+## Inhalt eines Konzeptblatts (4800 × 4432)
 
 - Isometrische Hauptansicht **ohne Visier**, mit höchstens 8 deutschen Bauteil-Beschriftungen
 - Sechs orthografische Ansichten (links, rechts, vorne, hinten, oben, unten) im gleichen Maßstab mit Bezugslinien
@@ -19,13 +19,17 @@ Verbindliche Gestaltungsregeln: [`docs/masterprompt.md`](docs/masterprompt.md) (
 
 ## Varianten
 
-| Variante | Idee |
-|---|---|
-| C | Neue Formen der Originalwaffen, je eigene Palette |
-| D | Originalformen, konstruktiv überarbeitet, Farbvarianten |
-| F | Neue Formen, mutige Paletten |
-| G | Neue Formen in der Cube-Escape-Farbwelt (Creme, Anthrazit, Orange, Cyan) |
-| H | „Werkstatt-Serie“: modulare Prototypen mit Klemm-/Schraubverbindungen |
+| Variante | Name | Idee |
+|---|---|---|
+| C | – | Neue Formen der Originalwaffen, je eigene Palette |
+| D | – | Originalformen, konstruktiv überarbeitet, Farbvarianten |
+| F | – | Neue Formen, mutige Paletten |
+| G | – | Neue Formen in der Cube-Escape-Farbwelt (Creme, Anthrazit, Orange, Cyan) |
+| H | – | „Werkstatt-Serie“: modulare Prototypen mit Klemm-/Schraubverbindungen |
+| J | **Black Ice** | Stealth-Serie: wenige große, scharfe Facetten wie bei Tarnkappenjets, matte dunkle Grundtöne, eisblaue Leuchtkanten |
+
+Neue Varianten bekommen einen englischen Namen (Regel in `CLAUDE.md`/`AGENTS.md`) und werden mit
+`python claude/generator/new_variant.py <Buchstabe> "<Name>" "<Idee>"` angelegt; Register: `claude/generator/variants.py`.
 
 Waffen je Variante: Pistole, Sturmgewehr, Impulsgewehr, Schrotflinte, Scharfschützengewehr, Maschinenpistole,
 Fusionsgewehr, Spurgewehr, Raketenwerfer, Bogen.
@@ -44,14 +48,16 @@ claude/                  nur Claude
   prompts/               fertige Prompts je Waffe (DE/EN)
   generator/
     eng.py raster.py     Modell-API und Z-Buffer-Toon-Renderer
-    views.py xl.py       Karte (2400×1560) und Konzeptblatt XL (4800×3400)
+    views.py xl.py       Karte (2400×1560) und Konzeptblatt XL (4800×4432)
     v01m.py c02–c10.py   Modelle Variante C
     dmods.py dmodels.py  Modelle Variante D
     f01–f10.py g01–g10.py h01–h10.py
-    build_*.py           Bauskripte je Variante, build_all.py baut alles
+    jlib.py j01–j10.py   Facetten-Bausteine und Modelle Variante J „Black Ice“
+    variants.py          Varianten-Register (Buchstabe, Name, Idee); new_variant.py legt neue Varianten an
+    build_*.py           Bauskripte je Variante, build_all.py baut alles; preview.py nimmt die Vorschauen auf
   output/
-    sheets/              Konzeptblätter XL (KC01 … KH10) als HTML
-    previews/            PNG-Vorschauen (werden auf dem Mac erzeugt, siehe Versionsbericht)
+    sheets/              Konzeptblätter XL (KC01 … KJ10) als HTML, je Blatt KXnn.spec.json
+    previews/            WebP-Vorschauen (werden auf dem Mac erzeugt, siehe Versionsbericht)
   reference/crops/       Original-Seitenansichten (Referenz für Variante D)
 codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
 ```
@@ -62,7 +68,7 @@ codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
 pip install -r requirements.txt
 playwright install chromium        # nur für Screenshots / Vorschauen
 python claude/generator/build_all.py      # alles neu bauen (dauert, die XL-Blätter sind groß)
-python claude/generator/build_all.py G H  # nur bestimmte Varianten
+python claude/generator/build_all.py G J  # nur bestimmte Varianten
 ```
 
 Die HTML-Dateien binden Schriften über Google Fonts ein; ohne Internet erscheinen Ersatzschriften.

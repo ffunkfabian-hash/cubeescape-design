@@ -4,7 +4,7 @@
 from cepaths import E3D,CLAUDE,OUT
 import copy,json,math,os,re,sys,unittest
 sys.path.insert(0,E3D)
-import export_spec,sheetmodels
+import export_spec,sheetmodels,variants
 from eng import CHANNELS,Model,rect,channel,copy_channels,split_sight
 from xlroles import recolor,VARIANTS,color_roles,assign_channels
 
@@ -48,8 +48,8 @@ def load(sheet):return json.loads(_read(export_spec.path(sheet)))
 
 class SpecFiles(unittest.TestCase):
     def test_all_present_and_current(self):
-        """50 Dateien, jede gleich der Ausgabe des Exporters (sonst: python3 claude/generator/export_spec.py)."""
-        self.assertEqual(len(sheetmodels.SHEETS),50)
+        """10 Dateien je Variante, jede gleich der Ausgabe des Exporters (sonst: python3 claude/generator/export_spec.py)."""
+        self.assertEqual(len(sheetmodels.SHEETS),10*len(variants.LETTERS))
         stale=[s for s in sheetmodels.SHEETS if not os.path.exists(export_spec.path(s)) or
                _read(export_spec.path(s))!=export_spec.dumps(export_spec.build(s))]
         self.assertEqual(stale,[],'veraltet oder fehlend – python3 claude/generator/export_spec.py')
@@ -226,5 +226,35 @@ class SkinFrame(unittest.TestCase):
         # ein Punkt im Band liegt im Zielrahmen ebenfalls im Band
         q=(o[0],bm['t0']+bm['width']/2,o[2]);pm=P(q);t=sum(pm[k]*bs['dir'][k] for k in range(3))
         self.assertTrue(bs['t0_m']<=t<=bs['t0_m']+bs['width_m'],(t,bs['t0_m']))
+
+class Variants(unittest.TestCase):
+    """Varianten-Register (claude-0.4): Namensregel für neue Varianten, Name im Spec, Facettenkörper der Variante J."""
+    def test_naming_rule(self):
+        self.assertEqual(len(set(variants.LETTERS)),len(variants.LETTERS))
+        for v in variants.VARIANTS:
+            if v['letter'] in 'CDFGH':self.assertIsNone(v['name']);continue   # älter als die Regel
+            with self.subTest(variant=v['letter']):self.assertEqual(variants.name_problems(v['letter'],v['name']),[])
+        self.assertTrue(variants.name_problems('K','Black Ice'))        # vergeben
+        self.assertTrue(variants.name_problems('K','Parallax'))         # Codex
+        self.assertTrue(variants.name_problems('K','schwarzes eis'))    # Schreibweise
+        self.assertTrue(variants.name_problems('K',None))
+        self.assertTrue(variants.name_problems('I','Glass Fang'))       # I wird nicht vergeben
+        self.assertEqual(variants.name_problems('K','Glass Fang'),[])
+    def test_spec_name(self):
+        for s in sheetmodels.SHEETS:
+            with self.subTest(sheet=s):self.assertEqual(load(s)['sheet']['variant_name'],variants.name(s[1]))
+    def test_facet_faces(self):
+        import jlib
+        m=jlib.model([jlib.K([(0,0),(80,0),(100,20),(80,40),(0,40)],'#222222',-10,10,b=4,bz=4)])
+        F=m.parts[0]['F']
+        self.assertEqual(tuple(F[0]['n']),(0,0,1));self.assertEqual(tuple(F[1]['n']),(0,0,-1))
+        self.assertEqual({v[2] for v in F[0]['v']},{10});self.assertEqual({v[2] for v in F[1]['v']},{-10})
+        # Seitenfläche eingerückt, Normalen Einheitslänge, je Kante Band + zwei Facetten
+        xs=[v[0] for v in F[0]['v']];self.assertAlmostEqual(min(xs),4,places=6)
+        self.assertEqual(len(F),2+3*5)
+        for f in F:self.assertAlmostEqual(sum(c*c for c in f['n']),1,places=9)
+        import skins
+        self.assertIsNotNone(skins.side_face(m.parts[0]))
+        with self.assertRaises(ValueError):jlib.inset([(0,0),(10,0),(10,4),(0,4)],3)   # Fase breiter als das Teil
 
 if __name__=='__main__':unittest.main()

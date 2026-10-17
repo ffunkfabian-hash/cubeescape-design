@@ -2,6 +2,13 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.4
+- Neue Variante **J „Black Ice“**: zehn Stealth-Waffen (KJ01–KJ10) aus Facettenkörpern (`jlib.py`: abgeschrägte Prismen,
+  Sechs-/Achtkant-Läufe, eisige Leuchtkanten), Blätter, Vorschauen, Specs und Prompts.
+- Regel: neue Varianten bekommen einen englischen Namen; Register `variants.py`, Anlage mit `new_variant.py` (prüft die Regel).
+- Spec: `sheet.variant_name` (additiv); `preview.py` nimmt die WebP-Vorschauen auf; `mkdoc.py` behält Abschnitte bei Teilbau.
+- Bericht: [claude/docs/versions/0.4.md](claude/docs/versions/0.4.md)
+
 ## claude-0.3
 - Skins: Katalog mit 9 gestalteten Skins (Farbflächen, eigene Glyphen/Zahlen/Embleme, Streifen/Verläufe/Ringe, Gold/Chrom mit
   Kantenabnutzung, Rippen/Finnen), je Waffe fünf; Farben aus den MT_-Kanälen plus zwei feste Skin-Akzente, Kontrastregel.

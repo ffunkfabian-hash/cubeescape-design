@@ -8,7 +8,7 @@ from eng import *
 import raster
 from xlroles import *
 from xlroles import _rgb,_hex,_lum,_sat,_mix
-import skins
+import skins,variants
 from skinraster import skin_texture
 
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
@@ -147,7 +147,8 @@ EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Ma
 
 def prompts(d,labels,mats,variant_letter,skin=None):
     pal=', '.join(d['palette'])
-    de=(f"Erstelle ein technisches Low-Poly-Concept-Art-Blatt für das Spiel Cube Escape: {d['name']}, Variante {variant_letter} „{d['nick']}“. "
+    vn=variants.name(variant_letter)   # englischer Variantenname (ab J), ältere Varianten ohne
+    de=(f"Erstelle ein technisches Low-Poly-Concept-Art-Blatt für das Spiel Cube Escape: {d['name']}, Variante {variant_letter}{f' ({vn})' if vn else ''} „{d['nick']}“. "
         f"Form: {d['form']}. {d['desc']} "
         f"Pflicht-Bauteile, alle sichtbar und nachvollziehbar verbunden: {', '.join(labels)}. "
         f"Farbpalette: {pal}. Materialien: {', '.join(mats)}. "
@@ -159,7 +160,7 @@ def prompts(d,labels,mats,variant_letter,skin=None):
     if d['name']=='Raketenwerfer':
         de=de.replace('auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.','auf der Waffe bleibt nur die freie Visierschiene als Aufnahme – seitlich links am Rohr montiert, damit das Rohr die Sichtlinie nicht verdeckt.')
     en_parts=', '.join(EN.get(l,l) for l in labels)
-    en=(f"Low-poly sci-fi weapon concept sheet for the game Cube Escape: futuristic {d.get('en_type','weapon')}, variant {variant_letter} \"{d['nick']}\". "
+    en=(f"Low-poly sci-fi weapon concept sheet for the game Cube Escape: futuristic {d.get('en_type','weapon')}, variant {variant_letter}{f' ({vn})' if vn else ''} \"{d['nick']}\". "
         f"Visible, logically connected parts: {en_parts}. Color palette {pal}. "
         "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. Draw the sight/scope detached as a separate modular attachment next to the weapon; the weapon shows only the empty sight rail. "
         +("Sight rail mounted on the left side of the tube, offset from the bore axis. " if d['name']=='Raketenwerfer' else "")+
@@ -347,7 +348,7 @@ def sheet(d,variant_letter):
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>{d['num']} {d['name']} Variante {variant_letter} Konzeptblatt XL</title>
+<title>{d['num']} {d['name']} Variante {_h.escape(variants.title(variant_letter))} Konzeptblatt XL</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -361,7 +362,7 @@ def sheet(d,variant_letter):
 <div style="display:flex;align-items:center;gap:30px;min-width:0">
 <span style="font-family:'Chakra Petch',sans-serif;font-size:140px;font-weight:700;line-height:1;color:{col}">{d['num']}</span>
 <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
-<span style="font-family:'Chakra Petch',sans-serif;font-size:74px;font-weight:700;letter-spacing:6px;line-height:1.05">{_h.escape(d['name'].upper())} · VARIANTE {variant_letter}</span>
+<span style="font-family:'Chakra Petch',sans-serif;font-size:74px;font-weight:700;letter-spacing:6px;line-height:1.05">{_h.escape(d['name'].upper())} · VARIANTE {_h.escape(variants.title(variant_letter).upper())}</span>
 <span style="font-size:25px;letter-spacing:4px;color:#8FA0B3">„{_h.escape(d['nick'].upper())}“ · KONZEPTBLATT XL · VISIER SEPARAT · HAUPTSKIN {_h.escape(hero['name'].upper())} · {_h.escape(d['form'])}</span>
 </div>
 </div>

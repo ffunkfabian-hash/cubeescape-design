@@ -11,6 +11,11 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   Änderungswünsche (z. B. eigene CHANGELOG-Zeilen `codex-…`) im PR oder an den Nutzer.
 - Codex arbeitet auf Branches `codex/…`; der Merge nach `main` erfolgt per Pull Request durch den Nutzer bzw. nach seiner Freigabe.
   Claude committet seine eigenen Ordner direkt auf `main`.
+- **Variantennamen** (Regel des Nutzers, 17.10.2026): Jede neue Variante bekommt zum Kennbuchstaben einen kurzen, markanten
+  **englischen Namen** (1–3 Wörter, z. B. J „Black Ice“; Codex: „Parallax“). Der Buchstabe bleibt die ID der Blätter (KJ01 …),
+  der Name steht in Kopfzeile, Prompts, Spec (`sheet.variant_name`) und README. Namen nicht doppelt vergeben, I und O nicht als
+  Buchstaben. Claude: Eintrag über `claude/generator/new_variant.py` (prüft die Regel), Register `claude/generator/variants.py`.
+  C–H bleiben ohne Namen.
 - Bildstufen (Rendern der Konzeptblätter) laut globaler Regel auf dem Mac mit `heavy_lock`; Cloud-Sitzungen nur schnelle Prüfungen.
 - **Erfahrungen** (Lehren aus Modell-, Raster- und Render-Pipeline, Prompts und Konzeptblättern) stehen in `docs/masterprompt.md` und
   `docs/prompt-vorlagen.md` (gemeinsam, Änderungen nur auf Wunsch des Nutzers), Claudes zusätzlich in `claude/docs/versions/`; vor dem

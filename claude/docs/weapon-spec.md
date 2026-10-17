@@ -16,7 +16,7 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | Feld | Inhalt |
 |---|---|
 | `format`, `format_version` | `cubeescape-design/weapon-spec`, `1` |
-| `sheet` | `id` (KC01 …), `file`, `variant` (C/D/F/G/H), `number`, `nick`, `fid` |
+| `sheet` | `id` (KC01 …), `file`, `variant` (Kennbuchstabe C/D/F/G/H/J …), `variant_name` (englischer Name der Variante, z. B. „Black Ice“; `null` bei C–H; ab claude-0.4, additiv), `number`, `nick`, `fid` |
 | `weapon` | `name_de`, `toolgen_id` (pistol, assault_rifle, pulse_rifle, shotgun, sniper_rifle, smg, fusion_rifle, scout_rifle, rocket_launcher, bow) |
 | `element` | `solar`/`arc`/`void`/`energy` je Waffentyp nach Entscheidung des Nutzers (17.10.2026, Toolgen `docs/ENTSCHEIDUNGEN.md`); Bogen `null` (nicht festgelegt) |
 | `units` | `model_unit_m` (Faktor Modelleinheit → m), `model_length_units`, `reference_length_m`, `rule`, `reference` |
