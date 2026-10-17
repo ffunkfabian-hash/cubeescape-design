@@ -10,7 +10,8 @@ Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `cod
 
 ## claude-0.1.2
 - Detailfeld „Abzugsbereich“: Griff, Abzug und Bügel mittig unter der Feldüberschrift (Rahmen aus der sichtbaren Box, Magazin im
-  Griff zählt mit); alle 50 Blätter neu aufgenommen, nur das Detailbild geändert.
+  Griff zählt mit, beim Bogen die Pfeilauflage); alle 50 Blätter neu aufgenommen, nur das Detailbild geändert.
+- `build_all.py` überspringt Schritte, deren gitignorierte Vorlagen fehlen (`render_dx05.py`, `make_v2d.py`).
 - Bericht: [claude/docs/versions/0.1.md](claude/docs/versions/0.1.md) (Abschnitt 0.1.2)
 
 ## claude-0.1.1

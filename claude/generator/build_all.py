@@ -20,8 +20,12 @@ jobs={
  'H':[P('build_h15.py',n,'noshot') for n in N[:5]]+[P('build_h610.py',n,'noshot') for n in N[5:]],
 }
 fid={'C':['v01']+[f'c{n}' for n in N[1:]],'D':[f'd{n}' for n in N],'F':[f'f{n}' for n in N],'G':[f'g{n}' for n in N],'H':[f'h{n}' for n in N]}
+# Schritte, die gitignorierte alte Karten als Vorlage lesen: fehlt die Vorlage, wird der Schritt übersprungen (XL-Blätter brauchen sie nicht)
+NEEDS={'render_dx05.py':['D05.dc.html','X05.dc.html'],'make_v2d.py':[f'V{n}.dc.html' for n in N]}
 def run_seq(cmds):
     for c in cmds:
+        miss=[f for f in NEEDS.get(c[1],[]) if not os.path.exists(os.path.join(OUT,f))]
+        if miss:print('ÜBERSPRUNGEN '+' '.join(c[1:])+' (Vorlage fehlt: '+', '.join(miss[:3])+(' …' if len(miss)>3 else '')+')',flush=True);continue
         r=subprocess.run(c,capture_output=True,text=True)
         print(('OK  ' if r.returncode==0 else 'FEHLER ')+' '.join(c[1:]),flush=True)
         if r.returncode:print(r.stderr[-2000:])
