@@ -83,12 +83,13 @@
   "view_axis_m": [0.0, -1.0, 0.0],
   "free": true,
   "aperture": {
-   "rays": 441,
+   "rays": 7989,
    "blocked_by": [],
-   "margin_m": 0.0008,
-   "rule": "Strahlen parallel zur Visierlinie auf einem 21×21-Raster in der freien Öffnung (Röhre: Bohrung), Rand 0,8 mm; kein undurchsichtiges Teil darf einen schneiden"
+   "step_m": 0.0005,
+   "margin_m": 0.0003,
+   "rule": "Strahlen parallel zur Visierlinie im Raster 0,5 mm in der freien Öffnung (Röhre: Bohrung), Rand 0,3 mm; kein undurchsichtiges Teil darf einen schneiden"
   },
-  "note": "Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung"
+  "note": "Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung, die engste Stelle ist tube.bore_radius_m"
  },
  "frame": {
   "type": "industrial",
@@ -171,13 +172,14 @@
  "anchors": {
   "Socket_Mount": {
    "position_m": [0.0, 0.0, 0.0],
-   "source": "Unterkante Mitte der Halterung = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)",
+   "source": "Unterkante der Halterung, Mitte in Länge und Breite = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Sight": {
    "position_m": [0.0, -0.001, 0.036],
@@ -187,7 +189,8 @@
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Reticle": {
    "position_m": [0.0, -0.02, 0.036],
@@ -197,7 +200,8 @@
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Eye": null
  },

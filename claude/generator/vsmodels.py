@@ -264,7 +264,7 @@ def b_trace(S,E):
     S.group('frame','Rahmen','MT_Accent','painted',ORANGE)
     S.ring('frame',8,13,loop(ly,0,16,20,3),loop(ly,0,14.2,18.2,2))
     S.group('struts','Stütze','MT_Secondary','painted',DARK)
-    for z in (15.5,-15.5):S.box('struts',-2,10,-13,-11.4,z-1.6,z+1.6,r=0.5).box('struts',-2,0,-15,-11.4,z-1.6,z+1.6,r=0.4)
+    for z in (15.5,-15.5):S.box('struts',-2,10,-13,-11.4,z-1.6,z+1.6,r=0.5).box('struts',-2,0,-13.6,-11.4,z-1.6,z+1.6,r=0.4)   # unter der Fensterunterkante
     S.group('glass','Glas','MT_Detail','glass',None,glass=True).pane('glass',10.5,loop(ly,0,14.8,18.8,2.4))
     S.group('marker','Markierungsrahmen','MT_Energy','lit',E,emit=True)
     for sy in (1,-1):
@@ -273,7 +273,7 @@ def b_trace(S,E):
             S.box('marker',13,13.8,cy-0.6,cy+0.6,min(cz+sz*0.6,cz-sz*6.5),max(cz+sz*0.6,cz-sz*6.5))
             S.box('marker',13,13.8,min(cy-sy*0.6,cy-sy*6.5),max(cy-sy*0.6,cy-sy*6.5),cz-0.6,cz+0.6)
     module_marker(S,x0=-20,x1=2,y0=-13.6,y1=-3,z0=12,z1=19,E='#FF4A3D')   # unter der Fensterunterkante, verdeckt das Sichtfeld nicht
-    return dict(line_y=ly,window=dict(shape='rect',x0=8,x1=14,glass_x=10.5,w=36.4,h=28.4,r=2))
+    return dict(line_y=ly,window=dict(shape='rect',x0=8,x1=13.8,glass_x=10.5,w=36.4,h=28.4,r=2))
 
 def b_rocket(S,E):
     mount(S,-30,30,26)
@@ -354,6 +354,14 @@ def load(vid):
     info=BY_ID[vid];S=Sight();S.module=None
     geo=info['build'](S,info['energy'])
     set_tint(S,info['tint'])
+    # Ursprung = Mitte der Halterung (längs): Modell und Fensterdaten um deren x-Mitte verschieben
+    mb=[q[0] for P in S.m.parts if P['group']=='mount' for f in P['F'] for q in f['v']];dx=(min(mb)+max(mb))/2
+    if abs(dx)>1e-9:
+        for P in S.m.parts:
+            for f in P['F']:f['v']=[(x-dx,y,z) for x,y,z in f['v']]
+        for k in ('x0','x1','glass_x'):geo['window'][k]-=dx
+        if geo.get('tube'):
+            for k in ('x0','x1','eye_x'):geo['tube'][k]-=dx
     return dict(S=S,info=info,geo=geo,id=vid)
 def set_tint(S,tint):
     """Glasfarbe (Zeichnung) = Farbe der Tönung"""
@@ -364,7 +372,7 @@ def set_tint(S,tint):
         if G['glass']:G['col']=c
     return S
 
-def aperture_loop(geo,margin=0.8):
+def aperture_loop(geo,margin=0.3):
     """freie Öffnung quer zur Visierlinie (y, z), um margin mm verkleinert; Röhre: Bohrung (engste Stelle der hohlen Röhre)"""
     ly=geo['line_y'];w=geo['window']
     if geo.get('tube'):return circle(ly,0,geo['tube']['bore_r']-margin)

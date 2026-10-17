@@ -67,8 +67,8 @@
   "height": 0.047,
   "width": 0.04,
   "bounds_m": [
-   [-0.02, -0.022, -0.003],
-   [0.02, 0.029, 0.044]
+   [-0.02, -0.024, -0.003],
+   [0.02, 0.027, 0.044]
   ],
   "line_height_m": 0.028
  },
@@ -77,18 +77,19 @@
   "width_m": 0.0364,
   "height_m": 0.0284,
   "corner_radius_m": 0.002,
-  "center_m": [0.0, -0.0105, 0.028],
-  "rear_edge_y_m": -0.008,
-  "front_edge_y_m": -0.014,
+  "center_m": [0.0, -0.0125, 0.028],
+  "rear_edge_y_m": -0.01,
+  "front_edge_y_m": -0.0158,
   "view_axis_m": [0.0, -1.0, 0.0],
   "free": true,
   "aperture": {
-   "rays": 441,
+   "rays": 4020,
    "blocked_by": [],
-   "margin_m": 0.0008,
-   "rule": "Strahlen parallel zur Visierlinie auf einem 21×21-Raster in der freien Öffnung (Röhre: Bohrung), Rand 0,8 mm; kein undurchsichtiges Teil darf einen schneiden"
+   "step_m": 0.0005,
+   "margin_m": 0.0003,
+   "rule": "Strahlen parallel zur Visierlinie im Raster 0,5 mm in der freien Öffnung (Röhre: Bohrung), Rand 0,3 mm; kein undurchsichtiges Teil darf einen schneiden"
   },
-  "note": "Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung"
+  "note": "Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung, die engste Stelle ist tube.bore_radius_m"
  },
  "frame": {
   "type": "lightweight",
@@ -164,46 +165,49 @@
    "g10"
   ],
   "bounds_m": [
-   [0.0105, -0.0032, 0.003],
-   [0.019, 0.02, 0.0136]
+   [0.0105, -0.0052, 0.003],
+   [0.019, 0.018, 0.0136]
   ]
  },
  "anchors": {
   "Socket_Mount": {
    "position_m": [0.0, 0.0, 0.0],
-   "source": "Unterkante Mitte der Halterung = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)",
+   "source": "Unterkante der Halterung, Mitte in Länge und Breite = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Sight": {
-   "position_m": [0.0, -0.008, 0.028],
+   "position_m": [0.0, -0.01, 0.028],
    "source": "hinterer Fensterrand auf der Visierlinie (Hinterkante des Rahmens)",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Reticle": {
-   "position_m": [0.0, -0.0105, 0.028],
+   "position_m": [0.0, -0.0125, 0.028],
    "source": "Glasmitte auf der Visierlinie; Cube Escape zeichnet hier das Fadenkreuz",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Eye": null
  },
  "sight_line": {
-  "start_m": [0.0, 0.03, 0.028],
-  "end_m": [0.0, -0.023, 0.028],
+  "start_m": [0.0, 0.028, 0.028],
+  "end_m": [0.0, -0.025, 0.028],
   "clear": true,
   "blocked_by": [],
   "glass_crossed": [
@@ -219,7 +223,7 @@
     "part": "g06",
     "emissive": false,
     "view_axis_m": [0.0, -1.0, 0.0],
-    "center_m": [0.0, -0.0105, 0.028]
+    "center_m": [0.0, -0.0125, 0.028]
    }
   ],
   "source": "Glasscheiben als Funktionsfläche (spec_checks.window_problems, Cubegen docs/DEVELOPER.md 9.17)"
@@ -236,8 +240,8 @@
    "color": "#6B7179",
    "area_m2": 0.003585,
    "bounds_m": [
-    [-0.011, -0.02, -0.003],
-    [0.011, 0.024, 0.006]
+    [-0.011, -0.022, -0.003],
+    [0.011, 0.022, 0.006]
    ]
   },
   {
@@ -251,8 +255,8 @@
    "color": "#F28C28",
    "area_m2": 7.4e-05,
    "bounds_m": [
-    [0.011, -0.0004, 0.0002],
-    [0.0136, 0.0044, 0.005]
+    [0.011, -0.0024, 0.0002],
+    [0.0136, 0.0024, 0.005]
    ]
   },
   {
@@ -266,8 +270,8 @@
    "color": "#2B2E33",
    "area_m2": 0.003386,
    "bounds_m": [
-    [-0.012, -0.022, 0.006],
-    [0.012, 0.029, 0.0139]
+    [-0.012, -0.024, 0.006],
+    [0.012, 0.027, 0.0139]
    ]
   },
   {
@@ -281,8 +285,8 @@
    "color": "#ECE6DA",
    "area_m2": 0.000535,
    "bounds_m": [
-    [-0.0133, 0.004, 0.0075],
-    [0.0133, 0.026, 0.0127]
+    [-0.0133, 0.002, 0.0075],
+    [0.0133, 0.024, 0.0127]
    ]
   },
   {
@@ -296,8 +300,8 @@
    "color": "#F28C28",
    "area_m2": 0.001808,
    "bounds_m": [
-    [-0.02, -0.013, 0.012],
-    [0.02, -0.008, 0.044]
+    [-0.02, -0.015, 0.012],
+    [0.02, -0.01, 0.044]
    ]
   },
   {
@@ -309,10 +313,10 @@
    "emissive": false,
    "glass": false,
    "color": "#2B2E33",
-   "area_m2": 0.000351,
+   "area_m2": 0.000322,
    "bounds_m": [
-    [-0.0171, -0.01, 0.0114],
-    [0.0171, 0.002, 0.015]
+    [-0.0171, -0.012, 0.0114],
+    [0.0171, 0.0, 0.0136]
    ]
   },
   {
@@ -326,8 +330,8 @@
    "color": "#3D9BEA",
    "area_m2": 0.002215,
    "bounds_m": [
-    [-0.0188, -0.0105, 0.0132],
-    [0.0188, -0.0105, 0.0428]
+    [-0.0188, -0.0125, 0.0132],
+    [0.0188, -0.0125, 0.0428]
    ]
   },
   {
@@ -341,8 +345,8 @@
    "color": "#5CC8FF",
    "area_m2": 0.000223,
    "bounds_m": [
-    [-0.0197, -0.0138, 0.0123],
-    [0.0197, -0.013, 0.0437]
+    [-0.0197, -0.0158, 0.0123],
+    [0.0197, -0.015, 0.0437]
    ]
   },
   {
@@ -356,8 +360,8 @@
    "color": "#2B2E33",
    "area_m2": 0.000902,
    "bounds_m": [
-    [0.012, -0.002, 0.003],
-    [0.019, 0.02, 0.0136]
+    [0.012, -0.004, 0.003],
+    [0.019, 0.018, 0.0136]
    ]
   },
   {
@@ -371,8 +375,8 @@
    "color": "#FF4A3D",
    "area_m2": 3.8e-05,
    "bounds_m": [
-    [0.0135, -0.0032, 0.0063],
-    [0.0175, -0.002, 0.0103]
+    [0.0135, -0.0052, 0.0063],
+    [0.0175, -0.004, 0.0103]
    ]
   },
   {
@@ -386,8 +390,8 @@
    "color": "#6B7179",
    "area_m2": 0.000258,
    "bounds_m": [
-    [0.0105, 0.001, 0.0053],
-    [0.012, 0.017, 0.0113]
+    [0.0105, -0.001, 0.0053],
+    [0.012, 0.015, 0.0113]
    ]
   }
  ],

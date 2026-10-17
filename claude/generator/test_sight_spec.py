@@ -58,7 +58,7 @@ class Content(unittest.TestCase):
             with self.subTest(sight=v):
                 self.assertEqual(SC.window_problems(sp['window_geometry']['elements'],parts,[]),[])
                 self.assertTrue(sp['sight_line']['clear']);self.assertEqual(sp['sight_line']['blocked_by'],[])
-                self.assertEqual(sp['window']['aperture']['blocked_by'],[]);self.assertGreater(sp['window']['aperture']['rays'],300)
+                self.assertEqual(sp['window']['aperture']['blocked_by'],[]);self.assertGreater(sp['window']['aperture']['rays'],1000)
                 self.assertTrue(all(parts[g]['glass'] for g in sp['sight_line']['glass_crossed']))
     def test_anchors(self):
         """Socket_Sight am hinteren Fensterrand auf der Visierlinie, Socket_Reticle in der Glasmitte, Socket_Eye hinter dem Objektiv"""
@@ -70,6 +70,12 @@ class Content(unittest.TestCase):
                 self.assertGreater(a['Socket_Sight'][1],a['Socket_Reticle'][1])                  # hinten = +Y
                 self.assertAlmostEqual(a['Socket_Sight'][1],sp['window']['rear_edge_y_m'],delta=TOL)
                 self.assertEqual(a['Socket_Reticle'],sp['window']['center_m'])
+                # Socket_Reticle liegt auf einer Glasfläche: Glastreffer der Visierlinie an seiner Stelle
+                d=V.load(v);gx=[x for g,x,gl in ES.line_hits(d['S'].m.parts,d['geo']['line_y']) if gl]
+                self.assertTrue(any(abs(ES.P((x,d['geo']['line_y'],0))[1]-a['Socket_Reticle'][1])<TOL for x in gx),(gx,a['Socket_Reticle']))
+                # Socket_Mount mittig unter der Halterung
+                mb=next(p for p in sp['parts'] if p['label']=='Halterung')['bounds_m']
+                self.assertAlmostEqual((mb[0][1]+mb[1][1])/2,0.0,delta=TOL);self.assertAlmostEqual((mb[0][0]+mb[1][0])/2,0.0,delta=TOL)
                 if a['Socket_Eye']:
                     self.assertGreaterEqual(a['Socket_Sight'][1],a['Socket_Eye'][1]);self.assertGreater(a['Socket_Eye'][1],a['Socket_Reticle'][1])
                     self.assertAlmostEqual(a['Socket_Eye'][2],h,delta=TOL)
@@ -117,6 +123,15 @@ class Counterproof(unittest.TestCase):
         S.group('edge','Kante','MT_Secondary','painted',V.DARK).box('edge',-20,-16,ly+hh-3,ly+hh+2,-4,4)
         self.assertNotIn('edge',[x for x,_,gl in ES.line_hits(S.m.parts,ly)])
         self.assertIn('edge',ES.aperture_check(S,g)[1])
+    def test_thin_and_shallow_blocks_found(self):
+        """Gegenbeweise aus der Opus-Prüfung 0.6: ein 1,7 mm schmaler Steg neben der Linie und eine 0,9 mm tiefe Nase am Rand (Raster 0,5 mm
+        plus Rand 0,3 mm: ab 0,8 mm Tiefe sicher gefunden)"""
+        d=V.load('VS09');S=d['S'];g=d['geo'];ly=g['line_y'];hh=g['window']['h']/2
+        S.group('rib','Steg','MT_Secondary','painted',V.DARK).box('rib',-20,-18,ly-hh,ly+hh,0.6,2.3)
+        self.assertNotIn('rib',[x for x,_,gl in ES.line_hits(S.m.parts,ly)]);self.assertIn('rib',ES.aperture_check(S,g)[1])
+        d=V.load('VS06');S=d['S'];g=d['geo'];ly=g['line_y'];hh=g['window']['h']/2
+        S.group('nose','Nase','MT_Secondary','painted',V.DARK).box('nose',-20,-16,ly+hh-0.9,ly+hh+2,-4,4)
+        self.assertIn('nose',ES.aperture_check(S,g)[1])
     def test_cross_window_is_found(self):
         sp=load('VS02');parts={p['id']:copy.deepcopy(p) for p in sp['parts']}
         gid=sp['window_geometry']['elements'][0]['part'];b=parts[gid]['bounds_m']

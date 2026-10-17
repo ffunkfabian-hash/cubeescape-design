@@ -28,7 +28,9 @@ TARGET_SOURCE=dict(
 # Achsen des Ankers: Cube Escape `Socket_Sight` „Blick +Z, +Y oben“ (FIRST_PERSON_EQUIPMENT.md › 4.2) als Blender-Drehung (XYZ):
 # Rx(90°) dreht lokal +Z auf Welt −Y (Blick nach vorn) und lokal +Y auf Welt +Z (oben)
 ANCHOR_AXES=dict(local_forward='+Z',local_up='+Y',forward=[0.0,-1.0,0.0],up=[0.0,0.0,1.0],rotation_euler_deg=[90.0,0.0,0.0],
-                 note='Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon')
+                 rotation_space='Blender (lokale Achsen des Empties vor dem Export)',
+                 note='Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, '
+                      'in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon')
 
 def srgb_to_linear(c):
     c=c/255.0
@@ -67,15 +69,30 @@ def line_hits(parts,line_y,lz=0.0):
             if _in_poly(line_y,lz,[(q[1],q[2]) for q in v]):out.append((Pt.get('group'),round(x,3),bool(Pt.get('glass'))))
     return out
 
-def aperture_check(S,geo,n=21,margin=0.8):
-    """Ganze Öffnung frei: Strahlen parallel zur Visierlinie auf einem n×n-Raster in der freien Öffnung (vsmodels.aperture_loop);
-    Ergebnis (Zahl der Strahlen, Gruppen undurchsichtiger Teile, die einen Strahl schneiden)."""
-    lp=V.aperture_loop(geo,margin);ys=[p[0] for p in lp];zs=[p[1] for p in lp];rays=0;bad=set()
-    for i in range(n):
-        for j in range(n):
-            y=min(ys)+(max(ys)-min(ys))*(i+0.5)/n;z=min(zs)+(max(zs)-min(zs))*(j+0.5)/n
+APERTURE_STEP=0.5     # mm, Rasterweite der Strahlen
+APERTURE_MARGIN=0.3   # mm Abstand zum Rand der Öffnung
+def aperture_check(S,geo,step=APERTURE_STEP,margin=APERTURE_MARGIN):
+    """Ganze Öffnung frei: Strahlen parallel zur Visierlinie auf einem Raster mit Weite step (mm) in der freien Öffnung
+    (vsmodels.aperture_loop, Rand margin); Ergebnis (Zahl der Strahlen, Gruppen undurchsichtiger Teile, die einen Strahl schneiden)."""
+    lp=V.aperture_loop(geo,margin);ys=[p[0] for p in lp];zs=[p[1] for p in lp]
+    # nur Flächen quer zur Linie, mit Hüllrechteck (y, z) für den schnellen Ausschluss
+    F=[]
+    for Pt in S.m.parts:
+        if Pt.get('glass'):continue
+        for f in Pt['F']:
+            v=f['v'];n=_newell(v)
+            if abs(n[0])<1e-6:continue
+            yz=[(q[1],q[2]) for q in v]
+            F.append((Pt.get('group'),yz,min(p[0] for p in yz),max(p[0] for p in yz),min(p[1] for p in yz),max(p[1] for p in yz)))
+    ny=int((max(ys)-min(ys))/step)+1;nz=int((max(zs)-min(zs))/step)+1;rays=0;bad=set()
+    for i in range(ny):
+        y=min(ys)+(max(ys)-min(ys))*(i+0.5)/ny
+        for j in range(nz):
+            z=min(zs)+(max(zs)-min(zs))*(j+0.5)/nz
             if not _in_poly(y,z,lp):continue
-            rays+=1;bad|={g for g,_,gl in line_hits(S.m.parts,y,z) if not gl}
+            rays+=1
+            for g,yz,y0,y1,z0,z1 in F:
+                if g not in bad and y0<=y<=y1 and z0<=z<=z1 and _in_poly(y,z,yz):bad.add(g)
     return rays,sorted(bad)
 
 def weapon_sheets(tid):
@@ -122,7 +139,7 @@ def build(vid):
     # Anker
     tube=geo.get('tube')
     an=dict(
-     Socket_Mount=dict(position_m=P((0,0,0)),source='Unterkante Mitte der Halterung = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)'),
+     Socket_Mount=dict(position_m=P((0,0,0)),source='Unterkante der Halterung, Mitte in Länge und Breite = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)'),
      Socket_Sight=dict(position_m=P((win['x0'],ly,0)),source='hinterer Fensterrand auf der Visierlinie'+(' (Augenende der Röhre)' if tube else ' (Hinterkante des Rahmens)')),
      Socket_Reticle=dict(position_m=P((win['glass_x'],ly,0)),source='Glasmitte'+(' des Objektivs' if tube else '')+' auf der Visierlinie; Cube Escape zeichnet hier das Fadenkreuz'),
      Socket_Eye=dict(position_m=P((tube['eye_x'],ly,0)),source='Mitte des Okularglases (Augenlinse); Cube Escape legt das Scope-Bild 2 mm davor') if tube else None,
@@ -155,10 +172,10 @@ def build(vid):
         window=dict(shape=win['shape'],width_m=r4(win['w']*UNIT),height_m=r4(win['h']*UNIT),corner_radius_m=r4(win['r']*UNIT),
                     center_m=P((win['glass_x'],ly,0)),rear_edge_y_m=P((win['x0'],0,0))[1],front_edge_y_m=P((win['x1'],0,0))[1],
                     view_axis_m=[0.0,-1.0,0.0],free=not blocked and not ap_bad,
-                    aperture=dict(rays=rays,blocked_by=ap_bad,margin_m=0.0008,
-                                  rule='Strahlen parallel zur Visierlinie auf einem 21×21-Raster in der freien Öffnung (Röhre: Bohrung), Rand 0,8 mm; '
+                    aperture=dict(rays=rays,blocked_by=ap_bad,step_m=APERTURE_STEP*UNIT,margin_m=APERTURE_MARGIN*UNIT,
+                                  rule='Strahlen parallel zur Visierlinie im Raster 0,5 mm in der freien Öffnung (Röhre: Bohrung), Rand 0,3 mm; '
                                        'kein undurchsichtiges Teil darf einen schneiden'),
-                    note='Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung'),
+                    note='Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung, die engste Stelle ist tube.bore_radius_m'),
         frame=dict(type=info['frame'],name_de=V.FRAMES[info['frame']],parts=[p['id'] for p in fr],
                    outer_width_m=r4(fb[1][0]-fb[0][0]),outer_height_m=r4(fb[1][2]-fb[0][2]),depth_m=r4(fb[1][1]-fb[0][1])),
         glass_tint=tint_rgba(info['tint']),
@@ -166,6 +183,7 @@ def build(vid):
                    space='glass_tint: RGB linear (aus sRGB), A = Deckkraft im Spiel',parts=[p['id'] for p in gl],
                    catalog={k:dict(name_de=v[0],srgb=v[1],rgba_linear=tint_rgba(k)) for k,v in V.TINTS.items()}),
         tube=dict(length_m=r4((tube['x1']-tube['x0'])*UNIT),lens_radius_m=r4(tube['lens_r']*UNIT),eye_radius_m=r4(tube['eye_r']*UNIT),
+                  bore_radius_m=r4(tube['bore_r']*UNIT),
                   eye_anchor='Socket_Eye') if tube else None,
         module=mod,
         anchors=anchors,

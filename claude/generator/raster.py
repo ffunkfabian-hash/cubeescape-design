@@ -21,7 +21,10 @@ def _glass_pass(glass,rgba,zb,yaw,pitch,center,T,w,h,s,tol):
             if x1<=x0 or y1<=y0:continue
             im=Image.new('L',(x1-x0,y1-y0),0);ImageDraw.Draw(im).polygon([(px-x0,py-y0) for px,py in pts],fill=255)
             mk=np.asarray(im)>0
-            A_=np.array([[px,py,1] for px,py in pts]);coef=np.linalg.lstsq(A_,np.array(zs),rcond=None)[0]
+            A_=np.array([[px,py,1] for px,py in pts])
+            try:coef=np.linalg.lstsq(A_,np.array(zs),rcond=None)[0]
+            except Exception:coef=np.array([0,0,np.mean(zs)])
+            if abs(coef[0])>50 or abs(coef[1])>50:coef=np.array([0,0,np.mean(zs)])   # fast auf der Kante: wie der undurchsichtige Durchgang
             yy,xx=np.mgrid[y0:y1,x0:x1];Z=coef[0]*(xx+0.5)+coef[1]*(yy+0.5)+coef[2]
             ok=mk&(Z>=zb[y0:y1,x0:x1]-tol)
             if not ok.any():continue

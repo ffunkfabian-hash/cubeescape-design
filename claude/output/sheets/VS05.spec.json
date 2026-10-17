@@ -67,8 +67,8 @@
   "height": 0.0575,
   "width": 0.056,
   "bounds_m": [
-   [-0.0295, -0.104, -0.003],
-   [0.0265, 0.104, 0.0545]
+   [-0.0295, -0.106, -0.003],
+   [0.0265, 0.102, 0.0545]
   ],
   "line_height_m": 0.027
  },
@@ -77,18 +77,19 @@
   "width_m": 0.0454,
   "height_m": 0.0454,
   "corner_radius_m": 0.0227,
-  "center_m": [0.0, -0.101, 0.027],
-  "rear_edge_y_m": 0.104,
-  "front_edge_y_m": -0.104,
+  "center_m": [0.0, -0.103, 0.027],
+  "rear_edge_y_m": 0.102,
+  "front_edge_y_m": -0.106,
   "view_axis_m": [0.0, -1.0, 0.0],
   "free": true,
   "aperture": {
-   "rays": 349,
+   "rays": 2037,
    "blocked_by": [],
-   "margin_m": 0.0008,
-   "rule": "Strahlen parallel zur Visierlinie auf einem 21×21-Raster in der freien Öffnung (Röhre: Bohrung), Rand 0,8 mm; kein undurchsichtiges Teil darf einen schneiden"
+   "step_m": 0.0005,
+   "margin_m": 0.0003,
+   "rule": "Strahlen parallel zur Visierlinie im Raster 0,5 mm in der freien Öffnung (Röhre: Bohrung), Rand 0,3 mm; kein undurchsichtiges Teil darf einen schneiden"
   },
-  "note": "Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung"
+  "note": "Maße = freie Öffnung (Innenkante Rahmen bzw. Leuchtrahmen); Röhre: Objektiv-Öffnung, die engste Stelle ist tube.bore_radius_m"
  },
  "frame": {
   "type": "standard",
@@ -158,6 +159,7 @@
   "length_m": 0.208,
   "lens_radius_m": 0.0227,
   "eye_radius_m": 0.014,
+  "bore_radius_m": 0.0129,
   "eye_anchor": "Socket_Eye"
  },
  "module": {
@@ -171,55 +173,59 @@
    "g15"
   ],
   "bounds_m": [
-   [-0.0295, -0.0092, 0.018],
-   [-0.015, 0.02, 0.033]
+   [-0.0295, -0.0112, 0.018],
+   [-0.015, 0.018, 0.033]
   ]
  },
  "anchors": {
   "Socket_Mount": {
    "position_m": [0.0, 0.0, 0.0],
-   "source": "Unterkante Mitte der Halterung = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)",
+   "source": "Unterkante der Halterung, Mitte in Länge und Breite = Ursprung; liegt auf Socket_Sight des Waffen-Specs (Oberkante der Visierschiene)",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Sight": {
-   "position_m": [0.0, 0.104, 0.027],
+   "position_m": [0.0, 0.102, 0.027],
    "source": "hinterer Fensterrand auf der Visierlinie (Augenende der Röhre)",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Reticle": {
-   "position_m": [0.0, -0.101, 0.027],
+   "position_m": [0.0, -0.103, 0.027],
    "source": "Glasmitte des Objektivs auf der Visierlinie; Cube Escape zeichnet hier das Fadenkreuz",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   },
   "Socket_Eye": {
-   "position_m": [0.0, 0.097, 0.027],
+   "position_m": [0.0, 0.095, 0.027],
    "source": "Mitte des Okularglases (Augenlinse); Cube Escape legt das Scope-Bild 2 mm davor",
    "local_forward": "+Z",
    "local_up": "+Y",
    "forward": [0.0, -1.0, 0.0],
    "up": [0.0, 0.0, 1.0],
    "rotation_euler_deg": [90.0, 0.0, 0.0],
-   "note": "Blick +Z, +Y oben wie Cube Escape Socket_Sight; Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
+   "rotation_space": "Blender (lokale Achsen des Empties vor dem Export)",
+   "note": "Verbindlich sind forward/up im Weltrahmen (Blender). Die Drehung gilt nur in Blender: der glTF-Export dreht die Achsen, in Unity entspricht „Blick +Z, +Y oben“ (Cube Escape Socket_Sight) dann der Identität. Toolgen: Anker-Drehung ist kein Vertrag, die Position schon"
   }
  },
  "sight_line": {
-  "start_m": [0.0, 0.105, 0.027],
-  "end_m": [0.0, -0.105, 0.027],
+  "start_m": [0.0, 0.103, 0.027],
+  "end_m": [0.0, -0.107, 0.027],
   "clear": true,
   "blocked_by": [],
   "glass_crossed": [
@@ -236,7 +242,7 @@
     "part": "g06",
     "emissive": false,
     "view_axis_m": [0.0, -1.0, 0.0],
-    "center_m": [0.0, -0.101, 0.027]
+    "center_m": [0.0, -0.103, 0.027]
    },
    {
     "type": "part",
@@ -244,7 +250,7 @@
     "part": "g07",
     "emissive": false,
     "view_axis_m": [0.0, -1.0, 0.0],
-    "center_m": [0.0, 0.097, 0.027]
+    "center_m": [0.0, 0.095, 0.027]
    }
   ],
   "source": "Glasscheiben als Funktionsfläche (spec_checks.window_problems, Cubegen docs/DEVELOPER.md 9.17)"
@@ -261,8 +267,8 @@
    "color": "#6B7179",
    "area_m2": 0.008705,
    "bounds_m": [
-    [-0.011, -0.052, -0.003],
-    [0.011, 0.056, 0.006]
+    [-0.011, -0.054, -0.003],
+    [0.011, 0.054, 0.006]
    ]
   },
   {
@@ -276,8 +282,8 @@
    "color": "#F28C28",
    "area_m2": 7.4e-05,
    "bounds_m": [
-    [0.011, -0.0004, 0.0002],
-    [0.0136, 0.0044, 0.005]
+    [0.011, -0.0024, 0.0002],
+    [0.0136, 0.0024, 0.005]
    ]
   },
   {
@@ -291,8 +297,8 @@
    "color": "#2B2E33",
    "area_m2": 0.034339,
    "bounds_m": [
-    [-0.0229, -0.064, 0.0041],
-    [0.0229, 0.098, 0.0499]
+    [-0.0229, -0.066, 0.0041],
+    [0.0229, 0.096, 0.0499]
    ]
   },
   {
@@ -306,8 +312,8 @@
    "color": "#ECE6DA",
    "area_m2": 0.009937,
    "bounds_m": [
-    [-0.0167, -0.022, 0.0103],
-    [0.0167, 0.026, 0.0437]
+    [-0.0167, -0.024, 0.0103],
+    [0.0167, 0.024, 0.0437]
    ]
   },
   {
@@ -321,8 +327,8 @@
    "color": "#F28C28",
    "area_m2": 0.015476,
    "bounds_m": [
-    [-0.0265, -0.104, 0.0005],
-    [0.0265, 0.077, 0.0535]
+    [-0.0265, -0.106, 0.0005],
+    [0.0265, 0.075, 0.0535]
    ]
   },
   {
@@ -336,8 +342,8 @@
    "color": "#1A1C20",
    "area_m2": 0.001815,
    "bounds_m": [
-    [-0.0176, 0.098, 0.0094],
-    [0.0176, 0.104, 0.0446]
+    [-0.0176, 0.096, 0.0094],
+    [0.0176, 0.102, 0.0446]
    ]
   },
   {
@@ -351,8 +357,8 @@
    "color": "#3D9BEA",
    "area_m2": 0.003302,
    "bounds_m": [
-    [-0.023, -0.101, 0.004],
-    [0.023, -0.101, 0.05]
+    [-0.023, -0.103, 0.004],
+    [0.023, -0.103, 0.05]
    ]
   },
   {
@@ -366,8 +372,8 @@
    "color": "#3D9BEA",
    "area_m2": 0.001277,
    "bounds_m": [
-    [-0.0143, 0.097, 0.0127],
-    [0.0143, 0.097, 0.0413]
+    [-0.0143, 0.095, 0.0127],
+    [0.0143, 0.095, 0.0413]
    ]
   },
   {
@@ -381,8 +387,8 @@
    "color": "#6B7179",
    "area_m2": 0.005207,
    "bounds_m": [
-    [-0.0181, -0.04, 0.0055],
-    [0.0181, 0.046, 0.0451]
+    [-0.0181, -0.042, 0.0055],
+    [0.0181, 0.044, 0.0451]
    ]
   },
   {
@@ -396,8 +402,8 @@
    "color": "#2B2E33",
    "area_m2": 0.001261,
    "bounds_m": [
-    [-0.0065, -0.0025, 0.021],
-    [0.0245, 0.0105, 0.0525]
+    [-0.0065, -0.0045, 0.021],
+    [0.0245, 0.0085, 0.0525]
    ]
   },
   {
@@ -411,8 +417,8 @@
    "color": "#F28C28",
    "area_m2": 0.000469,
    "bounds_m": [
-    [-0.0055, -0.0015, 0.022],
-    [0.0265, 0.0095, 0.0545]
+    [-0.0055, -0.0035, 0.022],
+    [0.0265, 0.0075, 0.0545]
    ]
   },
   {
@@ -426,8 +432,8 @@
    "color": "#F28C28",
    "area_m2": 0.001049,
    "bounds_m": [
-    [-0.0167, -0.054, 0.0103],
-    [0.0167, -0.05, 0.0437]
+    [-0.0167, -0.056, 0.0103],
+    [0.0167, -0.052, 0.0437]
    ]
   },
   {
@@ -441,8 +447,8 @@
    "color": "#2B2E33",
    "area_m2": 0.001713,
    "bounds_m": [
-    [-0.027, -0.008, 0.018],
-    [-0.0165, 0.02, 0.033]
+    [-0.027, -0.01, 0.018],
+    [-0.0165, 0.018, 0.033]
    ]
   },
   {
@@ -456,8 +462,8 @@
    "color": "#5CC8FF",
    "area_m2": 7.5e-05,
    "bounds_m": [
-    [-0.0247, -0.0092, 0.0226],
-    [-0.0188, -0.008, 0.0284]
+    [-0.0247, -0.0112, 0.0226],
+    [-0.0188, -0.01, 0.0284]
    ]
   },
   {
@@ -471,8 +477,8 @@
    "color": "#6B7179",
    "area_m2": 0.000348,
    "bounds_m": [
-    [-0.0165, -0.005, 0.0225],
-    [-0.015, 0.017, 0.0285]
+    [-0.0165, -0.007, 0.0225],
+    [-0.015, 0.015, 0.0285]
    ]
   },
   {
@@ -486,8 +492,8 @@
    "color": "#F28C28",
    "area_m2": 0.00016,
    "bounds_m": [
-    [-0.0295, 0.006, 0.0215],
-    [-0.027, 0.014, 0.0295]
+    [-0.0295, 0.004, 0.0215],
+    [-0.027, 0.012, 0.0295]
    ]
   }
  ],

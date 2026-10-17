@@ -20,7 +20,7 @@
     "up": {"const": [0.0, 0.0, 1.0]},
     "local_forward": {"const": "+Z"},
     "local_up": {"const": "+Y"},
-    "rotation_euler_deg": {"$ref": "#/$defs/vec3"},
+    "rotation_euler_deg": {"const": [90.0, 0.0, 0.0]},
     "source": {"type": "string"}
    }
   }
@@ -56,7 +56,7 @@
   "glass_tint": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 4, "maxItems": 4},
   "glass": {"type": "object", "required": ["id", "name_de", "srgb", "alpha", "parts", "catalog"],
             "properties": {"id": {"$ref": "#/$defs/tint"}, "srgb": {"$ref": "#/$defs/hex"}, "parts": {"type": "array", "minItems": 1}}},
-  "tube": {"type": ["object", "null"], "required": ["length_m", "lens_radius_m", "eye_radius_m", "eye_anchor"],
+  "tube": {"type": ["object", "null"], "required": ["length_m", "lens_radius_m", "eye_radius_m", "bore_radius_m", "eye_anchor"],
            "properties": {"eye_anchor": {"const": "Socket_Eye"}, "length_m": {"type": "number", "minimum": 0}, "lens_radius_m": {"type": "number", "minimum": 0}}},
   "module": {"type": ["object", "null"], "required": ["id", "name_de", "side", "parts", "bounds_m"],
              "properties": {"id": {"enum": ["night_vision", "rangefinder", "target_marker", "wind_compensation"]}, "side": {"enum": ["left", "right", "top"]}}},
