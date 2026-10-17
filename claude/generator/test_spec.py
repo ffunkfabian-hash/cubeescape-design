@@ -90,7 +90,9 @@ class SpecFiles(unittest.TestCase):
                 used={p['channel'] for p in sp['parts']}|{dd['channel'] for dd in sp['decals']}
                 self.assertEqual(sorted(used,key=CHANNELS.index),sp['channels_used'])
                 for v in sp['palette']:
+                    self.assertEqual(list(v['channels']),list(CHANNELS),v['id'])
                     self.assertEqual({c for c,h in v['channels'].items() if h},used,v['id'])
+                    self.assertEqual(list(a),['Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight'])
                 self.assertEqual([v['id'] for v in sp['palette']],export_spec.VARIANT_IDS)
                 self.assertEqual([v['swatches'] for v in sp['palette'][1:]],[[c.upper() for c in p] for _,p in VARIANTS[:3]])
                 # leuchtende Teile liegen auf Energie-/Leuchtkanälen, wenn nicht ausdrücklich anders gesetzt
@@ -118,11 +120,12 @@ class Channels(unittest.TestCase):
         self.assertEqual(m.parts[1]['channel'],'MT_Secondary');self.assertNotIn('channel',m.parts[0])
     def test_channel_does_not_change_sheet_colors(self):
         """Ein gesetzter Kanal ändert die Farbvarianten des Blatts nicht (recolor liest ihn nicht)."""
-        for s in ('KC01','KF09','KH05'):
+        for s in sheetmodels.SHEETS:
             g,_=split_sight(sheetmodels.load(s)['m'])
             g2=copy.deepcopy(g)
             for P in g2.parts:P['channel']='MT_Detail'
+            strip=lambda m:[{k:v for k,v in P.items() if k!='channel'} for P in m.parts]
             for _,pal in VARIANTS:
-                self.assertEqual([(P['col'],P['dec']) for P in recolor(g,pal).parts],[(P['col'],P['dec']) for P in recolor(g2,pal).parts])
+                self.assertEqual(strip(recolor(g,pal)),strip(recolor(g2,pal)),s)
 
 if __name__=='__main__':unittest.main()

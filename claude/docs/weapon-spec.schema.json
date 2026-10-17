@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "cubeescape-design/weapon-spec/1",
  "title": "Weapon spec der Konzeptblätter (format_version 1)",
- "description": "Beschreibung: claude/docs/weapon-spec.md. Erzeugt von claude/generator/export_spec.py; geprüft von claude/generator/test_spec.py (eigene Teilmenge von JSON Schema: type, required, properties, items, enum, const, pattern, minimum, minItems, maxItems, additionalProperties false).",
+ "description": "Beschreibung: claude/docs/weapon-spec.md. Erzeugt von claude/generator/export_spec.py; geprüft von claude/generator/test_spec.py (eigene Teilmenge von JSON Schema: type, required, properties, items, enum, const, pattern, minimum, minItems, maxItems, additionalProperties nur, wenn gesetzt). Unbekannte Felder sind erlaubt (Erweiterung innerhalb format_version 1); die genauen Kanal- und Ankerlisten prüft test_spec.py.",
  "$defs": {
   "hex": {"type": "string", "pattern": "^#[0-9A-F]{6}$"},
   "hexOrNull": {"type": ["string", "null"], "pattern": "^#[0-9A-F]{6}$"},
@@ -22,7 +22,6 @@
   "channels": {
    "type": "object",
    "required": ["MT_Primary", "MT_Secondary", "MT_Accent", "MT_Metal", "MT_Energy", "MT_Emission", "MT_Detail"],
-   "additionalProperties": false,
    "properties": {
     "MT_Primary": {"$ref": "#/$defs/hexOrNull"}, "MT_Secondary": {"$ref": "#/$defs/hexOrNull"},
     "MT_Accent": {"$ref": "#/$defs/hexOrNull"}, "MT_Metal": {"$ref": "#/$defs/hexOrNull"},
@@ -66,7 +65,6 @@
   "anchors": {
    "type": "object",
    "required": ["Socket_Hand", "Socket_SupportHand", "Socket_Muzzle", "Socket_CenterOfMass", "Socket_Sight"],
-   "additionalProperties": false,
    "properties": {
     "Socket_Hand": {"$ref": "#/$defs/anchor"}, "Socket_SupportHand": {"$ref": "#/$defs/anchor"},
     "Socket_Muzzle": {"$ref": "#/$defs/anchor"}, "Socket_CenterOfMass": {"$ref": "#/$defs/anchor"},

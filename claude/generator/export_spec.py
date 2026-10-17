@@ -262,14 +262,15 @@ def build(sheet):
 def textures(unit):
     """Muster der Material-Ansicht des Blatts (xl.make_texture) als Zielbild für Toolgens Bake, im Wortschatz von
     Toolgen data/surface_recipes.json › patterns (knurl/brushed/grain; Größen in mm, Werkzeugrahmen Socket_Hand).
-    brightness = Helligkeitsfaktor auf die Kanalfarbe im Blatt; Längen sind Weltlängen am Modell (keine UV)."""
+    brightness = Helligkeitsfaktor auf die Kanalfarbe im Blatt; Längen sind Weltlängen am Modell (keine UV).
+    Wellenachsen im Zielrahmen: Blatt-y -> Z, Blatt-(x+z) -> X−Y (Richtung, Vorzeichen egal: Kosinus)."""
     mm=lambda v:round(v*unit*1000,3)
     return dict(
         source='xl.make_texture (Materialansicht des Blatts), Modelleinheiten mal model_unit_m',
         vocabulary='Toolgen data/surface_recipes.json › patterns',
         painted=dict(toolgen_pattern=None,look='weicher Glanzverlauf, kein Relief',brightness=[0.87,1.13],
                      waves=[dict(axis='Z',wavelength_mm=mm(2*math.pi*26),amplitude=0.09),
-                            dict(axis='X+Y',wavelength_mm=mm(2*math.pi*55),amplitude=0.04)]),
+                            dict(axis='X-Y',wavelength_mm=mm(2*math.pi*55),amplitude=0.04)]),
         brushed=dict(toolgen_pattern='brushed',direction='long_axis',size_mm=mm(2*math.pi/(7.3*0.9)),brightness=[0.87,1.13],
                      cross_wavelengths_mm=[mm(2*math.pi/(3.1*0.9)),mm(2*math.pi/(7.3*0.9)),mm(2*math.pi/(13.1*0.9))],weights=[0.5,0.3,0.2]),
         rubber=dict(toolgen_pattern='knurl',direction='Flächenebene, ±45°',size_mm=mm(4.0),brightness=[0.66,1.0]),
