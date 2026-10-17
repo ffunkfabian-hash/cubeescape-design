@@ -53,8 +53,8 @@ def d07():
     m.prism([(40,150),(180,140),(205,160),(205,232),(40,232)],DK,-22,22,r=12);label(m,'Schaft')
     m.decal('z+',22,rr(70,156,96,24,8),P)
     m.prism([(300,278),(352,278),(382,392),(332,398)],K,-20,20,r=12);label(m,'Griff')
-    m.prism(arcband(354,438,280,50,11),'#8A93A3',-7,7);nh(m);label(m,'Abzug')
-    m.prism([(380,280),(394,280),(402,324),(388,326)],A,-6,6);label(m,'Abzug')
+    m.prism(arcband(354,438,280,70,11),'#8A93A3',-4,4);nh(m);label(m,'Abzug')
+    m.prism([(376,280),(394,280),(408,326),(392,330)],A,-7,7);label(m,'Abzug')
     m.prism(rect(236,278,52,72),K,-22,22,r=10);label(m,'Energiezelle')
     m.prism([(200,120),(400,110),(432,132),(432,282),(222,282),(200,260)],P,-38,38,r=16);label(m,'Ladekammer')
     m.decal('z+',38,rr(236,160,160,62,20),K)
@@ -179,4 +179,9 @@ def d10():
     m.prism([(580,240),(612,250),(580,260)],A,-3,3)
     m.prism([(312,243),(336,247),(336,253),(312,257)],A,-1,1)
     m.prism(rect(301,245,9,10),A,-3.5,3.5,r=2)                                # Nocke auf der Sehne
+    # Visieraufnahme am Mittelstück (bleibt), Visier separat und modular
+    m.prism(rect(456,214,18,16),DK,-7,7,r=3);label(m,'Visierschiene')
+    m.prism(rect(472,216,16,10),DK,-6,6,r=2);sight(m)
+    m.prism(rect(486,204,20,34),P,-9,9,r=4);label(m,'Visier');sight(m)
+    m.decal('z+',9,circ(496,221,6),A,emit=True)
     return m,(440,250,0)

@@ -85,14 +85,14 @@
    "source": "vorderstes bezeichnetes Mündungs-/Laufteil: Vorderkante von p13 (Pfeil), Querschnittsmitte"
   },
   "Socket_CenterOfMass": {
-   "position_m": [-0.0004, 0.1206, 0.0896],
-   "model": [385.29, 251.01, -0.17],
+   "position_m": [-0.0004, 0.1173, 0.0906],
+   "model": [386.74, 250.59, -0.16],
    "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert"
   },
   "Socket_Sight": {
-   "position_m": null,
-   "model": null,
-   "source": "kein Visier und keine Visierschiene im Modell"
+   "position_m": [0.0, -0.1133, 0.119],
+   "model": [489.0, 238.0, 0.0],
+   "source": "Unterkante Mitte der Visierbaugruppe (montierte Lage)"
   }
  },
  "palette": [
@@ -109,7 +109,7 @@
     "MT_Primary": "#3A3D44",
     "MT_Secondary": "#F2C230",
     "MT_Accent": "#FFF1B8",
-    "MT_Metal": null,
+    "MT_Metal": "#17181B",
     "MT_Energy": "#F2C230",
     "MT_Emission": "#F2C230",
     "MT_Detail": "#17181B"
@@ -144,7 +144,7 @@
     "MT_Primary": "#ECE6DA",
     "MT_Secondary": "#F3EFE7",
     "MT_Accent": "#F28C28",
-    "MT_Metal": null,
+    "MT_Metal": "#2B2E33",
     "MT_Energy": "#F4A14F",
     "MT_Emission": "#F4A14F",
     "MT_Detail": "#2B2E33"
@@ -166,7 +166,7 @@
     "MT_Primary": "#F3F6F9",
     "MT_Secondary": "#F7F9FB",
     "MT_Accent": "#22D3EE",
-    "MT_Metal": null,
+    "MT_Metal": "#3A4452",
     "MT_Energy": "#4ADBF1",
     "MT_Emission": "#4ADBF1",
     "MT_Detail": "#3A4452"
@@ -188,7 +188,7 @@
     "MT_Primary": "#4A4E57",
     "MT_Secondary": "#898C92",
     "MT_Accent": "#FF5A36",
-    "MT_Metal": null,
+    "MT_Metal": "#141518",
     "MT_Energy": "#FF785A",
     "MT_Emission": "#FF785A",
     "MT_Detail": "#141518"
@@ -202,6 +202,7 @@
   "MT_Primary",
   "MT_Secondary",
   "MT_Accent",
+  "MT_Metal",
   "MT_Energy",
   "MT_Emission",
   "MT_Detail"
@@ -478,19 +479,75 @@
     [-0.0079, 0.2903, 0.0806],
     [0.0079, 0.3106, 0.1032]
    ]
+  },
+  {
+   "id": "p17",
+   "label": "Visierschiene",
+   "channel": "MT_Metal",
+   "channel_source": "role",
+   "material": "brushed",
+   "emissive": false,
+   "sight": false,
+   "color": "#17181B",
+   "area_m2": 0.007368,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0158, -0.0795, 0.137],
+    [0.0158, -0.0389, 0.1731]
+   ]
+  },
+  {
+   "id": "p18",
+   "label": null,
+   "channel": "MT_Detail",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": true,
+   "color": "#17181B",
+   "area_m2": 0.004579,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0135, -0.111, 0.146],
+    [0.0135, -0.0749, 0.1686]
+   ]
+  },
+  {
+   "id": "p19",
+   "label": "Visier",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "brushed",
+   "emissive": false,
+   "sight": true,
+   "color": "#3A3D44",
+   "area_m2": 0.016107,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0203, -0.1516, 0.119],
+    [0.0203, -0.1065, 0.1956]
+   ]
   }
  ],
  "sight": {
-  "present": false,
-  "kind": null,
-  "window": null,
-  "source": "kein separates Visier im Modell",
+  "present": true,
+  "kind": "pin",
+  "window": "open",
+  "source": "Geometrie dmodels.d10: Pin-Visier mit Leuchtpunkt am Mittelstück (claude-0.1.1)",
   "modular": true,
-  "mount_side": null,
-  "labels": [],
-  "parts": [],
-  "bounds_m": null,
-  "anchor": null
+  "mount_side": "top",
+  "labels": [
+   "Visier"
+  ],
+  "parts": [
+   "p18",
+   "p19"
+  ],
+  "bounds_m": [
+   [-0.0203, -0.1516, 0.119],
+   [0.0203, -0.0749, 0.1956]
+  ],
+  "anchor": "Socket_Sight"
  },
  "decals": [
   {
@@ -660,6 +717,30 @@
     [-0.0361, 0.2565, -0.388],
     [-0.0361, 0.27, -0.3751]
    ]
+  },
+  {
+   "part": "p19",
+   "channel": "MT_Emission",
+   "surface": "left",
+   "emissive": true,
+   "color": "#F2C230",
+   "area_m2": 0.0005655,
+   "bounds_m": [
+    [0.0203, -0.1426, 0.1438],
+    [0.0203, -0.1155, 0.1708]
+   ]
+  },
+  {
+   "part": "p19",
+   "channel": "MT_Emission",
+   "surface": "right",
+   "emissive": true,
+   "color": "#F2C230",
+   "area_m2": 0.0005655,
+   "bounds_m": [
+    [-0.0203, -0.1426, 0.1438],
+    [-0.0203, -0.1155, 0.1708]
+   ]
   }
  ],
  "textures": {
@@ -707,9 +788,9 @@
   }
  },
  "summary": {
-  "parts": 17,
+  "parts": 20,
   "parts_explicit_channel": 0,
-  "decals": 14,
+  "decals": 16,
   "channels_with_other_colors": {
    "base": [
     "MT_Detail",
