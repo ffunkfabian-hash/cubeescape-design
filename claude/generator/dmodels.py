@@ -179,4 +179,9 @@ def d10():
     m.prism([(580,240),(612,250),(580,260)],A,-3,3)
     m.prism([(312,243),(336,247),(336,253),(312,257)],A,-1,1)
     m.prism(rect(301,245,9,10),A,-3.5,3.5,r=2)                                # Nocke auf der Sehne
+    # Visieraufnahme am Mittelstück (bleibt), Visier separat und modular
+    m.prism(rect(456,214,18,16),DK,-7,7,r=3);label(m,'Visierschiene')
+    m.prism(rect(472,216,16,10),DK,-6,6,r=2);sight(m)
+    m.prism(rect(486,204,20,34),P,-9,9,r=4);label(m,'Visier');sight(m)
+    m.decal('z+',9,circ(496,221,6),A,emit=True)
     return m,(440,250,0)

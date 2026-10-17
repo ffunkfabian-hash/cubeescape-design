@@ -28,6 +28,13 @@ def d01(P,K,A,L):
     # Ladeblock unten
     m.prism([(405,225),(505,225),(510,300),(400,300)],P,-30,30,r=10);label(m,'Energiezelle')
     m.decal('z+',30,roundpoly(rect(408,282,98,14),4),A,emit=True)
+    # Visierschiene (bleibt an der Waffe), Visier separat und modular
+    m.prism(rect(330,24,170,12),K,-13,13,r=3);label(m,'Visierschiene')
+    for xx in range(342,496,22):m.decal('z+',13,rect(xx,26,10,4),KM)
+    m.prism(rect(380,12,60,14),K,-14,14,r=4);sight(m)
+    m.prism([(360,-18),(460,-20),(468,-8),(468,12),(360,14)],P,-22,22,r=8);label(m,'Visier');sight(m)
+    m.decal('z+',22,roundpoly(rect(376,-8,36,16),4),KM);m.decal('z+',22,circ(424,0,6),A,emit=True)
+    m.decal('x+',468,circ(2,0,8),A,emit=True)
     # Muendung
     for a,b in ((560,600),(600,640)):m.cyl(a,b,105,0,72,K if a==560 else KM);label(m,'Mündung')
     m.cyl(640,648,105,0,60,K)
@@ -129,6 +136,13 @@ def d04(P,K,A,L):
     m.decal('z+',40,roundpoly(rect(230,150,70,22),6),KM)
     m.decal('z+',40,circ(430,140,12),A,emit=True)
     m.decal('z+',40,roundpoly(rect(470,120,80,26),6),KM)
+    # Visierschiene (bleibt an der Waffe), Visier separat und modular
+    m.prism(rect(250,-10,240,14),K,-13,13,r=3);label(m,'Visierschiene')
+    for xx in range(262,480,22):m.decal('z+',13,rect(xx,-8,10,4),KM)
+    m.prism(rect(320,-24,70,16),K,-14,14,r=4);sight(m)
+    m.prism([(300,-54),(460,-56),(470,-44),(470,-24),(300,-22)],P,-24,24,r=8);label(m,'Visier');sight(m)
+    m.decal('z+',24,roundpoly(rect(318,-46,50,16),4),KM);m.decal('z+',24,circ(390,-38,6),A,emit=True)
+    m.decal('x+',470,circ(-40,0,8),A,emit=True)
     # Trommelkasten
     m.prism([(440,184),(715,184),(715,330),(460,340),(440,320)],K,-52,52,r=18);label(m,'Trommelmagazin')
     m.decal('z+',52,roundpoly(rect(480,205,160,90),12),KM)
