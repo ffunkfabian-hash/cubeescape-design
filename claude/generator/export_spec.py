@@ -12,7 +12,7 @@ import json,math,os,re,sys
 sys.path.insert(0,E3D)
 import sheetmodels
 from eng import CHANNELS,split_sight
-from xlroles import VARIANTS,MATERIAL_IDS,color_roles,recolor,material_of,assign_channels
+from xlroles import MATERIAL_IDS,color_roles,material_of,assign_channels,channel_palettes
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
@@ -180,29 +180,9 @@ def build(sheet):
     unit=ref_len/model_len
     an,notes=_anchors(d,gun,sight_parts,allparts,ids)
     F=Frame(unit,an['Socket_Hand'][0])
-    # Kanäle (Rollen wie die Farbvarianten des Blatts: aus der Waffe ohne Visier)
-    role=color_roles(gun_m)
-    pch,dsrc=assign_channels(full,role,_area,lambda dd:_area2(dd[2]),d['palette'])
-    dch=[[c for c,_ in row] for row in dsrc]
-    # Paletten je Variante: Flächenanteil je Kanal (Teile + Aufkleber)
-    names=['BASIS · '+d['pill']]+[n for n,_ in VARIANTS[:3]]
-    pals=[d['palette']]+[p for _,p in VARIANTS[:3]]
-    palette=[]
-    for vid,vn,pal in zip(VARIANT_IDS,names,pals):
-        mm=full if vid=='base' else recolor(full,pal,role=role)
-        acc={ch:{} for ch in CHANNELS}
-        for i,P in enumerate(mm.parts):
-            a=_area(P);acc[pch[i][0]][P['col']]=acc[pch[i][0]].get(P['col'],0)+a
-            for k,dd in enumerate(P['dec']):
-                da=_area2(dd[2]);acc[dch[i][k]][dd[3]]=acc[dch[i][k]].get(dd[3],0)+da
-        chans={};dev={}
-        for ch in CHANNELS:
-            if not acc[ch]:chans[ch]=None;continue
-            tot=sum(acc[ch].values());order=sorted(acc[ch].items(),key=lambda t:(-t[1],t[0]))
-            chans[ch]=_hex(order[0][0])
-            if len(order)>1:dev[ch]=[dict(color=_hex(c),share=round(a/tot,3)) for c,a in order[1:]]
-        palette.append(dict(id=vid,name=vn,swatches=[_hex(c) for c in pal],channels=chans,other_colors=dev,
-                            on_sheet=True,sight_colors='extrapoliert' if vid!='base' else 'wie Modell'))
+    # Kanäle und Paletten je Variante (xlroles.channel_palettes, auch für die Skins)
+    palette,pch=channel_palettes(full,gun_m,d['palette'],d['pill'],CHANNELS)
+    dch=[[c for c,_ in row] for row in assign_channels(full,color_roles(gun_m),_area,lambda dd:_area2(dd[2]),d['palette'])[1]]
     # Teile
     parts=[]
     for i,P in allparts:

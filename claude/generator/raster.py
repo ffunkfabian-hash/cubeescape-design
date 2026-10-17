@@ -52,13 +52,19 @@ def rasterview(m,yaw,pitch,center,W,H,scale,pad=0,ow=3.0,origin=None,texture=Non
     fg=idb>=0
     if texture is not None:
         yw,pt=math.radians(yaw),math.radians(pitch);cyy,syy=math.cos(yw),math.sin(yw);cpp,spp=math.cos(pt),math.sin(pt)
-        yy_,xx_=np.mgrid[0:h,0:w].astype(np.float32)
-        X2=(xx_+0.5-w/2)/s+mx;Y2=(yy_+0.5-h/2-pad*SS)/s+my;Z2=zb/s
-        def inv(X2,Y2,Z2):
-            Y=Y2*cpp-Z2*spp;Z1=Y2*spp+Z2*cpp;X=X2*cyy-Z1*syy;Z=X2*syy+Z1*cyy;return X,Y,Z
-        WX,WY,WZ=inv(X2,Y2,Z2);WX=WX+center[0];WY=WY+center[1];WZ=WZ+center[2]
-        NX,NY,NZ=inv(nrmb[...,0],nrmb[...,1],nrmb[...,2])
-        col=texture(col,pb,idb,decm,[P for _,_,P in parts],SS,world=(WX,WY,WZ),nrm=(NX,NY,NZ))
+        # nur im Rahmen der Waffe rechnen (Speicher: Isometrie 5400×3600 Bildpunkte)
+        rws=np.nonzero(fg.any(1))[0];cls=np.nonzero(fg.any(0))[0]
+        if len(rws):
+            r0,r1=max(0,rws[0]-2),min(h,rws[-1]+3);c0,c1=max(0,cls[0]-2),min(w,cls[-1]+3);sl=(slice(r0,r1),slice(c0,c1))
+            yy_,xx_=np.mgrid[r0:r1,c0:c1].astype(np.float32)
+            X2=(xx_+0.5-w/2)/s+mx;Y2=(yy_+0.5-h/2-pad*SS)/s+my;Z2=zb[sl]/s
+            def inv(X2,Y2,Z2):
+                Y=Y2*cpp-Z2*spp;Z1=Y2*spp+Z2*cpp;X=X2*cyy-Z1*syy;Z=X2*syy+Z1*cyy;return X,Y,Z
+            WX,WY,WZ=inv(X2,Y2,Z2);WX=WX+center[0];WY=WY+center[1];WZ=WZ+center[2]
+            del X2,Y2,Z2,yy_,xx_
+            nb=nrmb[sl];NX,NY,NZ=inv(nb[...,0],nb[...,1],nb[...,2])
+            kw={'scale':s} if getattr(texture,'wants_scale',False) else {}
+            col[sl]=texture(col[sl],pb[sl],idb[sl],decm[sl],[P for _,_,P in parts],SS,world=(WX,WY,WZ),nrm=(NX,NY,NZ),**kw)
     # Konturen: Grenzen zwischen Flaechen-IDs, Silhouette dicker
     e=np.zeros_like(fg);sil=np.zeros_like(fg)
     for dy in (-1,0,1):

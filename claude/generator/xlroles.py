@@ -144,3 +144,42 @@ def assign_channels(m,role,area,decal_area,swatches=()):
                 if r[0]=='p':pch[r[1]]=(ch,src)
                 else:dch[r[1]][r[2]]=(ch,src)
     return pch,dch
+
+
+# ---------- Flächen und Kanal-Paletten je Farbvariante (Spec-Export und Skins, claude-0.3; ohne numpy)
+import math as _m
+def area3(v):
+    nx=ny=nz=0.0
+    for i in range(len(v)):
+        (x0,y0,z0),(x1,y1,z1)=v[i],v[(i+1)%len(v)]
+        nx+=(y0-y1)*(z0+z1);ny+=(z0-z1)*(x0+x1);nz+=(x0-x1)*(y0+y1)
+    return 0.5*_m.sqrt(nx*nx+ny*ny+nz*nz)
+def area2(p):return abs(sum(p[i][0]*p[(i+1)%len(p)][1]-p[(i+1)%len(p)][0]*p[i][1] for i in range(len(p))))/2
+def part_area(P):return sum(area3(f['v']) for f in P['F'])
+VARIANT_IDS=['base','standard','arktis','nacht']
+def _hexu(c):return c.upper() if c.startswith('#') else c
+def channel_palettes(full,gun_m,palette,pill,channels):
+    """Kanalfarben der vier Farbvarianten des Blatts (Basis + 3) wie im Spec (`palette`): je Kanal die Farbe mit der
+    größten Fläche (Teile + Aufkleber); Rollen aus der Waffe ohne Visier. Rückgabe: (Liste je Variante, Kanal je Teil)."""
+    role=color_roles(gun_m)
+    pch,dsrc=assign_channels(full,role,part_area,lambda dd:area2(dd[2]),palette)
+    dch=[[c for c,_ in row] for row in dsrc]
+    names=['BASIS · '+pill]+[n for n,_ in VARIANTS[:3]]
+    pals=[palette]+[p for _,p in VARIANTS[:3]]
+    out=[]
+    for vid,vn,pal in zip(VARIANT_IDS,names,pals):
+        mm=full if vid=='base' else recolor(full,pal,role=role)
+        acc={ch:{} for ch in channels}
+        for i,P in enumerate(mm.parts):
+            a=part_area(P);acc[pch[i][0]][P['col']]=acc[pch[i][0]].get(P['col'],0)+a
+            for k,dd in enumerate(P['dec']):
+                da=area2(dd[2]);acc[dch[i][k]][dd[3]]=acc[dch[i][k]].get(dd[3],0)+da
+        chans={};dev={}
+        for ch in channels:
+            if not acc[ch]:chans[ch]=None;continue
+            tot=sum(acc[ch].values());order=sorted(acc[ch].items(),key=lambda t:(-t[1],t[0]))
+            chans[ch]=_hexu(order[0][0])
+            if len(order)>1:dev[ch]=[dict(color=_hexu(c),share=round(a/tot,3)) for c,a in order[1:]]
+        out.append(dict(id=vid,name=vn,swatches=[_hexu(c) for c in pal],channels=chans,other_colors=dev,
+                        on_sheet=True,sight_colors='extrapoliert' if vid!='base' else 'wie Modell'))
+    return out,pch

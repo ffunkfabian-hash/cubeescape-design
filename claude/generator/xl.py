@@ -8,6 +8,8 @@ from eng import *
 import raster
 from xlroles import *
 from xlroles import _rgb,_hex,_lum,_sat,_mix
+import skins
+from skinraster import skin_texture
 
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
 ORTHO=[('SEITENANSICHT LINKS',0,0),('SEITENANSICHT RECHTS',180,0),('VORDERANSICHT',-90,0),('RÜCKANSICHT',90,0),('DRAUFSICHT',0,90),('UNTERANSICHT',0,-90)]
@@ -126,7 +128,7 @@ def panel(inner,w,h,label,fid,aria,small=False):
 
 EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Magazin':'magazine','Lauf':'barrel','Mündung':'muzzle','Mündungsbremse':'muzzle brake','Zielfernrohr':'scope on mounting rings','Visier':'sight','Schaft':'stock','Energiezelle':'energy cell','Kühlrippen':'cooling fins','Montageringe':'scope rings','Laufverkleidung':'barrel shroud','Vordergriff':'foregrip','Doppellauf':'double barrel','Trommel':'revolver cylinder','Sehne':'string','Wurfarm':'limb','Pfeil':'arrow','Umlenkrolle':'cam pulley','Pfeilauflage':'arrow rest','Stabilisator':'stabilizer','Rohr':'launch tube','Heckdüse':'rear exhaust','Abgasdüse':'rear exhaust','Raketenrohre':'rocket tubes','Handschutz':'handguard','Tragegriff':'carry handle','Kimme':'rear sight','Korn':'front sight','Ladeleiste':'charge indicator rail','Mündungsring':'muzzle ring','Schaftkappe':'butt plate','Wangenauflage':'cheek rest','Trommelmagazin':'drum magazine','Röhrenmagazin':'tube magazine','Pumpgriff':'pump grip','Kristallkern':'crystal core','Energiekugel':'energy orb','Bündelring':'focusing ring','Fokusring':'focusing ring','Fokusringe':'focusing rings','Laufmantel':'barrel jacket','Feuerkern':'fire core','Oberkiefer':'upper jaw','Unterkiefer':'lower jaw','Visierschiene':'sight rail','Ringvisier':'ring sight','Trichterheck':'flared rear funnel','Sicherungsmodul':'safety module','Rakete':'rocket','Spannmechanik':'cocking mechanism','Bolzen':'bolt','Mittelstück':'riser','Energie-Auge':'energy eye','Kondensator':'capacitor','Emitter':'emitter','Raketenkasten':'rocket pod','Heckkappe':'end cap','Verschluss':'breech','Kastenvisier':'box sight','Laufhülle':'barrel shroud','Laufkasten':'barrel housing','Ladekammer':'charging chamber','Beschleunigerring':'accelerator ring','Energiespule':'energy coil','Abschussrohr':'launch tube','Schalldämpfer':'suppressor','Montage':'mount','Rahmen':'frame','Energiekern':'energy core','Fokuskern':'focus core','Tragebügel mit Visier':'carry handle with sights','Oberlauf':'upper barrel','Unterlauf':'lower barrel','Energiemagazin':'energy magazine','Mittelstück':'riser','Abzugbügel':'trigger guard','Zweibein':'folded bipod','Kompensator':'compensator','Schlitten':'slide','Energiewürfel':'energy cube','Reflexvisier':'reflex sight','Käfig':'cage','Pulswürfel':'pulse cube','Feuerdämpfer':'flash hider','Kondensatorzelle':'capacitor cell','Fächeremitter':'fan emitter','Abschussrohre':'launch tubes','Kammerstängel':'bolt handle','Patronenfenster':'shell window','Klappschaft':'folding stock'}
 
-def prompts(d,labels,mats,variant_letter):
+def prompts(d,labels,mats,variant_letter,skin=None):
     pal=', '.join(d['palette'])
     de=(f"Erstelle ein technisches Low-Poly-Concept-Art-Blatt für das Spiel Cube Escape: {d['name']}, Variante {variant_letter} „{d['nick']}“. "
         f"Form: {d['form']}. {d['desc']} "
@@ -135,6 +137,7 @@ def prompts(d,labels,mats,variant_letter):
         "Ansichten: große isometrische Hauptansicht mit deutschen Bauteil-Beschriftungen, dazu Seitenansicht links und rechts, Vorder-, Rück-, Drauf- und Unteransicht – orthografisch, gleicher Maßstab, gemeinsame Bezugslinien – plus Detailansicht des Abzugsbereichs. "
         "Stil: futuristisch, industrial, Hard-Surface, abgeschrägte Gehäuse, kantige Panzerplatten, klare dunkle Konturen, flache Toon-Schattierung, dunkelblauer Rasterhintergrund. "
         "Konstruktion: Abzug mit Bügel klar erkennbar, Magazin im Schacht, Lauf sichtbar aus dem Gehäuse, konsistente Achsen. Visier bzw. Zielfernrohr NICHT montiert zeichnen, sondern separat als modulares Anbauteil daneben; auf der Waffe bleibt nur die freie Visierschiene als Aufnahme. "
+        +(f"Hauptskin „{skin[0]}“: {skin[1]}. " if skin else "")+
         "Vermeiden: schwebende Teile, unbeabsichtigte Überschneidungen, zufällige Leuchtstreifen, Bloom, Unschärfe, Nebel, realistische Militärwaffen-Kopien.")
     if d['name']=='Raketenwerfer':
         de=de.replace('auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.','auf der Waffe bleibt nur die freie Visierschiene als Aufnahme – seitlich links am Rohr montiert, damit das Rohr die Sichtlinie nicht verdeckt.')
@@ -143,6 +146,7 @@ def prompts(d,labels,mats,variant_letter):
         f"Visible, logically connected parts: {en_parts}. Color palette {pal}. "
         "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. Draw the sight/scope detached as a separate modular attachment next to the weapon; the weapon shows only the empty sight rail. "
         +("Sight rail mounted on the left side of the tube, offset from the bore axis. " if d['name']=='Raketenwerfer' else "")+
+        (f"Skin \"{skin[0]}\": {skin[2]}. " if skin else "")+
         "Hard-surface industrial design, chamfered housings, clean dark outlines, flat cel shading, dark blue grid background, no bloom, no blur, no floating parts.")
     return de,en
 
@@ -194,26 +198,67 @@ def sight_panel(ms,center,w,h,fid,name,col,small=False):
            f'<text x="{14 if small else 24}" y="{h-(12 if small else 26)}" font-family="Chakra Petch, sans-serif" font-size="{13 if small else 19}" letter-spacing="1.2" fill="#E6ECF2">{_h.escape(" · ".join(labs) if labs else "Visier")} · modular auf Schiene, nicht fest verbaut</text>')
     return panel(inner,w,h,'VISIER · SEPARAT' if small else 'VISIER · SEPARAT (ISOMETRIE / SEITE)',fid,name+' Visier separat gezeichnet',small)
 
+def _chip(x,y,c,fin,label):
+    """Farbfeld eines Skin-Slots: Lack flach, poliert mit Verlauf und Glanzstreifen, Neon mit Leuchtrand"""
+    from skinraster import tones
+    if fin in ('polished_gold','polished_chrome'):
+        t=tones(c,fin);gid=f'ch{abs(hash((c,fin)))%99999}'
+        sw=(f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{t[0]}"/><stop offset="0.42" stop-color="{t[1]}"/>'
+            f'<stop offset="0.5" stop-color="{t[4]}"/><stop offset="0.58" stop-color="{t[1]}"/><stop offset="1" stop-color="{t[3]}"/></linearGradient></defs>'
+            f'<rect x="{x}" y="{y}" width="34" height="34" rx="8" fill="url(#{gid})" stroke="#0A0A0D" stroke-width="1.5"/>')
+    elif fin=='neon':sw=f'<rect x="{x-3}" y="{y-3}" width="40" height="40" rx="10" fill="{c}" opacity="0.35"/><rect x="{x}" y="{y}" width="34" height="34" rx="8" fill="{c}" stroke="#0A0A0D" stroke-width="1.5"/>'
+    else:sw=f'<rect x="{x}" y="{y}" width="34" height="34" rx="8" fill="{c}" stroke="#0A0A0D" stroke-width="1.5"/>'
+    return sw+f'<text x="{x+44}" y="{y+24}" font-family="Barlow, sans-serif" font-size="19" fill="#C7D1DC">{_h.escape(label)}</text>'
+
+def skin_row(rsl,skinned,full,center,cw,ch,fid,name):
+    """Feld SKIN/MUSTER: fünf Skins aus dem Katalog in der Basis-Palette, je mit Slots und Bausteinen"""
+    out=''
+    for j,rs in enumerate(rsl):
+        mm,tx_,cs=skinned(0,rs,full)
+        vh=ch-230
+        e1,e2=extent(mm,ISO[1],ISO[2],center);sc=min((cw-70)/e1,(vh-70)/e2)
+        vv=svgview(mm,ISO[1],ISO[2],center,cw,vh,sc,ow=2.6,texture=tx_).replace('<image x="0" y="0"','<image x="0" y="26"',1)
+        inner=vv;y0=vh+24
+        for k,sl in enumerate(skins.slots_used(rs)[:6]):
+            c,fin,src=cs[sl]
+            lab=skins.SLOT_DE[sl]+(' · '+skins.FINISH_DE[fin] if fin!='paint' else '')+(' *' if src=='swatch' else '')
+            inner+=_chip(24+(k%2)*((cw-40)//2),y0+(k//2)*46,c,fin,lab)
+        bl=' · '.join(skins.BLOCKS[b] for b in skins.summary(rs))
+        inner+=f'<text x="24" y="{ch-22}" font-family="Chakra Petch, sans-serif" font-size="18" letter-spacing="1.2" fill="#8FA0B3">{_h.escape(bl.upper())}</text>'
+        lab=f'SKIN/MUSTER {j+1}/5 · {rs["name"].upper()}'+(' · HAUPTSKIN' if j==0 else '')
+        out+=panel(inner,cw,ch,lab,fid,f'{name} Skin {rs["name"]}')
+    return out
+
 def sheet(d,variant_letter):
     full=d['m'];center=d['center'];fid='x'+d['fid'];col=d['col']
     m,ms=split_sight(full)
-    W,H=4800,3400;PAD=80;G=32
+    # ---------- Skins (claude-0.3): fünf je Blatt, der erste ist der Hauptskin (Isometrie, Orthos, Farbvarianten)
+    sid=f'K{variant_letter}{d["num"]}'
+    rsl=[skins.resolve(full,k,sid,d['num']) for k in skins.pick(sid,full,d['num'])];hero=rsl[0]
+    cpal,_=channel_palettes(full,m,d['palette'],d['pill'],CHANNELS)
+    roles=color_roles(m)
+    def skinned(j,rs,mf):
+        cs=skins.slot_colors(rs,cpal[j]['channels'],cpal[j]['swatches'])
+        return split_sight(skins.apply(mf,rs,cs))[0],skin_texture(rs,cs),cs
+    mh,htex,_=skinned(0,hero,full)
+    SKH=1000
+    W,H0=4800,3400;PAD=80;G=32;H=H0+G+SKH
     # ---------- Isometrie mit Beschriftungen
     MW,MH=2700,1800
-    ew,eh=extent(m,ISO[1],ISO[2],center)
+    ew,eh=extent(mh,ISO[1],ISO[2],center)
     sm=min((MW-200)/ew,(MH-420)/eh,6.0)
-    v=svgview(m,ISO[1],ISO[2],center,MW,MH,sm,ow=4.6)
+    v=svgview(mh,ISO[1],ISO[2],center,MW,MH,sm,ow=4.6,texture=htex)
     anchors,rest=pick_labels(dict(raster.LAST.get('anchors',{})))
     call=_callouts(anchors,MW,MH,col,MH/2,k=1.35)
     if rest:call+=f'<text x="28" y="{MH-24}" font-family="Barlow, sans-serif" font-size="20" fill="#8FA0B3">Weitere Bauteile: {_h.escape(", ".join(sorted(rest)))}</text>'
-    iso=panel(v+call,MW,MH,ISO[0]+' · OHNE VISIER',fid,f"{d['name']} isometrische Ansicht mit Bauteilbeschriftungen, Visier separat")
+    iso=panel(v+call,MW,MH,ISO[0]+' · OHNE VISIER · HAUPTSKIN '+hero['name'].upper(),fid,f"{d['name']} isometrische Ansicht mit Bauteilbeschriftungen, Visier separat")
     # ---------- Ortho
     RW=W-2*PAD-MW-G
-    geo={lb:model_origin(m,y,p,center) for lb,y,p in ORTHO}
+    geo={lb:model_origin(mh,y,p,center) for lb,y,p in ORTHO}
     hwL,hhL=geo['SEITENANSICHT LINKS'][1],geo['SEITENANSICHT LINKS'][2];hhT=geo['DRAUFSICHT'][2];hwF=geo['VORDERANSICHT'][1]
     def obox(lb,yw,pt,w,h,ss):
         o,hw,hh=geo[lb]
-        vv=svgview(m,yw,pt,center,w,h,ss,ow=3.0,origin=o).replace('<image x="0" y="0"','<image x="0" y="12"',1)
+        vv=svgview(mh,yw,pt,center,w,h,ss,ow=3.0,origin=o,texture=htex).replace('<image x="0" y="0"','<image x="0" y="12"',1)
         cy=h/2+12;cx=w/2;ref=''
         if pt==0:
             for yy in (cy-hh*ss,cy+hh*ss):ref+=f'<line x1="0" y1="{yy:.1f}" x2="{w}" y2="{yy:.1f}" stroke="#4A6080" stroke-width="1.4" stroke-dasharray="8 8"/>'
@@ -235,7 +280,7 @@ def sheet(d,variant_letter):
         ss=min(min((bw/2-46)/hw,(bh/2-66)/hh) for _,hw,hh in geo.values())
         ortho=f'<div style="display:grid;grid-template-columns:repeat(2,{bw}px);grid-auto-rows:{bh}px;gap:{g}px">'+''.join(obox(lb,y,p,bw,bh,ss) for lb,y,p in ORTHO)+'</div>'
     # ---------- untere Reihe
-    BH=H-2*PAD-180-G-MH-G
+    BH=H0-2*PAD-180-G-MH-G
     DW=900;ph=(BH-20)//2
     dv,dnames=detail_view(m,center,DW,ph)
     if dv is None:dv,dnames='',[]
@@ -259,10 +304,10 @@ def sheet(d,variant_letter):
     VW=1380;vw=(VW-24)//2;vh=(BH-24)//2
     vs=''
     base=('BASIS · '+d['pill'],d['palette'])
-    for (vn,pal) in [base]+VARIANTS[:3]:
-        mm=recolor(m,pal) if pal is not d['palette'] else m
+    for j,(vn,pal) in enumerate([base]+VARIANTS[:3]):
+        mm,tx_,_=skinned(j,hero,recolor(full,pal,role=roles) if j else full)
         e1,e2=extent(mm,ISO[1],ISO[2],center);sc=min((vw-60)/e1,(vh-110)/e2)
-        vv=svgview(mm,ISO[1],ISO[2],center,vw,vh,sc,ow=2.4)
+        vv=svgview(mm,ISO[1],ISO[2],center,vw,vh,sc,ow=2.4,texture=tx_)
         dots=''.join(f'<rect x="{24+i*36}" y="{vh-46}" width="28" height="28" rx="7" fill="{c}" stroke="#0A0A0D" stroke-width="1"/>' for i,c in enumerate(pal))
         vs+=panel(vv+dots,vw,vh,vn if len(vn)<44 else vn[:42]+'…',fid,f"{d['name']} Farbvariante {vn}")
     varp=f'<div style="display:grid;grid-template-columns:repeat(2,{vw}px);grid-auto-rows:{vh}px;gap:24px;width:{VW}px">{vs}</div>'
@@ -271,7 +316,7 @@ def sheet(d,variant_letter):
     labels=sorted({P['label'] for P in m.parts if P.get('label')})
     mats=[nm.title() for nm,k in MATS if k in used]
     d2=dict(d);d2['en_type']=TYPE_EN.get(d['name'],'weapon')
-    de,en=prompts(d2,labels,mats,variant_letter)
+    de,en=prompts(d2,labels,mats,variant_letter,skin=(hero['name'],)+skins.DESC[hero['id']])
     PW=W-2*PAD-DW-MWd-VW-3*G
     pr=f'''<div style="width:{PW}px;height:{BH}px;box-sizing:border-box;border-radius:18px;border:1px solid #22314A;background:#0B121C;padding:26px 28px;display:flex;flex-direction:column;gap:14px;overflow:hidden">
 <span style="font-family:'Chakra Petch',sans-serif;font-size:19px;letter-spacing:3px;color:#8FA0B3">PROMPT · DEUTSCH</span>
@@ -298,7 +343,7 @@ def sheet(d,variant_letter):
 <span style="font-family:'Chakra Petch',sans-serif;font-size:140px;font-weight:700;line-height:1;color:{col}">{d['num']}</span>
 <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
 <span style="font-family:'Chakra Petch',sans-serif;font-size:74px;font-weight:700;letter-spacing:6px;line-height:1.05">{_h.escape(d['name'].upper())} · VARIANTE {variant_letter}</span>
-<span style="font-size:25px;letter-spacing:4px;color:#8FA0B3">„{_h.escape(d['nick'].upper())}“ · KONZEPTBLATT XL · VISIER SEPARAT · {_h.escape(d['form'])}</span>
+<span style="font-size:25px;letter-spacing:4px;color:#8FA0B3">„{_h.escape(d['nick'].upper())}“ · KONZEPTBLATT XL · VISIER SEPARAT · HAUPTSKIN {_h.escape(hero['name'].upper())} · {_h.escape(d['form'])}</span>
 </div>
 </div>
 <div style="display:flex;align-items:center;gap:30px;flex-shrink:0">
@@ -308,6 +353,7 @@ def sheet(d,variant_letter):
 </div>
 <div style="display:flex;gap:{G}px;height:{MH}px">{iso}{ortho}</div>
 <div style="display:flex;gap:{G}px;height:{BH}px">{det}{matp}{varp}{pr}</div>
+<div style="display:flex;gap:{G}px;height:{SKH}px">{skin_row(rsl,skinned,full,center,(W-2*PAD-4*G)//5,SKH,fid,d['name'])}</div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{{"$preview":{{"width":{W},"height":{H}}}}}'>
