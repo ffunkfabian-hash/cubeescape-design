@@ -6,6 +6,7 @@ Liest nur vorhandene Dateien (nichts fest verdrahtet, neue Varianten erscheinen 
                                          optional sheet.variant_name, weapon.name_de, skin.hero)
   claude/output/sheets/K??NN.dc.html     Blatt XL (öffnet direkt im Browser, support.js fehlt folgenlos)
   claude/output/previews/K??NN.webp      Vorschau 1600 px
+  claude/output/sheets/VSNN.spec.json    Visier-Serie (Sight-Spec, claude-0.6), Gruppe „VS“
   codex/**/output/*.html                 nur falls vorhanden, nur verlinkt (Codex-Ordner wird nie geschrieben)
 
 Die Seite ist offline per Doppelklick (file://) nutzbar, alle Links relativ.
@@ -55,6 +56,19 @@ def collect_sheets():
             "sheet": s.get("file") or f"{sid}.dc.html",
             "spec": spec.name,
         }
+    # Visier-Serie (claude-0.6): VSnn.spec.json (Sight-Spec), im Viewer als eigene Gruppe „VS · Visier-Serie“
+    for spec in sorted(SHEETS.glob("VS*.spec.json")):
+        try:
+            d = json.loads(spec.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as e:
+            print(f"WARNUNG: {spec.name} nicht lesbar ({e}), übersprungen")
+            continue
+        s, w, sg = d.get("sheet") or {}, d.get("weapon") or {}, d.get("sight") or {}
+        sid = s.get("id") or spec.name.split(".")[0]
+        items[sid] = {"id": sid, "variant": "VS", "variant_name": s.get("series_name_de") or "Visier-Serie",
+                      "number": str(s.get("number") or sid[2:4]), "nick": sg.get("title_de") or "",
+                      "weapon": w.get("name_de") or "", "weapon_id": w.get("toolgen_id") or "", "skin": "",
+                      "element": sg.get("type") or "", "sheet": s.get("file") or f"{sid}.dc.html", "spec": spec.name}
     # Blätter ohne Spec (z. B. halb gebaute Variante) trotzdem zeigen, Daten aus Dateiname und <title>.
     for f in sorted(SHEETS.glob("K*.dc.html")):
         sid = f.name[: -len(".dc.html")]

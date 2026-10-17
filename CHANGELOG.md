@@ -2,6 +2,14 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.6
+- Visier-Serie VS01–VS09: je Waffe 1–9 ein Blatt im XL-Stil aus einem Modell (`vsmodels.py`, `vsheet.py`, `build_vs.py`): Isometrie,
+  Seite/Oben/Rück mit Visierlinie und Ankern, Durchsicht im Spiel, vier Varianten, Fadenkreuze (nur Bild), Bausteine.
+- Neues Format `cubeescape-design/sight-spec` v1 (`VSnn.spec.json`, [claude/docs/sight-spec.md](claude/docs/sight-spec.md), Schema, Test):
+  Fenster, Rahmen, Glas-Tönung (RGBA linear), Röhre, Modul, Anker `Socket_Mount`/`Socket_Sight`/`Socket_Reticle`/`Socket_Eye`, Verweis
+  auf die Waffen-Specs. Freie Durchsicht an der Geometrie geprüft (Visierlinie, ganze Öffnung, Funktionsfläche); 60 Waffenblätter unverändert.
+- Raster: Glas durchscheinend (nur mit `glass=`, Waffenblätter bytegleich); Viewer-Gruppe „VS“; Bericht [claude/docs/versions/0.6.md](claude/docs/versions/0.6.md).
+
 ## claude-0.5.2
 - Spec (additiv, format_version 1): `sight.type` (neun Typen des Visiertypen-Blatts plus `iron`/`pin`, `kind` folgt daraus),
   `sight.frame` (Rahmen-Variante), `parts[].toolgen_material` (Toolgen-Materialien); Visier-Hinweise vergleichen jetzt den Zieltyp.

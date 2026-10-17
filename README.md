@@ -17,6 +17,14 @@ Verbindliche Gestaltungsregeln: [`docs/masterprompt.md`](docs/masterprompt.md) (
 - Vier Farbvarianten derselben Geometrie (Basis, Cube Escape Standard, Arktis, Nacht)
 - Prompt auf Deutsch und Englisch
 
+## Visier-Serie VS01–VS09 (claude-0.6)
+
+Zielbild der Visiere der Waffen 1–9 (Entscheidung des Nutzers 17.10.2026): je Waffe ein Blatt `VSnn.dc.html` im XL-Stil und ein
+Sight-Spec `VSnn.spec.json` (Format `cubeescape-design/sight-spec`, [claude/docs/sight-spec.md](claude/docs/sight-spec.md)), beide aus
+einem Modell (`claude/generator/vsmodels.py`). Blatt: Isometrie, Seite/Oben/Rück mit Visierlinie und Ankern, Durchsicht im Spiel,
+vier Varianten, Fadenkreuz-Varianten (nur Bild), Bausteine (Glas-Tönungen, Rahmen, Tech-Module). Alle Fenster sind frei durchsichtig
+(geprüft an der Geometrie). Bauen: `python3 claude/generator/export_sight.py` (Specs), `python3 claude/generator/build_vs.py` (Blätter).
+
 ## Varianten
 
 | Variante | Name | Idee |
@@ -45,7 +53,7 @@ docs/                    gemeinsam: Regeln und Aufträge
   AUFTRAG.md             vollständiger Auftrag für Codex (inkl. Masterprompt)
   prompt-vorlagen.md     Vorlagen für ChatGPT-Bildgenerator und Codex
 claude/                  nur Claude
-  docs/                  weapon-spec.md (Format), ENTSCHEIDUNGEN.md (Entscheidungen des Nutzers), versions/ (Berichte)
+  docs/                  weapon-spec.md, sight-spec.md (Formate), ENTSCHEIDUNGEN.md (Entscheidungen des Nutzers), versions/ (Berichte)
   prompts/               fertige Prompts je Waffe (DE/EN)
   generator/
     eng.py raster.py     Modell-API und Z-Buffer-Toon-Renderer
@@ -57,8 +65,9 @@ claude/                  nur Claude
     variants.py          Varianten-Register (Buchstabe, Name, Idee); new_variant.py legt neue Varianten an
     build_*.py           Bauskripte je Variante, build_all.py baut alles; preview.py nimmt die Vorschauen auf
     export_spec.py       Spec je Blatt (KXnn.spec.json); test_spec.py, spec_checks.py (Richtung, Visier gegen CE-Zielbild)
+    vsmodels.py vsheet.py  Visier-Serie: Modelle VS01–VS09 und Blatt; build_vs.py, export_sight.py (VSnn.spec.json), test_sight_spec.py
   output/
-    sheets/              KXnn.spec.json (im Repo), fonts/ (Schriften, SIL OFL); Konzeptblätter KXnn.dc.html (KC01 … KJ10) nur lokal/Release
+    sheets/              KXnn.spec.json und VSnn.spec.json (im Repo), fonts/ (Schriften, SIL OFL); Konzeptblätter KXnn.dc.html (KC01 … KJ10) nur lokal/Release
     previews/            WebP-Vorschauen (nur lokal/Release, werden auf dem Mac erzeugt)
   tests/                 golden.json (sha256 je Blatt und Spec), test_golden.py
   reference/crops/       Original-Seitenansichten (Referenz für Variante D)
@@ -80,7 +89,7 @@ Dateien nicht direkt öffnen, dort laden die Bilder nicht (statischer Schnappsch
 `.claude/launch.json` starten (`python3 -m http.server 8765 --directory claude/output`, dann http://localhost:8765).
 
 **Wo liegen die Blätter?** Seit claude-0.4.1 nicht mehr im Repo (waren 46 MB), sondern als Release-Asset (je Variante ein zip mit
-Blättern, Specs und `fonts/`, dazu ein zip Vorschauen) oder per `build_all.py --nur-xl` lokal gebaut. Im Repo bleiben Generator, Specs und
+Blättern, Specs und `fonts/`, ein zip Visier-Serie, dazu ein zip Vorschauen) oder per `build_all.py --nur-xl` lokal gebaut. Im Repo bleiben Generator, Specs und
 `claude/tests/golden.json` (sha256, Prüfung: `python3 claude/tests/test_golden.py --full`).
 Release-Weg: Blätter lokal bauen, dann `python3 claude/generator/release_assets.py` (Probelauf, packt nach `dist/`) und nach Freigabe des Nutzers
 `--upload` (`gh release upload` an `claude-v<Version>`); der Workflow legt nur Tag und Release an.

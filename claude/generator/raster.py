@@ -7,7 +7,36 @@ import eng
 SS=2
 def _hex(c):c=c.lstrip('#');return np.array([int(c[i:i+2],16) for i in (0,2,4)],np.float32)
 LAST={}
-def rasterview(m,yaw,pitch,center,W,H,scale,pad=0,ow=3.0,origin=None,texture=None,shadow=True):
+def _glass_pass(glass,rgba,zb,yaw,pitch,center,T,w,h,s,tol):
+    """Glas (Visier-Serie, claude-0.6): durchscheinende Scheiben über dem fertigen Bild, nur wo sie vor dem Undurchsichtigen liegen.
+    Teile mit P['alpha'] (Deckkraft der Zeichnung) und P['col'] (Tönung); dazu ein schräger Glanzstreifen und eine helle Kante.
+    Liefert Anker der Glas-Beschriftungen (Bildpunkte)."""
+    parts,_=eng.render(glass,yaw,pitch,center);anch={}
+    for d,polys,P in parts:
+        gc=_hex(P['col']);a0=float(P.get('alpha',0.34));hit=np.zeros((h,w),bool)
+        for kind,v,c,hard in polys:
+            pts=[T(p) for p in v];zs=[p[2]*s for p in v]
+            x0=max(0,int(min(p[0] for p in pts))-1);x1=min(w,int(max(p[0] for p in pts))+2)
+            y0=max(0,int(min(p[1] for p in pts))-1);y1=min(h,int(max(p[1] for p in pts))+2)
+            if x1<=x0 or y1<=y0:continue
+            im=Image.new('L',(x1-x0,y1-y0),0);ImageDraw.Draw(im).polygon([(px-x0,py-y0) for px,py in pts],fill=255)
+            mk=np.asarray(im)>0
+            A_=np.array([[px,py,1] for px,py in pts]);coef=np.linalg.lstsq(A_,np.array(zs),rcond=None)[0]
+            yy,xx=np.mgrid[y0:y1,x0:x1];Z=coef[0]*(xx+0.5)+coef[1]*(yy+0.5)+coef[2]
+            ok=mk&(Z>=zb[y0:y1,x0:x1]-tol)
+            if not ok.any():continue
+            hit[y0:y1,x0:x1]|=ok
+            streak=(((xx+yy)/(0.05*max(w,h)))%1.0<0.16)
+            a=np.where(streak,min(1.0,a0+0.16),a0)[ok]
+            sub=rgba[y0:y1,x0:x1];A=sub[...,3][ok]/255.0;rgb=sub[...,:3][ok]
+            oa=a+A*(1-a);sub[...,:3][ok]=(gc[None,:]*a[:,None]+rgb*(A*(1-a))[:,None])/np.maximum(oa,1e-6)[:,None];sub[...,3][ok]=oa*255
+        if hit.any():
+            edge=hit&~ndimage.binary_erosion(hit,iterations=max(1,int(SS)))
+            rgba[edge,:3]=np.clip(gc*0.35+255*0.65,0,255);rgba[edge,3]=np.maximum(rgba[edge,3],235)
+            yy,xx=np.nonzero(hit);cx,cy=xx.mean(),yy.mean();k=np.argmin((xx-cx)**2+(yy-cy)**2)
+            if P.get('label'):anch.setdefault(P['label'],(xx[k]/SS,yy[k]/SS))
+    return anch
+def rasterview(m,yaw,pitch,center,W,H,scale,pad=0,ow=3.0,origin=None,texture=None,shadow=True,glass=None):
     parts,allp=eng.render(m,yaw,pitch,center)
     xs=[p[0] for p in allp];ys=[p[1] for p in allp]
     mx=(min(xs)+max(xs))/2;my=(min(ys)+max(ys))/2
@@ -89,6 +118,7 @@ def rasterview(m,yaw,pitch,center,W,H,scale,pad=0,ow=3.0,origin=None,texture=Non
         rgba[...,:3]=gn;rgba[...,3]=np.clip(a,0,0.3)*255
     rgba[fg,:3]=col[fg];rgba[fg,3]=255
     rgba[line,:3]=_hex(eng.OL);rgba[line,3]=255
+    ganch=_glass_pass(glass,rgba,zb,yaw,pitch,center,T,w,h,s,tol) if glass is not None else {}
     anchors={};boxes={}
     labs={}
     for pi,(d,polys,P) in enumerate(parts):
@@ -104,6 +134,7 @@ def rasterview(m,yaw,pitch,center,W,H,scale,pad=0,ow=3.0,origin=None,texture=Non
         yy,xx=np.nonzero(mk);cxm,cym=xx.mean(),yy.mean()
         k=np.argmin((xx-cxm)**2+(yy-cym)**2)
         anchors[lb]=(xx[k]/SS,yy[k]/SS)
+    anchors.update(ganch)
     LAST.clear();LAST.update(anchors=anchors,boxes=boxes,origin=(mx,my))
     img=Image.fromarray(np.clip(rgba,0,255).astype(np.uint8),'RGBA').resize((W,H),Image.LANCZOS)
     buf=io.BytesIO();img.save(buf,'WEBP',quality=WEBP_QUALITY,method=6)

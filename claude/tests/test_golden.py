@@ -2,14 +2,15 @@
    python3 claude/tests/test_golden.py            # schnell: Spec-Hashes, Determinismus der Specs, Gegenbeweis
    python3 claude/tests/test_golden.py --full     # zusätzlich Blätter (nach build_all.py --nur-xl) und Determinismus eines Blatts (Mac, numpy/scipy)
    python3 claude/tests/test_golden.py --update [--specs|--sheets]   # golden.json aus den Dateien auf der Platte neu schreiben
-Golden = sha256 je claude/output/sheets/KXnn.spec.json und KXnn.dc.html in claude/tests/golden.json. Ändert sich eine Ausgabe
+Golden = sha256 je claude/output/sheets/KXnn.spec.json und KXnn.dc.html in claude/tests/golden.json; die Visier-Serie (claude-0.6)
+unter vs_specs/vs_sheets (VSnn.spec.json, VSnn.dc.html). Ändert sich eine Ausgabe
 absichtlich, steht die neue Hash-Liste im selben Commit wie die Änderung (nach Neubau: --update).
 """
 import hashlib,json,os,subprocess,sys,tempfile,unittest
 HERE=os.path.dirname(os.path.abspath(__file__))
 GEN=os.path.join(HERE,'..','generator');sys.path.insert(0,GEN)
 from cepaths import OUT
-import sheetmodels
+import sheetmodels,vsmodels
 GOLDEN=os.path.join(HERE,'golden.json')
 FULL='--full' in sys.argv
 sha=lambda b:hashlib.sha256(b).hexdigest()
@@ -38,6 +39,14 @@ class Golden(unittest.TestCase):
     def test_spec_hashes(self):
         g=golden()['specs'];bad=[s for s in sheetmodels.SHEETS if disk(s,'spec.json')!=g[s]]
         self.assertEqual(bad,[],'Spec geändert – neu bauen und: python3 claude/tests/test_golden.py --update --specs')
+    def test_vs_spec_hashes(self):
+        g=golden()['vs_specs'];self.assertEqual(sorted(g),vsmodels.IDS)
+        bad=[v for v in vsmodels.IDS if disk(v,'spec.json')!=g[v]]
+        self.assertEqual(bad,[],'Sight-Spec geändert – python3 claude/generator/export_sight.py, dann test_golden.py --update --specs')
+    @unittest.skipUnless(FULL,'nur mit --full (nach build_vs.py)')
+    def test_vs_sheet_hashes(self):
+        g=golden()['vs_sheets'];bad=[v for v in vsmodels.IDS if disk(v,'dc.html')!=g[v]]
+        self.assertEqual(bad,[],'Visier-Blatt geändert – python3 claude/tests/test_golden.py --update --sheets')
     @unittest.skipUnless(FULL,'nur mit --full (nach build_all.py --nur-xl)')
     def test_sheet_hashes(self):
         g=golden()['sheets'];bad=[s for s in sheetmodels.SHEETS if disk(s,'dc.html')!=g[s]]
@@ -59,10 +68,13 @@ class Determinism(unittest.TestCase):
 
 def update(which):
     g=golden() if os.path.exists(GOLDEN) else {'specs':{},'sheets':{}}
-    if which in ('all','specs'):g['specs']={s:disk(s,'spec.json') for s in sheetmodels.SHEETS}
-    if which in ('all','sheets'):g['sheets']={s:disk(s,'dc.html') for s in sheetmodels.SHEETS}
+    if which in ('all','specs'):g['specs']={s:disk(s,'spec.json') for s in sheetmodels.SHEETS};g['vs_specs']={v:disk(v,'spec.json') for v in vsmodels.IDS}
+    if which in ('all','sheets'):
+        # Blätter nur übernehmen, wenn sie gebaut sind (Waffenblätter und Visier-Serie getrennt baubar)
+        if all(os.path.exists(os.path.join(OUT,f'{s}.dc.html')) for s in sheetmodels.SHEETS):g['sheets']={s:disk(s,'dc.html') for s in sheetmodels.SHEETS}
+        if all(os.path.exists(os.path.join(OUT,f'{v}.dc.html')) for v in vsmodels.IDS):g['vs_sheets']={v:disk(v,'dc.html') for v in vsmodels.IDS}
     with open(GOLDEN,'w',encoding='utf-8') as f:json.dump(g,f,indent=1,sort_keys=True);f.write('\n')
-    print('golden.json:',len(g['specs']),'Specs,',len(g['sheets']),'Blätter')
+    print('golden.json:',len(g['specs']),'Specs,',len(g['sheets']),'Blätter,',len(g.get('vs_specs',{})),'Sight-Specs,',len(g.get('vs_sheets',{})),'Visier-Blätter')
 
 if __name__=='__main__':
     if '--update' in sys.argv:update('specs' if '--specs' in sys.argv else 'sheets' if '--sheets' in sys.argv else 'all');sys.exit(0)

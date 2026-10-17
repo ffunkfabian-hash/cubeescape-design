@@ -53,7 +53,7 @@ class SpecFiles(unittest.TestCase):
         stale=[s for s in sheetmodels.SHEETS if not os.path.exists(export_spec.path(s)) or
                _read(export_spec.path(s))!=export_spec.dumps(export_spec.build(s))]
         self.assertEqual(stale,[],'veraltet oder fehlend – python3 claude/generator/export_spec.py')
-        extra=sorted(f for f in os.listdir(OUT) if f.endswith('.spec.json') and f[:-10] not in sheetmodels.SHEETS)
+        extra=sorted(f for f in os.listdir(OUT) if f.startswith('K') and f.endswith('.spec.json') and f[:-10] not in sheetmodels.SHEETS)   # VSnn: Sight-Spec (test_sight_spec.py)
         self.assertEqual(extra,[])
 
     def test_schema(self):

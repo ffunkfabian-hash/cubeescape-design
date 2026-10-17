@@ -2,6 +2,7 @@
    python generator/build_all.py            # alles (Karten + XL-Blätter + Prompts)
    python generator/build_all.py --nur-xl   # nur die großen Konzeptblätter aus den vorhandenen reg/*.pkl
    python generator/build_all.py C G J      # nur bestimmte Varianten (Buchstaben aus variants.py)
+   python generator/build_all.py VS         # nur die Visier-Serie VS01–VS09 (mit Buchstaben: diese Varianten und VS)
 """
 import subprocess,sys,os,shutil
 from concurrent.futures import ThreadPoolExecutor
@@ -10,7 +11,9 @@ import variants
 os.chdir(E3D)
 args=sys.argv[1:]
 nur_xl='--nur-xl' in args
-V=[a for a in args if len(a)==1 and a in variants.LETTERS] or list(variants.LETTERS)
+letters=[a for a in args if len(a)==1 and a in variants.LETTERS]
+vs='VS' in args or not letters   # Visier-Serie VS01–VS09: bei allen oder mit Argument VS
+V=letters or ([] if 'VS' in args else list(variants.LETTERS))
 P=lambda *c:[sys.executable,*c]
 N=[f'{i:02d}' for i in range(1,11)]
 jobs={
@@ -34,9 +37,11 @@ def run_seq(cmds):
         r=subprocess.run(c,capture_output=True,text=True)
         print(('OK  ' if r.returncode==0 else 'FEHLER ')+' '.join(c[1:]),flush=True)
         if r.returncode:print(r.stderr[-2000:])
-if not nur_xl:
+if not nur_xl and V:
     with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[jobs[v] for v in V]))
-with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[[P('build_xl.py',*fid[v])] for v in V]))
+if V:
+    with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[[P('build_xl.py',*fid[v])] for v in V]))
+if vs:run_seq([P('build_vs.py')])   # Visier-Serie VS01–VS09 (claude-0.6), eigene Modelle (vsmodels.py)
 run_seq([P('mkdoc.py')])
 if os.path.exists('Waffen-Prompts.md'):shutil.copy('Waffen-Prompts.md',os.path.join(PROMPTS,'Waffen-Prompts.md'))
 run_seq([P('make_viewer.py')])   # Viewer claude/output/index.html (Regel in CLAUDE.md)
