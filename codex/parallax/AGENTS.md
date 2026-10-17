@@ -11,3 +11,7 @@ Code, Bezeichner und Kommentare auf Englisch.
 - Schwere Bildläufe auf dem Mac und rechnerweit über die vorhandene heavy-run.lock serialisieren.
 - Nur eigene Dateien ändern; Commit, Tag, Push oder Veröffentlichung nur auf Wunsch.
 - Versionen dieses Projekts zählen unabhängig vom Spiel. Aktuell 0.1.0 „Parallax“.
+
+## Trennung von Claude
+
+Dieser gesamte Stand gehört ausschließlich Codex. Code, Modelle, Konzepte, Prompts, Fonts und Tests bleiben unter `codex/parallax/`. Claudes bestehende Pipeline unter `generator/` nicht ändern oder ihre Ausgaben überschreiben. Keine gemeinsamen schreibbaren Dateien und keine Symlinks zwischen den Pipelines. Entscheidung des Nutzers, 17.10.2026.

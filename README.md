@@ -98,9 +98,11 @@ keine schwebenden Teile, keine ungewollten Durchdringungen (koplanare Teile ≥ 
 
 ## Parallax · eigenständiger Codex-Stand
 
-Unter [`generator/parallax/`](generator/parallax/README.md) liegt die unabhängig gebaute Pipeline 0.1 „Parallax“ mit zehn Modellen, lokal eingebetteten Schriften, selbstständigen HTML-Blättern und 22 Unit-Tests. Einstieg: [`generator/parallax/output/index.html`](generator/parallax/output/index.html). Diese Fassung besitzt ihre eigene Modell-API und ergänzt die bestehenden Varianten.
+Unter [`codex/parallax/`](codex/parallax/README.md) liegt die unabhängig gebaute Pipeline 0.1 „Parallax“ mit zehn Modellen, lokal eingebetteten Schriften, selbstständigen HTML-Blättern und 22 Unit-Tests. Einstieg: [`codex/parallax/output/index.html`](codex/parallax/output/index.html). Diese Fassung besitzt ihre eigene Modell-API und ergänzt die bestehenden Varianten.
 
 ```bash
-python -m unittest discover -s generator/parallax/tests -v
-python generator/parallax/build.py
+python -m unittest discover -s codex/parallax/tests -v
+python codex/parallax/build.py
 ```
+
+Die Stände bleiben nach Erzeuger getrennt: `generator/` enthält Claudes bestehende Pipeline; `codex/parallax/` enthält ausschließlich den Codex-Stand samt eigenen Modellen, Prompts und Konzeptblättern. Es gibt keine gemeinsam beschriebenen Generatordateien.
