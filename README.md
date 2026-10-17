@@ -71,6 +71,11 @@ python claude/generator/build_all.py      # alles neu bauen (dauert, die XL-Blä
 python claude/generator/build_all.py G J  # nur bestimmte Varianten
 ```
 
+**Viewer:** `claude/output/index.html` zeigt alle Blätter mit Vorschau, Filter und Großansicht (`python claude/generator/make_viewer.py`,
+läuft auch am Ende von `build_all.py`). Im normalen Browser per Doppelklick öffnen. Im Browser-Bereich der Claude-App lokale
+Dateien nicht direkt öffnen, dort laden die Bilder nicht (statischer Schnappschuss). Stattdessen die Vorschau „viewer“ aus
+`.claude/launch.json` starten (`python3 -m http.server 8765 --directory claude/output`, dann http://localhost:8765).
+
 Die HTML-Dateien binden Schriften über Google Fonts ein; ohne Internet erscheinen Ersatzschriften.
 `claude/output/sheets/*.dc.html` sind Canvas-Artboards; zum Ansehen im Browser die Zeile
 `<script src="./support.js"></script>` ignorieren bzw. entfernen.
