@@ -60,7 +60,7 @@ CATALOG=[
  dict(id='stufenblock',name='Stufenblock',accents={'SK_Accent1':(GOLD,'polished_gold'),'SK_Accent2':(INK,'paint')},
       layers=[dict(type='side_block',poly=[(-0.1,0.62),(0.34,0.62),(0.34,0.40),(0.68,0.40),(0.68,0.18),(1.1,0.18),(1.1,1.1),(-0.1,1.1)],slot='MT_Detail'),
               dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='glyphs',items='num',height=0.22,at=(0.80,0.62),slots=['MT_Primary'],on='MT_Detail'),
+              dict(type='glyphs',items='num',height=0.22,at=(0.80,0.62),slots=['MT_Primary']),
               dict(type='trim',kind='ribs',count=4,slot='SK_Accent1',at=(0.18,0.35)),
               dict(type='edge_wear',target='body',width=0.013,coverage=0.21)]),
  dict(id='zielringe',name='Zielringe',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(WHITE,'paint')},

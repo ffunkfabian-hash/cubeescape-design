@@ -224,6 +224,8 @@ def skin_row(rsl,skinned,full,center,cw,ch,fid,name):
             lab=skins.SLOT_DE[sl]+(' · '+skins.FINISH_DE[fin] if fin!='paint' else '')+(' *' if src=='swatch' else '')
             inner+=_chip(24+(k%2)*((cw-40)//2),y0+(k//2)*46,c,fin,lab)
         bl=' · '.join(skins.BLOCKS[b] for b in skins.summary(rs))
+        if any(cs[sl][2]=='swatch' for sl in skins.slots_used(rs)):
+            inner+=f'<text x="24" y="{ch-46}" font-family="Barlow, sans-serif" font-size="15" fill="#6F8093">* Kanal an der Waffe unbelegt: Farbfeld der Blatt-Palette</text>'
         inner+=f'<text x="24" y="{ch-22}" font-family="Chakra Petch, sans-serif" font-size="15" letter-spacing="0.8" fill="#8FA0B3">{_h.escape(bl.upper())}</text>'
         lab=f'SKIN/MUSTER {j+1}/5 · {rs["name"].upper()}'+(' · HAUPTSKIN' if j==0 else '')
         out+=panel(inner,cw,ch,lab,fid,f'{name} Skin {rs["name"]}')
