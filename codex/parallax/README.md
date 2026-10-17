@@ -9,7 +9,9 @@ Vorgesehenes Repository: [ffunkfabian-hash/cubeescape-design](https://github.com
 Die Anforderung ist eine unabhängige gestalterische Referenz aus einem konsistenten 3D-Modell je Waffe.
 Geometrie, CPU-Rasterizer, Modellmodule, Layout und Build sind getrennt. Farbvarianten ändern ausschließlich
 Materialrollen. Die Daten werden nicht ins Spiel importiert; Spielstände, IDs, Formate und Spielmodelle bleiben unberührt.
-Der [Masterprompt](masterprompt.md) ist die verbindliche Gestaltungs- und Prüfreferenz.
+Der [gemeinsame Masterprompt](../../docs/masterprompt.md) ist die verbindliche Gestaltungs- und Prüfreferenz;
+[masterprompt.md](masterprompt.md) bewahrt die beigefügte Ausgangsreferenz.
+[Versionsbericht 0.1](../docs/versions/0.1.md).
 
 ## Installation und Bau
 
