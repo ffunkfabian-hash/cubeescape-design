@@ -1,15 +1,16 @@
 """Baut alle Karten und Konzeptblätter neu.
    python generator/build_all.py            # alles (Karten + XL-Blätter + Prompts)
    python generator/build_all.py --nur-xl   # nur die großen Konzeptblätter aus den vorhandenen reg/*.pkl
-   python generator/build_all.py --varianten C G   # nur bestimmte Varianten
+   python generator/build_all.py C G J      # nur bestimmte Varianten (Buchstaben aus variants.py)
 """
 import subprocess,sys,os,shutil
 from concurrent.futures import ThreadPoolExecutor
 from cepaths import E3D,ROOT,OUT,PROMPTS
+import variants
 os.chdir(E3D)
 args=sys.argv[1:]
 nur_xl='--nur-xl' in args
-V=[a for a in args if len(a)==1 and a in 'CDFGH'] or list('CDFGH')
+V=[a for a in args if len(a)==1 and a in variants.LETTERS] or list(variants.LETTERS)
 P=lambda *c:[sys.executable,*c]
 N=[f'{i:02d}' for i in range(1,11)]
 jobs={
@@ -19,7 +20,11 @@ jobs={
  'G':[P('build_g15.py',n,'noshot') for n in N[:5]]+[P('build_g610.py',n,'noshot') for n in N[5:]],
  'H':[P('build_h15.py',n,'noshot') for n in N[:5]]+[P('build_h610.py',n,'noshot') for n in N[5:]],
 }
+for v in variants.LETTERS:   # jlib-Varianten (ab J): keine Karten, build_xl lädt die Modelle direkt (sheetmodels)
+    if variants.lib(v)=='jlib':jobs[v]=[]
 fid={'C':['v01']+[f'c{n}' for n in N[1:]],'D':[f'd{n}' for n in N],'F':[f'f{n}' for n in N],'G':[f'g{n}' for n in N],'H':[f'h{n}' for n in N]}
+for v in variants.LETTERS:
+    fid.setdefault(v,[f'{v.lower()}{n}' for n in N])
 # Schritte, die gitignorierte alte Karten als Vorlage lesen: fehlt die Vorlage, wird der Schritt übersprungen (XL-Blätter brauchen sie nicht)
 NEEDS={'render_dx05.py':['D05.dc.html','X05.dc.html'],'make_v2d.py':[f'V{n}.dc.html' for n in N]}
 def run_seq(cmds):
@@ -34,4 +39,5 @@ if not nur_xl:
 with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[[P('build_xl.py',*fid[v])] for v in V]))
 run_seq([P('mkdoc.py')])
 if os.path.exists('Waffen-Prompts.md'):shutil.copy('Waffen-Prompts.md',os.path.join(PROMPTS,'Waffen-Prompts.md'))
+run_seq([P('make_viewer.py')])   # Viewer claude/output/index.html (Regel in CLAUDE.md)
 print('fertig')

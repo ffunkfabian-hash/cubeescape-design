@@ -2,14 +2,21 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
-## claude-0.3.1
+## claude-0.4.1
 - Golden nur als sha256 (`claude/tests/golden.json`, Blätter und Specs), Test `claude/tests/test_golden.py` (quick: Specs, Determinismus,
   Gegenbeweis; `--full`: Blätter, Determinismus eines Blatts). Blätter waren nicht reproduzierbar: `hash()` in `xl.swatch_svg` (je Prozess
-  anderes IDs) → `zlib.crc32`; alle 50 Blätter neu gebaut, nur diese IDs ändern sich.
+  anderes IDs) → `zlib.crc32`; alle 60 Blätter neu gebaut, nur diese IDs ändern sich.
 - `shot.py`: PNG ohne date/time-Chunks, 8 Bit (ImageMagick 6 und 7); `report.md` ungetrackt.
 - Repo-Größe: Blätter (`*.dc.html`) und Vorschauen nicht mehr im Repo, sondern Release-Asset (je Variante ein zip, dazu Vorschauen;
   `claude/generator/release_assets.py`, Upload per `gh release upload` vom Mac, `release.yml` legt nur Release an); WebP-Qualität 92 → 60. Historie unverändert.
 - Schriften als Dateien mit echten Gewichten (Chakra Petch 400–700, Barlow 400–600, JetBrains Mono variabel, SIL OFL 1.1) in `claude/output/sheets/fonts/`, relative `@font-face` statt Google Fonts.
+
+## claude-0.4
+- Neue Variante **J „Black Ice“**: zehn Stealth-Waffen (KJ01–KJ10) aus Facettenkörpern (`jlib.py`: abgeschrägte Prismen,
+  Sechs-/Achtkant-Läufe, eisige Leuchtkanten), Blätter, Vorschauen, Specs und Prompts.
+- Regel: neue Varianten bekommen einen englischen Namen; Register `variants.py`, Anlage mit `new_variant.py` (prüft die Regel).
+- Spec: `sheet.variant_name` (additiv); `preview.py` nimmt die WebP-Vorschauen auf; `mkdoc.py` behält Abschnitte bei Teilbau.
+- Bericht: [claude/docs/versions/0.4.md](claude/docs/versions/0.4.md)
 
 ## claude-0.3
 - Skins: Katalog mit 9 gestalteten Skins (Farbflächen, eigene Glyphen/Zahlen/Embleme, Streifen/Verläufe/Ringe, Gold/Chrom mit

@@ -10,14 +10,14 @@ damit Toolgen sie nicht aus dem Bild lesen muss.
 from cepaths import E3D,OUT
 import json,math,os,re,sys
 sys.path.insert(0,E3D)
-import sheetmodels
+import sheetmodels,variants
 from eng import CHANNELS,split_sight
 from xlroles import MATERIAL_IDS,color_roles,material_of,assign_channels,channel_palettes
 import skins as SK
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
-CLAUDE_VERSION='0.3'
+CLAUDE_VERSION='0.4'
 
 # Waffentyp -> Toolgen-Id, Bezugslänge (m), Element.
 # Längen: Toolgen-Weltmodelle, Ausdehnung entlang der Mündungsachse (Blender −Y) aus qa_game.json › bounds_lod0 ›
@@ -199,7 +199,8 @@ def build(sheet):
             decals.append(dict(part=ids[i],channel=dch[i][k],surface=SURFACES[plane],emissive=bool(em),color=_hex(col),
                                area_m2=round(_area2(pts)*unit*unit,7),bounds_m=F.bb(_bb(v3))))
     # Visier
-    kind,window,ssrc=SIGHTS[sheet]
+    # ab J (jlib): Visierart steht im Modell (META['sight'] in <v>NN.py)
+    kind,window,ssrc=SIGHTS[sheet] if sheet in SIGHTS else (*d['sight'],f"META sight in {d['fid']}.py")
     if sight_parts:
         sb=_bb(_verts([P for _,P in sight_parts]));gb=_bb(_verts([P for _,P in gun]))
         gz=_center(gb)[2];side='left' if sb[0][2]>gz+5 else 'right' if sb[1][2]<gz-5 else 'top'
@@ -220,7 +221,7 @@ def build(sheet):
     return dict(
         format=FORMAT,format_version=FORMAT_VERSION,
         generator=dict(repo='cubeescape-design',tool='claude/generator/export_spec.py',claude_version=CLAUDE_VERSION),
-        sheet=dict(id=sheet,file=f'{sheet}.dc.html',variant=d['V'],number=d['num'],nick=d['nick'],fid=d['fid']),
+        sheet=dict(id=sheet,file=f'{sheet}.dc.html',variant=d['V'],variant_name=variants.name(d['V']),number=d['num'],nick=d['nick'],fid=d['fid']),
         weapon=dict(name_de=d['name'],toolgen_id=tid),
         element=element,element_source=ELEMENT_SOURCE if element else 'nicht festgelegt (Toolgen-Bogen ohne Element)',
         units=dict(model_unit_m=round(unit,8),model_length_units=round(model_len,2),reference_length_m=ref_len,rule=rule,

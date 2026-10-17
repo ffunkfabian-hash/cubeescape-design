@@ -6,7 +6,7 @@ diesem Modell gerendert und sind damit garantiert deckungsgleich.
 
 Verbindliche Gestaltungsregeln: [`docs/masterprompt.md`](docs/masterprompt.md) (Concept-Art-Qualitäts-Masterprompt).
 
-## Inhalt eines Konzeptblatts (4800 × 3400)
+## Inhalt eines Konzeptblatts (4800 × 4432)
 
 - Isometrische Hauptansicht **ohne Visier**, mit höchstens 8 deutschen Bauteil-Beschriftungen
 - Sechs orthografische Ansichten (links, rechts, vorne, hinten, oben, unten) im gleichen Maßstab mit Bezugslinien
@@ -19,13 +19,17 @@ Verbindliche Gestaltungsregeln: [`docs/masterprompt.md`](docs/masterprompt.md) (
 
 ## Varianten
 
-| Variante | Idee |
-|---|---|
-| C | Neue Formen der Originalwaffen, je eigene Palette |
-| D | Originalformen, konstruktiv überarbeitet, Farbvarianten |
-| F | Neue Formen, mutige Paletten |
-| G | Neue Formen in der Cube-Escape-Farbwelt (Creme, Anthrazit, Orange, Cyan) |
-| H | „Werkstatt-Serie“: modulare Prototypen mit Klemm-/Schraubverbindungen |
+| Variante | Name | Idee |
+|---|---|---|
+| C | – | Neue Formen der Originalwaffen, je eigene Palette |
+| D | – | Originalformen, konstruktiv überarbeitet, Farbvarianten |
+| F | – | Neue Formen, mutige Paletten |
+| G | – | Neue Formen in der Cube-Escape-Farbwelt (Creme, Anthrazit, Orange, Cyan) |
+| H | – | „Werkstatt-Serie“: modulare Prototypen mit Klemm-/Schraubverbindungen |
+| J | **Black Ice** | Stealth-Serie: wenige große, scharfe Facetten wie bei Tarnkappenjets, matte dunkle Grundtöne, eisblaue Leuchtkanten |
+
+Neue Varianten bekommen einen englischen Namen (Regel in `CLAUDE.md`/`AGENTS.md`) und werden mit
+`python claude/generator/new_variant.py <Buchstabe> "<Name>" "<Idee>"` angelegt; Register: `claude/generator/variants.py`.
 
 Waffen je Variante: Pistole, Sturmgewehr, Impulsgewehr, Schrotflinte, Scharfschützengewehr, Maschinenpistole,
 Fusionsgewehr, Spurgewehr, Raketenwerfer, Bogen.
@@ -44,14 +48,16 @@ claude/                  nur Claude
   prompts/               fertige Prompts je Waffe (DE/EN)
   generator/
     eng.py raster.py     Modell-API und Z-Buffer-Toon-Renderer
-    views.py xl.py       Karte (2400×1560) und Konzeptblatt XL (4800×3400)
+    views.py xl.py       Karte (2400×1560) und Konzeptblatt XL (4800×4432)
     v01m.py c02–c10.py   Modelle Variante C
     dmods.py dmodels.py  Modelle Variante D
     f01–f10.py g01–g10.py h01–h10.py
-    build_*.py           Bauskripte je Variante, build_all.py baut alles
+    jlib.py j01–j10.py   Facetten-Bausteine und Modelle Variante J „Black Ice“
+    variants.py          Varianten-Register (Buchstabe, Name, Idee); new_variant.py legt neue Varianten an
+    build_*.py           Bauskripte je Variante, build_all.py baut alles; preview.py nimmt die Vorschauen auf
   output/
-    sheets/              KXnn.spec.json (im Repo), fonts/ (Schriften, SIL OFL); Konzeptblätter KXnn.dc.html nur lokal/Release
-    previews/            Vorschauen (nur lokal/Release)
+    sheets/              KXnn.spec.json (im Repo), fonts/ (Schriften, SIL OFL); Konzeptblätter KXnn.dc.html (KC01 … KJ10) nur lokal/Release
+    previews/            WebP-Vorschauen (nur lokal/Release, werden auf dem Mac erzeugt)
   tests/                 golden.json (sha256 je Blatt und Spec), test_golden.py
   reference/crops/       Original-Seitenansichten (Referenz für Variante D)
 codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
@@ -63,10 +69,15 @@ codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
 pip install -r requirements.txt
 playwright install chromium        # nur für Screenshots / Vorschauen
 python claude/generator/build_all.py      # alles neu bauen (dauert, die XL-Blätter sind groß)
-python claude/generator/build_all.py G H  # nur bestimmte Varianten
+python claude/generator/build_all.py G J  # nur bestimmte Varianten
 ```
 
-**Wo liegen die Blätter?** Seit claude-0.3.1 nicht mehr im Repo (waren 46 MB), sondern als Release-Asset (je Variante ein zip mit
+**Viewer:** `claude/output/index.html` zeigt alle Blätter mit Vorschau, Filter und Großansicht (`python claude/generator/make_viewer.py`,
+läuft auch am Ende von `build_all.py`). Im normalen Browser per Doppelklick öffnen. Im Browser-Bereich der Claude-App lokale
+Dateien nicht direkt öffnen, dort laden die Bilder nicht (statischer Schnappschuss). Stattdessen die Vorschau „viewer“ aus
+`.claude/launch.json` starten (`python3 -m http.server 8765 --directory claude/output`, dann http://localhost:8765).
+
+**Wo liegen die Blätter?** Seit claude-0.4.1 nicht mehr im Repo (waren 46 MB), sondern als Release-Asset (je Variante ein zip mit
 Blättern, Specs und `fonts/`, dazu ein zip Vorschauen) oder per `build_all.py --nur-xl` lokal gebaut. Im Repo bleiben Generator, Specs und
 `claude/tests/golden.json` (sha256, Prüfung: `python3 claude/tests/test_golden.py --full`).
 Release-Weg: Blätter lokal bauen, dann `python3 claude/generator/release_assets.py` (Probelauf, packt nach `dist/`) und nach Freigabe des Nutzers

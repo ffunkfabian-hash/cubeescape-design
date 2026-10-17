@@ -11,6 +11,7 @@ Muster liegen im Objektraum (Seitenprojektion bzw. Richtung im Modell), nicht in
 Objekt-Koordinaten in Blender backen.
 """
 import math,copy
+import variants
 from eng import CHANNELS,Model,rect,circ
 from xlroles import color_roles,material_of,part_area,METAL_LABELS,DARK_LABELS,GRIP_LABELS,_mix
 
@@ -90,7 +91,7 @@ BY_ID={s['id']:s for s in CATALOG}
 def pick(sheet,full=None,num=None,palette=None):
     """fünf Skins je Blatt; der erste ist der Hauptskin (Isometrie, Orthos, Farbvarianten). Reihenfolge: Drehung des Katalogs
     je Blatt (Schritt 2 über 9 Skins), dann – wenn das Modell gegeben ist – Skins, deren Lagen alle Platz finden, zuerst."""
-    fam='CDFGH'.index(sheet[1]);n=int(sheet[2:])
+    fam=variants.LETTERS.index(sheet[1]);n=int(sheet[2:])
     st=(n+fam*5)%len(CATALOG)   # gleichmäßig über die 50 Blätter, Probeblätter verschieden
     order=[CATALOG[(st+2*j)%len(CATALOG)]['id'] for j in range(len(CATALOG))]
     if full is not None:
