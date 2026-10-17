@@ -74,7 +74,7 @@ Sieben Slots wie in Cube Escape: `MT_Primary`, `MT_Secondary`, `MT_Accent`, `MT_
    `arktis`, `nacht` entstehen wie im Blatt mit `recolor` (Rollen der Waffe ohne Visier); Visierteile sind im Blatt nicht
    umgefärbt gezeigt, ihre Farben sind mit derselben Regel ergänzt (`sight_colors: extrapoliert`).
 
-Stand 17.10.2026: alle Zuordnungen heuristisch (0 ausdrücklich); 36 Kanäle in der Basis-Palette haben Nebenfarben über 10 %
+Stand 17.10.2026: alle Zuordnungen heuristisch (0 ausdrücklich); 34 Kanäle in der Basis-Palette haben Nebenfarben über 10 %
 (meist zwei Metalltöne in `MT_Metal` oder dunkle Aufkleber in `MT_Detail`). Feinjustage je Blatt über `channel`/`ch`.
 
 ## Material, Visier, Aufkleber, Texturen
@@ -84,8 +84,8 @@ Stand 17.10.2026: alle Zuordnungen heuristisch (0 ausdrücklich); 36 Kanäle in 
 - `sight.kind` im Toolgen-Wortschatz `hold.sight_kind` (`iron`, `reflex`, `holo`, `scope`, `energy`) plus `pin` (Bogen-Pinvisier);
   `window`: `none` (Kimme/Korn), `open` (Ring, Lochblende, Klappvisier ohne Glas), `glass` (flache Scheibe), `lens` (runde Optik).
   Festgelegt je Blatt in `export_spec.SIGHTS` mit Quelle (Bezeichnung, Text des Blatts, Kommentar/Geometrie im Modell).
-  `mount_side`: `left` bei den Raketenwerfern (Schiene links am Rohr), sonst `top`. KD01, KD04, KD10 haben auf diesem Stand kein
-  separates Visier (claude-0.1.1 ergänzt es; danach neu exportieren).
+  `mount_side`: `left` bei den Raketenwerfern (Schiene links am Rohr), sonst `top`. Alle 50 Blätter haben ein separates
+  Visier (KD01, KD04, KD10 seit claude-0.1.1).
 - `decals`: jeder Aufkleber des Modells (beidseitige als zwei Einträge), Fläche nach Ebene: `left` (+X), `right` (−X), `front` (−Y),
   `back` (+Y), `top` (+Z).
 - `textures`: Muster der Materialansicht des Blatts (`xl.make_texture`) in mm: gebürstet → `brushed` entlang `long_axis` des Teils,
