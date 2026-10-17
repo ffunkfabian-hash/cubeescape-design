@@ -16,6 +16,12 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   der Name steht in Kopfzeile, Prompts, Spec (`sheet.variant_name`) und README. Namen nicht doppelt vergeben, I und O nicht als
   Buchstaben. Claude: Eintrag über `claude/generator/new_variant.py` (prüft die Regel), Register `claude/generator/variants.py`.
   C–H bleiben ohne Namen.
+- **Viewer bei jeder Varianten-Sitzung aktualisieren** (Regel des Nutzers, 17. Oktober 2026): Wer Konzeptblätter neu baut oder
+  ändert (neue Variante, Korrekturen), bringt ohne Nachfrage alles auf Stand: Blätter `K??NN.dc.html`, `K??NN.spec.json`,
+  Vorschauen `claude/output/previews/K??NN.webp` und zuletzt den Viewer mit `python3 claude/generator/make_viewer.py` (erzeugt
+  `claude/output/index.html`; ruft `build_all.py` ihn auf, genügt dessen Lauf). Die Ausgabe nennt Blattzahl und Varianten: prüfen,
+  dass die neue Variante samt Vorschauen drin ist, und `index.html` mit den Blättern committen. Beim Abschluss **einmal** anbieten,
+  den Viewer zu öffnen (`open claude/output/index.html`, Knopf in der Abschlussbox); nicht ungefragt öffnen, nicht wiederholt anbieten.
 - Bildstufen (Rendern der Konzeptblätter) laut globaler Regel auf dem Mac mit `heavy_lock`; Cloud-Sitzungen nur schnelle Prüfungen.
 - **Erfahrungen** (Lehren aus Modell-, Raster- und Render-Pipeline, Prompts und Konzeptblättern) stehen in `docs/masterprompt.md` und
   `docs/prompt-vorlagen.md` (gemeinsam, Änderungen nur auf Wunsch des Nutzers), Claudes zusätzlich in `claude/docs/versions/`; vor dem
