@@ -1,6 +1,6 @@
 from cepaths import E3D,OUT
 # Große Konzeptblätter (Seite „Konzeptblätter“): Isometrie + 6 Ortho + Detail Abzug + Material/Texturen + Farbvarianten + Prompt
-import math,copy,colorsys,pickle,sys,html as _h
+import math,copy,colorsys,pickle,sys,zlib,html as _h
 import numpy as np
 from scipy import ndimage
 sys.path.insert(0,E3D+'')
@@ -219,7 +219,7 @@ def _chip(x,y,c,fin,label):
     """Farbfeld eines Skin-Slots: Lack flach, poliert mit Verlauf und Glanzstreifen, Neon mit Leuchtrand"""
     from skinraster import tones
     if fin in ('polished_gold','polished_chrome'):
-        t=tones(c,fin);gid=f'ch{abs(hash((c,fin)))%99999}'
+        t=tones(c,fin);gid=f'ch{zlib.crc32((c+fin).encode())%99999}'   # reproduzierbar (hash() ist je Prozess zufällig)
         sw=(f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{t[0]}"/><stop offset="0.42" stop-color="{t[1]}"/>'
             f'<stop offset="0.5" stop-color="{t[4]}"/><stop offset="0.58" stop-color="{t[1]}"/><stop offset="1" stop-color="{t[3]}"/></linearGradient></defs>'
             f'<rect x="{x}" y="{y}" width="34" height="34" rx="8" fill="url(#{gid})" stroke="#0A0A0D" stroke-width="1.5"/>')

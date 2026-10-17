@@ -2,6 +2,13 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.3
+- Skins: Katalog mit 9 gestalteten Skins (Farbflächen, eigene Glyphen/Zahlen/Embleme, Streifen/Verläufe/Ringe, Gold/Chrom mit
+  Kantenabnutzung, Rippen/Finnen), je Waffe fünf; Farben aus den MT_-Kanälen plus zwei feste Skin-Akzente, Kontrastregel.
+- Konzeptblätter: Hauptskin in Isometrie, Orthos und Farbvarianten, neue Reihe SKIN/MUSTER (Blatt 4800×4432), Prompts nennen den Skin.
+- Spec: Feld `skin` (additiv, format_version 1) mit Lagen im Toolgen-Rahmen und neuen Mustertypen; Test 12 Fälle.
+- Bericht: [claude/docs/versions/0.3.md](claude/docs/versions/0.3.md), Format: [claude/docs/weapon-spec.md › Skins](claude/docs/weapon-spec.md#skins)
+
 ## claude-0.2
 - Weapon-Spec je Konzeptblatt (`claude/output/sheets/KXnn.spec.json`, 50 Dateien): Element, Kanal-Paletten der vier
   Farbvarianten, Bauteile, Visier, Aufkleber, Maße, Anker, Texturmuster – für Toolgen ohne Bildlesen.

@@ -283,8 +283,9 @@ _CACHE={}
 def resolve(full,sid,sheet,num,palette):
     """palette: die vier Farbfelder des Blatts (d['palette']) – für die Kontrastregel und unbelegte Kanäle"""
     key=(id(full),len(full.parts),sid,sheet,num,tuple(palette))
-    if key not in _CACHE:_CACHE[key]=_resolve(full,sid,sheet,num,palette)
-    return _CACHE[key]
+    hit=_CACHE.get(key)
+    if hit is None or hit[0] is not full:_CACHE[key]=hit=(full,_resolve(full,sid,sheet,num,palette))   # Modell mitführen: id() wird wiederverwendet
+    return hit[1]
 
 # Kontrastregel: Lagen, die sich vom Körper abheben sollen (Streifen, Ringe, Teilflächen, Glyphen), weichen auf den nächsten
 # Slot aus, wenn ihre Basisfarbe der Körperfarbe zu ähnlich ist (RGB-Abstand < MIN_CONTRAST, Werte 0..1).
@@ -300,12 +301,12 @@ _BASE={}
 def base_slots(full,palette,accents):
     """Basisfarbe je Slot (Kanalfarbe der Basis-Palette, unbelegt: Farbfeld) und Körperfarbe"""
     key=(id(full),tuple(palette))
-    if key not in _BASE:
+    if key not in _BASE or _BASE[key][0] is not full:
         from xlroles import channel_palettes
         from eng import Model as _M
         gm=_M();gm.parts=[P for P in full.parts if not P.get('sight')]
-        _BASE[key]=channel_palettes(full,gm,palette,'',CHANNELS)[0][0]['channels']
-    ch=_BASE[key]
+        _BASE[key]=(full,channel_palettes(full,gm,palette,'',CHANNELS)[0][0]['channels'])
+    ch=_BASE[key][1]
     out={c:(ch[c] or palette[SWATCH_FALLBACK[c]].upper()) for c in CHANNELS}
     for a,(c,_) in accents.items():out[a]=c
     return out
@@ -368,7 +369,8 @@ def _resolve(full,sid,sheet,num,palette):
             if not pl:out['notes'].append(f"glyphs {Lr['items']}: kein freier Platz auf einer Seitenfläche");continue
             i,(x0,y0,x1,y1),sc=pl;taken.append((x0,y0,x1,y1))
             P=full.parts[i];_,z0,z1=side_face(P)
-            decs=[];gsl=[fix(x,against=bs[Lr['on']] if Lr.get('on') else None) for x in Lr['slots']]
+            prev=[L['slot'] for L in out['layers'] if L['type']=='side_block']   # Glyphen heben sich auch von Teilflächen ab
+            decs=[];gsl=[fix(x,avoid=prev) for x in Lr['slots']]
             for poly,ci in polys:
                 pts=[(x0+px*sc,y0+py*sc) for px,py in poly]
                 slot=gsl[min(ci,len(gsl)-1)]

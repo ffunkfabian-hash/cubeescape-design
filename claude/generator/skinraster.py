@@ -93,7 +93,8 @@ def skin_texture(rs,colors):
             m=tgt(L['parts'])
             if not m.any():continue
             e=np.zeros((h,w),bool)
-            for dy,dx in ((0,1),(1,0),(0,-1),(-1,0)):e|=idb!=np.roll(np.roll(idb,dy,0),dx,1)
+            for dy,dx in ((0,1),(1,0),(0,-1),(-1,0)):   # nur Geometriekanten: Aufkleber-Ränder zählen nicht
+                e|=(idb!=np.roll(np.roll(idb,dy,0),dx,1))&~decm&~np.roll(np.roll(decm,dy,0),dx,1)
             dist=ndimage.distance_transform_edt(~e)
             # zusammenhängende Abschnitte: Zellen von etwa sechs Abnutzungsbreiten, Breite je Zelle 60–100 %
             wpx=L['width']*scale;cell=L['width']*6.0
