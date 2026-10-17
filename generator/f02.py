@@ -1,0 +1,27 @@
+SC,EW,AU,NB='#3C4256','#E8EEF6','#7CFFB2','#1A1E2C'
+INFO=dict(num='02',name='Sturmgewehr',nick='POLARLICHT',col=AU,pill='SCHIEFER · EISWEISS · AURORA',pal=[SC,EW,AU,NB],center=(372,300,0),
+ alt='Sturmgewehr Variante F: Bullpup-Gewehr in Schiefer und Eisweiß mit Magazin hinter dem Griff, Tragebügel oben und Aurora-Leuchtlinien',
+ desc='Als Bullpup umgebaut: Das Magazin sitzt hinter dem Griff, dadurch wird die Waffe kurz und kompakt. Oben spannt sich ein langer Tragebügel, der zugleich als Visierschiene dient – Kimme und Korn sind separat gezeichnet; Aurora-Grün markiert nur das Magazinfenster und den Handschutz.',
+ form='Bullpup: Magazin hinter Griff und Abzug · Schaftkappe hinten · Tragebügel auf zwei Stützen als Visierschiene · Kimme und Korn separat · Handschutz · kurzer Lauf mit Kühlscheiben')
+ITEMS=[
+ dict(t='poly',p=[(76,236),(92,234),(92,316),(76,312)],c=NB,z=(-24,24),r=4,L='Schaftkappe'),
+ dict(t='poly',p=[(90,230),(330,222),(350,240),(350,320),(110,320),(90,300)],c=SC,z=(-26,26),r=12,L='Gehäuse',
+      d=[([(168,248),(320,244),(320,300),(168,302)],NB,False,8),([(186,262),(232,261),(232,272),(186,273)],SC,False,3)]),
+ dict(t='poly',p=[(200,320),(250,320),(244,400),(196,400)],c=EW,z=(-16,16),r=6,L='Magazin',d=[([(216,340),(230,340),(227,384),(213,384)],AU,True,3)]),
+ dict(t='poly',p=[(300,320),(342,320),(326,410),(288,410)],c=NB,z=(-18,18),r=8,L='Griff'),
+ dict(t='poly',p=[(330,382),(392,380),(392,388),(330,390)],c=NB,z=(-5,5)),
+ dict(t='poly',p=[(386,322),(394,322),(392,388),(384,386)],c=NB,z=(-5,5)),
+ dict(t='poly',p=[(352,318),(360,318),(364,344),(358,346)],c=EW,z=(-3,3),L='Abzug'),
+ dict(t='poly',p=[(350,238),(520,238),(540,256),(540,306),(350,306)],c=EW,z=(-22,22),r=10,L='Handschutz',
+      d=[([(370,258),(510,258),(510,266),(370,266)],AU,True,3),([(380,282),(400,282),(400,294),(380,294)],NB,False,2),([(416,282),(436,282),(436,294),(416,294)],NB,False,2),([(452,282),(472,282),(472,294),(452,294)],NB,False,2)]),
+ dict(t='poly',p=[(182,212),(196,212),(196,232),(182,232)],c=SC,z=(-6,6),r=2),
+ dict(t='poly',p=[(440,204),(454,204),(454,244),(440,244)],c=SC,z=(-6,6),r=2),
+ dict(t='poly',p=[(150,208),(470,192),(482,199),(470,208),(160,222)],c=EW,z=(-8,8),r=5,L='Tragebügel'),
+ dict(t='poly',p=[(186,196),(204,195),(204,207),(186,208.5)],c=NB,z=(-6,6),r=2,L='Kimme',S=True),
+ dict(t='poly',p=[(456,184),(466,184),(466,194),(456,194.5)],c=NB,z=(-3,3),r=1,L='Korn',S=True),
+ dict(t='cyl',x=(540,640),y=274,R=13,c=NB,L='Lauf'),
+ dict(t='cyl',x=(560,566),y=274,R=21,c=SC),
+ dict(t='cyl',x=(582,588),y=274,R=21,c=SC),
+ dict(t='cyl',x=(604,610),y=274,R=21,c=SC),
+ dict(t='cyl',x=(640,668),y=274,R=18,c=EW,cap=[(10,NB,False),(4,AU,True)]),
+]
