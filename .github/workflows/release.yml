@@ -2,11 +2,17 @@ name: Release Konzeptblätter
 on:
   push:
     tags: ['claude-v*']
+# Release nur per Tag claude-v* (auf Wunsch des Nutzers); keine Tests. Öffentliches Repo: kostet keine Minuten.
+# Schätzung 17.10.2026: ~1 min je Lauf × ~1–2 Läufe im Monat.
 permissions:
   contents: write
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Pakete schnüren

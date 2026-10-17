@@ -1,0 +1,26 @@
+{
+  "name": "cubeescape-design",
+  "version": {
+    "file": "CHANGELOG.md",
+    "pattern": "(?m)^## claude-(\\d+\\.\\d+(?:\\.\\d+)?)"
+  },
+  "check": {
+    "quick": [["python3", "-m", "py_compile", "claude/generator/eng.py", "claude/generator/raster.py", "claude/generator/views.py", "claude/generator/xl.py"]],
+    "full": [["python3", "claude/generator/build_all.py", "--nur-xl"]]
+  },
+  "docs": {
+    "changelog": "CHANGELOG.md",
+    "dir": "claude/docs"
+  },
+  "owners": {
+    "claude/": "Claude",
+    "codex/": "Codex",
+    "docs/": "gemeinsam – nur auf Wunsch des Nutzers",
+    "Wurzel (README.md, CHANGELOG.md, AGENTS.md, CLAUDE.md, .ce-repo.json, .github/)": "Claude; Codex meldet Änderungswünsche"
+  },
+  "release": {
+    "branch_prefix": "release/",
+    "tag_prefix": "claude-v"
+  },
+  "heavy_lock": true
+}
