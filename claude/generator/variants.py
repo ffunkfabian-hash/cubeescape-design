@@ -23,8 +23,10 @@ VARIANTS=[
  dict(letter='J',name='Black Ice',idea='Stealth-Serie: wenige große, scharfe Facetten wie bei Tarnkappenjets, matte dunkle Grundtöne, '
       'eisblaue Leuchtkanten',since='0.4',lib='jlib'),
 ]
-# Namen, die schon vergeben sind (Codex-Pipeline codex/parallax), dürfen nicht noch einmal vorkommen
-TAKEN={'Parallax'}
+# Varianten der Codex-Pipeline (codex/, Stand codex-0.2.1 auf main 53d52e9): Buchstabe und Name sind dort vergeben
+# (Blätter KA01 …, KK01 …) und dürfen hier nicht noch einmal vorkommen
+CODEX={'A':'Parallax','K':'Flux Bloom'}
+TAKEN=set(CODEX.values())
 # Buchstaben, die nicht vergeben werden: I sieht in Blatt-IDs wie 1 aus (KI01), O wie 0
 SKIP_LETTERS='IO'
 
@@ -43,6 +45,7 @@ def name_problems(letter,nm,variants=VARIANTS):
     out=[]
     if not re.fullmatch(r'[A-Z]',letter or ''):out.append('Buchstabe muss ein Großbuchstabe sein')
     if letter in SKIP_LETTERS:out.append(f'Buchstabe {letter} wird nicht vergeben (Verwechslung mit Ziffern)')
+    if letter in CODEX:out.append(f'Buchstabe {letter} gehört Codex („{CODEX[letter]}“)')
     if not nm:out.append('neue Varianten brauchen einen englischen Namen');return out
     if not NAME_RE.match(nm):out.append('Name: 1–3 englische Wörter, nur Buchstaben, je Wort groß beginnend (z. B. „Black Ice“)')
     if len(nm)>16:out.append('Name höchstens 16 Zeichen (Kopfzeile des Blatts)')

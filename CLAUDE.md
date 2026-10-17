@@ -5,6 +5,8 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
 
 - Claude schreibt ausschließlich unter `claude/` (Pipeline, Modelle, Konzeptblätter, Prompts).
 - `codex/` gehört Codex: nicht ändern, nicht verschieben, keine Dateien daraus übernehmen oder per Symlink koppeln.
+- **Gleiche Regeln für Codex** (Nutzer, 17.10.2026): Alles hier gilt für Codex sinngemäß mit `codex/`. Wer hier eine Regel
+  ändert, zieht `AGENTS.md` im selben Zug nach. Codex-Varianten (A „Parallax“, K „Flux Bloom“) stehen in `variants.CODEX`.
 - `docs/` ist gemeinsam (Masterprompt, Aufträge, Vorlagen): nur nach ausdrücklichem Wunsch des Nutzers ändern.
 - Releases von Claude: Branch `release/claude-<version>` pushen; der Workflow legt Tag `claude-v<version>` und Release an.
 - Wurzeldateien (`README.md`, `CHANGELOG.md`, `AGENTS.md`, `CLAUDE.md`, `.ce-repo.json`, `.github/`) pflegt Claude; Codex meldet
@@ -31,3 +33,6 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   Quelle verlinken statt kopieren; vor Änderungen an Spec, Blättern oder Regeln lesen); vor dem
   Bauen, das ein Schwesterprojekt berührt (Toolgen, Cube Escape, Robogen, Cubegen), dessen Stelle lesen: `~/.claude/CLAUDE.md` ›
   Erfahrungen festhalten und querlesen.
+- **Texturen gemeinsam hinterlegen** (Wunsch des Nutzers, 17.10.2026): Materialmuster und Skins sollen an einer gemeinsamen Stelle
+  liegen, die Claude und Codex gleich nutzen; Ort noch offen. Bis dahin keine neuen Textur- oder Skin-Arten ohne Eintrag im
+  Versionsbericht.

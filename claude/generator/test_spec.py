@@ -234,12 +234,15 @@ class Variants(unittest.TestCase):
         for v in variants.VARIANTS:
             if v['letter'] in 'CDFGH':self.assertIsNone(v['name']);continue   # älter als die Regel
             with self.subTest(variant=v['letter']):self.assertEqual(variants.name_problems(v['letter'],v['name']),[])
-        self.assertTrue(variants.name_problems('K','Black Ice'))        # vergeben
-        self.assertTrue(variants.name_problems('K','Parallax'))         # Codex
-        self.assertTrue(variants.name_problems('K','schwarzes eis'))    # Schreibweise
-        self.assertTrue(variants.name_problems('K',None))
+        self.assertTrue(variants.name_problems('L','Black Ice'))        # vergeben
+        self.assertTrue(variants.name_problems('L','Parallax'))         # Codex
+        self.assertTrue(variants.name_problems('L','Flux Bloom'))       # Codex
+        self.assertTrue(variants.name_problems('L','schwarzes eis'))    # Schreibweise
+        self.assertTrue(variants.name_problems('L',None))
         self.assertTrue(variants.name_problems('I','Glass Fang'))       # I wird nicht vergeben
-        self.assertEqual(variants.name_problems('K','Glass Fang'),[])
+        self.assertTrue(variants.name_problems('K','Glass Fang'))       # K gehört Codex (KK01 …)
+        self.assertTrue(variants.name_problems('A','Glass Fang'))       # A gehört Codex (KA01 …)
+        self.assertEqual(variants.name_problems('L','Glass Fang'),[])
     def test_spec_name(self):
         for s in sheetmodels.SHEETS:
             with self.subTest(sheet=s):self.assertEqual(load(s)['sheet']['variant_name'],variants.name(s[1]))
