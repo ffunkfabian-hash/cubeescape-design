@@ -39,4 +39,5 @@ if not nur_xl:
 with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[[P('build_xl.py',*fid[v])] for v in V]))
 run_seq([P('mkdoc.py')])
 if os.path.exists('Waffen-Prompts.md'):shutil.copy('Waffen-Prompts.md',os.path.join(PROMPTS,'Waffen-Prompts.md'))
+run_seq([P('make_viewer.py')])   # Viewer claude/output/index.html (Regel in CLAUDE.md)
 print('fertig')
