@@ -1,8 +1,10 @@
 name: Release Konzeptblätter
 on:
+  # Release über einen Branch release/claude-<version> (Tags kann die Claude-Sitzung nicht pushen) oder per Hand.
   push:
-    tags: ['claude-v*']
-# Release nur per Tag claude-v* (auf Wunsch des Nutzers); keine Tests. Öffentliches Repo: kostet keine Minuten.
+    branches: ['release/claude-*']
+  workflow_dispatch:
+# Release nur auf Wunsch des Nutzers; keine Tests. Öffentliches Repo: kostet keine Minuten.
 # Schätzung 17.10.2026: ~1 min je Lauf × ~1–2 Läufe im Monat.
 permissions:
   contents: write
@@ -15,14 +17,18 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Version bestimmen
+        run: echo "VER=claude-v${GITHUB_REF_NAME#release/claude-}" >> "$GITHUB_ENV"
       - name: Pakete schnüren
         run: |
           mkdir -p dist
-          cd claude/output && zip -qr ../../dist/claude-konzeptblaetter-${GITHUB_REF_NAME}.zip sheets && cd ../..
-          zip -qr dist/claude-prompts-${GITHUB_REF_NAME}.zip docs claude/prompts
+          cd claude/output && zip -qr ../../dist/claude-konzeptblaetter-${VER}.zip sheets && cd ../..
+          zip -qr dist/claude-prompts-${VER}.zip docs claude/prompts
       - name: Release anlegen
         uses: softprops/action-gh-release@v2
         with:
-          name: Konzeptblätter ${{ github.ref_name }}
+          tag_name: ${{ env.VER }}
+          target_commitish: ${{ github.sha }}
+          name: Claude-Konzeptblätter ${{ env.VER }}
           body_path: docs/RELEASE.md
           files: dist/*.zip
