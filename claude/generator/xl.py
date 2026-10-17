@@ -147,17 +147,30 @@ def detail_view(m,center,W,H,ow=3.0):
     core=[P for P in m.parts if (P.get('label') or '') in DETAIL_LABELS[:6]]
     sel=core or [P for P in m.parts if (P.get('label') or '') in DETAIL_LABELS]
     if not sel:return None,None
-    bb=_bbox(sel)
-    yaw,pitch=-28,-22
-    c3=[(a+b)/2 for a,b in bb]
-    yw,pt=math.radians(yaw),math.radians(pitch)
-    o=tf((c3[0]-center[0],c3[1]-center[1],c3[2]-center[2]),yw,pt)
-    corners=[(x,y,z) for x in bb[0] for y in bb[1] for z in bb[2]]
-    pr=[tf((x-center[0],y-center[1],z-center[2]),yw,pt) for x,y,z in corners]
-    hw=max(abs(p[0]-o[0]) for p in pr);hh=max(abs(p[1]-o[1]) for p in pr)
-    sc=min((W/2-40)/max(hw*1.8,1),(H/2-50)/max(hh*1.8,1),4.5)
-    v=svgview(m,yaw,pitch,center,W,H,sc,ow=ow,origin=(o[0],o[1]),shadow=False)
     names=sorted({P['label'] for P in sel},key=DETAIL_LABELS.index)
+    yaw,pitch=-28,-22
+    yw,pt=math.radians(yaw),math.radians(pitch)
+    # Rahmen = sichtbarer Teil von Griff/Abzug/Bügel (der Griffkopf steckt im Gehäuse), mittig in der Fläche unter der Überschrift
+    TOP,BOT,SIDE,FILL=58,26,40,1.4
+    near=[P for P in m.parts if (P.get('label') or '') in DETAIL_LABELS]
+    pr=[tf((q[0]-center[0],q[1]-center[1],q[2]-center[2]),yw,pt) for P in near for f in P['F'] for q in f['v']]
+    box=[min(p[0] for p in pr),min(p[1] for p in pr),max(p[0] for p in pr),max(p[1] for p in pr)]
+    o=((box[0]+box[2])/2,(box[1]+box[3])/2)
+    s0=min((W-2*SIDE)/max(box[2]-box[0],1),(H-TOP-BOT)/max(box[3]-box[1],1))
+    svgview(m,yaw,pitch,center,W,H,s0,ow=ow,origin=o,shadow=False)  # Vorlauf: was davon ist sichtbar?
+    vis=raster.LAST.get('boxes',{})
+    vb=[vis[n] for n in names if n in vis]
+    if vb:
+        px=[min(b[0] for b in vb),min(b[1] for b in vb),max(b[2] for b in vb),max(b[3] for b in vb)]
+        # Magazin im Griff (Pistole): Bodenplatte unter dem Griff gehört mit in den Rahmen; Magazin vor dem Abzug oder oben auf dem Gehäuse nicht
+        for n in DETAIL_LABELS[6:]:
+            b=vis.get(n)
+            if n not in names and b and px[0]<=(b[0]+b[2])/2<=px[2] and (b[1]+b[3])/2>(px[1]+px[3])/2:
+                px=[min(px[0],b[0]),min(px[1],b[1]),max(px[2],b[2]),max(px[3],b[3])]
+        box=[o[0]+(px[0]-W/2)/s0,o[1]+(px[1]-H/2)/s0,o[0]+(px[2]-W/2)/s0,o[1]+(px[3]-H/2)/s0]
+        o=((box[0]+box[2])/2,(box[1]+box[3])/2)
+    sc=min((W-2*SIDE)/max((box[2]-box[0])*FILL,1),(H-TOP-BOT)/max((box[3]-box[1])*FILL,1),4.5)
+    v=svgview(m,yaw,pitch,center,W,H,sc,pad=(TOP-BOT)/2,ow=ow,origin=o,shadow=False)
     return v,names
 
 def _callouts(anchors,MW,MH,col,cy_model,k=1.0):
