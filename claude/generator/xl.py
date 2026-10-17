@@ -153,7 +153,33 @@ def pick_labels(anchors,n=8):
     ks=sorted(anchors,key=lambda k:(PRIO.index(k) if k in PRIO else 50,k))[:n]
     return {k:anchors[k] for k in ks},[k for k in anchors if k not in ks]
 
+def _shift_part(P,dx):
+    Q=dict(P);Q['F']=[dict(f,v=[(x-dx,y,z) for x,y,z in f['v']]) for f in P['F']]
+    dec=[]
+    for plane,val,pts,c,em in P['dec']:
+        if plane[0]=='z':pts=[(x-dx,y) for x,y in pts]
+        elif plane[0]=='x':val=val-dx
+        else:pts=[(x-dx,z) for x,z in pts]
+        dec.append((plane,val,pts,c,em))
+    Q['dec']=dec;return Q
+
+def compact_sight(ms,gap=30):
+    """Getrennte Visierteile (Kimme hinten, Korn vorne) rücken für die Visier-Ansicht zusammen,
+    sonst bestimmt der Abstand über die ganze Waffenlänge den Maßstab und die Teile werden winzig."""
+    xs=[(min(q[0] for f in P['F'] for q in f['v']),max(q[0] for f in P['F'] for q in f['v']),P) for P in ms.parts]
+    cl=[]
+    for x0,x1,P in sorted(xs,key=lambda t:t[0]):
+        if cl and x0<=cl[-1][1]+gap:cl[-1][1]=max(cl[-1][1],x1);cl[-1][2].append(P)
+        else:cl.append([x0,x1,[P]])
+    if len(cl)<2:return ms,False
+    out=Model();shift=0
+    for i,(x0,x1,Ps) in enumerate(cl):
+        if i:shift+=max(0,x0-cl[i-1][1]-gap)
+        out.parts+=[_shift_part(P,shift) if shift else P for P in Ps]
+    return out,shift>0
+
 def sight_panel(ms,center,w,h,fid,name,col,small=False):
+    if ms.parts:ms,_=compact_sight(ms)
     if not ms.parts:
         inner=f'<text x="{w/2}" y="{h/2}" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" fill="#8FA0B3">Keine Optik – Visierschiene frei</text>'
         return panel(inner,w,h,'VISIER · SEPARAT',fid,name+' ohne separates Visier')
