@@ -5,7 +5,7 @@
 """
 import subprocess,sys,os,shutil
 from concurrent.futures import ThreadPoolExecutor
-from cepaths import E3D,ROOT,OUT
+from cepaths import E3D,ROOT,OUT,PROMPTS
 os.chdir(E3D)
 args=sys.argv[1:]
 nur_xl='--nur-xl' in args
@@ -29,5 +29,5 @@ if not nur_xl:
     with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[jobs[v] for v in V]))
 with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[[P('build_xl.py',*fid[v])] for v in V]))
 run_seq([P('mkdoc.py')])
-if os.path.exists('Waffen-Prompts.md'):shutil.copy('Waffen-Prompts.md',os.path.join(ROOT,'docs','prompts','Waffen-Prompts.md'))
+if os.path.exists('Waffen-Prompts.md'):shutil.copy('Waffen-Prompts.md',os.path.join(PROMPTS,'Waffen-Prompts.md'))
 print('fertig')

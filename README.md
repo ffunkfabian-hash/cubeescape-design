@@ -32,23 +32,28 @@ Fusionsgewehr, Spurgewehr, Raketenwerfer, Bogen.
 
 ## Struktur
 
+Die Stände sind **nach Erzeuger getrennt**: `claude/` enthält ausschließlich Claudes Pipeline und Konzepte,
+`codex/` ausschließlich die von Codex. Gemeinsam ist nur `docs/` (Regeln und Aufträge). Siehe `CLAUDE.md` und `AGENTS.md`.
+
 ```
-docs/
+docs/                    gemeinsam: Regeln und Aufträge
   masterprompt.md        verbindliche Qualitätsregeln
   AUFTRAG.md             vollständiger Auftrag für Codex (inkl. Masterprompt)
   prompt-vorlagen.md     Vorlagen für ChatGPT-Bildgenerator und Codex
+claude/                  nur Claude
   prompts/               fertige Prompts je Waffe (DE/EN)
-generator/
-  eng.py raster.py       Modell-API und Z-Buffer-Toon-Renderer
-  views.py xl.py         Karte (2400×1560) und Konzeptblatt XL (4800×3400)
-  v01m.py c02–c10.py     Modelle Variante C
-  dmods.py dmodels.py    Modelle Variante D
-  f01–f10.py g01–g10.py h01–h10.py
-  build_*.py             Bauskripte je Variante, build_all.py baut alles
-output/
-  sheets/                Konzeptblätter XL (KC01 … KH10) als HTML
-  previews/              PNG-Vorschauen
-reference/crops/         Original-Seitenansichten (Referenz für Variante D)
+  generator/
+    eng.py raster.py     Modell-API und Z-Buffer-Toon-Renderer
+    views.py xl.py       Karte (2400×1560) und Konzeptblatt XL (4800×3400)
+    v01m.py c02–c10.py   Modelle Variante C
+    dmods.py dmodels.py  Modelle Variante D
+    f01–f10.py g01–g10.py h01–h10.py
+    build_*.py           Bauskripte je Variante, build_all.py baut alles
+  output/
+    sheets/              Konzeptblätter XL (KC01 … KH10) als HTML
+    previews/            PNG-Vorschauen
+  reference/crops/       Original-Seitenansichten (Referenz für Variante D)
+codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
 ```
 
 ## Einrichten und bauen
@@ -56,12 +61,12 @@ reference/crops/         Original-Seitenansichten (Referenz für Variante D)
 ```bash
 pip install -r requirements.txt
 playwright install chromium        # nur für Screenshots / Vorschauen
-python generator/build_all.py      # alles neu bauen (dauert, die XL-Blätter sind groß)
-python generator/build_all.py G H  # nur bestimmte Varianten
+python claude/generator/build_all.py      # alles neu bauen (dauert, die XL-Blätter sind groß)
+python claude/generator/build_all.py G H  # nur bestimmte Varianten
 ```
 
 Die HTML-Dateien binden Schriften über Google Fonts ein; ohne Internet erscheinen Ersatzschriften.
-`output/sheets/*.dc.html` sind Canvas-Artboards; zum Ansehen im Browser die Zeile
+`claude/output/sheets/*.dc.html` sind Canvas-Artboards; zum Ansehen im Browser die Zeile
 `<script src="./support.js"></script>` ignorieren bzw. entfernen.
 
 ## Modell-API (Kurzfassung)
@@ -83,7 +88,7 @@ keine schwebenden Teile, keine ungewollten Durchdringungen (koplanare Teile ≥ 
 ## Mit Codex weiterarbeiten
 
 `docs/AUFTRAG.md` enthält den kompletten Auftrag inklusive Masterprompt. In Codex: „Lies docs/AUFTRAG.md vollständig“
-– für neue Varianten an den vorhandenen Modellen in `generator/` orientieren.
+– für neue Varianten eine eigene Pipeline unter `codex/` anlegen (Claudes Dateien unter `claude/` nicht verändern).
 
 ## Bekannte Grenzen
 

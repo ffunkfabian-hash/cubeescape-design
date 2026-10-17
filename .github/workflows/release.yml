@@ -1,7 +1,7 @@
 name: Release Konzeptblätter
 on:
   push:
-    tags: ['v*']
+    tags: ['claude-v*']
 permissions:
   contents: write
 jobs:
@@ -12,8 +12,8 @@ jobs:
       - name: Pakete schnüren
         run: |
           mkdir -p dist
-          cd output && zip -qr ../dist/konzeptblaetter-${GITHUB_REF_NAME}.zip sheets previews && cd ..
-          zip -qr dist/prompts-${GITHUB_REF_NAME}.zip docs
+          cd claude/output && zip -qr ../../dist/claude-konzeptblaetter-${GITHUB_REF_NAME}.zip sheets previews && cd ../..
+          zip -qr dist/claude-prompts-${GITHUB_REF_NAME}.zip docs claude/prompts
       - name: Release anlegen
         uses: softprops/action-gh-release@v2
         with:
