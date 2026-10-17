@@ -6,84 +6,12 @@ from scipy import ndimage
 sys.path.insert(0,E3D+'')
 from eng import *
 import raster
+from xlroles import *
+from xlroles import _rgb,_hex,_lum,_sat,_mix
 
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
 ORTHO=[('SEITENANSICHT LINKS',0,0),('SEITENANSICHT RECHTS',180,0),('VORDERANSICHT',-90,0),('RÜCKANSICHT',90,0),('DRAUFSICHT',0,90),('UNTERANSICHT',0,-90)]
 DETAIL_LABELS=['Abzug','Abzugbügel','Bügel','Griff','Pistolengriff','Griffstück','Magazin','Energiemagazin']
-GRIP_LABELS={'Griff','Pistolengriff','Vordergriff','Pumpgriff','Griffstück','Wangenauflage','Schaftkappe'}
-METAL_LABELS={'Lauf','Doppellauf','Oberlauf','Unterlauf','Mündung','Mündungsbremse','Laufmantel','Montageringe','Montage','Schiene','Visierschiene','Schalldämpfer','Rohr','Abschussrohr','Zinken','Kühlrippen','Laufklammer','Fokusringe','Fokusring','Bündelring','Beschleunigerring','Energiespule','Rahmen'}
-
-VARIANTS=[
- ('CUBE ESCAPE STANDARD',['#ECE6DA','#A3A7AD','#2B2E33','#F28C28']),
- ('ARKTIS',['#F3F6F9','#AEBBCA','#3A4452','#22D3EE']),
- ('NACHT',['#4A4E57','#2C2F35','#141518','#FF5A36']),
- ('WÜSTE',['#DCC8A0','#917B57','#3B3226','#F2A93B']),
-]
-MATS=[('LACKIERTES METALL','lack'),('GEBÜRSTETES METALL','brushed'),('GUMMIERTER GRIFF','rubber'),('MATTER KUNSTSTOFF','plastic'),('BELEUCHTETES ELEMENT','light')]
-
-def _rgb(c):c=c.lstrip('#');return tuple(int(c[i:i+2],16)/255 for i in (0,2,4))
-def _hex(r):return '#%02X%02X%02X'%tuple(max(0,min(255,round(x*255))) for x in r)
-def _lum(c):r,g,b=_rgb(c);return 0.2126*r+0.7152*g+0.0722*b
-def _sat(c):r,g,b=_rgb(c);h,l,s=colorsys.rgb_to_hls(r,g,b);return s if 0.08<l<0.92 else 0
-def _mix(a,b,t):A,B=_rgb(a),_rgb(b);return _hex(tuple(A[i]*(1-t)+B[i]*t for i in range(3)))
-
-def all_colors(m):
-    out={}
-    for P in m.parts:
-        out.setdefault(P['col'],[0,P['emit']]);out[P['col']][0]+=len(P['F'])
-        for d in P['dec']:
-            out.setdefault(d[3],[0,d[4]]);out[d[3]][0]+=1
-            if d[4]:out[d[3]][1]=True
-    return out
-
-BODY_LABELS={'Gehäuse','Schaft','Rahmen','Handschutz','Laufverkleidung','Laufmantel','Laufhülle','Schlitten','Raketenkasten','Rohr','Abschussrohr','Abschussrohre','Mittelstück','Wurfarm','Tragegriff','Laufkasten','Ladekammer','Kondensator','Kondensatorzelle','Trommel','Schaftkappe','Trichterheck'}
-DARK_LABELS={'Griff','Pistolengriff','Vordergriff','Pumpgriff','Griffstück','Magazin','Energiemagazin','Trommelmagazin','Röhrenmagazin','Abzug','Abzugbügel','Wangenauflage'}
-def recolor(m,pal):
-    """Gleiche Geometrie, neue Materialkombination – nach Bauteil-Rollen:
-    Gehäuse/Schaft -> Primärfarbe (hell), Griffe/Magazine -> dunkel, Metallteile -> mittel, Leucht-/Signalfarben -> Akzent."""
-    light,mid,dark,acc=pal
-    cols=all_colors(m)
-    votes={}
-    for P in m.parts:
-        lb=P.get('label') or ''
-        r='light' if lb in BODY_LABELS else 'dark' if lb in DARK_LABELS else 'mid' if lb in METAL_LABELS else None
-        if r and not P['emit']:votes.setdefault(P['col'],{}).setdefault(r,0);votes[P['col']][r]+=len(P['F'])
-    tot=sum(n for n,e in cols.values()) or 1
-    bodyc=max(cols,key=lambda c:(votes.get(c,{}).get('light',0),cols[c][0] if not cols[c][1] else -1))
-    Lb=_lum(bodyc)
-    def role(c,emit):
-        if emit:return 'acc'
-        if c in votes:return 'light' if 'light' in votes[c] else max(votes[c],key=votes[c].get)
-        if c==bodyc:return 'light'
-        if _sat(c)>=0.5 and cols[c][0]/tot<0.12 and abs(_lum(c)-Lb)>0.05:return 'accd'
-        L=_lum(c)
-        if abs(L-Lb)<0.07:return 'light'
-        if L>Lb:return 'lightx'
-        return 'mid' if L>0.24 else 'dark'
-    def mp(c,emit):
-        r=role(c,emit)
-        if r=='acc':return _mix(acc,'#FFFFFF',0.18) if _lum(c)>0.75 else acc
-        if r=='accd':return acc
-        if r=='light':return light
-        if r=='lightx':return _mix(light,'#FFFFFF',0.35)
-        if r=='mid':return mid
-        return dark
-    m2=copy.deepcopy(m)
-    for P in m2.parts:
-        P['col']=mp(P['col'],P['emit'])
-        P['dec']=[(a,b,c,mp(d,e),e) for a,b,c,d,e in P['dec']]
-    return m2
-
-def material_of(P):
-    if P['emit']:return 'light'
-    lb=P.get('label') or ''
-    if lb in GRIP_LABELS:return 'rubber'
-    if lb in METAL_LABELS:return 'brushed'
-    L=_lum(P['col'])
-    if _sat(P['col'])>0.5:return 'lack'
-    if L>0.55:return 'lack'
-    if L>0.22:return 'brushed'
-    return 'plastic'
 
 def make_texture(seed=3):
     """Texturen im Objektraum: Muster hängen an Bauteil-Koordinaten (nicht an der Bildrichtung)."""

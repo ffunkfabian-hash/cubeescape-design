@@ -1,0 +1,1095 @@
+{
+ "format": "cubeescape-design/weapon-spec",
+ "format_version": 1,
+ "generator": {
+  "repo": "cubeescape-design",
+  "tool": "claude/generator/export_spec.py",
+  "claude_version": "0.2"
+ },
+ "sheet": {
+  "id": "KC06",
+  "file": "KC06.dc.html",
+  "variant": "C",
+  "number": "06",
+  "nick": "Neon",
+  "fid": "c06"
+ },
+ "weapon": {
+  "name_de": "Maschinenpistole",
+  "toolgen_id": "smg"
+ },
+ "element": "energy",
+ "element_source": "Nutzer 17.10.2026 (Toolgen docs/ENTSCHEIDUNGEN.md, data/tools.json)",
+ "units": {
+  "model_unit_m": 0.00103356,
+  "model_length_units": 596.0,
+  "reference_length_m": 0.616,
+  "rule": "Länge entlang der Mündungsachse (Modell x, Visier montiert) = Toolgen-Länge des Waffentyps",
+  "reference": "Toolgen 0.13 Weltmodell smg, qa_game.json bounds_lod0.source_bounds_m (Messung 17.10.2026)"
+ },
+ "axes": {
+  "model": {
+   "x": "vorn (Mündung)",
+   "y": "unten",
+   "z": "links"
+  },
+  "target": {
+   "system": "Toolgen/Blender",
+   "forward": "-Y",
+   "up": "+Z",
+   "left": "+X",
+   "unit": "m"
+  },
+  "matrix_model_to_target": [
+   [0, 0, 1],
+   [-1, 0, 0],
+   [0, -1, 0]
+  ],
+  "origin": "Socket_Hand",
+  "formula": "p_m = model_unit_m * M · (p_model − Socket_Hand.model)"
+ },
+ "dimensions_m": {
+  "weapon": {
+   "length": 0.616,
+   "height": 0.3142,
+   "width": 0.0702,
+   "bounds_m": [
+    [-0.0351, -0.3121, -0.093],
+    [0.0351, 0.3039, 0.2212]
+   ]
+  },
+  "with_sight": {
+   "length": 0.616,
+   "height": 0.3411,
+   "width": 0.0702,
+   "bounds_m": [
+    [-0.0351, -0.3121, -0.093],
+    [0.0351, 0.3039, 0.2481]
+   ]
+  }
+ },
+ "anchors": {
+  "Socket_Hand": {
+   "position_m": [0.0, 0.0, 0.0],
+   "model": [354.05, 360.0, 0.0],
+   "source": "Mitte von p05 (Griff)"
+  },
+  "Socket_SupportHand": {
+   "position_m": null,
+   "model": null,
+   "source": "nicht ableitbar (kein Vordergriff, zweiter Griff oder Handschutz vor dem Griff)"
+  },
+  "Socket_Muzzle": {
+   "position_m": [0.0, -0.2811, 0.1375],
+   "model": [626.0, 227.0, 0.0],
+   "source": "vorderstes bezeichnetes Mündungs-/Laufteil: Vorderkante von p15 (Mündung), Querschnittsmitte"
+  },
+  "Socket_CenterOfMass": {
+   "position_m": [-0.0, -0.0116, 0.1203],
+   "model": [365.28, 243.58, -0.0],
+   "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert"
+  },
+  "Socket_Sight": {
+   "position_m": [0.0, 0.0259, 0.2201],
+   "model": [329.0, 147.0, 0.0],
+   "source": "Unterkante Mitte der Visierbaugruppe (montierte Lage)"
+  }
+ },
+ "palette": [
+  {
+   "id": "base",
+   "name": "BASIS · SCHWARZ · MAGENTA · GELB",
+   "swatches": [
+    "#1A1A1F",
+    "#2B2B33",
+    "#EC4899",
+    "#FACC15"
+   ],
+   "channels": {
+    "MT_Primary": "#1A1A1F",
+    "MT_Secondary": null,
+    "MT_Accent": "#7A2550",
+    "MT_Metal": "#2B2B33",
+    "MT_Energy": null,
+    "MT_Emission": "#EC4899",
+    "MT_Detail": "#FACC15"
+   },
+   "other_colors": {
+    "MT_Primary": [
+     {
+      "color": "#0B0B0E",
+      "share": 0.005
+     }
+    ],
+    "MT_Emission": [
+     {
+      "color": "#FCE7F3",
+      "share": 0.021
+     }
+    ]
+   },
+   "on_sheet": true,
+   "sight_colors": "wie Modell"
+  },
+  {
+   "id": "standard",
+   "name": "CUBE ESCAPE STANDARD",
+   "swatches": [
+    "#ECE6DA",
+    "#A3A7AD",
+    "#2B2E33",
+    "#F28C28"
+   ],
+   "channels": {
+    "MT_Primary": "#ECE6DA",
+    "MT_Secondary": null,
+    "MT_Accent": "#F28C28",
+    "MT_Metal": "#A3A7AD",
+    "MT_Energy": null,
+    "MT_Emission": "#F28C28",
+    "MT_Detail": "#2B2E33"
+   },
+   "other_colors": {
+    "MT_Emission": [
+     {
+      "color": "#F4A14F",
+      "share": 0.021
+     }
+    ]
+   },
+   "on_sheet": true,
+   "sight_colors": "extrapoliert"
+  },
+  {
+   "id": "arktis",
+   "name": "ARKTIS",
+   "swatches": [
+    "#F3F6F9",
+    "#AEBBCA",
+    "#3A4452",
+    "#22D3EE"
+   ],
+   "channels": {
+    "MT_Primary": "#F3F6F9",
+    "MT_Secondary": null,
+    "MT_Accent": "#22D3EE",
+    "MT_Metal": "#AEBBCA",
+    "MT_Energy": null,
+    "MT_Emission": "#22D3EE",
+    "MT_Detail": "#3A4452"
+   },
+   "other_colors": {
+    "MT_Emission": [
+     {
+      "color": "#4ADBF1",
+      "share": 0.021
+     }
+    ]
+   },
+   "on_sheet": true,
+   "sight_colors": "extrapoliert"
+  },
+  {
+   "id": "nacht",
+   "name": "NACHT",
+   "swatches": [
+    "#4A4E57",
+    "#2C2F35",
+    "#141518",
+    "#FF5A36"
+   ],
+   "channels": {
+    "MT_Primary": "#4A4E57",
+    "MT_Secondary": null,
+    "MT_Accent": "#FF5A36",
+    "MT_Metal": "#2C2F35",
+    "MT_Energy": null,
+    "MT_Emission": "#FF5A36",
+    "MT_Detail": "#141518"
+   },
+   "other_colors": {
+    "MT_Emission": [
+     {
+      "color": "#FF785A",
+      "share": 0.021
+     }
+    ]
+   },
+   "on_sheet": true,
+   "sight_colors": "extrapoliert"
+  }
+ ],
+ "channels_used": [
+  "MT_Primary",
+  "MT_Accent",
+  "MT_Metal",
+  "MT_Emission",
+  "MT_Detail"
+ ],
+ "parts": [
+  {
+   "id": "p00",
+   "label": null,
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.004249,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0165, 0.1589, 0.1816],
+    [-0.0062, 0.2918, 0.1988]
+   ]
+  },
+  {
+   "id": "p01",
+   "label": null,
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.004245,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0165, 0.159, 0.0823],
+    [-0.0062, 0.2917, 0.0975]
+   ]
+  },
+  {
+   "id": "p02",
+   "label": null,
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.004249,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.0062, 0.1589, 0.1816],
+    [0.0165, 0.2918, 0.1988]
+   ]
+  },
+  {
+   "id": "p03",
+   "label": null,
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.004245,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.0062, 0.159, 0.0823],
+    [0.0165, 0.2917, 0.0975]
+   ]
+  },
+  {
+   "id": "p04",
+   "label": "Schaft",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.017623,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0227, 0.2853, 0.0744],
+    [0.0227, 0.3039, 0.2026]
+   ]
+  },
+  {
+   "id": "p05",
+   "label": "Griff",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "rubber",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.040978,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0227, -0.0366, -0.0827],
+    [0.0227, 0.0366, 0.0827]
+   ]
+  },
+  {
+   "id": "p06",
+   "label": "Magazin",
+   "channel": "MT_Detail",
+   "channel_source": "role",
+   "material": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#FACC15",
+   "area_m2": 0.011338,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0269, -0.033, -0.093],
+    [0.0269, 0.0414, -0.0786]
+   ]
+  },
+  {
+   "id": "p07",
+   "label": "Abzug",
+   "channel": "MT_Detail",
+   "channel_source": "role",
+   "material": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#FACC15",
+   "area_m2": 0.002358,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0041, -0.0577, 0.0221],
+    [0.0041, -0.0436, 0.0848]
+   ]
+  },
+  {
+   "id": "p08",
+   "label": null,
+   "channel": "MT_Metal",
+   "channel_source": "distributed",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#2B2B33",
+   "area_m2": 0.002649,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0062, -0.0903, -0.0041],
+    [0.0062, -0.0289, 0.0041]
+   ]
+  },
+  {
+   "id": "p09",
+   "label": null,
+   "channel": "MT_Metal",
+   "channel_source": "distributed",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#2B2B33",
+   "area_m2": 0.003834,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0062, -0.0909, -0.0041],
+    [0.0062, -0.0806, 0.0848]
+   ]
+  },
+  {
+   "id": "p10",
+   "label": "Gehäuse",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.148568,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0351, -0.1984, 0.0827],
+    [0.0351, 0.1737, 0.1964]
+   ]
+  },
+  {
+   "id": "p11",
+   "label": "Visierschiene",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "brushed",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.021299,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0165, -0.0578, 0.1943],
+    [0.0165, 0.1075, 0.2212]
+   ]
+  },
+  {
+   "id": "p12",
+   "label": "Kimme",
+   "channel": "MT_Metal",
+   "channel_source": "distributed",
+   "material": "matte",
+   "emissive": false,
+   "sight": true,
+   "color": "#2B2B33",
+   "area_m2": 0.002621,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0103, 0.0621, 0.2201],
+    [0.0103, 0.091, 0.2357]
+   ]
+  },
+  {
+   "id": "p13",
+   "label": "Korn",
+   "channel": "MT_Metal",
+   "channel_source": "distributed",
+   "material": "matte",
+   "emissive": false,
+   "sight": true,
+   "color": "#2B2B33",
+   "area_m2": 0.002008,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0083, -0.0392, 0.2201],
+    [0.0083, -0.0144, 0.2357]
+   ]
+  },
+  {
+   "id": "p14",
+   "label": null,
+   "channel": "MT_Metal",
+   "channel_source": "distributed",
+   "material": "matte",
+   "emissive": false,
+   "sight": true,
+   "color": "#2B2B33",
+   "area_m2": 0.00048,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0031, -0.031, 0.2346],
+    [0.0031, -0.0227, 0.2481]
+   ]
+  },
+  {
+   "id": "p15",
+   "label": "Mündung",
+   "channel": "MT_Metal",
+   "channel_source": "role",
+   "material": "brushed",
+   "emissive": false,
+   "sight": false,
+   "color": "#2B2B33",
+   "area_m2": 0.023326,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0269, -0.2811, 0.1096],
+    [0.0269, -0.1984, 0.1654]
+   ]
+  },
+  {
+   "id": "p16",
+   "label": null,
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.004112,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0145, -0.3121, 0.123],
+    [0.0145, -0.2811, 0.1519]
+   ]
+  }
+ ],
+ "sight": {
+  "present": true,
+  "kind": "iron",
+  "window": "none",
+  "source": "Bezeichnung Kimme/Korn",
+  "modular": true,
+  "mount_side": "top",
+  "labels": [
+   "Kimme",
+   "Korn"
+  ],
+  "parts": [
+   "p12",
+   "p13",
+   "p14"
+  ],
+  "bounds_m": [
+   [-0.0103, -0.0392, 0.2201],
+   [0.0103, 0.091, 0.2481]
+  ],
+  "anchor": "Socket_Sight"
+ },
+ "decals": [
+  {
+   "part": "p04",
+   "channel": "MT_Detail",
+   "surface": "left",
+   "emissive": false,
+   "color": "#FACC15",
+   "area_m2": 0.0010341,
+   "bounds_m": [
+    [0.0227, 0.2874, 0.1034],
+    [0.0227, 0.3018, 0.1757]
+   ]
+  },
+  {
+   "part": "p04",
+   "channel": "MT_Detail",
+   "surface": "right",
+   "emissive": false,
+   "color": "#FACC15",
+   "area_m2": 0.0010341,
+   "bounds_m": [
+    [-0.0227, 0.2874, 0.1034],
+    [-0.0227, 0.3018, 0.1757]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Metal",
+   "surface": "left",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0052358,
+   "bounds_m": [
+    [0.0227, -0.0265, -0.062],
+    [0.0227, 0.0244, 0.062]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Metal",
+   "surface": "right",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0052358,
+   "bounds_m": [
+    [-0.0227, -0.0265, -0.062],
+    [-0.0227, 0.0244, 0.062]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "left",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [0.0227, -0.0186, 0.0331],
+    [0.0227, 0.0104, 0.0413]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "right",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [-0.0227, -0.0186, 0.0331],
+    [-0.0227, 0.0104, 0.0413]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "left",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [0.0227, -0.0165, 0.0124],
+    [0.0227, 0.0125, 0.0207]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "right",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [-0.0227, -0.0165, 0.0124],
+    [-0.0227, 0.0125, 0.0207]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "left",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [0.0227, -0.0144, -0.0083],
+    [0.0227, 0.0145, 0.0]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "right",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [-0.0227, -0.0144, -0.0083],
+    [-0.0227, 0.0145, 0.0]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "left",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [0.0227, -0.0124, -0.0289],
+    [0.0227, 0.0166, -0.0207]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "right",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [-0.0227, -0.0124, -0.0289],
+    [-0.0227, 0.0166, -0.0207]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "left",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [0.0227, -0.0103, -0.0496],
+    [0.0227, 0.0187, -0.0413]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "right",
+   "emissive": false,
+   "color": "#7A2550",
+   "area_m2": 0.0002361,
+   "bounds_m": [
+    [-0.0227, -0.0103, -0.0496],
+    [-0.0227, 0.0187, -0.0413]
+   ]
+  },
+  {
+   "part": "p10",
+   "channel": "MT_Metal",
+   "surface": "left",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0041734,
+   "bounds_m": [
+    [0.0351, -0.1826, 0.1819],
+    [0.0351, 0.1624, 0.1943]
+   ]
+  },
+  {
+   "part": "p10",
+   "channel": "MT_Metal",
+   "surface": "right",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0041734,
+   "bounds_m": [
+    [-0.0351, -0.1826, 0.1819],
+    [-0.0351, 0.1624, 0.1943]
+   ]
+  },
+  {
+   "part": "p10",
+   "channel": "MT_Emission",
+   "surface": "left",
+   "emissive": true,
+   "color": "#EC4899",
+   "area_m2": 0.0013601,
+   "bounds_m": [
+    [0.0351, -0.0206, 0.1509],
+    [0.0351, 0.1447, 0.1592]
+   ]
+  },
+  {
+   "part": "p10",
+   "channel": "MT_Emission",
+   "surface": "right",
+   "emissive": true,
+   "color": "#EC4899",
+   "area_m2": 0.0013601,
+   "bounds_m": [
+    [-0.0351, -0.0206, 0.1509],
+    [-0.0351, 0.1447, 0.1592]
+   ]
+  },
+  {
+   "part": "p10",
+   "channel": "MT_Detail",
+   "surface": "left",
+   "emissive": false,
+   "color": "#FACC15",
+   "area_m2": 0.0021677,
+   "bounds_m": [
+    [0.0351, -0.1219, 0.1013],
+    [0.0351, -0.0558, 0.1344]
+   ]
+  },
+  {
+   "part": "p10",
+   "channel": "MT_Primary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#0B0B0E",
+   "area_m2": 0.0012092,
+   "bounds_m": [
+    [0.0355, -0.1157, 0.1065],
+    [0.0355, -0.062, 0.1292]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, 0.092, 0.2212],
+    [0.0134, 0.0993, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, 0.0776, 0.2212],
+    [0.0134, 0.0848, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, 0.0631, 0.2212],
+    [0.0134, 0.0703, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, 0.0486, 0.2212],
+    [0.0134, 0.0559, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, 0.0342, 0.2212],
+    [0.0134, 0.0414, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, 0.0197, 0.2212],
+    [0.0134, 0.0269, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, 0.0052, 0.2212],
+    [0.0134, 0.0125, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, -0.0093, 0.2212],
+    [0.0134, -0.002, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, -0.0237, 0.2212],
+    [0.0134, -0.0165, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, -0.0382, 0.2212],
+    [0.0134, -0.031, 0.2212]
+   ]
+  },
+  {
+   "part": "p11",
+   "channel": "MT_Metal",
+   "surface": "top",
+   "emissive": false,
+   "color": "#2B2B33",
+   "area_m2": 0.0001944,
+   "bounds_m": [
+    [-0.0134, -0.0527, 0.2212],
+    [0.0134, -0.0454, 0.2212]
+   ]
+  },
+  {
+   "part": "p12",
+   "channel": "MT_Emission",
+   "surface": "back",
+   "emissive": true,
+   "color": "#EC4899",
+   "area_m2": 5.13e-05,
+   "bounds_m": [
+    [-0.0041, 0.091, 0.2274],
+    [0.0041, 0.091, 0.2336]
+   ]
+  },
+  {
+   "part": "p14",
+   "channel": "MT_Emission",
+   "surface": "left",
+   "emissive": true,
+   "color": "#EC4899",
+   "area_m2": 1.96e-05,
+   "bounds_m": [
+    [0.0031, -0.0294, 0.2415],
+    [0.0031, -0.0242, 0.2464]
+   ]
+  },
+  {
+   "part": "p14",
+   "channel": "MT_Emission",
+   "surface": "right",
+   "emissive": true,
+   "color": "#EC4899",
+   "area_m2": 1.96e-05,
+   "bounds_m": [
+    [-0.0031, -0.0294, 0.2415],
+    [-0.0031, -0.0242, 0.2464]
+   ]
+  },
+  {
+   "part": "p15",
+   "channel": "MT_Primary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.0004286,
+   "bounds_m": [
+    [0.0269, -0.2211, 0.1199],
+    [0.0269, -0.2087, 0.155]
+   ]
+  },
+  {
+   "part": "p15",
+   "channel": "MT_Primary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.0004286,
+   "bounds_m": [
+    [-0.0269, -0.2211, 0.1199],
+    [-0.0269, -0.2087, 0.155]
+   ]
+  },
+  {
+   "part": "p15",
+   "channel": "MT_Primary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.0004286,
+   "bounds_m": [
+    [0.0269, -0.2418, 0.1199],
+    [0.0269, -0.2294, 0.155]
+   ]
+  },
+  {
+   "part": "p15",
+   "channel": "MT_Primary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.0004286,
+   "bounds_m": [
+    [-0.0269, -0.2418, 0.1199],
+    [-0.0269, -0.2294, 0.155]
+   ]
+  },
+  {
+   "part": "p15",
+   "channel": "MT_Primary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.0004286,
+   "bounds_m": [
+    [0.0269, -0.2625, 0.1199],
+    [0.0269, -0.2501, 0.155]
+   ]
+  },
+  {
+   "part": "p15",
+   "channel": "MT_Primary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#1A1A1F",
+   "area_m2": 0.0004286,
+   "bounds_m": [
+    [-0.0269, -0.2625, 0.1199],
+    [-0.0269, -0.2501, 0.155]
+   ]
+  },
+  {
+   "part": "p16",
+   "channel": "MT_Emission",
+   "surface": "front",
+   "emissive": true,
+   "color": "#EC4899",
+   "area_m2": 0.0002674,
+   "bounds_m": [
+    [-0.0093, -0.3121, 0.1282],
+    [0.0093, -0.3121, 0.1468]
+   ]
+  },
+  {
+   "part": "p16",
+   "channel": "MT_Emission",
+   "surface": "front",
+   "emissive": true,
+   "color": "#FCE7F3",
+   "area_m2": 6.68e-05,
+   "bounds_m": [
+    [-0.0047, -0.3126, 0.1328],
+    [0.0047, -0.3126, 0.1421]
+   ]
+  }
+ ],
+ "textures": {
+  "source": "xl.make_texture (Materialansicht des Blatts), Modelleinheiten mal model_unit_m",
+  "vocabulary": "Toolgen data/surface_recipes.json › patterns",
+  "painted": {
+   "toolgen_pattern": null,
+   "look": "weicher Glanzverlauf, kein Relief",
+   "brightness": [0.87, 1.13],
+   "waves": [
+    {
+     "axis": "Z",
+     "wavelength_mm": 168.845,
+     "amplitude": 0.09
+    },
+    {
+     "axis": "X-Y",
+     "wavelength_mm": 357.172,
+     "amplitude": 0.04
+    }
+   ]
+  },
+  "brushed": {
+   "toolgen_pattern": "brushed",
+   "direction": "long_axis",
+   "size_mm": 0.988,
+   "brightness": [0.87, 1.13],
+   "cross_wavelengths_mm": [2.328, 0.988, 0.551],
+   "weights": [0.5, 0.3, 0.2]
+  },
+  "rubber": {
+   "toolgen_pattern": "knurl",
+   "direction": "Flächenebene, ±45°",
+   "size_mm": 4.134,
+   "brightness": [0.66, 1.0]
+  },
+  "matte": {
+   "toolgen_pattern": "grain",
+   "size_mm": 0.795,
+   "brightness": [0.955, 1.045]
+  },
+  "lit": {
+   "toolgen_pattern": null,
+   "look": "leuchtend, Kanalfarbe als Emission, kein Muster"
+  }
+ },
+ "summary": {
+  "parts": 17,
+  "parts_explicit_channel": 0,
+  "decals": 42,
+  "channels_with_other_colors": {
+   "base": [
+    "MT_Emission",
+    "MT_Primary"
+   ],
+   "standard": [
+    "MT_Emission"
+   ],
+   "arktis": [
+    "MT_Emission"
+   ],
+   "nacht": [
+    "MT_Emission"
+   ]
+  }
+ }
+}

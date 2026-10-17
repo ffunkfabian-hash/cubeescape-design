@@ -131,6 +131,20 @@ def extent(m,yaw,pitch,center):
 
 def label(m,name):
     m.parts[-1]['label']=name;return m
+
+# Cube-Escape-Farbkanäle (Docs/EQUIPMENT.md › Farbkanäle). Ein ausdrücklicher Kanal gilt nur für den Export
+# (spec.json); das Blatt (Zeichnung, recolor) liest ihn nicht. Ohne Angabe ordnet xlroles.assign_channels() per Heuristik zu.
+CHANNELS=('MT_Primary','MT_Secondary','MT_Accent','MT_Metal','MT_Energy','MT_Emission','MT_Detail')
+def channel(m,ch):
+    """ordnet das zuletzt angelegte Teil ausdrücklich einem Kanal zu"""
+    assert ch in CHANNELS,ch
+    m.parts[-1]['channel']=ch;return m
+def copy_channels(m,entries):
+    """übernimmt 'ch' aus Bau-Einträgen (fgen-ITEMS, flib-Spec; gleiche Reihenfolge wie m.parts)"""
+    assert len(m.parts)==len(entries),(len(m.parts),len(entries))
+    for P,e in zip(m.parts,entries):
+        if e.get('ch'):assert e['ch'] in CHANNELS,e['ch'];P['channel']=e['ch']
+    return m
 def model_origin(m,yaw,pitch,center):
     """Projektion des Bounding-Box-Mittelpunkts aller Teile (gemeinsamer Bezugspunkt)."""
     vs=[q for P in m.parts for f in P['F'] for q in f['v']]
