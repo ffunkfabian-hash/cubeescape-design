@@ -51,7 +51,7 @@ claude/                  nur Claude
     build_*.py           Bauskripte je Variante, build_all.py baut alles
   output/
     sheets/              Konzeptblätter XL (KC01 … KH10) als HTML
-    previews/            PNG-Vorschauen
+    previews/            PNG-Vorschauen (werden auf dem Mac erzeugt, siehe Versionsbericht)
   reference/crops/       Original-Seitenansichten (Referenz für Variante D)
 codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
 ```
