@@ -88,19 +88,22 @@ def rasterview(m,yaw,pitch,center,W,H,scale,pad=0,ow=3.0,origin=None,texture=Non
         rgba[...,:3]=gn;rgba[...,3]=np.clip(a,0,0.3)*255
     rgba[fg,:3]=col[fg];rgba[fg,3]=255
     rgba[line,:3]=_hex(eng.OL);rgba[line,3]=255
-    anchors={}
+    anchors={};boxes={}
     labs={}
     for pi,(d,polys,P) in enumerate(parts):
         if P.get('label'):labs.setdefault(P['label'],[]).append(pi)
     for lb,pis in labs.items():
-        mk=np.isin(pb,pis)&~line
+        vis=np.isin(pb,pis)
+        if vis.any():  # sichtbare Pixel-Box je Bauteil (Bildpunkte, ohne SS)
+            yy,xx=np.nonzero(vis);boxes[lb]=(xx.min()/SS,yy.min()/SS,(xx.max()+1)/SS,(yy.max()+1)/SS)
+        mk=vis&~line
         mk2=mk&~decm
         if mk2.sum()>=20*SS*SS:mk=ndimage.binary_erosion(mk2,iterations=3) if ndimage.binary_erosion(mk2,iterations=3).sum()>0 else mk2
         if mk.sum()<20*SS*SS:continue
         yy,xx=np.nonzero(mk);cxm,cym=xx.mean(),yy.mean()
         k=np.argmin((xx-cxm)**2+(yy-cym)**2)
         anchors[lb]=(xx[k]/SS,yy[k]/SS)
-    LAST.clear();LAST.update(anchors=anchors,origin=(mx,my))
+    LAST.clear();LAST.update(anchors=anchors,boxes=boxes,origin=(mx,my))
     img=Image.fromarray(np.clip(rgba,0,255).astype(np.uint8),'RGBA').resize((W,H),Image.LANCZOS)
     buf=io.BytesIO();img.save(buf,'WEBP',quality=92,method=6)
     b64=base64.b64encode(buf.getvalue()).decode()
