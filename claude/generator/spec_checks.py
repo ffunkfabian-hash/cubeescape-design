@@ -15,25 +15,36 @@ TOL=1e-3            # m
 GRIP_LABELS=('Griff','Pistolengriff','Griffstück')
 PROJECTILE_LABELS=('Rakete',)
 
-# Bekannte Richtungsbefunde: Blatt -> Grund. Der Test verlangt, dass sie weiter anschlagen (sonst Eintrag entfernen).
+# Bekannte Richtungsbefunde: Blatt -> (Grund, Anfänge der erwarteten Befundtexte). Der Test verlangt genau diese Befunde
+# (verschwindet einer oder kommt einer hinzu, schlägt er an).
 KNOWN_DIRECTION={
- 'KF10':'Pin-Ring (p34, leuchtend) ist in X am dünnsten: Durchsicht quer zur Pfeilachse statt entlang −Y; '
-        'Blatt unverändert, Entscheidung des Nutzers offen (claude-0.5)',
+ 'KF10':('Pin-Ring (p34, leuchtend) ist in X am dünnsten: Durchsicht quer zur Pfeilachse statt entlang −Y; '
+         'Blatt unverändert, Entscheidung des Nutzers offen (claude-0.5)',['Fenster part p34:','Fensterteil p34 ']),
 }
+def known_matches(sheet,problems):
+    """True, wenn problems genau die erwarteten Befunde des bekannten Blatts sind (je Anfang genau einer)."""
+    pre=KNOWN_DIRECTION[sheet][1]
+    return len(problems)==len(pre) and all(sum(p.startswith(x) for p in problems)==1 for x in pre)
 
 def _inside(p,b,tol=TOL,axes=(0,1,2)):return all(b[0][a]-tol<=p[a]<=b[1][a]+tol for a in axes)
 def _ext(b):return [b[1][a]-b[0][a] for a in range(3)]
 def _center(b):return [(b[0][a]+b[1][a])/2 for a in range(3)]
 
 def projectile_ids(sp):
-    """Geschoss im Rohr (Rakete) samt Teilen in ihrem Querschnitt dahinter: zählt nicht als Waffe vor der Mündung."""
+    """Geschoss im Rohr (Rakete) samt unbezeichneter Teile in ihrem Querschnitt, die als Kette hinten anschließen (wie der Exporter):
+    zählt nicht als Waffe vor der Mündung."""
     parts=sp['parts'];out=set()
+    def within(b,rb):return all(rb[0][a]-TOL<=b[0][a] and b[1][a]<=rb[1][a]+TOL for a in (0,2))
     for R in parts:
         if R['label'] not in PROJECTILE_LABELS:continue
-        rb=R['bounds_m'];out.add(R['id'])
-        for P in parts:
-            b=P['bounds_m']
-            if all(rb[0][a]-TOL<=b[0][a] and b[1][a]<=rb[1][a]+TOL for a in (0,2)) and b[0][1]>=rb[0][1]-TOL:out.add(P['id'])
+        rb=R['bounds_m'];out.add(R['id']);rear=rb[1][1]          # hinten = größtes Y
+        while True:
+            nxt=[P for P in parts if P['id'] not in out and P['label'] is None and within(P['bounds_m'],rb)
+                 and P['bounds_m'][0][1]<=rear+TOL and P['bounds_m'][1][1]>rear+TOL]
+            if not nxt:break
+            P=max(nxt,key=lambda q:q['bounds_m'][1][1]);out.add(P['id']);rear=P['bounds_m'][1][1]
+        out|={P['id'] for P in parts if P['label'] is None and within(P['bounds_m'],rb) and P['bounds_m'][1][1]<=rear+TOL
+              and P['bounds_m'][0][1]>=rb[0][1]-TOL}
     return out
 
 def direction_problems(sp):
@@ -47,6 +58,9 @@ def direction_problems(sp):
     ahead=[p['id'] for p in sp['parts'] if not p['sight'] and p['id'] not in proj and _inside(m,p['bounds_m'],axes=(0,2))
            and p['bounds_m'][0][1]<m[1]-TOL]
     if ahead:pr.append(f'Socket_Muzzle nicht am vorderen Ende der Mündungsachse: {", ".join(ahead)} ragen weiter nach −Y')
+    face=[p['id'] for p in sp['parts'] if not p['sight'] and p['id'] not in proj and _inside(m,p['bounds_m'],axes=(0,2))
+          and abs(p['bounds_m'][0][1]-m[1])<=TOL]
+    if not face:pr.append('Socket_Muzzle liegt auf keiner Vorderkante eines Teils auf der Mündungsachse (zu weit vorn oder seitlich)')
     mp=parts.get(a['Socket_Muzzle'].get('part'))
     if mp is None or not _inside(m,mp['bounds_m'],axes=(0,2)):pr.append('Socket_Muzzle liegt nicht im Querschnitt seines Mündungsteils')
     # 2. Griff: Socket_Hand (Ursprung) im Griffteil, der Griff hängt unter der Mündungsachse
@@ -70,7 +84,7 @@ def direction_problems(sp):
     wg=s.get('window_geometry')
     for e in (wg or {}).get('elements',[]):
         ax=e['view_axis_m']
-        if abs(ax[1])<0.95:pr.append(f'Fenster {e["type"]} {e.get("decal",e["part"])}: Durchsicht {ax} nicht entlang der Laufachse (Y)')
+        if not ax[1]<=-0.95:pr.append(f'Fenster {e["type"]} {e["decal"] if e["type"]=="decal" else e["part"]}: Durchsicht {ax} nicht entlang der Laufachse (erwartet −Y)')
         if e['type']=='decal':
             x=_ext(sp['decals'][e['decal']]['bounds_m'])
             if not (x[1]<TOL/2 and x[0]>TOL/2 and x[2]>TOL/2):pr.append(f'Fenster-Aufkleber {e["decal"]} liegt nicht quer zur Laufachse (Ausdehnung {[round(v,4) for v in x]})')
@@ -124,7 +138,7 @@ def main(argv):
     if '--json' in argv:print(json.dumps(res,ensure_ascii=False,indent=1));return 0
     print('Richtung (Fehler, außer bekannte):')
     for s,r in res.items():
-        for p in r['direction']:print(f'  {s}: {p}'+('  [bekannt]' if s in KNOWN_DIRECTION else ''))
+        for p in r['direction']:print(f'  {s}: {p}'+('  [bekannt]' if s in KNOWN_DIRECTION and known_matches(s,r['direction']) else ''))
     hints=[h for r in res.values() for h in r['sight_hints']]
     print(f'Visier gegen CE-Zielbild ({CE_SOURCE}): {len(hints)} Hinweise')
     for h in hints:print('  '+h)

@@ -169,7 +169,8 @@ Vorzeichen legt Toolgen im Clip fest; hier stehen Art, Achse und die Teile des B
   Anker oder Bounds): `Socket_Muzzle` vor dem Griff (−Y) und am vorderen Ende der Mündungsachse, im Querschnitt seines Teils;
   `Socket_Hand` im Griffteil, der unter die Mündungsachse reicht; Visier über der Mündungsachse, `Socket_Sight` über dem Griff an der
   Unterkante der Baugruppe (links bei `mount_side: left`); jedes Fensterelement mit Durchsicht entlang Y, Aufkleber flach quer zur
-  Laufachse. Gegenbeweis im Test: Exporter mit gespiegelter Y- bzw. Z-Achse oder vertauschtem X/Y schlägt bei jedem Waffentyp an.
+  Laufachse (Achse −Y), Mündung auf einer Vorderkante. Gegenbeweis im Test: Exporter mit gespiegelter Y- bzw. Z-Achse oder vertauschtem
+  X/Y schlägt bei jedem Waffentyp an, jeweils mit der zuständigen Prüfung (Mündung, Visier oben, Fenster).
   Bekannter Befund: KF10 (Pin-Ring quer zur Pfeilachse), `KNOWN_DIRECTION`.
 - **`window_geometry`**: Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; `view_axis_m` aus der Geometrie
   (Newell-Normale bzw. dünnste Ausdehnung), Vorzeichen nach vorn (−Y). Ohne solches Element `null` mit Grund (Stand: 17 Blätter mit

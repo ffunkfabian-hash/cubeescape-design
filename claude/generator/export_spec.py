@@ -119,14 +119,20 @@ def _pick_hand(parts):
 
 PROJECTILE_LABELS=('Rakete',)   # Geschoss im Rohr: gehört nicht zur Waffe (Toolgen: kein Projektil im Asset)
 def _projectile(gun,tol=1.0):
-    """Teile des Geschosses: bezeichnete Raketen und Teile in ihrem Querschnitt dahinter (Rumpf, Ringe)."""
+    """Teile des Geschosses: bezeichnete Raketen und unbezeichnete Teile in ihrem Querschnitt, die als Kette hinten an ihr
+    anschließen (Rumpf, Ringe); bezeichnete Teile und abgesetzte Teile bleiben Waffe."""
     out=set()
     for i,R in gun:
         if R.get('label') not in PROJECTILE_LABELS:continue
-        rb=_bb(_verts([R]));out.add(i)
-        for k,P in gun:
+        rb=_bb(_verts([R]));out.add(i);rear=rb[0][0]
+        while True:
+            nxt=[(k,b) for k,P in gun for b in [_bb(_verts([P]))] if k not in out and P.get('label') is None
+                 and all(rb[0][a]-tol<=b[0][a] and b[1][a]<=rb[1][a]+tol for a in (1,2)) and b[1][0]>=rear-tol and b[0][0]<rear-tol]
+            if not nxt:break
+            k,b=min(nxt,key=lambda t:t[1][0][0]);out.add(k);rear=b[0][0]
+        for k,P in gun:   # Kleinteile innerhalb der Kette (Bänder, Nasenring)
             b=_bb(_verts([P]))
-            if all(rb[0][a]-tol<=b[0][a] and b[1][a]<=rb[1][a]+tol for a in (1,2)) and b[1][0]<=rb[1][0]+tol:out.add(k)
+            if P.get('label') is None and all(rb[0][a]-tol<=b[0][a] and b[1][a]<=rb[1][a]+tol for a in (1,2)) and rear-tol<=b[0][0] and b[1][0]<=rb[1][0]+tol:out.add(k)
     return out
 
 def _muzzle_front(gun,front,cc,tol=1.0):
@@ -206,7 +212,7 @@ def window_geometry(window,sight_parts,ids,F,decal_index):
                            center_m=[r4(sum(v[a] for v in q)/len(q)) for a in range(3)]))
         if P['emit']:
             b=F.bb(_bb(_verts([P])));e=[b[1][a]-b[0][a] for a in range(3)];k=min(range(3),key=lambda a:e[a])
-            el.append(dict(type='part',part=ids[i],emissive=True,view_axis_m=[0.0 if a!=k else -1.0 for a in range(3)],
+            el.append(dict(type='part',decal=None,part=ids[i],emissive=True,view_axis_m=[0.0 if a!=k else -1.0 for a in range(3)],
                            center_m=[r4((b[0][a]+b[1][a])/2) for a in range(3)]))
     if not el:return None,'kein Fensterelement im Modell (Fenster nur in Bezeichnung/Text; Leuchtstreifen an den Seiten zählen nicht)'
     return dict(elements=el,source='Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; Achse aus der Geometrie'),None

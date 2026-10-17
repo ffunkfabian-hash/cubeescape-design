@@ -265,20 +265,27 @@ class Direction(unittest.TestCase):
         for s in sheetmodels.SHEETS:
             pr=spec_checks.direction_problems(load(s))
             with self.subTest(sheet=s):
-                if s in spec_checks.KNOWN_DIRECTION:self.assertTrue(pr,f'{s} ist in KNOWN_DIRECTION, aber ohne Befund – Eintrag entfernen')
+                if s in spec_checks.KNOWN_DIRECTION:
+                    self.assertTrue(spec_checks.known_matches(s,pr),f'{s}: Befunde weichen von KNOWN_DIRECTION ab: {pr}')
                 else:self.assertEqual(pr,[])
     def test_counterproof_mirrored_axes(self):
         import spec_checks
         sample=['KC01','KD02','KF03','KG04','KH05','KJ06','KC07','KD08','KF09','KG10']   # jeder Waffentyp einmal
         bad={'Y gespiegelt (vorn +Y)':[[0,0,1],[1,0,0],[0,-1,0]],'Z gespiegelt (oben −Z)':[[0,0,1],[-1,0,0],[0,1,0]],
              'X/Y vertauscht':[[-1,0,0],[0,0,1],[0,-1,0]]}
+        # je Achse schlägt die zuständige Prüfung an: Y -> Mündung, Z -> Visier oben, X/Y -> Fenster (Blätter mit Fenstergeometrie)
+        expect={'Y gespiegelt (vorn +Y)':'Socket_Muzzle nicht vor dem Griff','Z gespiegelt (oben −Z)':'Visier nicht über der Mündungsachse',
+                'X/Y vertauscht':'Fenster'}
         old=export_spec.M2B
         try:
             for name,M in bad.items():
                 export_spec.M2B=M
                 for s in sample:
+                    sp=json.loads(export_spec.dumps(export_spec.build(s)));pr=spec_checks.direction_problems(sp)
                     with self.subTest(axes=name,sheet=s):
-                        self.assertTrue(spec_checks.direction_problems(json.loads(export_spec.dumps(export_spec.build(s)))))
+                        self.assertTrue(pr)
+                        if name!='X/Y vertauscht' or sp['sight']['window_geometry']:
+                            self.assertTrue(any(p.startswith(expect[name]) for p in pr),pr)
         finally:export_spec.M2B=old
         self.assertEqual(spec_checks.direction_problems(load('KC01')),[])
     def test_muzzle_extension(self):

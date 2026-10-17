@@ -56,7 +56,7 @@
    "type": "object", "required": ["kind", "name_de", "toolgen_node", "motions", "parts", "labels", "match", "source"],
    "properties": {
     "kind": {"enum": ["slide", "bolt", "cell", "fins", "coil", "pump", "lever", "hatch"]},
-    "toolgen_node": {"type": "string"},
+    "name_de": {"type": "string"}, "toolgen_node": {"type": "string"},
     "motions": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["type", "axis"],
                 "properties": {"type": {"enum": ["translate", "rotate"]}, "axis": {"$ref": "#/$defs/vec3"}}}},
     "parts": {"type": ["array", "null"], "items": {"type": "string", "pattern": "^p[0-9]{2,3}$"}},
@@ -66,8 +66,8 @@
    }
   },
   "windowElement": {
-   "type": "object", "required": ["type", "part", "emissive", "view_axis_m", "center_m"],
-   "properties": {"type": {"enum": ["decal", "part"]}, "decal": {"type": "integer", "minimum": 0},
+   "type": "object", "required": ["type", "decal", "part", "emissive", "view_axis_m", "center_m"],
+   "properties": {"type": {"enum": ["decal", "part"]}, "decal": {"description": "Index in decals[] bei type decal, sonst null", "type": ["integer", "null"], "minimum": 0},
                   "part": {"type": "string", "pattern": "^p[0-9]{2,3}$"}, "emissive": {"type": "boolean"},
                   "view_axis_m": {"$ref": "#/$defs/vec3"}, "center_m": {"$ref": "#/$defs/vec3"}}
   },
@@ -163,7 +163,7 @@
   "moving_parts": {
    "description": "claude-0.5, optional (ältere Specs ohne): bewegliche Teile wie Toolgens Use-Clip; Beschreibung in weapon-spec.md › Bewegliche Teile",
    "type": "object", "required": ["source", "root_moves", "frame", "items", "note"],
-   "properties": {"root_moves": {"const": false}, "items": {"type": "array", "items": {"$ref": "#/$defs/motion"}},
+   "properties": {"source": {"type": "string"}, "frame": {"type": "string"}, "root_moves": {"const": false}, "items": {"type": "array", "items": {"$ref": "#/$defs/motion"}},
                   "note": {"type": ["string", "null"]}}
   },
   "sight": {
@@ -177,7 +177,7 @@
     "parts": {"type": "array", "items": {"type": "string"}},
     "window_geometry": {"description": "claude-0.5, optional: Fensterelemente des Visiers oder null (Grund in window_geometry_note)",
                         "type": ["object", "null"], "required": ["elements", "source"],
-                        "properties": {"elements": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/windowElement"}}}},
+                        "properties": {"elements": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/windowElement"}}, "source": {"type": "string"}}},
     "window_geometry_note": {"type": ["string", "null"]}
    }
   },
