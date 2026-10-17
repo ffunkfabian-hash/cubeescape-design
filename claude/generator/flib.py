@@ -1,5 +1,5 @@
 from cepaths import E3D,OUT
-import math
+import math,os
 from eng import *
 import ext
 OLc='#0A0A0D'
@@ -60,7 +60,8 @@ def svg2d(spec,fid):
             g.append(f'<polygon points="{x0},{cy-a} {x1},{cy-b} {x1},{cy+b} {x0},{cy+a}" fill="{s["col"]}" stroke="{OLc}" stroke-width="3" stroke-linejoin="round"/>')
         out+=g
     return '\n'.join(out)
-TPL=open(OUT+'/V06.dc.html').read()
+# Vorlage (gitignoriert, nicht mehr genutzt): fehlt sie, soll der Import für den Spec-Export trotzdem gehen
+TPL=open(OUT+'/V06.dc.html').read() if os.path.exists(OUT+'/V06.dc.html') else ''
 def board2d(spec,num,name,vname,col,pill,aria,desc,palette,form,fid,ty=0):
     sw=''.join(f'<div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 6px; background: {c}"></div><span style="font-size: 12px; color: #8FA0B3">{c}</span></div>\n' for c in palette)
     svg=f'''<svg viewBox="0 0 760 600" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; display: block" role="img" aria-label="{aria}">

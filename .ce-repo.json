@@ -5,7 +5,9 @@
     "pattern": "(?m)^## claude-(\\d+\\.\\d+(?:\\.\\d+)?)"
   },
   "check": {
-    "quick": [["python3", "-m", "py_compile", "claude/generator/eng.py", "claude/generator/raster.py", "claude/generator/views.py", "claude/generator/xl.py"]],
+    "quick": [["python3", "-m", "py_compile", "claude/generator/eng.py", "claude/generator/raster.py", "claude/generator/views.py", "claude/generator/xl.py",
+               "claude/generator/xlroles.py", "claude/generator/sheetmodels.py", "claude/generator/export_spec.py"],
+              ["python3", "claude/generator/test_spec.py"]],
     "full": [["python3", "claude/generator/build_all.py", "--nur-xl"]]
   },
   "docs": {
