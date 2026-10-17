@@ -42,6 +42,7 @@ def K(prof,col,z0,z1,b=None,bz=None,emit=False,dec=(),glow=(),xdec=(),label=None
     senkrechten Stirnfläche des Mittelbands."""
     hw=(z1-z0)/2
     bz=0.4*hw if bz is None else bz;b=bz if b is None else b
+    if not(z1>z0 and b>=0 and 0<=bz<=hw):raise ValueError(f'Facette: z0<z1, b>=0 und 0<=bz<=(z1-z0)/2 nötig (z={z0}..{z1}, b={b}, bz={bz})')
     return dict(k='facet',prof=list(prof),col=col,z0=z0,z1=z1,b=b,bz=bz,emit=emit,dec=list(dec),glow=list(glow),xdec=list(xdec),
                 label=label,sight=sight,ch=ch)
 def X(x0,x1,cy,R,col,n=6,cz=0,emit=False,cap=(),label=None,sight=False,ch=None):
