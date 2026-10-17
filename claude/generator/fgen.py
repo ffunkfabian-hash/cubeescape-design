@@ -1,3 +1,4 @@
+from fontcss import FONT_CSS
 from cepaths import E3D,OUT
 import math,sys
 sys.path.insert(0,E3D+'')
@@ -99,7 +100,7 @@ TPL_HEAD='''<!doctype html>
 <body>
 <x-dc>
 <helmet>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&amp;family=Barlow:wght@400;500;600&amp;display=swap" rel="stylesheet">
+{FONT_CSS}
 <style>body{{margin:0}}</style>
 </helmet>
 <div style="width: 1200px; height: 780px; box-sizing: border-box; padding: 40px 48px; background: #0E1622; color: #E6ECF2; font-family: Barlow, sans-serif; display: flex; flex-direction: column; gap: 24px">

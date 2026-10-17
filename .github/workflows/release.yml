@@ -6,6 +6,8 @@ on:
   workflow_dispatch:
 # Release nur auf Wunsch des Nutzers; keine Tests. Öffentliches Repo: kostet keine Minuten.
 # Schätzung 17.10.2026: ~1 min je Lauf × ~1–2 Läufe im Monat.
+# Blätter (*.dc.html), Schriften und Vorschauen sind nicht im Repo: sie werden auf dem Mac gebaut und mit
+# `python3 claude/generator/release_assets.py --upload` als zips an dieses Release gehängt (nur auf Wunsch des Nutzers).
 permissions:
   contents: write
 concurrency:
@@ -22,7 +24,6 @@ jobs:
       - name: Pakete schnüren
         run: |
           mkdir -p dist
-          cd claude/output && zip -qr ../../dist/claude-konzeptblaetter-${VER}.zip sheets && cd ../..
           zip -qr dist/claude-prompts-${VER}.zip docs claude/prompts
       - name: Release anlegen
         uses: softprops/action-gh-release@v2

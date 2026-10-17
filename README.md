@@ -50,8 +50,9 @@ claude/                  nur Claude
     f01–f10.py g01–g10.py h01–h10.py
     build_*.py           Bauskripte je Variante, build_all.py baut alles
   output/
-    sheets/              Konzeptblätter XL (KC01 … KH10) als HTML
-    previews/            PNG-Vorschauen (werden auf dem Mac erzeugt, siehe Versionsbericht)
+    sheets/              KXnn.spec.json (im Repo), fonts/ (Schriften, SIL OFL); Konzeptblätter KXnn.dc.html nur lokal/Release
+    previews/            Vorschauen (nur lokal/Release)
+  tests/                 golden.json (sha256 je Blatt und Spec), test_golden.py
   reference/crops/       Original-Seitenansichten (Referenz für Variante D)
 codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
 ```
@@ -65,7 +66,12 @@ python claude/generator/build_all.py      # alles neu bauen (dauert, die XL-Blä
 python claude/generator/build_all.py G H  # nur bestimmte Varianten
 ```
 
-Die HTML-Dateien binden Schriften über Google Fonts ein; ohne Internet erscheinen Ersatzschriften.
+**Wo liegen die Blätter?** Seit claude-0.3.1 nicht mehr im Repo (waren 46 MB), sondern als Release-Asset (je Variante ein zip mit
+Blättern, Specs und `fonts/`, dazu ein zip Vorschauen) oder per `build_all.py --nur-xl` lokal gebaut. Im Repo bleiben Generator, Specs und
+`claude/tests/golden.json` (sha256, Prüfung: `python3 claude/tests/test_golden.py --full`).
+Release-Weg: Blätter lokal bauen, dann `python3 claude/generator/release_assets.py` (Probelauf, packt nach `dist/`) und nach Freigabe des Nutzers
+`--upload` (`gh release upload` an `claude-v<Version>`); der Workflow legt nur Tag und Release an.
+Die Schriften (Chakra Petch, Barlow, JetBrains Mono, SIL OFL 1.1) liegen als Dateien neben den Blättern in `claude/output/sheets/fonts/`.
 `claude/output/sheets/*.dc.html` sind Canvas-Artboards; zum Ansehen im Browser die Zeile
 `<script src="./support.js"></script>` ignorieren bzw. entfernen.
 

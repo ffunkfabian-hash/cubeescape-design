@@ -4,7 +4,9 @@ claude/generator/final/
 claude/generator/prev*.html
 claude/generator/prev*.png
 claude/generator/*.md
-# Karten (Zwischenstufe) ignorieren, nur die Konzeptblätter K*.dc.html bleiben im Repo.
-# Keine [..]-Muster: macOS-Git mit core.ignorecase=true wertet sie nicht aus.
+# Konzeptblätter (*.dc.html) und Vorschauen sind Release-Asset, nicht im Repo (claude-0.3.1): im Repo bleiben Generator, KXnn.spec.json,
+# Schriften und claude/tests/golden.json (sha256). Der Release-Branch nimmt sie mit `git add -f` auf.
 claude/output/sheets/*.dc.html
-!claude/output/sheets/K*.dc.html
+claude/output/previews/
+report.md
+dist/

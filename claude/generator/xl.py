@@ -1,3 +1,4 @@
+from fontcss import FONT_CSS
 from cepaths import E3D,OUT
 # Große Konzeptblätter (Seite „Konzeptblätter“): Isometrie + 6 Ortho + Detail Abzug + Material/Texturen + Farbvarianten + Prompt
 import math,copy,colorsys,pickle,sys,zlib,html as _h
@@ -56,7 +57,7 @@ def make_texture(seed=3):
 
 def swatch_svg(kind,w,h,col):
     """kleines Musterfeld je Material (Vektor)"""
-    cid=f'sw{kind}{abs(hash(col))%9999}'
+    cid=f'sw{kind}{zlib.crc32(col.encode())%9999}'   # reproduzierbar (hash() ist je Prozess zufällig)
     if kind=='lack':return f'<defs><linearGradient id="{cid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{_mix(col,"#FFFFFF",0.25)}"/><stop offset="0.55" stop-color="{col}"/><stop offset="1" stop-color="{_mix(col,"#000000",0.2)}"/></linearGradient></defs><rect width="{w}" height="{h}" rx="10" fill="url(#{cid})"/>'
     if kind=='brushed':
         lines=''.join(f'<line x1="0" y1="{y}" x2="{w}" y2="{y}" stroke="{_mix(col,"#FFFFFF" if (y*7)%3 else "#000000",0.18)}" stroke-width="1"/>' for y in range(2,h,3))
@@ -353,7 +354,7 @@ def sheet(d,variant_letter):
 <body>
 <x-dc>
 <helmet>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&amp;family=Barlow:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+{FONT_CSS}
 <style>body{{margin:0}}</style>
 </helmet>
 <div style="width:{W}px;height:{H}px;box-sizing:border-box;padding:{PAD}px;background:#0E1622;color:#E6ECF2;font-family:Barlow,sans-serif;display:flex;flex-direction:column;gap:{G}px">

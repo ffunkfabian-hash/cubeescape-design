@@ -1,6 +1,7 @@
 import math,io,base64
 import numpy as np
 from PIL import Image,ImageDraw
+WEBP_QUALITY=60   # war 92; Sichtprüfung 17.10.2026 (Blätter sind Release-Asset, Größe zählt)
 from scipy import ndimage
 import eng
 SS=2
@@ -105,7 +106,7 @@ def rasterview(m,yaw,pitch,center,W,H,scale,pad=0,ow=3.0,origin=None,texture=Non
         anchors[lb]=(xx[k]/SS,yy[k]/SS)
     LAST.clear();LAST.update(anchors=anchors,boxes=boxes,origin=(mx,my))
     img=Image.fromarray(np.clip(rgba,0,255).astype(np.uint8),'RGBA').resize((W,H),Image.LANCZOS)
-    buf=io.BytesIO();img.save(buf,'WEBP',quality=92,method=6)
+    buf=io.BytesIO();img.save(buf,'WEBP',quality=WEBP_QUALITY,method=6)
     b64=base64.b64encode(buf.getvalue()).decode()
     sh_y=(max(ys)-my)*scale+H/2+pad+14
     shd=f'<ellipse cx="{W/2}" cy="{sh_y:.0f}" rx="{(max(xs)-min(xs))*scale*0.45:.0f}" ry="{max(8,14*scale):.0f}" fill="#000" opacity="0.32"/>' if shadow else ''

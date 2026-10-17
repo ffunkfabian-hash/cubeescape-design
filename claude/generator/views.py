@@ -1,3 +1,4 @@
+from fontcss import FONT_CSS
 from cepaths import E3D,OUT
 from eng import *
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
@@ -77,7 +78,7 @@ def card(m,center,num,name,sub,col,pill,desc,palette,form,fid):
 <body>
 <x-dc>
 <helmet>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&amp;family=Barlow:wght@400;500;600&amp;display=swap" rel="stylesheet">
+{FONT_CSS}
 <style>body{{margin:0}}</style>
 </helmet>
 <div style="width:{W}px;height:{H}px;box-sizing:border-box;padding:48px 56px;background:#0E1622;color:#E6ECF2;font-family:Barlow,sans-serif;display:flex;flex-direction:column;gap:26px">
