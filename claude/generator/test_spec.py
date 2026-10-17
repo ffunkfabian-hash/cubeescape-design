@@ -322,6 +322,30 @@ class MovingParts(unittest.TestCase):
         self.assertIsNone(load('KC02')['moving_parts']['items'][0]['parts'])               # Verschluss nicht gezeichnet
         self.assertEqual(load('KC10')['moving_parts']['items'],[])                          # Bogen
 
+class RobotFit(unittest.TestCase):
+    """robot_fit (claude-0.5.1): Zielzahlen mit Quelle, Pistole und Bogen ausgenommen, Messung am auf Ziellänge skalierten Blatt."""
+    def test_robot_fit(self):
+        for s in sheetmodels.SHEETS:
+            sp=load(s);r=sp['robot_fit'];tid=sp['weapon']['toolgen_id']
+            with self.subTest(sheet=s):
+                self.assertIs(r['concept_sheets'],False)
+                self.assertEqual([r['robot'][k]['value'] for k in ('height_m','hand_m','arm_m')],[1.5,0.09,0.42])
+                if tid in ('pistol','bow'):
+                    self.assertFalse(r['applies']);self.assertTrue(r['reason']);self.assertIsNone(r['sheet_at_target'])
+                    if tid=='pistol':self.assertEqual(r['targets']['length_min_m']['value'],0.24)
+                    continue
+                self.assertTrue(r['applies']);t=r['targets']
+                for k,v in t.items():self.assertTrue(v['source'].startswith('Cube Escape'),k)
+                self.assertEqual(t['length_m']['value'],export_spec.ROBOT_LENGTH[tid])
+                self.assertEqual((t['support_hand_max_forward_m']['value'],t['stock_max_behind_m']['value'],t['barrel_min_m']['value'],
+                                  t['receiver_min_height_m']['value']),(0.10,0.12,0.03,0.08))
+                m=r['sheet_at_target']
+                self.assertAlmostEqual(m['scale']*sp['dimensions_m']['with_sight']['length'],t['length_m']['value'],delta=1e-3)
+                self.assertAlmostEqual(m['stock_behind_m'],m['scale']*sp['dimensions_m']['with_sight']['bounds_m'][1][1],delta=2e-4)
+                self.assertEqual(m['ok']['stock_behind'],m['stock_behind_m']<=0.12)
+                sup=sp['anchors']['Socket_SupportHand']['position_m']
+                self.assertEqual(m['support_forward_m'] is None,sup is None)
+
 class SightTargets(unittest.TestCase):
     """Visier gegen das CE-Zielbild: nur Hinweise (kein Fehler); die Tabelle hier muss zu Cube Escape passen."""
     def test_hints_are_hints(self):

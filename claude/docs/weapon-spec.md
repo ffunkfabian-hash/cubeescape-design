@@ -1,6 +1,6 @@
 # Weapon-Spec der Konzeptblätter (`KXnn.spec.json`, format_version 1)
 
-Stand 17.10.2026 (claude-0.2, Feld `skin` seit claude-0.3, `moving_parts`, Fenstergeometrie und Richtungstest seit claude-0.5). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
+Stand 17.10.2026 (claude-0.2, Feld `skin` seit claude-0.3, `moving_parts`, Fenstergeometrie und Richtungstest seit claude-0.5, `robot_fit` seit claude-0.5.1). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
 Werten des Blatts als Daten, damit Toolgen (und Cube Escape) sie nicht aus dem Bild lesen müssen. Die Blätter bleiben das
 Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesbare Fassung.
 
@@ -28,6 +28,7 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | `channels_used` | Kanäle, die Teile oder Aufkleber belegen |
 | `parts[]` | `id` (p00 …, Reihenfolge des Modells), `label` (deutsche Bauteilbezeichnung oder `null`), `channel`, `channel_source`, `material`, `emissive`, `sight`, `color` (Basis), `area_m2`, `long_axis`, `bounds_m`, `moving` (Art aus `moving_parts` oder `null`; claude-0.5) |
 | `moving_parts` | (claude-0.5, optional) bewegliche Teile wie Toolgens Use-Clip – siehe [Bewegliche Teile](#bewegliche-teile) |
+| `robot_fit` | (claude-0.5.1, optional) Größe in der Roboterhand: Zielzahlen mit Quelle und das Blatt daran gemessen – siehe [Größe in der Roboterhand](#größe-in-der-roboterhand) |
 | `sight` | `present`, `kind`, `window`, `source`, `modular` (immer separat), `mount_side`, `labels`, `parts`, `bounds_m`, `anchor`, `window_geometry` (Fensterelemente mit Durchsichtachse oder `null`), `window_geometry_note` (Grund bei `null`; beide claude-0.5) |
 | `decals[]` | `part`, `channel`, `surface` (left/right/front/back/top), `emissive`, `color`, `area_m2`, `bounds_m` |
 | `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns` |
@@ -163,6 +164,22 @@ Vorzeichen legt Toolgen im Clip fest; hier stehen Art, Achse und die Teile des B
 - Stand claude-0.5: 11 von 60 Einträgen haben Teile (Schlitten 3, Verschluss als ähnliches Teil 1, Pumpgriff 3, ähnliche Zelle 3 von 6,
   Beschleunigerring 1 von 6); Verschluss der Gewehre, Kammerstängel, Ladeklappe und Flossen sind in keinem Blatt bezeichnet.
 
+## Größe in der Roboterhand
+
+`robot_fit` (claude-0.5.1, Entscheidung des Nutzers 17.10.2026) gibt die Zielmaße einer Roboter-Variante der Weltmodelle (Toolgen,
+Cube Escape 0.82 › Stufe 2) als Daten. Roboter-Konzeptblätter gibt es nicht (`concept_sheets: false`, Entscheidung des Nutzers).
+
+- `robot`: Höhe 1,50 m, Hand 0,09 m, Arm 0,42 m (CE `Docs/EQUIPMENT.md` › Maße des Roboters). Jeder Wert als `{value, source}`.
+- `targets` (je `{value, source}`): `length_m` (Länge in der Hand, CE-Tabelle auf cm gerundet: MP 0,52 · Sturm 0,67 · Impuls 0,66 ·
+  Schrot 0,67 · Fusion 0,67 · Spur 0,69 · Scharfschütze 0,73 · Raketenwerfer 0,65 m), `support_hand_max_forward_m` 0,10,
+  `stock_max_behind_m` 0,12, `barrel_min_m` 0,03, `receiver_min_height_m` 0,08, `silhouette_factor` 1,5 (Bezug Toolgen-Weltmodell,
+  am Blatt nicht messbar). Pistole: `applies: false` (Maßstab genügt, Becher-Griff), nur `length_min_m` 0,24; Bogen: `applies: false`.
+- `sheet_at_target`: das Blatt auf `length_m` skaliert (`scale`) und gemessen: Stützhand vor dem Griff, Schaft hinter dem Griff
+  (hinterste Kante, Visier montiert), Lauf (kleinerer Querschnitt des Mündungsteils), Gehäuse (größte Höhe eines Teils „Gehäuse“);
+  `ok` je Wert, `null` wenn am Blatt nicht ableitbar. Stand 0.5.1: kein Blatt hält Stützhand (0,12–0,31 m) und Schaft (0,17–0,34 m) ein –
+  die Blätter sind Menschenwaffen; die Roboter-Variante muss Toolgen umbauen, nicht skalieren (Befund CE 0.82). Lauf ≥ 3 cm halten
+  27 von 48, Gehäuse ≥ 8 cm 28 von 38 messbaren Blättern.
+
 ## Richtung und Visier-Zielbild
 
 - **Richtungstest** (`spec_checks.direction_problems`, Lehre Cubegen `docs/DEVELOPER.md` 9.17: die Funktionsfläche prüfen, nicht nur
@@ -172,6 +189,8 @@ Vorzeichen legt Toolgen im Clip fest; hier stehen Art, Achse und die Teile des B
   Laufachse (Achse −Y), Mündung auf einer Vorderkante. Gegenbeweis im Test: Exporter mit gespiegelter Y- bzw. Z-Achse oder vertauschtem
   X/Y schlägt bei jedem Waffentyp an, jeweils mit der zuständigen Prüfung (Mündung, Visier oben, Fenster).
   Bekannter Befund: KF10 (Pin-Ring quer zur Pfeilachse), `KNOWN_DIRECTION`.
+  **Grenze (Sichtprüfung 0.5.1):** Scheiben auf Seitenflächen und offene Ringe ohne Leuchtteil prüft der Test nicht; 19 Blätter haben
+  ein Fenster quer zur Laufachse ([visier-abgleich.md](visier-abgleich.md)). Erweiterung nach der Entscheidung des Nutzers.
 - **`window_geometry`**: Aufkleber vorn/hinten auf Visierteilen und leuchtende Visierteile; `view_axis_m` aus der Geometrie
   (Newell-Normale bzw. dünnste Ausdehnung), Vorzeichen nach vorn (−Y). Ohne solches Element `null` mit Grund (Stand: 17 Blätter mit
   Fenster, das nur in Bezeichnung oder Text steht).

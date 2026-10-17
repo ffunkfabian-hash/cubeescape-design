@@ -17,7 +17,7 @@ import skins as SK
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
-CLAUDE_VERSION='0.5'
+CLAUDE_VERSION='0.5.1'
 
 # Waffentyp -> Toolgen-Id, Bezugslänge (m), Element.
 # Längen: Toolgen-Weltmodelle, Ausdehnung entlang der Mündungsachse (Blender −Y) aus qa_game.json › bounds_lod0 ›
@@ -187,6 +187,48 @@ def moving_parts(tid,allparts,ids):
     return dict(source=MOTION_SOURCE,root_moves=False,frame='Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse',
                 items=items,note=note),per
 
+# Größe in der Roboterhand (claude-0.5.1, Entscheidung des Nutzers 17.10.2026: „in Spec 1.x mit aufnehmen“). Zahlen aus Cube Escape
+# (Stand 677841ff, 17.10.2026); Längen = „Länge in der Hand“ der Tabelle, auf cm gerundet.
+CE_EQ='Cube Escape Docs/EQUIPMENT.md › Größe in der Roboterhand (0.82)'
+CE_S2='Cube Escape Docs/versions/0.82.md › Stufe 2 (Auftrag an Toolgen)'
+ROBOT_LENGTH={'smg':0.52,'assault_rifle':0.67,'pulse_rifle':0.66,'shotgun':0.67,'fusion_rifle':0.67,'scout_rifle':0.69,
+ 'sniper_rifle':0.73,'rocket_launcher':0.65}
+def _v(value,source):return dict(value=value,source=source)
+def robot_fit(tid,anchors,parts,dims,muzzle_part):
+    """robot_fit: Zielmaße einer Roboter-Variante (Toolgen Stufe 2) und das Blatt, auf die Ziellänge skaliert, daran gemessen."""
+    robot=dict(height_m=_v(1.50,CE_EQ+' › Maße des Roboters'),hand_m=_v(0.09,CE_EQ+' › Maße des Roboters'),
+               arm_m=_v(0.42,CE_EQ+' › Maße des Roboters'))
+    base=dict(source=f'{CE_EQ}; {CE_S2} (CE 677841ff, 17.10.2026)',robot=robot,concept_sheets=False,concept_sheets_reason='keine Roboter-Konzeptblätter (Entscheidung des Nutzers 17.10.2026)')
+    if tid=='pistol':
+        return dict(base,applies=False,reason='Pistole von der Roboter-Variante ausgenommen: Maßstab genügt, Becher-Griff sitzt ('+CE_S2+')',
+                    targets=dict(length_min_m=_v(0.24,CE_EQ+' › Begründung (1): knapp drei Handlängen')),sheet_at_target=None)
+    if tid not in ROBOT_LENGTH:
+        return dict(base,applies=False,reason='nicht im Waffensatz von Cube Escape (Bogen: Referenzmodell, kein Spielwerkzeug)',
+                    targets=None,sheet_at_target=None)
+    L=ROBOT_LENGTH[tid]
+    targets=dict(length_m=_v(L,CE_EQ+' › Tabelle, Länge in der Hand (gerundet)'),
+                 support_hand_max_forward_m=_v(0.10,CE_S2+': Socket_SupportHand höchstens 0,10 m vor Socket_Hand'),
+                 stock_max_behind_m=_v(0.12,CE_S2+': Schaft höchstens 0,12 m hinter Socket_Hand'),
+                 barrel_min_m=_v(0.03,CE_S2+': Lauf ≥ 3 cm'),receiver_min_height_m=_v(0.08,CE_S2+': Gehäuse ≥ 8 cm hoch'),
+                 silhouette_factor=_v(1.5,CE_S2+': Querschnitt von Gehäuse und Lauf etwa 1,5fach (Bezug: Toolgen-Weltmodell, am Blatt nicht messbar)'))
+    s=L/dims['with_sight']['length']
+    sup=anchors['Socket_SupportHand']['position_m'];back=dims['with_sight']['bounds_m'][1][1]
+    def ext(p):b=p['bounds_m'];return [b[1][k]-b[0][k] for k in range(3)]
+    mp=[p for p in parts if p['id']==muzzle_part]
+    rec=[p for p in parts if p['label']=='Gehäuse' and not p['sight']]
+    m=dict(scale=r4(s),
+           support_forward_m=r4(s*-sup[1]) if sup else None,
+           stock_behind_m=r4(s*back),
+           barrel_m=r4(s*min(ext(mp[0])[0],ext(mp[0])[2])) if mp else None,
+           receiver_height_m=r4(s*max(ext(p)[2] for p in rec)) if rec else None,
+           basis='Blatt auf targets.length_m skaliert (Länge entlang der Mündungsachse, Visier montiert); Lauf = kleinerer Querschnitt des '
+                 'Mündungsteils, Gehäuse = größte Höhe eines Teils „Gehäuse“')
+    m['ok']=dict(support_forward=None if m['support_forward_m'] is None else m['support_forward_m']<=0.10,
+                 stock_behind=m['stock_behind_m']<=0.12,
+                 barrel=None if m['barrel_m'] is None else m['barrel_m']>=0.03,
+                 receiver_height=None if m['receiver_height_m'] is None else m['receiver_height_m']>=0.08)
+    return dict(base,applies=True,reason=None,targets=targets,sheet_at_target=m)
+
 def _newell(pts):
     n=[0.0,0.0,0.0]
     for k in range(len(pts)):
@@ -323,6 +365,7 @@ def build(sheet):
         if k not in anchors:anchors[k]=dict(position_m=None,model=None,source=notes.get(k,'nicht ableitbar'),part=None)
     anchors={k:anchors[k] for k in ('Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight')}
     used=[ch for ch in CHANNELS if palette[0]['channels'][ch]]
+    dims_=dict(weapon=dims([P for _,P in gun]),with_sight=dims(full.parts))
     return dict(
         format=FORMAT,format_version=FORMAT_VERSION,
         generator=dict(repo='cubeescape-design',tool='claude/generator/export_spec.py',claude_version=CLAUDE_VERSION),
@@ -334,12 +377,13 @@ def build(sheet):
         axes=dict(model=dict(x='vorn (Mündung)',y='unten',z='links'),target=dict(system='Toolgen/Blender',forward='-Y',up='+Z',left='+X',unit='m'),
                   matrix_model_to_target=M2B,origin='Socket_Hand',
                   formula='p_m = model_unit_m * M · (p_model − Socket_Hand.model)'),
-        dimensions_m=dict(weapon=dims([P for _,P in gun]),with_sight=dims(full.parts)),
+        dimensions_m=dims_,
         anchors=anchors,
         palette=palette,
         channels_used=used,
         parts=parts,
         moving_parts=moving,
+        robot_fit=robot_fit(tid,anchors,parts,dims_,anchors['Socket_Muzzle']['part']),
         sight=sight,
         decals=decals,
         textures=textures(unit),

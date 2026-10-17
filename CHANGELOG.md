@@ -2,6 +2,13 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.5.1
+- Spec (additiv, format_version 1): `robot_fit` – Größe in der Roboterhand (CE 0.82): Zielzahlen mit Quelle, Blatt auf Ziellänge
+  gemessen; Pistole und Bogen ausgenommen; keine Roboter-Konzeptblätter.
+- Visier-Abgleich aller 60 Blätter gegen die Visier-Blätter des Nutzers ([claude/docs/visier-abgleich.md](claude/docs/visier-abgleich.md)):
+  6 passen, 46 weichen als Blatt ab, 19 mit Fenster quer zur Laufachse; Vorschlag `sight.type`/`frame`; Abgleich mit Toolgen-Mustern/Decals.
+- ENTSCHEIDUNGEN.md: MP4 nur auf Anfrage, keine Roboter-Blätter, `robot_fit`, Visier-Zielbild.
+
 ## claude-0.5
 - Spec (additiv, format_version 1): `moving_parts` und `parts[].moving` (bewegliche Teile wie Toolgens Use-Clip, Wurzel fest, Zuordnung
   über Bezeichnungen, sonst `null` mit Grund), `sight.window_geometry` (Fenster mit Durchsichtachse aus der Geometrie), `anchors.*.part`.

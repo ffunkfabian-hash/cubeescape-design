@@ -65,6 +65,7 @@
     "source": {"type": "string"}
    }
   },
+  "sourced": {"type": "object", "required": ["value", "source"], "properties": {"value": {"type": "number"}, "source": {"type": "string"}}},
   "windowElement": {
    "type": "object", "required": ["type", "decal", "part", "emissive", "view_axis_m", "center_m"],
    "properties": {"type": {"enum": ["decal", "part"]}, "decal": {"description": "Index in decals[] bei type decal, sonst null", "type": ["integer", "null"], "minimum": 0},
@@ -165,6 +166,20 @@
    "type": "object", "required": ["source", "root_moves", "frame", "items", "note"],
    "properties": {"source": {"type": "string"}, "frame": {"type": "string"}, "root_moves": {"const": false}, "items": {"type": "array", "items": {"$ref": "#/$defs/motion"}},
                   "note": {"type": ["string", "null"]}}
+  },
+  "robot_fit": {
+   "description": "claude-0.5.1, optional (ältere Specs ohne): Größe in der Roboterhand (Cube Escape 0.82, Stufe 2); Beschreibung in weapon-spec.md › Größe in der Roboterhand",
+   "type": "object", "required": ["source", "robot", "concept_sheets", "applies", "reason", "targets", "sheet_at_target"],
+   "properties": {
+    "source": {"type": "string"}, "concept_sheets": {"const": false}, "applies": {"type": "boolean"}, "reason": {"type": ["string", "null"]},
+    "robot": {"type": "object", "required": ["height_m", "hand_m", "arm_m"],
+              "properties": {"height_m": {"$ref": "#/$defs/sourced"}, "hand_m": {"$ref": "#/$defs/sourced"}, "arm_m": {"$ref": "#/$defs/sourced"}}},
+    "targets": {"type": ["object", "null"]},
+    "sheet_at_target": {"type": ["object", "null"], "required": ["scale", "support_forward_m", "stock_behind_m", "barrel_m", "receiver_height_m", "basis", "ok"],
+                        "properties": {"scale": {"type": "number", "minimum": 0}, "support_forward_m": {"type": ["number", "null"]},
+                                       "stock_behind_m": {"type": "number"}, "barrel_m": {"type": ["number", "null"]},
+                                       "receiver_height_m": {"type": ["number", "null"]}, "basis": {"type": "string"}, "ok": {"type": "object"}}}
+   }
   },
   "sight": {
    "type": "object", "required": ["present", "kind", "window", "source", "modular", "mount_side", "labels", "parts", "bounds_m", "anchor"],
