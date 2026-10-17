@@ -95,3 +95,12 @@ keine schwebenden Teile, keine ungewollten Durchdringungen (koplanare Teile ≥ 
 - Texturen sind prozedurale Muster für Konzeptblätter, keine UV-Texturen.
 - Farbvarianten werden automatisch nach Bauteil-Rollen umgefärbt; einzelne Akzente können an ungewohnter Stelle landen.
 - Gestalterische Referenz, keine bemaßte Fertigungszeichnung.
+
+## Parallax · eigenständiger Codex-Stand
+
+Unter [`generator/parallax/`](generator/parallax/README.md) liegt die unabhängig gebaute Pipeline 0.1 „Parallax“ mit zehn Modellen, lokal eingebetteten Schriften, selbstständigen HTML-Blättern und 22 Unit-Tests. Einstieg: [`generator/parallax/output/index.html`](generator/parallax/output/index.html). Diese Fassung besitzt ihre eigene Modell-API und ergänzt die bestehenden Varianten.
+
+```bash
+python -m unittest discover -s generator/parallax/tests -v
+python generator/parallax/build.py
+```
