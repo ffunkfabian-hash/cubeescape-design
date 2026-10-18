@@ -26,7 +26,10 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   `python3 claude/generator/release_assets.py` (Probelauf, `--upload` nur auf Wunsch) ins Release. Im Repo bleiben `KXnn.spec.json` und
   `claude/tests/golden.json` (nach Neubau `python3 claude/tests/test_golden.py --update`). Beim Abschluss **einmal** anbieten, den Viewer
   zu öffnen (`open claude/output/index.html`, Knopf in der Abschlussbox); nicht ungefragt öffnen, nicht wiederholt anbieten.
-- Bildstufen (Rendern der Konzeptblätter) laut globaler Regel auf dem Mac mit `heavy_lock`; Cloud-Sitzungen nur schnelle Prüfungen.
+- Bildstufen (Rendern der Konzeptblätter) und Hash-Prüfungen (`test_golden --full`, libwebp-abhängig) laut globaler Regel auf dem Mac mit
+  `heavy_lock`; Cloud-Sitzungen (auch Codex Cloud, nur auf freigegebenem Branch) dürfen umsetzen und alles ohne Bildstufe prüfen.
+  Bekommt Codex einen Auftrag, dessen Ergebnis am Bild beurteilt wird (Visiere, Modelle), legt Claude vorher die Zielbild-Vorschauen
+  lokal ab (`~/Library/Caches/CubeEscapeDesign/…`) und nennt den Pfad im Auftrag.
 - **Erfahrungen** (Lehren aus Modell-, Raster- und Render-Pipeline, Prompts und Konzeptblättern) stehen in `docs/masterprompt.md` und
   `docs/prompt-vorlagen.md` (gemeinsam, Änderungen nur auf Wunsch des Nutzers), Claudes zusätzlich in `claude/docs/versions/`;
   dauerhafte Entscheidungen des Nutzers mit Grund in `claude/docs/ENTSCHEIDUNGEN.md` (Datum | Entscheidung | Grund, neue Zeilen unten,

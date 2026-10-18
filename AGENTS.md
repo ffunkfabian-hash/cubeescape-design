@@ -27,7 +27,10 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   Prüfwerte (Hashes). Beim Abschluss einmal anbieten, den Viewer zu öffnen.
 - Releases nur auf Wunsch des Nutzers. Der Release-Workflow kennt bisher nur `release/claude-<version>`; einen Codex-Weg
   (`release/codex-<version>`, Tag `codex-v<version>`) legt Claude an, sobald der Nutzer ihn möchte.
-- Bildstufen (Rendern der Konzeptblätter) laut globaler Regel auf dem Mac mit `heavy_lock`; Cloud-Sitzungen nur schnelle Prüfungen.
+- Bildstufen (Rendern der Konzeptblätter) und Hash-Prüfungen (`test_golden --full`, libwebp-abhängig) laut globaler Regel auf dem Mac mit
+  `heavy_lock`; Cloud-Sitzungen (auch Codex Cloud, nur auf freigegebenem Branch) dürfen umsetzen und alles ohne Bildstufe prüfen.
+  Bekommt Codex einen Auftrag, dessen Ergebnis am Bild beurteilt wird (Visiere, Modelle), legt Claude vorher die Zielbild-Vorschauen
+  lokal ab (`~/Library/Caches/CubeEscapeDesign/…`) und nennt den Pfad im Auftrag.
 - **Erfahrungen** (Lehren aus Modell-, Raster- und Render-Pipeline, Prompts und Konzeptblättern) stehen in `docs/masterprompt.md` und
   `docs/prompt-vorlagen.md` (gemeinsam, Änderungen nur auf Wunsch des Nutzers), Codex' zusätzlich in `codex/docs/versions/`.
   Dauerhafte Entscheidungen des Nutzers: `claude/docs/ENTSCHEIDUNGEN.md` (gilt für beide Pipelines, vor Änderungen an Spec, Blättern
