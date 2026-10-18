@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.6.1
+- Gemeinsamer Texturkatalog [docs/textures/](docs/textures/README.md) (`cubeescape-design/texture-catalog` v1): Materialien nach Toolgen-Namen, Muster in mm
+  (Median-Maßstab der 60 Specs als Startwert), Oberflächen mit Tonleitern und Kantenabnutzung, 14 Skins (9 Claude, 5 Codex), Kanäle; 24 Musterbilder.
+- `make_swatches.py` (nur aus `catalog.json`), `check_catalog.py` (Schema, sha256, Abgleich mit Toolgen `surface_recipes.json`); Teil von `./check`.
+  Claudes Pipeline liest den Katalog noch nicht (eigener Schritt mit Bildstufe); Bericht [claude/docs/versions/0.6.md](claude/docs/versions/0.6.md).
+
 ## claude-0.6
 - Visier-Serie VS01–VS09: je Waffe 1–9 ein Blatt im XL-Stil aus einem Modell (`vsmodels.py`, `vsheet.py`, `build_vs.py`): Isometrie,
   Seite/Oben/Rück mit Visierlinie und Ankern, Durchsicht im Spiel, vier Varianten, Fadenkreuze (nur Bild), Bausteine.
