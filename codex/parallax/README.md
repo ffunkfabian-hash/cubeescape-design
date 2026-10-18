@@ -13,3 +13,9 @@ Mit `--probe` entstehen zunächst Pistole, Fusionsgewehr, Spurgewehr und Bogen. 
 
 Die Specs sind eigenständige gestalterische Referenzen, kein bestätigter Toolgen-Importvertrag. Maße und Anker
 sind nachvollziehbar ausgewiesen; CE-Roboterpassung ist ohne Modelltest unbekannt.
+
+## 0.1.2 · Stilvertrag und Texturkatalog
+
+Gleiche zeichnerische Regeln und gemeinsamer Katalog wie Flux Bloom, ohne Änderung der ursprünglichen Modelle,
+Paletten oder Namen. Kanonische Übergabe: `output/KAxx.spec.json` im Weapon-Spec-v1-Format plus `golden.json`.
+Befehle und Grenzen: [gemeinsame Pipeline](../fluxbloom/README.md#stilvertrag-weapon-spec-v1-und-gemeinsamer-katalog).

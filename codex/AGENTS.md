@@ -4,7 +4,7 @@ Globale Regeln und die AGENTS.md im Repository-Wurzelordner gelten. Nur unter `c
 Keine Dateien aus `claude/` übernehmen, verändern oder per Symlink einbinden. Gemeinsame Vorgaben in `docs/` nur lesen.
 Bildläufe auf dem Mac mit heavy_lock; Tests und Syntax sind die schnellen Prüfungen.
 
-Aktuell codex-0.2, Variante K „Flux Bloom“, und codex-0.1, Variante A „Parallax“, Branch `codex/flux-bloom`.
+Aktuell codex-0.2, Variante K „Flux Bloom“, und codex-0.1, Variante A „Parallax“, Branch `codex/style-spec`.
 Nutzerauftrag vom 17.10.2026: Auch Parallax nach dem aktuellen Claude-Maßstab überarbeiten.
 Beide Modellserien bleiben getrennt, die eigenen Codex-Werkzeuge für Raster, Skins, Layout und Spec werden gemeinsam genutzt.
 Der Renderer und allgemeine Bausteine stammen aus dem früheren eigenen Codex-Werkzeug; die zehn Konzepte sind neu.
@@ -49,3 +49,17 @@ vom Stand der Spec-/Code-Daten benennen. Keine Dateien aus Claudes Pipeline übe
 Parallax 0.1.1 und Flux Bloom 0.2.1 wurden nach diesem Umfang überarbeitet und auf dem Mac geprüft.
 Prüfbelege und Grenzen stehen in den Versionsberichten; eine pauschale gestalterische Gleichwertigkeit oder
 Toolgen-/Roboter-Eignung wird daraus nicht abgeleitet.
+
+## Stilvertrag und kanonische Übergabe (18.10.2026)
+
+Maßgeblich ist der vom Nutzer übergebene Auftrag [Angleichung](../claude/docs/auftrag-codex-angleichung.md).
+Teil A/B: Zeichnungsstil nach Zahlen, Weapon-Spec v1 als Übergabe; alte DesignReference nur zusätzlich.
+KA01, KA05, KK05 und KK08 zuerst rendern und mit dem offiziellen Messskript prüfen. Erst nach ausdrücklicher
+Nutzerfreigabe der verkleinerten Bilder auf alle zwanzig Blätter ausrollen; Median über zehn ist erst dann vollständig.
+Modelle, Silhouetten, Paletten, Skin-Arten und Namen unverändert lassen. Texturkatalog (Teil C) erst lesen,
+wenn `docs/textures/` auf main liegt; keine neuen Texturdefinitionen als Zwischenlösung.
+Erzeugte Galerien bleiben lokal; `output/*.spec.json`, `output/golden.json` und Prüfwerte werden versioniert.
+
+Nutzerfreigabe am 18.10.2026: Die vier Stilproben sind akzeptiert, alle 20 dürfen umgestellt werden.
+Teil C ist seit main `0e62096` ebenfalls freigegeben: Katalogparameter zur Bauzeit lesen, physische mm mit dem
+Spec-Maßstab umrechnen und Material-/Skin-IDs im Spec referenzieren; `docs/textures/` bleibt nur lesbar.

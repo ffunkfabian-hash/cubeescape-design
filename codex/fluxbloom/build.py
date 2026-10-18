@@ -114,13 +114,14 @@ def main(argv=None):
     parser.add_argument('--screenshots', type=Path)
     parser.add_argument('--weapon', action='append', help='Slug; repeat to select multiple weapons')
     parser.add_argument('--capture-only', action='store_true', help='Inspect existing HTML without rerendering geometry')
+    parser.add_argument('--spec-only', action='store_true', help='Export canonical weapon specs without rendering sheets')
     args = parser.parse_args(argv)
     from collections_codex import load_collection, PROBE_SLUGS
     from sheet import build_sheet
     started = time.monotonic()
     models = load_collection(args.collection)
     collection_root=HERE if args.collection=='fluxbloom' else HERE.parent/'parallax'
-    args.output=args.output or collection_root/('probe' if args.probe else 'output')
+    args.output=args.output or (collection_root/'output' if args.spec_only else collection_root/('probe' if args.probe else 'output'))
     args.screenshots=args.screenshots or Path.home()/f'Library/Caches/CubeEscapeDesign/concept-sheets/{args.collection}-upgrade-{"probe" if args.probe else "full"}'
     if args.probe and not args.weapon:args.weapon=list(PROBE_SLUGS)
     selected = [(n, meta, model) for n, (meta, model) in enumerate(models, 1)
@@ -128,6 +129,16 @@ def main(argv=None):
     if not selected or (args.weapon and set(args.weapon) - {m['slug'] for _, m, _ in selected}):
         parser.error('Unknown or empty weapon selection')
     args.output.mkdir(parents=True, exist_ok=True)
+    if args.spec_only:
+        from weapon_spec import make_spec, dump
+        for number, meta, model in selected:
+            sheet_id=f"K{meta['variant']}{number:02d}"
+            record={'geometry_sha256':geometry_hash(model),'orthographic_views':[]}
+            canonical=make_spec(meta,model,number,record)
+            target=args.output/f'{sheet_id}.spec.json'
+            target.write_text(dump(canonical),encoding='utf-8')
+        print(f"Fertig: {len(selected)} kanonische Specs unter {args.output}; keine Bilder erzeugt.",flush=True)
+        return 0
     records, paths = [], []
     for number, meta, model in selected:
         checks = validate_model(meta, model)
@@ -143,7 +154,9 @@ def main(argv=None):
             (args.output / (sheet_id + '-prompts.txt')).write_text('DEUTSCH\n' + record['prompts']['de'] + '\n\nENGLISH\n' + record['prompts']['en'] + '\n', encoding='utf-8')
         if not args.capture_only:
             from spec import design_spec
-            (args.output / (sheet_id + '.spec.json')).write_text(json.dumps(design_spec(meta, model, number, record), ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
+            from weapon_spec import make_spec, dump
+            (args.output / (sheet_id + '.reference.json')).write_text(json.dumps(design_spec(meta, model, number, record), ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
+            (args.output / (sheet_id + '.spec.json')).write_text(dump(make_spec(meta, model, number, record)), encoding='utf-8')
         records.append({**record, 'slug': meta['slug'], 'geometry_sha256': geometry_hash(model), 'geometry_checks': checks})
         paths.append(path)
     captures = screenshots(paths, args.screenshots)
@@ -163,7 +176,7 @@ def main(argv=None):
         cards.append(f'<a href="{html.escape(path.name)}"><img src="previews/{path.stem}.jpg" alt="{html.escape(meta["kind"])}"><span>{path.stem} · {html.escape(meta["name"])} / {html.escape(meta["kind"])}</span></a>')
     gallery_title=f"Codex · {models[0][0]['variant_name']} · {'Probeblätter' if args.probe else 'Konzeptblätter'}"
     (args.output / 'index.html').write_text('<!doctype html><html lang="de"><meta charset="utf-8"><title>'+html.escape(gallery_title)+'</title><style>body{background:#0e1622;color:#ece6da;font:20px sans-serif;padding:40px}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}a{color:#e1d2ff;text-decoration:none}img{width:100%;display:block;border-radius:8px}span{display:block;padding:16px}p{max-width:900px;line-height:1.5}</style><h1>'+html.escape(gallery_title)+'</h1><p>Überarbeitete Waffenformen · kräftige Farbwelten · ein 3D-Modell je Blatt · sechs orthografische Ansichten im selben Maßstab. Gestalterische Referenzen.</p><main>'+''.join(cards)+'</main></html>', encoding='utf-8')
-    manifest = {'version': '0.2.1' if args.collection=='fluxbloom' else '0.1.1', 'name': models[0][0]['variant_name'], 'stage': 'probe' if args.probe else 'full', 'canvas': [4800, 4432],
+    manifest = {'version': '0.2.2' if args.collection=='fluxbloom' else '0.1.2', 'name': models[0][0]['variant_name'], 'stage': 'probe' if args.probe else 'full', 'canvas': [4800, 4432],
                 'records': records, 'browser_qa': captures, 'seconds': round(time.monotonic()-started, 2),
                 'visual_review': 'Manuelle Sichtprüfung der Screenshots erforderlich; automatische Prüfungen ersetzen sie nicht.'}
     (args.output / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
