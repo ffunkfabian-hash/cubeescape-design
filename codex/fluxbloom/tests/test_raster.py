@@ -134,7 +134,10 @@ class RasterTests(unittest.TestCase):
         for material in ("paint", "rubber", "plastic", "light"):
             values = texture_factor(material, points)
             np.testing.assert_array_equal(values, texture_factor(material, points))
-            self.assertTrue(np.all((values >= .8) & (values <= 1.15)))
+            from texture_catalog import material as catalog_material, pattern
+            limits = pattern(catalog_material(material)['pattern'])['contrast']
+            low, high = limits['brightness'] if limits else (1., 1.)
+            self.assertTrue(np.all((values >= low) & (values <= high)))
 
     def test_shared_smooth_group_omits_internal_contour(self):
         vertices = [np.array([[-10,-10,1], [0,-10,1], [0,10,1], [-10,10,1]]),

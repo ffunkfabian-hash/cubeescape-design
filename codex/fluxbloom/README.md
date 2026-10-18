@@ -30,7 +30,7 @@ HTML-Galerie: `output/index.html`. PNGs liegen unter `~/Library/Caches/CubeEscap
 `--weapon sniper` wählt ein Modell; `--output` und `--screenshots` ändern die Ausgabeorte.
 
 Eigene Daten pro Blatt: HTML, DE-/EN-Prompts, Spec mit `sheet.variant_name`, Materialrollen und sämtlichen Polygonen.
-Der Spec-Typ `CodexDesignReference` ist eine eigene gestalterische Referenz, kein Importvertrag und keine
+Der zusätzliche Typ `CodexDesignReference` in `*.reference.json` ist eine eigene gestalterische Referenz, kein Importvertrag und keine
 Fertigungszeichnung. Die Rohpolygone verwenden Designeinheiten; Referenzmaße in Metern, Achsenumrechnung und Anker sind zusätzlich dokumentiert. Sechs Orthos teilen Maßstab und Bezugspunkt;
 Hauptansicht, Detail und separate Optik haben eigene Darstellungsmaßstäbe.
 
@@ -61,3 +61,34 @@ Der Vergleich erwartet die separat heruntergeladenen Claude-v0.3-Bildbelege unte
 `~/Library/Caches/CubeEscapeDesign/comparison/shots/`. Ohne diese Belege die Serien einzeln mit `build.py` bauen;
 `compare.py` kopiert keine Claude-Quellen. Der Vergleich liegt anschließend unter
 `~/Library/Caches/CubeEscapeDesign/comparison-upgrade/index.html`.
+
+## Stilvertrag, Weapon-Spec v1 und gemeinsamer Katalog
+
+Die aktuelle Überarbeitung verwendet [docs/textures/catalog.json](../../docs/textures/catalog.json) zur Bauzeit:
+Material-Aliase, physische Mustergrößen in mm, Oberflächen, Abnutzung und die bestehenden fünf Skins. Kein Katalogwert
+wird als zweite Rezeptdefinition im Codex-Code gepflegt. `units.model_unit_m` aus dem Spec versorgt alle Bildpanels;
+der Katalog-Startwert greift nur ohne Spec und wird als solcher ausgewiesen.
+
+Die Darstelleinheiten des Blattfits sind ausdrücklich von physischen Metern getrennt: vier Displayeinheiten je
+Modelleinheit lassen den Claude-Fit mit cap6 auf den kleineren Codex-Modellen zu, ohne die Modelle zu verändern.
+Lange Waffen bekommen volle Orthozeilen; bei breiteren Formen wird die rechte Spalte höher und die Zusatzfelder
+links schmaler. Gemeinsamer Maßstab und Hüllquader-Mittelpunkt bleiben erhalten.
+
+Ohne Bildstufe: `python codex/fluxbloom/build.py --spec-only`, ebenso mit `--collection parallax`.
+Die Dateien `KAxx.spec.json` / `KKxx.spec.json` neben den Blättern sind das kanonische Weapon-Spec-v1-Format;
+`weapon-spec.schema.json` ist das unabhängig formulierte eigene Prüfprofil, zusätzlich prüfen Tests das offizielle
+Schema nur lesend. `jsonschema` ist dafür eine verpflichtende Abhängigkeit.
+
+Freigegebener vollständiger Neubau (Mac unter heavy_lock):
+`python codex/fluxbloom/alignment_build.py --full`.
+Vier Katalogproben samt breitem Raketenwerfer und Kontaktbogen: derselbe Befehl ohne `--full`.
+Prüfwerte erneuern: `python codex/fluxbloom/spec_hashes.py`.
+
+Messung nur mit dem offiziellen CLI `claude/generator/style_metrics.py`, Codex-Feld `150 560 2910 2120`;
+Ergebnis enthält dessen Rundung. Materialvergleich und Messdaten liegen unter
+`~/Library/Caches/CubeEscapeDesign/style-contract/`. Die Musterbilder im Katalog bleiben unverändert.
+
+Die Spec enthält konservative Use-Clip-Zuordnungen anhand der dokumentierten Bauteilnamen; unbekannte Teile stehen
+mit Grund auf null. Offene Aperturen sind als solche beschrieben, es wird kein physisches Glas erfunden.
+Die vollständigen Skin-Rezepte sind über Katalog-IDs erreichbar. V1 beschreibt nicht jede dynamische Ersatzfarbe,
+kontinuierliche Mischung oder elliptische Ringmaske; die präzisen Grenzen stehen in den Skin-Notizen.
