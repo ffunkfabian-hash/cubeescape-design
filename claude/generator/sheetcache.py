@@ -98,6 +98,9 @@ def env_fingerprint():
     for m in ('numpy','scipy','PIL'):
         try:v.append(f'{m}{__import__(m).__version__}')
         except Exception:v.append(f'{m}-')
+    try:
+        from PIL import features;v.append('webp'+str(features.version('webp')))   # eingebettete WebP-Bilder hängen am libwebp-Encoder
+    except Exception:v.append('webp-')
     return ' '.join(v)
 
 def code_key(kind):
@@ -139,10 +142,11 @@ def lookup(key):
     e=_entry(key)
     try:
         with open(e+'.json',encoding='utf-8') as f:meta=json.load(f)
+        if not isinstance(meta,dict):return None
         if meta.get('key')!=key or os.path.getsize(e+'.html')!=meta['size']:return None
         if sha_file(e+'.html')!=meta['sha256']:return None
         return meta
-    except (OSError,ValueError,KeyError):return None
+    except (OSError,ValueError,KeyError,TypeError):return None
 
 def store(key,page,extra=None):
     """Legt das Blatt (str) ab: erst das Blatt, dann die Meta zuletzt (ohne Meta gilt der Eintrag als nicht vorhanden)."""

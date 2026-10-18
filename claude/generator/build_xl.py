@@ -21,6 +21,7 @@ for fid in FIDS:
     fn=f'K{V}{d["num"]}.dc.html';sid=fn[:-8]
     key=sheetcache.sheet_key('weapon',sid,d,V) if USE_CACHE else None
     meta=sheetcache.lookup(key) if key and not FORCE else None
+    if meta and not isinstance(meta.get('prompt'),dict):meta=None   # Eintrag ohne Prompts: neu bauen
     if meta:
         wrote=sheetcache.restore(key,meta,PROJ+fn)
         with open(PROJ+fn,encoding='utf-8') as f:page=f.read()

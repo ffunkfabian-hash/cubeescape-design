@@ -90,8 +90,9 @@ class Keys(unittest.TestCase):
         finally:vsmodels.load=orig
         self.assertNotEqual(before,after)
         other=next(s for s in sheetmodels.SHEETS if vsmount.VS_OF.get(sheetmodels.load(s)['name'])=='VS05')
+        ref=self.key(other)   # vor dem Patch
         vsmodels.load=patched
-        try:self.assertEqual(self.key(other),SC.sheet_key('weapon',other,*(lambda d:(d,d['V']))(sheetmodels.load(other))))
+        try:self.assertEqual(self.key(other),ref,'Waffenblatt mit anderem Visier bleibt gleich')
         finally:vsmodels.load=orig
     def test_canon_rejects_unknown(self):
         with self.assertRaises(TypeError):SC.canon(object())
