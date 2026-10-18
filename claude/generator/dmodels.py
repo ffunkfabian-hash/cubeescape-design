@@ -183,5 +183,5 @@ def d10():
     m.prism(rect(456,214,18,16),DK,-7,7,r=3);label(m,'Visierschiene')
     m.prism(rect(472,216,16,10),DK,-6,6,r=2);sight(m)
     m.prism(rect(486,204,20,34),P,-9,9,r=4);label(m,'Visier');sight(m)
-    m.decal('z+',9,circ(496,221,6),A,emit=True)
+    m.decal('x-',486,circ(221,0,6),A,emit=True)   # Leuchtpunkt auf der Rückseite, zum Schützen, Durchsicht −Y (bis 0.6 seitlich: Querfenster, claude-0.7 behoben)
     return m,(440,250,0)

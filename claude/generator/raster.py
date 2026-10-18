@@ -9,7 +9,8 @@ def _hex(c):c=c.lstrip('#');return np.array([int(c[i:i+2],16) for i in (0,2,4)],
 LAST={}
 def _glass_pass(glass,rgba,zb,yaw,pitch,center,T,w,h,s,tol):
     """Glas (Visier-Serie, claude-0.6): durchscheinende Scheiben über dem fertigen Bild, nur wo sie vor dem Undurchsichtigen liegen.
-    Teile mit P['alpha'] (Deckkraft der Zeichnung) und P['col'] (Tönung); dazu ein schräger Glanzstreifen und eine helle Kante.
+    Teile mit P['alpha'] (Deckkraft der Zeichnung) und P['col'] (Tönung); dazu ein weicher Glanzverlauf ohne Linien (seit claude-0.7,
+    vorher schräge Schraffur) und eine helle Kante.
     Liefert Anker der Glas-Beschriftungen (Bildpunkte)."""
     parts,_=eng.render(glass,yaw,pitch,center);anch={}
     for d,polys,P in parts:
@@ -29,8 +30,9 @@ def _glass_pass(glass,rgba,zb,yaw,pitch,center,T,w,h,s,tol):
             ok=mk&(Z>=zb[y0:y1,x0:x1]-tol)
             if not ok.any():continue
             hit[y0:y1,x0:x1]|=ok
-            streak=(((xx+yy)/(0.05*max(w,h)))%1.0<0.16)
-            a=np.where(streak,min(1.0,a0+0.16),a0)[ok]
+            # dezenter Glanz statt Schraffur (Wunsch des Nutzers 18.10.2026): weicher Verlauf, oben links etwas deckender, keine Linien
+            t=np.clip(((xx-x0)+(yy-y0))/max(1.0,0.6*((x1-x0)+(y1-y0))),0.0,1.0)
+            a=(a0+0.07*(1.0-t)**2)[ok]
             sub=rgba[y0:y1,x0:x1];A=sub[...,3][ok]/255.0;rgb=sub[...,:3][ok]
             oa=a+A*(1-a);sub[...,:3][ok]=(gc[None,:]*a[:,None]+rgb*(A*(1-a))[:,None])/np.maximum(oa,1e-6)[:,None];sub[...,3][ok]=oa*255
         if hit.any():

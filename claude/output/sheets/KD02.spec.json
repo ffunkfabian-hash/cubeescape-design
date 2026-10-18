@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.2"
+  "claude_version": "0.7"
  },
  "sheet": {
   "id": "KD02",
@@ -57,11 +57,11 @@
   },
   "with_sight": {
    "length": 0.934,
-   "height": 0.4502,
+   "height": 0.4103,
    "width": 0.0838,
    "bounds_m": [
     [-0.0419, -0.6209, -0.0765],
-    [0.0419, 0.3131, 0.3737]
+    [0.0419, 0.3131, 0.3338]
    ]
   }
  },
@@ -85,16 +85,16 @@
    "part": "p09"
   },
   "Socket_CenterOfMass": {
-   "position_m": [0.0, -0.1314, 0.146],
-   "model": [421.66, 176.9, 0.0],
+   "position_m": [0.0, -0.1305, 0.1375],
+   "model": [420.9, 184.61, 0.0],
    "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert",
    "part": null
   },
   "Socket_Sight": {
-   "position_m": [0.0, -0.1516, 0.2836],
-   "model": [440.0, 52.0, 0.0],
-   "source": "Unterkante Mitte der Visierbaugruppe (montierte Lage)",
-   "part": null
+   "position_m": [0.0, -0.1791, 0.2858],
+   "model": [465.0, 50.0, 0.0],
+   "source": "Oberkante der Visierschiene p10 unter der Mitte der Halterung (Socket_Mount von VS02)",
+   "part": "p10"
   }
  },
  "palette": [
@@ -110,27 +110,21 @@
    "channels": {
     "MT_Primary": "#3A3D44",
     "MT_Secondary": "#525660",
-    "MT_Accent": null,
+    "MT_Accent": "#E11D2E",
     "MT_Metal": "#1A1C20",
     "MT_Energy": null,
     "MT_Emission": "#E11D2E",
     "MT_Detail": "#1A1C20"
    },
    "other_colors": {
-    "MT_Secondary": [
-     {
-      "color": "#E11D2E",
-      "share": 0.376
-     }
-    ],
     "MT_Detail": [
      {
       "color": "#8C93A2",
-      "share": 0.04
+      "share": 0.129
      },
      {
       "color": "#0B0D10",
-      "share": 0.009
+      "share": 0.03
      }
     ]
    },
@@ -149,23 +143,17 @@
    "channels": {
     "MT_Primary": "#ECE6DA",
     "MT_Secondary": "#F3EFE7",
-    "MT_Accent": null,
+    "MT_Accent": "#2B2E33",
     "MT_Metal": "#A3A7AD",
     "MT_Energy": null,
     "MT_Emission": "#F28C28",
     "MT_Detail": "#A3A7AD"
    },
    "other_colors": {
-    "MT_Secondary": [
-     {
-      "color": "#2B2E33",
-      "share": 0.376
-     }
-    ],
     "MT_Detail": [
      {
       "color": "#2B2E33",
-      "share": 0.05
+      "share": 0.159
      }
     ]
    },
@@ -184,23 +172,17 @@
    "channels": {
     "MT_Primary": "#F3F6F9",
     "MT_Secondary": "#F7F9FB",
-    "MT_Accent": null,
+    "MT_Accent": "#3A4452",
     "MT_Metal": "#AEBBCA",
     "MT_Energy": null,
     "MT_Emission": "#22D3EE",
     "MT_Detail": "#AEBBCA"
    },
    "other_colors": {
-    "MT_Secondary": [
-     {
-      "color": "#3A4452",
-      "share": 0.376
-     }
-    ],
     "MT_Detail": [
      {
       "color": "#3A4452",
-      "share": 0.05
+      "share": 0.159
      }
     ]
    },
@@ -219,23 +201,17 @@
    "channels": {
     "MT_Primary": "#4A4E57",
     "MT_Secondary": "#898C92",
-    "MT_Accent": null,
+    "MT_Accent": "#141518",
     "MT_Metal": "#2C2F35",
     "MT_Energy": null,
     "MT_Emission": "#FF5A36",
     "MT_Detail": "#2C2F35"
    },
    "other_colors": {
-    "MT_Secondary": [
-     {
-      "color": "#141518",
-      "share": 0.376
-     }
-    ],
     "MT_Detail": [
      {
       "color": "#141518",
-      "share": 0.05
+      "share": 0.159
      }
     ]
    },
@@ -246,6 +222,7 @@
  "channels_used": [
   "MT_Primary",
   "MT_Secondary",
+  "MT_Accent",
   "MT_Metal",
   "MT_Emission",
   "MT_Detail"
@@ -272,7 +249,7 @@
   {
    "id": "p01",
    "label": "Abzug",
-   "channel": "MT_Secondary",
+   "channel": "MT_Accent",
    "channel_source": "distributed",
    "material": "painted",
    "toolgen_material": "painted",
@@ -451,37 +428,289 @@
   },
   {
    "id": "p11",
-   "label": null,
-   "channel": "MT_Detail",
-   "channel_source": "role",
-   "material": "matte",
-   "toolgen_material": "painted_matte",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": true,
    "color": "#1A1C20",
-   "area_m2": 0.009392,
+   "area_m2": 0.002909,
    "long_axis": "Y",
    "bounds_m": [
-    [-0.0154, -0.2067, 0.2836],
-    [0.0154, -0.1185, 0.3012]
+    [-0.011, -0.2031, 0.2858],
+    [0.011, -0.1551, 0.2918]
    ],
    "moving": null
   },
   {
    "id": "p12",
-   "label": "Kastenvisier",
-   "channel": "MT_Detail",
-   "channel_source": "role",
-   "material": "matte",
-   "toolgen_material": "painted_matte",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
    "emissive": false,
    "sight": true,
    "color": "#1A1C20",
-   "area_m2": 0.056718,
+   "area_m2": 0.000498,
    "long_axis": "Y",
    "bounds_m": [
-    [-0.0264, -0.2507, 0.2969],
-    [0.0264, -0.0524, 0.3737]
+    [0.008, -0.1991, 0.2828],
+    [0.011, -0.1591, 0.2858]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p13",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "emissive": false,
+   "sight": true,
+   "color": "#1A1C20",
+   "area_m2": 0.000498,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.011, -0.1991, 0.2828],
+    [-0.008, -0.1591, 0.2858]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p14",
+   "label": "Klemmschraube",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 7.4e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.011, -0.1815, 0.286],
+    [0.0136, -0.1767, 0.2908]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p15",
+   "label": "Gehäuse",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 0.003899,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.012, -0.2071, 0.2918],
+    [0.012, -0.1501, 0.2998]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p16",
+   "label": "Abdeckung",
+   "channel": "MT_Primary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#3A3D44",
+   "area_m2": 0.000268,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.012, -0.1751, 0.2933],
+    [0.0133, -0.1541, 0.2984]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p17",
+   "label": "Abdeckung",
+   "channel": "MT_Primary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#3A3D44",
+   "area_m2": 0.000268,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0133, -0.1751, 0.2933],
+    [-0.012, -0.1541, 0.2984]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p18",
+   "label": "Abdeckung",
+   "channel": "MT_Primary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#3A3D44",
+   "area_m2": 0.000678,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.009, -0.1671, 0.2998],
+    [0.009, -0.1511, 0.3013]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p19",
+   "label": "Rahmen",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 0.000325,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0195, -0.2001, 0.2998],
+    [0.0195, -0.2001, 0.3338]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p20",
+   "label": "Rahmen",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 0.000325,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0195, -0.1841, 0.2998],
+    [0.0195, -0.1841, 0.3338]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p21",
+   "label": "Rahmen",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 0.002197,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0195, -0.2001, 0.2998],
+    [0.0195, -0.1841, 0.3338]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p22",
+   "label": "Rahmen",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 0.001932,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.017, -0.2001, 0.3023],
+    [0.017, -0.1841, 0.3313]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p23",
+   "label": "Glas",
+   "channel": "MT_Detail",
+   "channel_source": "explicit",
+   "material": "glass",
+   "toolgen_material": null,
+   "emissive": false,
+   "sight": true,
+   "color": "#8FA6B8",
+   "area_m2": 0.002105,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0176, -0.1971, 0.3017],
+    [0.0176, -0.1971, 0.3319]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p24",
+   "label": "Emitter",
+   "channel": "MT_Emission",
+   "channel_source": "explicit",
+   "material": "lit",
+   "toolgen_material": "energy_glass",
+   "emissive": true,
+   "sight": true,
+   "color": "#E11D2E",
+   "area_m2": 0.00011,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.003, -0.1781, 0.2998],
+    [0.003, -0.1721, 0.3014]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p25",
+   "label": "Bedienknopf",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 8.9e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.003, -0.1601, 0.3013],
+    [0.008, -0.1531, 0.3021]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p26",
+   "label": "Bedienknopf",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#525660",
+   "area_m2": 8.9e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.008, -0.1601, 0.3013],
+    [-0.003, -0.1531, 0.3021]
    ],
    "moving": null
   }
@@ -574,58 +803,82 @@
   "present": true,
   "kind": "holo",
   "window": "glass",
-  "source": "Bezeichnung Kastenvisier",
+  "source": "Visier-Serie VS02 (Offenes Holo-Visier), Modell claude/generator/vsmodels.py",
   "modular": true,
   "mount_side": "top",
   "type": "holo",
-  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
-  "frame": "closed",
-  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
+  "type_source": "Visier-Serie VS02 (Offenes Holo-Visier): Standardvisier des Waffentyps (Entscheidung des Nutzers 17.10.2026 „Danach Waffenblätter umstellen“)",
+  "frame": "open",
+  "frame_source": "Visier-Serie VS02 (Offenes Holo-Visier)",
   "labels": [
-   "Kastenvisier"
+   "Abdeckung",
+   "Bedienknopf",
+   "Emitter",
+   "Gehäuse",
+   "Glas",
+   "Halterung",
+   "Klemmschraube",
+   "Rahmen"
   ],
   "parts": [
    "p11",
-   "p12"
+   "p12",
+   "p13",
+   "p14",
+   "p15",
+   "p16",
+   "p17",
+   "p18",
+   "p19",
+   "p20",
+   "p21",
+   "p22",
+   "p23",
+   "p24",
+   "p25",
+   "p26"
   ],
   "bounds_m": [
-   [-0.0264, -0.2507, 0.2836],
-   [0.0264, -0.0524, 0.3737]
+   [-0.0195, -0.2071, 0.2828],
+   [0.0195, -0.1501, 0.3338]
   ],
   "anchor": "Socket_Sight",
   "window_geometry": {
    "elements": [
     {
-     "type": "decal",
-     "decal": 38,
-     "part": "p12",
+     "type": "part",
+     "decal": null,
+     "part": "p23",
      "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [0.0264, -0.0965, 0.3342],
-     "face_fraction": 0.093
-    },
-    {
-     "type": "decal",
-     "decal": 39,
-     "part": "p12",
-     "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [-0.0264, -0.0965, 0.3342],
-     "face_fraction": 0.093
-    },
-    {
-     "type": "decal",
-     "decal": 42,
-     "part": "p12",
-     "emissive": true,
      "view_axis_m": [0.0, -1.0, 0.0],
-     "center_m": [0.0, -0.2507, 0.3342],
-     "face_fraction": 0.237
+     "center_m": [0.0, -0.1971, 0.3168]
     }
    ],
-   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
+   "source": "Glasscheiben des Visiers als Funktionsfläche (wie Sight-Spec window_geometry); Achse aus der Geometrie"
   },
-  "window_geometry_note": null
+  "window_geometry_note": null,
+  "sight_spec": {
+   "id": "VS02",
+   "file": "VS02.spec.json",
+   "format": "cubeescape-design/sight-spec",
+   "variant": "Kanalfarben der Waffe (Basis-Palette des Blatts)",
+   "mount": "Socket_Mount des Sight-Specs = Socket_Sight dieses Specs, angehoben um riser_m; Achsen gleich (vorn −Y, oben +Z)",
+   "riser_m": 0.0,
+   "socket_mount_m": [0.0, -0.1791, 0.2858],
+   "socket_reticle_m": [0.0, -0.1971, 0.3168],
+   "socket_eye_m": null,
+   "line_height_m": 0.031,
+   "rail": {
+    "part": "p10",
+    "added": false,
+    "seat": "Mitte der Visierschiene"
+   },
+   "line_clear_of_weapon": true,
+   "blocked_by": [],
+   "replaced": [
+    "Kastenvisier"
+   ]
+  }
  },
  "decals": [
   {
@@ -678,7 +931,7 @@
   },
   {
    "part": "p06",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "left",
    "emissive": false,
    "color": "#1A1C20",
@@ -690,7 +943,7 @@
   },
   {
    "part": "p06",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "right",
    "emissive": false,
    "color": "#1A1C20",
@@ -702,7 +955,7 @@
   },
   {
    "part": "p06",
-   "channel": "MT_Secondary",
+   "channel": "MT_Accent",
    "surface": "left",
    "emissive": false,
    "color": "#E11D2E",
@@ -714,7 +967,7 @@
   },
   {
    "part": "p06",
-   "channel": "MT_Secondary",
+   "channel": "MT_Accent",
    "surface": "right",
    "emissive": false,
    "color": "#E11D2E",
@@ -750,7 +1003,7 @@
   },
   {
    "part": "p07",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "left",
    "emissive": false,
    "color": "#1A1C20",
@@ -762,7 +1015,7 @@
   },
   {
    "part": "p07",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "right",
    "emissive": false,
    "color": "#1A1C20",
@@ -774,7 +1027,7 @@
   },
   {
    "part": "p07",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "left",
    "emissive": false,
    "color": "#1A1C20",
@@ -786,7 +1039,7 @@
   },
   {
    "part": "p07",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "right",
    "emissive": false,
    "color": "#1A1C20",
@@ -846,7 +1099,7 @@
   },
   {
    "part": "p08",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "left",
    "emissive": false,
    "color": "#1A1C20",
@@ -858,7 +1111,7 @@
   },
   {
    "part": "p08",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "right",
    "emissive": false,
    "color": "#1A1C20",
@@ -870,7 +1123,7 @@
   },
   {
    "part": "p08",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "left",
    "emissive": false,
    "color": "#1A1C20",
@@ -882,7 +1135,7 @@
   },
   {
    "part": "p08",
-   "channel": "MT_Detail",
+   "channel": "MT_Metal",
    "surface": "right",
    "emissive": false,
    "color": "#1A1C20",
@@ -1083,66 +1336,6 @@
     [-0.0143, -0.2551, 0.2792],
     [-0.0143, -0.2441, 0.2836]
    ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Secondary",
-   "surface": "left",
-   "emissive": false,
-   "color": "#525660",
-   "area_m2": 0.0014236,
-   "bounds_m": [
-    [0.0264, -0.1185, 0.3177],
-    [0.0264, -0.0745, 0.3508]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Secondary",
-   "surface": "right",
-   "emissive": false,
-   "color": "#525660",
-   "area_m2": 0.0014236,
-   "bounds_m": [
-    [-0.0264, -0.1185, 0.3177],
-    [-0.0264, -0.0745, 0.3508]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Emission",
-   "surface": "left",
-   "emissive": true,
-   "color": "#E11D2E",
-   "area_m2": 0.00024,
-   "bounds_m": [
-    [0.0264, -0.1053, 0.3254],
-    [0.0264, -0.0877, 0.3431]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Emission",
-   "surface": "right",
-   "emissive": true,
-   "color": "#E11D2E",
-   "area_m2": 0.00024,
-   "bounds_m": [
-    [-0.0264, -0.1053, 0.3254],
-    [-0.0264, -0.0877, 0.3431]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Emission",
-   "surface": "front",
-   "emissive": true,
-   "color": "#E11D2E",
-   "area_m2": 0.0009601,
-   "bounds_m": [
-    [-0.0176, -0.2507, 0.3166],
-    [0.0176, -0.2507, 0.3519]
-   ]
   }
  ],
  "textures": {
@@ -1268,9 +1461,9 @@
     "colors": {
      "base": {
       "MT_Accent": {
-       "color": "#FF8A94",
+       "color": "#E11D2E",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "MT_Detail": {
        "color": "#1A1C20",
@@ -1285,9 +1478,9 @@
      },
      "standard": {
       "MT_Accent": {
-       "color": "#F28C28",
+       "color": "#2B2E33",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "MT_Detail": {
        "color": "#A3A7AD",
@@ -1302,9 +1495,9 @@
      },
      "arktis": {
       "MT_Accent": {
-       "color": "#22D3EE",
+       "color": "#3A4452",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "MT_Detail": {
        "color": "#AEBBCA",
@@ -1319,9 +1512,9 @@
      },
      "nacht": {
       "MT_Accent": {
-       "color": "#FF5A36",
+       "color": "#141518",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "MT_Detail": {
        "color": "#2C2F35",
@@ -1558,9 +1751,9 @@
     "colors": {
      "base": {
       "MT_Accent": {
-       "color": "#FF8A94",
+       "color": "#E11D2E",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#C9D2DC",
@@ -1575,9 +1768,9 @@
      },
      "standard": {
       "MT_Accent": {
-       "color": "#F28C28",
+       "color": "#2B2E33",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#C9D2DC",
@@ -1592,9 +1785,9 @@
      },
      "arktis": {
       "MT_Accent": {
-       "color": "#22D3EE",
+       "color": "#3A4452",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#C9D2DC",
@@ -1609,9 +1802,9 @@
      },
      "nacht": {
       "MT_Accent": {
-       "color": "#FF5A36",
+       "color": "#141518",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#C9D2DC",
@@ -1867,9 +2060,9 @@
     "colors": {
      "base": {
       "MT_Accent": {
-       "color": "#FF8A94",
+       "color": "#E11D2E",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#F2C230",
@@ -1884,9 +2077,9 @@
      },
      "standard": {
       "MT_Accent": {
-       "color": "#F28C28",
+       "color": "#2B2E33",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#F2C230",
@@ -1901,9 +2094,9 @@
      },
      "arktis": {
       "MT_Accent": {
-       "color": "#22D3EE",
+       "color": "#3A4452",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#F2C230",
@@ -1918,9 +2111,9 @@
      },
      "nacht": {
       "MT_Accent": {
-       "color": "#FF5A36",
+       "color": "#141518",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#F2C230",
@@ -2180,9 +2373,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#FF8A94",
+       "color": "#E11D2E",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#E2B04A",
@@ -2197,9 +2390,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#F28C28",
+       "color": "#2B2E33",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#E2B04A",
@@ -2214,9 +2407,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#22D3EE",
+       "color": "#3A4452",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#E2B04A",
@@ -2231,9 +2424,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#FF5A36",
+       "color": "#141518",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#E2B04A",
@@ -2524,9 +2717,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#FF8A94",
+       "color": "#E11D2E",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#3A3F47",
@@ -2546,9 +2739,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#F28C28",
+       "color": "#2B2E33",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#3A3F47",
@@ -2568,9 +2761,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#22D3EE",
+       "color": "#3A4452",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#3A3F47",
@@ -2590,9 +2783,9 @@
        "source": "channel"
       },
       "MT_Accent": {
-       "color": "#FF5A36",
+       "color": "#141518",
        "finish": "paint",
-       "source": "swatch"
+       "source": "channel"
       },
       "SK_Accent1": {
        "color": "#3A3F47",
@@ -2756,25 +2949,21 @@
  },
  "summary": {
   "skins": 5,
-  "parts": 13,
-  "parts_explicit_channel": 0,
-  "decals": 43,
+  "parts": 27,
+  "parts_explicit_channel": 16,
+  "decals": 38,
   "channels_with_other_colors": {
    "base": [
-    "MT_Detail",
-    "MT_Secondary"
+    "MT_Detail"
    ],
    "standard": [
-    "MT_Detail",
-    "MT_Secondary"
+    "MT_Detail"
    ],
    "arktis": [
-    "MT_Detail",
-    "MT_Secondary"
+    "MT_Detail"
    ],
    "nacht": [
-    "MT_Detail",
-    "MT_Secondary"
+    "MT_Detail"
    ]
   }
  }

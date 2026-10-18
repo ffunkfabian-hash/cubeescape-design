@@ -2,6 +2,19 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## Unreleased (Pipeline)
+- Inhalts-Cache für Blätter (`claude/generator/sheetcache.py`): `build_all.py`/`build_xl.py`/`build_vs.py` bauen nur Blätter neu, deren Schlüssel
+  (Modell, Palette/Skin, Quelltext der schreibenden Funktionen `CODE_PARTS`) sich geändert hat; Cache außerhalb des Repos. `--force` (alles neu, Einträge
+  erneuert) und `CE_NO_CACHE=1` (Cache ganz aus) umgehen den Cache; `full`-Check (`test_golden --full`) und Release immer ohne Cache. Test `claude/tests/test_sheetcache.py`.
+
+## claude-0.7
+- Waffenblätter 1–9 (C, D, F, G, H, J) tragen das Standardvisier ihres Typs aus der Visier-Serie VS01–VS09 (`vsmount.py`, Modell aus
+  `vsmodels.py`, Farben über die MT_-Kanäle der Waffe, Sitz auf der Visierschiene; 15 Blätter mit neuer Schiene, 5 mit Erhöhung).
+- Spec (additiv, format_version 1): `sight.sight_spec` (Verweis `VSnn.spec.json`, Lage, Erhöhung, Anker), `material: glass`; Typ/Rahmen aus der Serie.
+- Die 23 Querfenster sind behoben (`KNOWN_CROSS_WINDOWS` leer), Bogen-Pins fluchten entlang −Y, Visier-Hinweise 0; Test `VisierSerie`.
+- Glas ohne Schraffur (Wunsch des Nutzers): getönte Fläche mit weichem Glanz; VS01–VS09 neu gebaut.
+- Bericht [claude/docs/versions/0.7.md](claude/docs/versions/0.7.md).
+
 ## claude-0.6.1
 - Gemeinsamer Texturkatalog [docs/textures/](docs/textures/README.md) (`cubeescape-design/texture-catalog` v1): Materialien nach Toolgen-Namen, Muster in mm
   (Median-Maßstab der 60 Specs als Startwert), Oberflächen mit Tonleitern und Kantenabnutzung, 14 Skins (9 Claude, 5 Codex), Kanäle; 24 Musterbilder.

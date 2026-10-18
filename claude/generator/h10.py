@@ -55,7 +55,7 @@ def spec():
     P([(CX-CR+12,300),(CX-CR+36,309),(CX-CR+36,300)],KO,-0.8,0.8),
     # Visierhalter (bleibt) + Pin-Visier separat
     P(rect(404,226,30,8),DK,-4,4,r=2),
-    S(Lb(P(rect(432,208,18,34),KO,-8,8,r=3,xdec=[('x+',450,roundpoly(rect(220,-3,8,6),2),KH,True)]),'Visier')),
+    S(Lb(P(rect(432,208,18,34),KO,-8,8,r=3,xdec=[('x-',432,roundpoly(rect(220,-3,8,6),2),KH,True)]),'Visier')),   # Leuchtpunkt zum Schützen (claude-0.7, bis 0.6 vorn)
     # Stabilisator
     Lb(C(404,488,372,6,DK,n=8),'Stabilisator'),
     C(488,510,372,11,KO,n=8),

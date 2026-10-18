@@ -269,7 +269,7 @@ class Direction(unittest.TestCase):
             pr=spec_checks.direction_problems(load(s))
             with self.subTest(sheet=s):
                 self.assertTrue(spec_checks.known_ok(s,pr),f'{s}: Befunde weichen von KNOWN_CROSS_WINDOWS ab: {pr}')
-        self.assertEqual(len(spec_checks.KNOWN_CROSS_WINDOWS),23)
+        self.assertEqual(spec_checks.KNOWN_CROSS_WINDOWS,{})   # 23 Querfenster (0.5.2) mit der Visier-Serie behoben (claude-0.7)
         self.assertTrue(set(spec_checks.KNOWN_CROSS_WINDOWS)<=set(sheetmodels.SHEETS))
     def test_window_cases(self):
         """Gegenbeweis je Fall an der Funktionsfläche: Seitenscheibe, Scheibe/Ring quer, Leuchtteil oben quer, falsche Achse – und
@@ -287,14 +287,19 @@ class Direction(unittest.TestCase):
         self.assertEqual(quer([el('part',[0,0,-1],part='pC')]),['pC'])           # Leuchtteil flach oben
         pr=C.window_problems([el('decal',[-1,0,0],1)],parts,decals,hand_z=0.0)    # Achse widerspricht der Geometrie
         self.assertTrue(any(p.startswith('Fensterachse [d1]') for p in pr))
-        sp=load('KC03');self.assertEqual(C.direction_problems(sp),[])            # neues Querfenster auf sauberem Blatt
-        e=sp['sight']['window_geometry']['elements'][0];b=sp['decals'][e['decal']]['bounds_m']
+        sp=load('KC03');self.assertEqual(C.direction_problems(sp),[])            # neues Querfenster auf sauberem Blatt (Glasscheibe gedreht)
+        e=sp['sight']['window_geometry']['elements'][0];parts={p['id']:p for p in sp['parts']};b=parts[e['part']]['bounds_m']
         b[1][0],b[1][1]=b[0][0],b[0][1]+0.02;e['view_axis_m']=[-1.0,0.0,0.0]
         self.assertFalse(C.known_ok('KC03',C.direction_problems(sp)))
-        # Exporter: Seitenaufkleber ab PANE_MIN_FRACTION ist Fenster (KD01), kleine Punkte nicht (KJ04)
-        f=lambda s:[x.get('face_fraction') for x in (load(s)['sight']['window_geometry'] or {}).get('elements',[]) if x['type']=='decal']
-        self.assertTrue(any(v and v>=export_spec.PANE_MIN_FRACTION for v in f('KD01')))
-        self.assertEqual(f('KJ04'),[])
+        # Exporter: Seitenaufkleber ab PANE_MIN_FRACTION ist Fenster, kleine Punkte nicht (seit claude-0.7 ohne Blatt mit Seitenscheibe:
+        # Modell im Test, Teil 20 × 20 × 10 mit Aufkleber 8 × 8 = 16 % bzw. 2 × 2 = 1 %)
+        F=export_spec.Frame(0.001,(0,0,0))
+        def frac(w):
+            m=Model();m.prism(rect(0,0,20,20),'#808080',-5,5);m.decal('z+',5,rect(6,6,w,w),'#FFFFFF',both=False)
+            g,_=export_spec.window_geometry('glass',[(0,m.parts[0])],['p00'],F,{(0,0):0})
+            return [x['face_fraction'] for x in (g or {}).get('elements',[])]
+        self.assertTrue(frac(8) and frac(8)[0]>=export_spec.PANE_MIN_FRACTION)
+        self.assertEqual(frac(2),[])
     def test_counterproof_mirrored_axes(self):
         import spec_checks
         sample=['KC01','KD02','KF03','KG04','KH05','KJ06','KC07','KD08','KF09','KG10']   # jeder Waffentyp einmal
@@ -319,8 +324,8 @@ class Direction(unittest.TestCase):
     def test_muzzle_extension(self):
         """Mündung über unbezeichnete Teile auf der Achse verlängert (Pfeilspitze, Kappe), Rakete im Rohr zählt nicht."""
         sp=load('KD10');self.assertIn('verlängert über p14',sp['anchors']['Socket_Muzzle']['source'])
-        sp=load('KC09');src=sp['anchors']['Socket_Muzzle']['source']
-        self.assertIn('p24',src);self.assertNotIn('p25',src);self.assertNotIn('p27',src)
+        sp=load('KC09');src=sp['anchors']['Socket_Muzzle']['source']   # Kappe p18, Rakete p21 mit Heck p19 (bis 0.6: p24, p27, p25)
+        self.assertIn('p18',src);self.assertNotIn('p19',src);self.assertNotIn('p21',src)
         self.assertEqual(sp['anchors']['Socket_Muzzle']['part'],'p09')
 
 class MovingParts(unittest.TestCase):
@@ -371,7 +376,7 @@ class SightVocabulary(unittest.TestCase):
         fn=os.path.expanduser('~/Claude/cubeescape-toolgen/data/surface_recipes.json')
         if not os.path.exists(fn):self.skipTest('Toolgen-Repo nicht vorhanden')
         with open(fn,encoding='utf-8') as f:mats=json.load(f)['materials']
-        self.assertTrue(set(export_spec.TOOLGEN_MATERIAL.values())<=set(mats))
+        self.assertTrue(set(export_spec.TOOLGEN_MATERIAL.values())-{None}<=set(mats))   # None: Klarglas, in Toolgen noch kein Material
 
 class RobotFit(unittest.TestCase):
     """robot_fit (claude-0.5.1): Zielzahlen mit Quelle, Pistole und Bogen ausgenommen, Messung am auf Ziellänge skalierten Blatt."""
@@ -405,8 +410,9 @@ class SightTargets(unittest.TestCase):
         for s in sheetmodels.SHEETS:
             h=spec_checks.sight_target_hints(load(s))
             self.assertIsInstance(h,list);self.assertLessEqual(len(h),1)
-        self.assertEqual(spec_checks.sight_target_hints(load('KC05')),[])                  # Zielfernrohr am Scharfschützengewehr passt
-        self.assertTrue(spec_checks.sight_target_hints(load('KC08')))                      # Spurgewehr: Röhre statt Fenster
+            self.assertEqual(h,[],s)   # seit claude-0.7 tragen alle Blätter das Visier der Visier-Serie (Hinweise bis 0.6: 41)
+        sp=load('KC08');sp['sight'].update(kind='scope',window='lens',type='precision')
+        self.assertTrue(spec_checks.sight_target_hints(sp))                                # Gegenbeweis: Spurgewehr mit Röhre
     def test_table_matches_ce(self):
         import spec_checks
         fn=spec_checks.ce_equipment_path()
@@ -414,5 +420,53 @@ class SightTargets(unittest.TestCase):
         ce=spec_checks.ce_table(fn)
         self.assertEqual({nr:(v,d) for nr,v,d,*_ in spec_checks.CE_SIGHTS.values()},ce,
                          'CE-Tabelle „Visiere je Waffe“ geändert – CE_SIGHTS in spec_checks.py nachziehen')
+
+class VisierSerie(unittest.TestCase):
+    """Waffen 1–9 tragen das Standardvisier der Visier-Serie VS01–VS09 (claude-0.7, vsmount.py): Lage, Anker und Typ wie im Sight-Spec,
+    Glas als Fenster, Visierlinie frei von der Waffe, kein Visierteil in der Waffe, Farben aus den Kanälen der Waffe; Bögen ohne VS."""
+    def test_sheets(self):
+        import spec_checks
+        for s in sheetmodels.SHEETS:
+            sp=load(s)
+            with self.subTest(sheet=s):
+                self.assertEqual(spec_checks.vs_problems(sp),[])
+                if sp['weapon']['toolgen_id']=='bow':self.assertNotIn('sight_spec',sp['sight']);continue
+                d=sp['dimensions_m'];self.assertEqual(d['with_sight']['length'],d['weapon']['length'])   # Maßstab bleibt der Waffe
+                self.assertNotIn('Kimme',sp['sight']['labels']);self.assertNotIn('Korn',sp['sight']['labels'])
+    def test_models(self):
+        import vsmount
+        for s in sheetmodels.SHEETS:
+            d=sheetmodels.load(s);v=d['vs']
+            with self.subTest(sheet=s):
+                if d['name']=='Bogen':self.assertIsNone(v);continue
+                gun=[P for P in d['m'].parts if not P.get('sight')];sight=[P for P in d['m'].parts if P.get('sight')]
+                self.assertEqual(sum(1 for P in gun if P.get('label')=='Visierschiene'),1)
+                rail=d['m'].parts[v['rail_part']];self.assertEqual(rail.get('label'),'Visierschiene')
+                GW=vsmount.Faces([P for P in gun if P is not rail]);RF=vsmount.Faces([rail]);k=v['k'];deep=[0.0,0.0]
+                for P in sight:   # kein Visierteil in der Waffe; in die Schiene greifen nur die Klemmbacken der Halterung
+                    for f in P['F']:
+                        for q in f['v']:
+                            for n,(FF,skip) in enumerate(((GW,False),(RF,P['vs_group']=='mount'))):
+                                t=None if skip else vsmount.top_y(FF,q[0],q[2])
+                                if t is not None:deep[n]=max(deep[n],(q[1]-t)/k)
+                self.assertLessEqual(deep[0],0.3,f'Visierteil {deep[0]:.1f} mm in der Waffe')
+                self.assertLessEqual(deep[1],0.3,f'Visierteil {deep[1]:.1f} mm in der Schiene')
+                for P in sight:   # Leuchtteile bleiben auf Energie-Kanälen (weapon-spec.md › Kanäle)
+                    if P['emit']:self.assertIn(P['channel'],('MT_Energy','MT_Emission'),P['label'])
+                ch=v['channels']   # Kanalfarben der Waffe (Basis-Palette)
+                for P in sight:
+                    if P.get('glass'):continue
+                    if ch.get(P['channel']):self.assertEqual(P['col'],ch[P['channel']],(P['label'],P['channel']))
+                    elif P['emit'] and ch.get('MT_Accent'):self.assertEqual(P['col'],ch['MT_Accent'],P['label'])   # Waffe ohne Leuchtkanal
+                    else:self.assertFalse(any(ch.get(c) for c in (P['channel'],)+vsmount.FALLBACK.get(P['channel'],())),P['label'])
+    def test_counterproof(self):
+        import spec_checks
+        sp=load('KF03');self.assertEqual(spec_checks.vs_problems(sp),[])
+        b=copy.deepcopy(sp);b['sight']['sight_spec']['socket_mount_m'][2]+=0.01;self.assertTrue(spec_checks.vs_problems(b))
+        b=copy.deepcopy(sp);b['sight']['sight_spec']['id']='VS02';self.assertTrue(spec_checks.vs_problems(b))
+        b=copy.deepcopy(sp);b['sight']['sight_spec']['socket_reticle_m'][1]+=0.01;self.assertTrue(spec_checks.vs_problems(b))
+        b=copy.deepcopy(sp);b['sight']['sight_spec']['line_clear_of_weapon']=False;self.assertTrue(spec_checks.vs_problems(b))
+        b=copy.deepcopy(sp);b['sight']['sight_spec']['file']='VS04.spec.json';self.assertTrue(spec_checks.vs_problems(b))
+        b=copy.deepcopy(sp);del b['sight']['sight_spec'];self.assertEqual(spec_checks.vs_problems(b),['kein Visier der Visier-Serie (VS03)'])
 
 if __name__=='__main__':unittest.main()

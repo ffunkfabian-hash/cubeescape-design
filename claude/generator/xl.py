@@ -147,7 +147,7 @@ def panel(inner,w,h,label,fid,aria,small=False):
 EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Magazin':'magazine','Lauf':'barrel','Mündung':'muzzle','Mündungsbremse':'muzzle brake','Zielfernrohr':'scope on mounting rings','Visier':'sight','Schaft':'stock','Energiezelle':'energy cell','Kühlrippen':'cooling fins','Montageringe':'scope rings','Laufverkleidung':'barrel shroud','Vordergriff':'foregrip','Doppellauf':'double barrel','Trommel':'revolver cylinder','Sehne':'string','Wurfarm':'limb','Pfeil':'arrow','Umlenkrolle':'cam pulley','Pfeilauflage':'arrow rest','Stabilisator':'stabilizer','Rohr':'launch tube','Heckdüse':'rear exhaust','Abgasdüse':'rear exhaust','Raketenrohre':'rocket tubes','Handschutz':'handguard','Tragegriff':'carry handle','Kimme':'rear sight','Korn':'front sight','Ladeleiste':'charge indicator rail','Mündungsring':'muzzle ring','Schaftkappe':'butt plate','Wangenauflage':'cheek rest','Trommelmagazin':'drum magazine','Röhrenmagazin':'tube magazine','Pumpgriff':'pump grip','Kristallkern':'crystal core','Energiekugel':'energy orb','Bündelring':'focusing ring','Fokusring':'focusing ring','Fokusringe':'focusing rings','Laufmantel':'barrel jacket','Feuerkern':'fire core','Oberkiefer':'upper jaw','Unterkiefer':'lower jaw','Visierschiene':'sight rail','Ringvisier':'ring sight','Trichterheck':'flared rear funnel','Sicherungsmodul':'safety module','Rakete':'rocket','Spannmechanik':'cocking mechanism','Bolzen':'bolt','Mittelstück':'riser','Energie-Auge':'energy eye','Kondensator':'capacitor','Emitter':'emitter','Raketenkasten':'rocket pod','Heckkappe':'end cap','Verschluss':'breech','Kastenvisier':'box sight','Laufhülle':'barrel shroud','Laufkasten':'barrel housing','Ladekammer':'charging chamber','Beschleunigerring':'accelerator ring','Energiespule':'energy coil','Abschussrohr':'launch tube','Schalldämpfer':'suppressor','Montage':'mount','Rahmen':'frame','Energiekern':'energy core','Fokuskern':'focus core','Tragebügel mit Visier':'carry handle with sights','Oberlauf':'upper barrel','Unterlauf':'lower barrel','Energiemagazin':'energy magazine','Mittelstück':'riser','Abzugbügel':'trigger guard','Zweibein':'folded bipod','Kompensator':'compensator','Schlitten':'slide','Energiewürfel':'energy cube','Reflexvisier':'reflex sight','Käfig':'cage','Pulswürfel':'pulse cube','Feuerdämpfer':'flash hider','Kondensatorzelle':'capacitor cell','Fächeremitter':'fan emitter','Abschussrohre':'launch tubes','Kammerstängel':'bolt handle','Patronenfenster':'shell window','Klappschaft':'folding stock'}
 
 def prompts(d,labels,mats,variant_letter,skin=None):
-    pal=', '.join(d['palette'])
+    pal=', '.join(d['palette']);vs=d.get('vs')
     vn=variants.name(variant_letter)   # englischer Variantenname (ab J), ältere Varianten ohne
     de=(f"Erstelle ein technisches Low-Poly-Concept-Art-Blatt für das Spiel Cube Escape: {d['name']}, Variante {variant_letter}{f' ({vn})' if vn else ''} „{d['nick']}“. "
         f"Form: {d['form']}. {d['desc']} "
@@ -156,6 +156,7 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         "Ansichten: große isometrische Hauptansicht mit deutschen Bauteil-Beschriftungen, dazu Seitenansicht links und rechts, Vorder-, Rück-, Drauf- und Unteransicht – orthografisch, gleicher Maßstab, gemeinsame Bezugslinien – plus Detailansicht des Abzugsbereichs. "
         "Stil: futuristisch, industrial, Hard-Surface, abgeschrägte Gehäuse, kantige Panzerplatten, klare dunkle Konturen, flache Toon-Schattierung, dunkelblauer Rasterhintergrund. "
         "Konstruktion: Abzug mit Bügel klar erkennbar, Magazin im Schacht, Lauf sichtbar aus dem Gehäuse, konsistente Achsen. Visier bzw. Zielfernrohr NICHT montiert zeichnen, sondern separat als modulares Anbauteil daneben; auf der Waffe bleibt nur die freie Visierschiene als Aufnahme. "
+        +(f"Visier: {vs['info']['title']} aus der Visier-Serie ({vs['id']}): {vs['info']['desc']} " if vs else "")
         +(f"Hauptskin „{skin[0]}“: {skin[1]}. " if skin else "")+
         "Vermeiden: schwebende Teile, unbeabsichtigte Überschneidungen, zufällige Leuchtstreifen, Bloom, Unschärfe, Nebel, realistische Militärwaffen-Kopien.")
     if d['name']=='Raketenwerfer':
@@ -165,6 +166,7 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         f"Visible, logically connected parts: {en_parts}. Color palette {pal}. "
         "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. Draw the sight/scope detached as a separate modular attachment next to the weapon; the weapon shows only the empty sight rail. "
         +("Sight rail mounted on the left side of the tube, offset from the bore axis. " if d['name']=='Raketenwerfer' else "")+
+        (f"Sight: {VS_EN[vs['id']]} ({vs['id']}, sight series), drawn separately. " if vs else "")+
         (f"Skin \"{skin[0]}\": {skin[2]}. " if skin else "")+
         "Hard-surface industrial design, chamfered housings, clean dark outlines, flat cel shading, dark blue grid background, no bloom, no blur, no floating parts.")
     return de,en
@@ -201,21 +203,39 @@ def compact_sight(ms,gap=30):
         out.parts+=[_shift_part(P,shift) if shift else P for P in Ps]
     return out,shift>0
 
-def sight_panel(ms,center,w,h,fid,name,col,small=False):
-    if ms.parts:ms,_=compact_sight(ms)
+VS_EN={'VS01':'compact reflex sight with open window','VS02':'open holographic sight','VS03':'precision tube scope with objective lens',
+ 'VS04':'wide-angle round reflex sight','VS05':'high-precision long-range scope','VS06':'machine sight with closed tunnel hood',
+ 'VS07':'energy sight with glowing octagonal frame','VS08':'tracking sight window with marker corners, no tube',
+ 'VS09':'wide-range sight in a bolted industrial frame'}
+def _sight_view(ms,yaw,pitch,center,W,H,sc,vs):
+    """Visieransicht; Visier-Serie mit dem Glas-Durchgang wie auf den VS-Blättern (durchscheinend, Tönung des Visiers)"""
+    if not vs:return svgview(ms,yaw,pitch,center,W,H,sc,ow=2.6,shadow=False)
+    from vsheet import DRAW_ALPHA
+    import vsmodels
+    o=Model();g=Model();a=DRAW_ALPHA(vsmodels.TINTS[vs['info']['tint']][2])
+    for P in ms.parts:
+        if P.get('glass'):Q=dict(P);Q['alpha']=a;g.parts.append(Q)
+        else:o.parts.append(P)
+    return raster.rasterview(o,yaw,pitch,center,W,H,sc,0,2.6,shadow=False,glass=g)
+def sight_panel(ms,center,w,h,fid,name,col,small=False,vs=None):
+    if ms.parts and not vs:ms,_=compact_sight(ms)
     if not ms.parts:
         inner=f'<text x="{w/2}" y="{h/2}" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" fill="#8FA0B3">Keine Optik – Visierschiene frei</text>'
         return panel(inner,w,h,'VISIER · SEPARAT',fid,name+' ohne separates Visier')
     hw_=w/2-24
-    e1,e2=extent(ms,ISO[1],ISO[2],center);s1=min((hw_-40)/e1,(h-(60 if small else 130))/e2,6)
-    v1=svgview(ms,ISO[1],ISO[2],center,int(hw_),h-40,s1,ow=2.6,shadow=False)
-    e3,e4=extent(ms,0,0,center);s2=min((hw_-40)/e3,(h-(60 if small else 130))/e4,6)
-    v2=svgview(ms,0,0,center,int(hw_),h-40,s2,ow=2.6,shadow=False)
+    cap=1e9 if vs else 6   # Visier-Serie: formatfüllend (die Waffenblätter haben je eigenen Maßstab), sonst wie bis 0.6
+    rear=name=='Bogen'      # Bogen-Pin: Rückansicht zeigt den Leuchtpunkt, wie ihn der Schütze sieht (claude-0.7)
+    e1,e2=extent(ms,ISO[1],ISO[2],center);s1=min((hw_-40)/e1,(h-(60 if small else 130))/e2,cap)
+    v1=_sight_view(ms,ISO[1],ISO[2],center,int(hw_),h-40,s1,vs)
+    y2=90 if rear else 0
+    e3,e4=extent(ms,y2,0,center);s2=min((hw_-40)/e3,(h-(60 if small else 130))/e4,cap)
+    v2=_sight_view(ms,y2,0,center,int(hw_),h-40,s2,vs)
     labs=sorted({P['label'] for P in ms.parts if P.get('label')})
+    cap=f"{vs['id']} · {vs['info']['title']}" if vs else " · ".join(labs) if labs else "Visier"
     inner=(f'<g transform="translate(16,24)">{v1}</g><g transform="translate({w/2+8:.0f},24)">{v2}</g>'
            f'<line x1="{w/2}" y1="56" x2="{w/2}" y2="{h-60}" stroke="#22314A" stroke-width="1.5"/>'
-           f'<text x="{14 if small else 24}" y="{h-(12 if small else 26)}" font-family="Chakra Petch, sans-serif" font-size="{13 if small else 19}" letter-spacing="1.2" fill="#E6ECF2">{_h.escape(" · ".join(labs) if labs else "Visier")} · modular auf Schiene, nicht fest verbaut</text>')
-    return panel(inner,w,h,'VISIER · SEPARAT' if small else 'VISIER · SEPARAT (ISOMETRIE / SEITE)',fid,name+' Visier separat gezeichnet',small)
+           f'<text x="{14 if small else 24}" y="{h-(12 if small else 26)}" font-family="Chakra Petch, sans-serif" font-size="{13 if small else 19}" letter-spacing="1.2" fill="#E6ECF2">{_h.escape(cap)} · modular auf Schiene, nicht fest verbaut</text>')
+    return panel(inner,w,h,'VISIER · SEPARAT' if small else 'VISIER · SEPARAT (ISOMETRIE / '+('RÜCK' if rear else 'SEITE')+')',fid,name+(f' Visier {vs["id"]} {vs["info"]["title"]}' if vs else ' Visier')+' separat gezeichnet',small)
 
 def _chip(x,y,c,fin,label):
     """Farbfeld eines Skin-Slots: Lack flach, poliert mit Verlauf und Glanzstreifen, Neon mit Leuchtrand"""
@@ -306,7 +326,7 @@ def sheet(d,variant_letter):
     dv,dnames=detail_view(m,center,DW,ph)
     if dv is None:dv,dnames='',[]
     det=panel(dv,DW,ph,'DETAIL · ABZUGSBEREICH ('+(", ".join(dnames) if dnames else "Griff")+')',fid,f"{d['name']} Detailansicht Abzugsbereich von schräg unten")
-    sp=sight_panel(ms,center,DW,ph,fid,d['name'],col)
+    sp=sight_panel(ms,center,DW,ph,fid,d['name'],col,vs=d.get('vs'))
     det=f'<div style="display:flex;flex-direction:column;gap:20px;width:{DW}px">{det}{sp}</div>'
     # Material
     MWd=1180;mh=BH-190
@@ -334,7 +354,7 @@ def sheet(d,variant_letter):
     varp=f'<div style="display:grid;grid-template-columns:repeat(2,{vw}px);grid-auto-rows:{vh}px;gap:24px;width:{VW}px">{vs}</div>'
     # Prompt
     m=full
-    labels=sorted({P['label'] for P in m.parts if P.get('label')})
+    labels=sorted({P['label'] for P in m.parts if P.get('label') and not (d.get('vs') and P.get('sight'))})   # Visier-Serie: Teile nicht einzeln
     mats=[nm.title() for nm,k in MATS if k in used]
     d2=dict(d);d2['en_type']=TYPE_EN.get(d['name'],'weapon')
     de,en=prompts(d2,labels,mats,variant_letter,skin=(hero['name'],)+skins.DESC[hero['id']])

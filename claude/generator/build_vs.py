@@ -5,11 +5,25 @@ Die Specs schreibt export_sight.py (ohne Bildstufe); das Blatt liest dieselben M
 from cepaths import E3D,OUT
 import os,sys,time
 sys.path.insert(0,E3D)
-import vsheet,vsmodels
+import sheetcache,vsmodels,export_sight
+USE_CACHE=not sheetcache.disabled()   # CE_NO_CACHE=1: Cache ganz aus
+FORCE=sheetcache.forced()             # --force: alles neu bauen, Einträge erneuern (Release, test_golden --full)
+def write(vid,page):
+    with open(os.path.join(OUT,f'{vid}.dc.html'),'w',encoding='utf-8') as f:f.write(page)
+    with open(os.path.join(E3D,'final',f'{vid}.html'),'w',encoding='utf-8') as f:f.write(page.replace('<script src="./support.js"></script>',''))
 def main(ids):
     for vid in ids or vsmodels.IDS:
-        t=time.time();page=vsheet.sheet(vid)
-        with open(os.path.join(OUT,f'{vid}.dc.html'),'w',encoding='utf-8') as f:f.write(page)
-        with open(os.path.join(E3D,'final',f'{vid}.html'),'w',encoding='utf-8') as f:f.write(page.replace('<script src="./support.js"></script>',''))
-        print(f'{vid}.dc.html',len(page)//1024,'KB',f'{time.time()-t:.1f} s',flush=True)
-if __name__=='__main__':main(sys.argv[1:])
+        t=time.time();dest=os.path.join(OUT,f'{vid}.dc.html')
+        # Eingaben: Modell und Sight-Spec (die auch die Waffen-Specs des Typs liest, export_sight.weapon_sheets)
+        key=sheetcache.sheet_key('vs',vid,vsmodels.load(vid),export_sight.build(vid)) if USE_CACHE else None
+        meta=sheetcache.lookup(key) if key and not FORCE else None
+        if meta:
+            wrote=sheetcache.restore(key,meta,dest)
+            with open(dest,encoding='utf-8') as f:page=f.read()
+            sheetcache.write_if_changed(os.path.join(E3D,'final',f'{vid}.html'),page.replace('<script src="./support.js"></script>',''))
+            print(f'{vid}.dc.html',meta['size']//1024,'KB','Cache-Treffer','geschrieben' if wrote else 'unverändert',sheetcache.golden_state('vs',vid,meta['sha256']),flush=True);continue
+        import vsheet
+        page=vsheet.sheet(vid);write(vid,page)
+        if key:sheetcache.store(key,page,dict(sheet=vid))
+        print(f'{vid}.dc.html',len(page)//1024,'KB',f'{time.time()-t:.1f} s','gebaut'+('' if key else ' (ohne Cache)'),flush=True)
+if __name__=='__main__':main([a for a in sys.argv[1:] if not a.startswith('--')])

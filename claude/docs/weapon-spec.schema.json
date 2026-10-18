@@ -151,9 +151,9 @@
      "label": {"type": ["string", "null"]},
      "channel": {"$ref": "#/$defs/channel"},
      "channel_source": {"enum": ["explicit", "role", "distributed"]},
-     "material": {"enum": ["painted", "brushed", "rubber", "matte", "lit"]},
-     "toolgen_material": {"description": "claude-0.5.2, optional: Material im Wortschatz von Toolgen surface_recipes.json › materials",
-                          "enum": ["painted", "painted_matte", "ceramic", "brushed", "satin", "polished", "rough_cast", "rubber", "energy_glass"]},
+     "material": {"description": "glass ab claude-0.7 (Glasscheiben der Visier-Serie)", "enum": ["painted", "brushed", "rubber", "matte", "lit", "glass"]},
+     "toolgen_material": {"description": "claude-0.5.2, optional: Material im Wortschatz von Toolgen surface_recipes.json › materials; null = Klarglas (in Toolgen noch kein Material, claude-0.7)",
+                          "enum": ["painted", "painted_matte", "ceramic", "brushed", "satin", "polished", "rough_cast", "rubber", "energy_glass", null]},
      "emissive": {"type": "boolean"}, "sight": {"type": "boolean"},
      "color": {"$ref": "#/$defs/hex"},
      "area_m2": {"type": "number", "minimum": 0},
@@ -200,7 +200,20 @@
     "window_geometry": {"description": "claude-0.5, optional: Fensterelemente des Visiers oder null (Grund in window_geometry_note)",
                         "type": ["object", "null"], "required": ["elements", "source"],
                         "properties": {"elements": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/windowElement"}}, "source": {"type": "string"}}},
-    "window_geometry_note": {"type": ["string", "null"]}
+    "window_geometry_note": {"type": ["string", "null"]},
+    "sight_spec": {"description": "claude-0.7, optional (Waffen 1–9): Standardvisier der Visier-Serie, Verweis auf VSnn.spec.json und Lage auf der Waffe",
+     "type": "object",
+     "required": ["id", "file", "format", "mount", "riser_m", "socket_mount_m", "socket_reticle_m", "socket_eye_m", "line_height_m", "rail", "line_clear_of_weapon", "blocked_by", "replaced"],
+     "properties": {
+      "id": {"type": "string", "pattern": "^VS0[1-9]$"}, "file": {"type": "string", "pattern": "^VS0[1-9]\\.spec\\.json$"},
+      "format": {"const": "cubeescape-design/sight-spec"}, "variant": {"type": "string"}, "mount": {"type": "string"},
+      "riser_m": {"type": "number", "minimum": 0},
+      "socket_mount_m": {"$ref": "#/$defs/vec3"}, "socket_reticle_m": {"$ref": "#/$defs/vec3"}, "socket_eye_m": {"$ref": "#/$defs/vec3OrNull"},
+      "line_height_m": {"type": "number", "minimum": 0},
+      "rail": {"type": "object", "required": ["part", "added", "seat"],
+               "properties": {"part": {"$ref": "#/$defs/partId"}, "added": {"type": "boolean"}, "seat": {"type": "string"}}},
+      "line_clear_of_weapon": {"type": "boolean"}, "blocked_by": {"type": "array", "items": {"type": "string"}},
+      "replaced": {"type": "array", "items": {"type": "string"}}}}
    }
   },
   "decals": {

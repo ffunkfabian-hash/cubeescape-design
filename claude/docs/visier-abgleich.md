@@ -68,6 +68,9 @@ KD10 und KF10. Alle 23 stehen als bekannte Befunde im Test (`spec_checks.KNOWN_C
 - Vokabular wie vorgeschlagen, umgesetzt in claude-0.5.2 ([weapon-spec.md › Visier-Vokabular](weapon-spec.md#visier-vokabular));
   die Decal-Zuordnung bleibt offen.
 
+**Umgesetzt in claude-0.7 (18.10.2026):** Die Waffen 1–9 tragen das Standardvisier der Visier-Serie, die Bogen-Pins leuchten nach
+vorn; die 23 Querfenster sind behoben ([versions/0.7.md](versions/0.7.md)).
+
 ## Frage an den Nutzer (beantwortet)
 
 Gelten für Toolgen künftig nur die neuen Visier-Blätter (Paket 2, VS01–VS09) als Visier-Zielbild, während die Visiere auf den 60

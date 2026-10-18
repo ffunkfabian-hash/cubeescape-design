@@ -41,7 +41,7 @@ def spec():
     K([(CX-CR+12,300),(CX-CR+36,300),(CX-CR+36,309)],IC,-0.8,0.8,b=0,bz=0),
     K(rect(404,226,30,8),DK,-4,4,b=1,bz=1),
     # --- Pin-Visier separat
-    K(rect(432,208,18,34),BK,-8,8,b=3,bz=3,sight=True,label='Visier',dec=[(rect(438,222,6,6),IC,True)]),
+    K(rect(432,208,18,34),BK,-8,8,b=3,bz=3,sight=True,label='Visier',xdec=[('x-',432,rect(222,-3,6,6),IC,True)]),   # Leuchtpunkt auf der Rückseite, zum Schützen (claude-0.7; bis 0.6 seitlich)
     X(404,488,372,6,DK,n=6,label='Stabilisator'),
     T(488,510,372,8,11,GM,n=6),
     ]

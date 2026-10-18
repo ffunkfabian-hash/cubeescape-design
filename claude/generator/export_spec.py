@@ -17,7 +17,7 @@ import skins as SK
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
-CLAUDE_VERSION='0.5.2'
+CLAUDE_VERSION='0.7'
 
 # Waffentyp -> Toolgen-Id, Bezugslänge (m), Element.
 # Längen: Toolgen-Weltmodelle, Ausdehnung entlang der Mündungsachse (Blender −Y) aus qa_game.json › bounds_lod0 ›
@@ -37,35 +37,16 @@ WEAPONS={
 }
 ELEMENT_SOURCE='Nutzer 17.10.2026 (Toolgen docs/ENTSCHEIDUNGEN.md, data/tools.json)'
 
-# Visier je Blatt: (Art, Fenster, Quelle). Art im Toolgen-Wortschatz hold.sight_kind (iron/reflex/holo/scope/energy) plus
-# pin (Bogen-Pinvisier); Fenster: none (Kimme/Korn), open (offener Ring/Lochblende/Rahmen ohne Glas), glass (flache
-# Scheibe), lens (runde Optik). Quelle: Bezeichnung im Modell, Text des Blatts oder Kommentar/Geometrie im Modell.
+# Visier je Blatt ohne Visier-Serie (Bögen): (Art, Fenster, Quelle). Art im Toolgen-Wortschatz hold.sight_kind plus pin (Bogen-Pinvisier);
+# Fenster: none (Kimme/Korn), open (offener Ring/Lochblende ohne Glas), glass (flache Scheibe). Quelle: Bezeichnung oder Geometrie im
+# Modell. Die Waffen 1–9 tragen ab claude-0.7 das Standardvisier der Visier-Serie VS01–VS09 (vsmount.py); ihre Einträge (Stand 0.6) sind
+# entfallen. Ab J (jlib) steht die Art im Modell (META['sight'] in <v>NN.py).
 SIGHTS={
- 'KC01':('iron','none','Bezeichnung Kimme/Korn'),'KC02':('iron','open','Bezeichnung Diopter/Korn'),
- 'KC03':('reflex','glass','Bezeichnung Reflexvisier'),'KC04':('holo','glass','Bezeichnung Kastenvisier'),
- 'KC05':('scope','lens','Bezeichnung Zielfernrohr'),'KC06':('iron','none','Bezeichnung Kimme/Korn'),
- 'KC07':('reflex','glass','Bezeichnung Reflexvisier'),'KC08':('scope','lens','Kommentar c08.py: Zielfernrohr-Block mit Linse'),
- 'KC09':('iron','open','Bezeichnung Ringvisier/Korn'),'KC10':('iron','none','Bezeichnung Kimme/Korn'),
- 'KD01':('reflex','glass','Geometrie dmods.d01: Visierblock mit Leuchtpunkt vorn (claude-0.1.1)'),'KD02':('holo','glass','Bezeichnung Kastenvisier'),
- 'KD03':('holo','glass','Geometrie dmods.d03: großer Kasten mit Leuchtfenster vorn'),'KD04':('reflex','glass','Geometrie dmods.d04: Visierblock mit Leuchtpunkt vorn (claude-0.1.1)'),
- 'KD05':('scope','lens','Bezeichnung Zielfernrohr'),'KD06':('iron','none','Bezeichnung Kimme · Korn'),
- 'KD07':('reflex','glass','Geometrie dmodels.d07: Visierblock mit Leuchtpunkt vorn'),'KD08':('scope','lens','Bezeichnung Zielfernrohr'),
- 'KD09':('scope','lens','Geometrie dmodels.d09: Rohrvisier auf Stützen'),'KD10':('pin','open','Geometrie dmodels.d10: Pin-Visier mit Leuchtpunkt am Mittelstück (claude-0.1.1)'),
- 'KF01':('iron','none','Bezeichnung Kimme/Korn'),'KF02':('iron','none','Bezeichnung Kimme/Korn'),
- 'KF03':('reflex','glass','Text des Blatts: Reflexvisier'),'KF04':('iron','none','Bezeichnung Korn'),
- 'KF05':('scope','lens','Bezeichnung Zielfernrohr'),'KF06':('reflex','glass','Text des Blatts: Reflexvisier'),
- 'KF07':('reflex','glass','Geometrie f07.py: Visierblock mit Leuchtpunkt vorn'),'KF08':('scope','lens','Bezeichnung Zielfernrohr'),
- 'KF09':('reflex','glass','Geometrie f09.py: Visierblock mit Leuchtpunkt vorn'),'KF10':('pin','open','Geometrie f10.py: leuchtender Pin-Ring am Bogen'),
- 'KG01':('iron','none','Bezeichnung Kimme/Korn'),'KG02':('reflex','glass','Bezeichnung Reflexvisier'),
- 'KG03':('reflex','glass','Geometrie g03.py: Visierblock mit Leuchtfenster vorn'),'KG04':('iron','open','Text des Blatts: Lochvisier'),
- 'KG05':('scope','lens','Bezeichnung Zielfernrohr'),'KG06':('reflex','glass','Text des Blatts: Reflexvisier'),
- 'KG07':('reflex','glass','Geometrie g07.py: Visierkopf mit Leuchtfenster vorn'),'KG08':('scope','lens','Bezeichnung Zielfernrohr'),
- 'KG09':('reflex','glass','Kommentar g09.py: Visierkopf mit Linse'),'KG10':('pin','glass','Geometrie g10.py: Visier auf Arm mit Leuchtfenster'),
- 'KH01':('reflex','glass','Bezeichnung Reflexvisier'),'KH02':('holo','glass','Bezeichnung Holovisier'),
- 'KH03':('iron','open','Bezeichnung Ringvisier'),'KH04':('iron','open','Bezeichnung Lochvisier'),
- 'KH05':('scope','lens','Bezeichnung Zielfernrohr'),'KH06':('reflex','glass','Kommentar h06.py: Reflexvisier'),
- 'KH07':('holo','glass','Kommentar h07.py: Holo-Rahmen'),'KH08':('scope','lens','Bezeichnung Zielfernrohr'),
- 'KH09':('iron','open','Text des Blatts: Klappvisier'),'KH10':('pin','glass','Text des Blatts: Pin-Visier'),
+ 'KC10':('iron','none','Bezeichnung Kimme/Korn'),
+ 'KD10':('pin','open','Geometrie dmodels.d10: Pin-Visier am Mittelstück, Leuchtpunkt hinten zum Schützen (claude-0.7)'),
+ 'KF10':('pin','open','Geometrie f10.py: leuchtender Pin-Ring am Bogen, quer zur Laufachse (claude-0.7)'),
+ 'KG10':('pin','glass','Geometrie g10.py: Visier auf Arm mit Leuchtfenster hinten zum Schützen (claude-0.7)'),
+ 'KH10':('pin','glass','Text des Blatts: Pin-Visier'),
 }
 
 # Visier-Vokabular (claude-0.5.2, Entscheidung des Nutzers 17.10.2026): sight.type = Typ des Visiertypen-Blatts (Cube Escape
@@ -85,7 +66,7 @@ def sight_frame(window):
     Ring/Lochblende = open, Kimme/Korn ohne Rahmen = null."""
     return {'glass':'closed','lens':'standard','open':'open'}.get(window)
 # Material der Teile im Wortschatz von Toolgen data/surface_recipes.json › materials (claude-0.5.2)
-TOOLGEN_MATERIAL={'painted':'painted','brushed':'brushed','rubber':'rubber','matte':'painted_matte','lit':'energy_glass'}
+TOOLGEN_MATERIAL={'painted':'painted','brushed':'brushed','rubber':'rubber','matte':'painted_matte','lit':'energy_glass','glass':None}   # Klarglas: in Toolgen noch kein Material (wie Sight-Spec)
 
 HAND_LABELS=('Griff','Pistolengriff','Griffstück')
 SUPPORT_LABELS=('Vordergriff','Pumpgriff')
@@ -328,7 +309,11 @@ def _anchors(d,gun,sight_parts,allparts,ids):
         W+=w;acc=[acc[k]+w*cc[k] for k in range(3)]
     an['Socket_CenterOfMass']=([a/W for a in acc],'Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert')
     # Visier
-    if sight_parts:
+    if d.get('vs'):
+        v=d['vs'];rp=v['rail_part']
+        an['Socket_Sight']=(list(v['seat']),f'Oberkante der Visierschiene {ids[rp]} unter der Mitte der Halterung (Socket_Mount von {v["id"]}'
+                            +(f' über {v["riser_mm"]:g} mm Erhöhung' if v['riser_mm'] else '')+')',rp)
+    elif sight_parts:
         bb=_bb(_verts([P for _,P in sight_parts]));cc=_center(bb)
         an['Socket_Sight']=([cc[0],bb[1][1],cc[2]],'Unterkante Mitte der Visierbaugruppe (montierte Lage)')
     else:
@@ -340,6 +325,40 @@ def _anchors(d,gun,sight_parts,allparts,ids):
     return an,notes
 
 def _area(P):return sum(_area3(f['v']) for f in P['F'])
+
+SIGHT_SPEC_FORMAT='cubeescape-design/sight-spec'
+def _side(sb,gun):
+    gz=_center(_bb(_verts([P for _,P in gun])))[2];return 'left' if sb[0][2]>gz+5 else 'right' if sb[1][2]<gz-5 else 'top'
+def vs_sight(v,sight_parts,gun,ids,F,unit):
+    """Visierblock eines Blatts mit dem Standardvisier der Visier-Serie (claude-0.7, vsmount.py): Typ und Rahmen aus der Serie,
+    Fenster = Glasscheiben (wie der Sight-Spec), Verweis auf VSnn.spec.json mit Lage auf der Waffe."""
+    info=v['info'];st=info['type'];kind,window=SIGHT_TYPES[st]
+    sb=_bb(_verts([P for _,P in sight_parts]));geo=v['geo'];k=v['k'];mx,my,mz=v['mount']
+    at=lambda x,y:F.p((mx+x*k,my+y*k,mz))
+    el=[]
+    for i,P in sight_parts:
+        if not P.get('glass'):continue
+        b=F.bb(_bb(_verts([P])))
+        el.append(dict(type='part',decal=None,part=ids[i],emissive=False,view_axis_m=_view_axis(_newell([F.p(q) for q in P['F'][0]['v']])),
+                       center_m=[r4((b[0][a]+b[1][a])/2) for a in range(3)]))
+    src=f'Visier-Serie {v["id"]} ({info["title"]})'
+    tube=geo.get('tube')
+    return dict(present=True,kind=kind,window=window,source=src+', Modell claude/generator/vsmodels.py',modular=True,mount_side=_side(sb,gun),
+                type=st,type_source=f'{src}: Standardvisier des Waffentyps (Entscheidung des Nutzers 17.10.2026 „Danach Waffenblätter umstellen“)',
+                frame=info['frame'],frame_source=src,
+                labels=sorted({P.get('label') for _,P in sight_parts if P.get('label')}),parts=[ids[i] for i,_ in sight_parts],
+                bounds_m=F.bb(sb),anchor='Socket_Sight',
+                window_geometry=dict(elements=el,source='Glasscheiben des Visiers als Funktionsfläche (wie Sight-Spec window_geometry); Achse aus der Geometrie'),
+                window_geometry_note=None,
+                sight_spec=dict(id=v['id'],file=f'{v["id"]}.spec.json',format=SIGHT_SPEC_FORMAT,variant='Kanalfarben der Waffe (Basis-Palette des Blatts)',
+                                mount='Socket_Mount des Sight-Specs = Socket_Sight dieses Specs, angehoben um riser_m; Achsen gleich (vorn −Y, oben +Z)',
+                                riser_m=r4(v['riser_mm']/1000),socket_mount_m=at(0,0),
+                                socket_reticle_m=at(geo['window']['glass_x'],geo['line_y']),socket_eye_m=at(tube['eye_x'],geo['line_y']) if tube else None,
+                                line_height_m=r4(-geo['line_y']/1000+v['riser_mm']/1000),
+                                rail=dict(part=ids[v['rail_part']],
+                                          added=v['rail_added'],seat=v['seat_source']),
+                                line_clear_of_weapon=not v['blocked_by'],blocked_by=v['blocked_by'],
+                                replaced=v['old_labels']))
 
 def _hex(c):return c.upper() if c.startswith('#') else c
 
@@ -376,9 +395,10 @@ def build(sheet):
             decals.append(dict(part=ids[i],channel=dch[i][k],surface=SURFACES[plane],emissive=bool(em),color=_hex(col),
                                area_m2=round(_area2(pts)*unit*unit,7),bounds_m=F.bb(_bb(v3))))
     # Visier
-    # ab J (jlib): Visierart steht im Modell (META['sight'] in <v>NN.py)
-    kind,window,ssrc=SIGHTS[sheet] if sheet in SIGHTS else (*d['sight'],f"META sight in {d['fid']}.py")
-    if sight_parts:
+    if d.get('vs'):
+        sight=vs_sight(d['vs'],sight_parts,gun,ids,F,unit)
+    elif sight_parts:
+        kind,window,ssrc=SIGHTS[sheet] if sheet in SIGHTS else (*d['sight'],f"META sight in {d['fid']}.py")
         sb=_bb(_verts([P for _,P in sight_parts]));gb=_bb(_verts([P for _,P in gun]))
         gz=_center(gb)[2];side='left' if sb[0][2]>gz+5 else 'right' if sb[1][2]<gz-5 else 'top'
         st=sight_type(kind,tid);assert SIGHT_TYPES[st][0]==kind,(sheet,st,kind)

@@ -3,14 +3,17 @@
    python generator/build_all.py --nur-xl   # nur die großen Konzeptblätter aus den vorhandenen reg/*.pkl
    python generator/build_all.py C G J      # nur bestimmte Varianten (Buchstaben aus variants.py)
    python generator/build_all.py VS         # nur die Visier-Serie VS01–VS09 (mit Buchstaben: diese Varianten und VS)
+   python generator/build_all.py --force    # ohne Inhalts-Cache (sheetcache.py): alle Blätter neu; Pflicht vor Release und für test_golden --full
+Ohne --force baut build_xl.py/build_vs.py nur Blätter, deren Schlüssel (Modell, Palette/Skin, Quelltext der schreibenden Funktionen) sich geändert hat.
 """
 import subprocess,sys,os,shutil
 from concurrent.futures import ThreadPoolExecutor
 from cepaths import E3D,ROOT,OUT,PROMPTS
-import variants
+import variants,sheetcache
 os.chdir(E3D)
 args=sys.argv[1:]
 nur_xl='--nur-xl' in args
+FORCE=['--force'] if sheetcache.forced(args) else []   # an build_xl/build_vs durchreichen
 letters=[a for a in args if len(a)==1 and a in variants.LETTERS]
 vs='VS' in args or not letters   # Visier-Serie VS01–VS09: bei allen oder mit Argument VS
 V=letters or ([] if 'VS' in args else list(variants.LETTERS))
@@ -36,12 +39,14 @@ def run_seq(cmds):
         if miss:print('ÜBERSPRUNGEN '+' '.join(c[1:])+' (Vorlage fehlt: '+', '.join(miss[:3])+(' …' if len(miss)>3 else '')+')',flush=True);continue
         r=subprocess.run(c,capture_output=True,text=True)
         print(('OK  ' if r.returncode==0 else 'FEHLER ')+' '.join(c[1:]),flush=True)
+        for ln in r.stdout.splitlines():
+            if 'Cache' in ln or 'gebaut' in ln:print('    '+ln,flush=True)   # Treffer/Neubau je Blatt (sheetcache)
         if r.returncode:print(r.stderr[-2000:])
 if not nur_xl and V:
     with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[jobs[v] for v in V]))
 if V:
-    with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[[P('build_xl.py',*fid[v])] for v in V]))
-if vs:run_seq([P('build_vs.py')])   # Visier-Serie VS01–VS09 (claude-0.6), eigene Modelle (vsmodels.py)
+    with ThreadPoolExecutor(len(V)) as ex:list(ex.map(run_seq,[[P('build_xl.py',*fid[v],*FORCE)] for v in V]))
+if vs:run_seq([P('build_vs.py',*FORCE)])   # Visier-Serie VS01–VS09 (claude-0.6), eigene Modelle (vsmodels.py)
 run_seq([P('mkdoc.py')])
 if os.path.exists('Waffen-Prompts.md'):shutil.copy('Waffen-Prompts.md',os.path.join(PROMPTS,'Waffen-Prompts.md'))
 run_seq([P('make_viewer.py')])   # Viewer claude/output/index.html (Regel in CLAUDE.md)

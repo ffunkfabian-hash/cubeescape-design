@@ -52,7 +52,7 @@ def spec():
     # Visier auf Montagearm, Stabilisator
     P(rect(400,216,8,18),K,-6,6,r=2),  # Visieraufnahme am Mittelstück (bleibt)
     S(P(rect(408,222,22,8),K,-4,4,r=2)),
-    S(Lb(P(rect(428,206,16,32),GR,-8,8,r=3,xdec=[('x+',444,roundpoly(rect(218,-3,8,6),2),CY,True)]),'Visier')),
+    S(Lb(P(rect(428,206,16,32),GR,-8,8,r=3,xdec=[('x-',428,roundpoly(rect(218,-3,8,6),2),CY,True)]),'Visier')),   # Leuchtpunkt zum Schützen (claude-0.7, bis 0.6 vorn)
     C(400,486,372,6,K,n=8),
     C(486,506,372,11,GR,n=8),
     ]

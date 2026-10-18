@@ -9,14 +9,16 @@
                "claude/generator/xlroles.py", "claude/generator/sheetmodels.py", "claude/generator/export_spec.py",
                "claude/generator/skins.py", "claude/generator/skinraster.py", "claude/generator/variants.py", "claude/generator/jlib.py",
                "claude/generator/new_variant.py", "claude/generator/spec_checks.py", "claude/generator/vsmodels.py",
-               "claude/generator/export_sight.py", "claude/generator/vsheet.py", "claude/generator/build_vs.py"],
+               "claude/generator/export_sight.py", "claude/generator/vsheet.py", "claude/generator/build_vs.py",
+               "claude/generator/vsmount.py", "claude/generator/sheetcache.py"],
               ["python3", "claude/generator/test_spec.py"],
               ["python3", "claude/generator/export_sight.py", "--check"],
               ["python3", "claude/generator/test_sight_spec.py"],
               ["python3", "claude/tests/test_golden.py"],
+              ["python3", "claude/tests/test_sheetcache.py"],
               ["python3", "-m", "py_compile", "docs/textures/make_swatches.py", "docs/textures/check_catalog.py"],
               ["python3", "docs/textures/check_catalog.py"]],
-    "full": [["python3", "claude/generator/build_all.py", "--nur-xl"],
+    "full": [["python3", "claude/generator/build_all.py", "--nur-xl", "--force"],
              ["python3", "claude/tests/test_golden.py", "--full"]]
   },
   "docs": {

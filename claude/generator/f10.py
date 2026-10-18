@@ -38,7 +38,8 @@ def spec():
     ]+[P(wrap(266,cy,a,a+15),PK,-1.5,1.5,emit=True) for cy in (150,450) for a in range(90,270,15)]+[
     Lb(P(rect(394,248,12,12),K,-6,6,r=2),'Visierschiene'),
     Sg(P(rect(404,250,30,8),K,-5,5,r=3)),
-    Sg(Lb(P(circ(440,254,10,18),PK,-4,4,emit=True,smooth=True,dec=[D(circ(440,254,4),K)]),'Visier')),
+    # Pin-Ring quer zur Laufachse: Durchsicht nach vorn (−Y), bis 0.6 seitlich (Querfenster, claude-0.7 behoben)
+    Sg(Lb(C(434,442,254,10,PK,n=18,emit=True,cap=[(254,0,4,K,False)]),'Visier')),
     C(255,520,300,3.5,E,n=12,cz=0),
     Lb(P(rect(366,303.5,26,5),K,-4.6,4,r=1.5),'Pfeilauflage'),
     F(520,548,300,8,1,PK,cz=0),
