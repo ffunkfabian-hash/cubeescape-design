@@ -35,5 +35,6 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   Vor dem Bauen, das ein Schwesterprojekt berührt (Toolgen, Cube Escape, Robogen, Cubegen), dessen Stelle lesen: `~/.claude/CLAUDE.md` ›
   Erfahrungen festhalten und querlesen.
 - **Texturen gemeinsam hinterlegen** (Wunsch des Nutzers, 17.10.2026): Materialmuster und Skins sollen an einer gemeinsamen Stelle
-  liegen, die Claude und Codex gleich nutzen. Der Ort ist noch offen. Bis dahin keine neuen Textur- oder Skin-Arten ohne Eintrag im
-  Versionsbericht; vorhandene Definitionen nicht umbauen.
+  liegen, die Claude und Codex gleich nutzen: Katalog `docs/textures/` (Parameter und Musterbilder; Entscheidung 18.10.2026, Claude
+  legt ihn an). Bis er auf `main` liegt, keine neuen Textur- oder Skin-Arten ohne Eintrag im Versionsbericht; vorhandene Definitionen
+  nicht umbauen. Danach lesen beide Pipelines Materialien, Oberflächen und Skins aus dem Katalog.
