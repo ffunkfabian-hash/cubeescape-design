@@ -39,6 +39,8 @@ selbst standen aber nirgends als Zahlen. Dieser Auftrag liefert sie nach.
   auf Parallax) auf die Werte unten bringen und alle 20 Blätter neu bauen.
 - **Teil B – Weapon-Spec:** Je Blatt eine `KAnn.spec.json` bzw. `KKnn.spec.json` im Format
   [weapon-spec.md](weapon-spec.md) (`format_version` 1) samt Schema ausgeben.
+- **Teil D – Visiere der Visier-Serie:** Die Codex-Waffen 1–9 (KA01–KA09, KK01–KK09) tragen das Standardvisier ihres Typs aus
+  VS01–VS09 statt eigener Optiken, wie Claudes Blätter seit claude-0.7. Entscheidung des Nutzers vom 18.10.2026, Einzelheiten unten.
 - **Teil C – Texturen:** Materialmuster, Oberflächen und Skins aus dem gemeinsamen Katalog `docs/textures/` lesen statt eigener Werte.
   Den Katalog legt Claude vorher an; der Aufbau ist unten vorgeschlagen. Codex beginnt Teil C erst, wenn der Katalog auf `main` liegt.
 
@@ -89,12 +91,33 @@ Inhalt wie [auftrag-codex-spec.md](auftrag-codex-spec.md) › Inhalt je Datei, e
 - Was sich nicht ableiten lässt, steht als `null` mit Grund im Spec, wie bei Claude. Nichts raten.
 - Seit claude-0.7 (additiv, `format_version` 1): `parts[].material` kennt `glass` (Glasscheiben, `toolgen_material: null`); Glas zählt
   als Fenster in `window_geometry`. `Socket_Sight` ist bei Claude jetzt die Oberkante der Visierschiene unter der Mitte der Halterung.
-  `sight.sight_spec` verweist auf ein Visier der Visier-Serie (`VSnn.spec.json`); Codex lässt das Feld weg, solange es keine VS-Visiere
-  verwendet ([Visier der Visier-Serie](weapon-spec.md#visier-der-visier-serie)).
-- **Offen (Nutzer):** Sollen auch die Codex-Blätter das Standardvisier der Visier-Serie VS01–VS09 tragen? Bei Claude gilt das seit
-  claude-0.7 nach der Entscheidung vom 17.10.2026 für die Waffen 1–9. Bis zur Entscheidung behält Codex seine eigenen Optiken.
+  `sight.sight_spec` verweist auf das Visier der Visier-Serie (`VSnn.spec.json`) und ist für die Codex-Waffen 1–9 Pflicht (Teil D),
+  beim Bogen fehlt es ([Visier der Visier-Serie](weapon-spec.md#visier-der-visier-serie)).
 - `CodexDesignReference` darf als zusätzliche Datei bleiben, ist aber nicht die Übergabe an Toolgen.
 - Format-Änderungswünsche (neue Felder, andere Bedeutung) meldet Codex an Claude oder den Nutzer und legt sie nicht selbst fest.
+
+## Visiere der Visier-Serie (Teil D)
+
+Entscheidung des Nutzers vom 18.10.2026: Auch die Codex-Blätter tragen das Standardvisier der Visier-Serie VS01–VS09 (Waffen 1–9), wie
+Claudes Blätter seit claude-0.7. Die Visier-Nummer ist die Waffennummer: Pistole VS01 … Raketenwerfer VS09.
+
+- **Quelle (nur lesen):** `claude/output/sheets/VSnn.spec.json` und [sight-spec.md](sight-spec.md). Darin stehen Maße
+  (`dimensions_m`), Fenster, Rahmen, Glas samt Tönung, Röhre, Modul, Anker, Visierlinie und die Teile mit Kanal, Material und
+  Hüllquader. Zielbild sind die VS-Blätter (Release-Asset bzw. lokal `claude/output/sheets/VSnn.dc.html`).
+- **Modell:** Codex baut jedes Visier als eigenes Modell nach diesen Daten nach. Claudes `vsmodels.py` wird nicht übernommen
+  (Repo-Regel). Maße, Fensterlage und Anker müssen auf ±0,5 mm zum Sight-Spec passen; Teile, Bezeichnungen und Materialien wie dort.
+- **Montage** nach [weapon-spec.md › Visier der Visier-Serie](weapon-spec.md#visier-der-visier-serie): `Socket_Mount` auf der Oberkante der
+  Visierschiene unter der Mitte der Halterung (Raketenwerfer: Seitenschiene links am Rohr). Fehlt die Schiene, kommt eine dazu
+  (6 mm über der höchsten Stelle, 14 mm breit). Kein Visierteil ragt in die Waffe, nötigenfalls auf einer Erhöhung (`riser_m`). Die
+  Visierlinie bleibt frei. Farben kommen aus den Kanälen der Waffe, das Glas behält die Tönung des Sight-Specs.
+- **Bogen (10):** kein VS-Visier. Er behält sein Pin-Visier; Pin und Leuchtpunkt fluchten entlang −Y, der Leuchtpunkt sitzt auf der
+  Rückseite zum Schützen.
+- **Blatt:** Glas und Feld „Visier · separat“ nach dem Stilvertrag (Zeilen „Glas“ und „Feld ‚Visier · separat‘“). Das Fadenkreuz
+  zeichnet Cube Escape; auf dem Blatt erscheint es höchstens als Bild an `Socket_Reticle`, wie bei Claude.
+- **Spec:** `sight.type`/`frame` aus dem Sight-Spec, `sight.sight_spec` mit allen Feldern aus weapon-spec.md, Glasscheiben als
+  `window_geometry`, `Socket_Sight` = Oberkante der Schiene.
+- **Prüfung:** Claude prüft die Codex-Specs mit `spec_checks.vs_problems` (VS-Nummer, Typ/Rahmen, Anker gegen den Sight-Spec, Glas als
+  Fenster, freie Visierlinie, Länge) und mit dem Richtungstest.
 
 ## Texturen (Teil C) – gemeinsamer Katalog `docs/textures/`
 
@@ -178,6 +201,7 @@ docs/textures/
 ## Modell
 - Teil A: `gpt-6.1-sol` (`high`), weil Licht, Kontur und Wirkung erst am Bild beurteilt werden.
 - Teil C: `gpt-6-luna` (`medium`), weil Katalog und Prüfskript vorliegen und das Ergebnis automatisch prüfbar ist.
+- Teil D: `gpt-6.1-sol` (`high`), weil Modelle nach Zielbild gebaut und am Bild beurteilt werden.
 - Teil B: `gpt-6-luna` (`medium`), weil das Muster vorliegt (Claudes Exporter, Schema) und das Ergebnis automatisch prüfbar ist.
 - Kontingent am 17.10.2026 um 23:2x: 5-h-Fenster 33 % übrig (Reset 03:41 am 18.10.), Woche 90 % übrig. Nach der Regel heißt das:
   Teil A erst nach dem Reset starten, Teil B ginge sofort.
@@ -190,8 +214,9 @@ docs/textures/
    Bezugslänge (±0,5 mm). Claude prüft anschließend Richtung und Anker mit `spec_checks.py`.
 4. Texturen: `python3 docs/textures/check_catalog.py` grün; Codex-Test, dass jede verwendete Material-, Oberflächen- und Skin-ID
    im Katalog steht; Musterfeld im Blatt gegen `swatches/` am Kontaktbogen.
-5. Erwartete Unterschiede: nur Dateien unter `codex/` ändern sich. Die Blätter bekommen Konturen, eine hellere Oberseite und bei langen
-   Waffen größere Orthos; Modelle und Paletten bleiben gleich.
+5. Visiere: `spec_checks.vs_problems` ohne Befund für KA01–KA09 und KK01–KK09; Kontaktbogen Visierfeld neben VS01–VS09.
+6. Erwartete Unterschiede: nur Dateien unter `codex/` ändern sich. Die Blätter bekommen Konturen, eine hellere Oberseite, bei langen
+   Waffen größere Orthos und die Visiere der Serie; Modelle der Waffen und Paletten bleiben gleich.
 
 ## Release
 nein.
