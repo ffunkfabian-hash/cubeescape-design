@@ -1,7 +1,7 @@
 """Packt die Konzeptblätter als Release-Asset und hängt sie per gh an das Release claude-v<Version> (nur auf Wunsch des Nutzers).
    python3 claude/generator/release_assets.py            # Probelauf: packt nach dist/ (ungetrackt) und zeigt, was hochgeladen würde
    python3 claude/generator/release_assets.py --upload   # zusätzlich: gh release upload claude-v<Version> dist/*.zip --clobber
-Voraussetzung: Blätter gebaut (build_all.py --nur-xl, Prüfung: python3 claude/tests/test_golden.py --full), Release existiert
+Voraussetzung: Blätter gebaut (build_all.py --nur-xl --force: vor einem Release immer ohne Inhalts-Cache, sheetcache.py, Prüfung: python3 claude/tests/test_golden.py --full), Release existiert
 (der Workflow legt es beim Push auf release/claude-<Version> an). Je Variante ein zip: Blätter, Specs, fonts/ (Pakete laufen allein offline), dazu eins für die Visier-Serie VS01–VS09;
 dazu ein zip Vorschauen samt Viewer index.html (make_viewer.py), falls vorhanden. Entpackt man alle zips in einen Ordner, öffnet index.html den Viewer."""
 import os,re,subprocess,sys,zipfile

@@ -2,6 +2,11 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## Unreleased (Pipeline)
+- Inhalts-Cache für Blätter (`claude/generator/sheetcache.py`): `build_all.py`/`build_xl.py`/`build_vs.py` bauen nur Blätter neu, deren Schlüssel
+  (Modell, Palette/Skin, Quelltext der schreibenden Funktionen `CODE_PARTS`) sich geändert hat; Cache außerhalb des Repos. `--force` (alles neu, Einträge
+  erneuert) und `CE_NO_CACHE=1` (Cache ganz aus) umgehen den Cache; `full`-Check (`test_golden --full`) und Release immer ohne Cache. Test `claude/tests/test_sheetcache.py`.
+
 ## claude-0.7
 - Waffenblätter 1–9 (C, D, F, G, H, J) tragen das Standardvisier ihres Typs aus der Visier-Serie VS01–VS09 (`vsmount.py`, Modell aus
   `vsmodels.py`, Farben über die MT_-Kanäle der Waffe, Sitz auf der Visierschiene; 15 Blätter mit neuer Schiene, 5 mit Erhöhung).
