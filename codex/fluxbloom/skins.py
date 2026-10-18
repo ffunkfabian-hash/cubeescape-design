@@ -8,23 +8,13 @@ from copy import deepcopy
 import numpy as np
 from PIL import ImageColor
 from eng import bounds, decal, prism
+import texture_catalog as textures
 
 CHANNELS = ('MT_Primary', 'MT_Secondary', 'MT_Accent', 'MT_Metal',
             'MT_Energy', 'MT_Emission', 'MT_Detail')
-CATALOG = [
-    dict(id='circuit_bloom', name='Circuit Bloom', accent1='#F0A554', accent2='#8AE5DA',
-         description='Schräge Farbblöcke über Gehäusenähte, Doppelband, eigene 07-Glyphe und kleine Kühlrippen.'),
-    dict(id='tidal_pulse', name='Tidal Pulse', accent1='#47C7C3', accent2='#E9C18A',
-         description='Petrolfarbener Längsverlauf, helle Zielringe und nummeriertes Seitenemblem.'),
-    dict(id='gilt_vector', name='Gilt Vector', accent1='#D7AE52', accent2='#C0D2DA',
-         description='Polierte Goldfelder, Chromkante, dunkle Winkelglyphe und dezente Kantenabnutzung.'),
-    dict(id='transit_mark', name='Transit Mark', accent1='#E5A346', accent2='#F1E8CF',
-         description='Versetzte Warnbänder über Bauteilgrenzen, dunkle Nase und industrielle 23-Kennung.'),
-    dict(id='chrome_crest', name='Chrome Crest', accent1='#B9CDDA', accent2='#C97B56',
-         description='Gebürstete Chromfelder, kupferfarbener Kontrast, echte Seitenrippen und Flossen.'),
-]
-_BY_ID = {item['id']: item for item in CATALOG}
-FINISH = {'paint': 0, 'gold': 1, 'chrome': 2, 'metal': 3, 'rubber': 4, 'plastic': 5, 'light': 6}
+CATALOG = textures.CodexSkinRecords()
+FINISH = {'paint': 0, 'gold': 1, 'chrome': 2, 'metal': 3, 'rubber': 4, 'plastic': 5, 'light': 6,
+          'polished_gold': 1, 'polished_chrome': 2, 'neon': 6}
 _ROLE_CHANNEL = dict(primary='MT_Primary', medium='MT_Secondary', dark='MT_Detail', accent='MT_Accent')
 _DEFAULTS = dict(zip(CHANNELS, ('#D5CCB8','#858F99','#F28C28','#858F99','#57C7CA','#9BE4DD','#303844')))
 
@@ -86,7 +76,7 @@ def _contrast(requested, base, colors):
     return candidate
 
 
-def sample_surface(part, world, normal, skin_id=None, palette=None):
+def sample_surface(part, world, normal, skin_id=None, palette=None, *, return_materials=False):
     """Return RGB samples and finish IDs, with no camera or screen dependency.
 
     palette can be a resolved seven-slot mapping or a legacy four-role mapping.
@@ -102,48 +92,65 @@ def sample_surface(part, world, normal, skin_id=None, palette=None):
         base = np.asarray(palette['_base_color'], dtype=float)
     rgb = np.broadcast_to(base, shape + (3,)).copy()
     finish = np.full(shape, FINISH.get(getattr(part, 'finish', part.material), 0), dtype=np.uint8)
+    materials = np.full(shape, textures.material(part.material)['id'], dtype=object)
     if skin_id is None or not _eligible(part):
-        return rgb, finish
-    recipe = _BY_ID[skin_id]
+        return (rgb, finish, materials) if return_materials else (rgb, finish)
+    recipe = textures.skin(skin_id)
     declaration = getattr(part, 'skin_declarations', {})
     origin = np.asarray(declaration.get('origin', [0, 0, 0]), dtype=float)
-    extent = np.maximum(np.asarray(declaration.get('extent', [200, 100, 35]), dtype=float), 1.)
+    extent = np.maximum(np.asarray(declaration.get('extent', [200, 100, 35]), dtype=float), 1e-12)
     u, v, w = np.moveaxis((world-origin)/extent, -1, 0)
-    diagonal = u + .28*v
-    a1, a2 = _rgb(recipe['accent1']), _rgb(recipe['accent2'])
-    dark = _contrast('MT_Detail', base, colors)
-    secondary = _contrast('MT_Secondary', base, colors)
-    def layer(mask, color, material='paint'):
-        rgb[mask] = color
-        finish[mask] = FINISH[material]
-    if skin_id == 'circuit_bloom':
-        layer((diagonal > .36) & (diagonal < .65), dark)
-        layer((diagonal > .65) & (diagonal < .71), a1)
-        layer((diagonal > .72) & (diagonal < .735), a2, 'metal')
-        layer((diagonal < .19) & (v < .6), secondary)
-    elif skin_id == 'tidal_pulse':
-        mix = np.clip((u-.12)/.72, 0, 1)[..., None]
-        rgb[:] = base*(1-.68*mix) + a1*(.68*mix)
-        radius = np.sqrt(((u-.61)*1.35)**2 + ((v-.43)*.64)**2)
-        layer(((radius > .19) & (radius < .21)) | ((radius > .25) & (radius < .258)), a2)
-        layer((v > .71) & (v < .76), dark)
-    elif skin_id == 'gilt_vector':
-        layer((diagonal > .19) & (diagonal < .62), a1, 'gold')
-        layer((diagonal > .62) & (diagonal < .66), a2, 'chrome')
-        layer((diagonal > .66) & (diagonal < .75), dark)
-        layer((v > .67) & (v < .70), secondary, 'metal')
-    elif skin_id == 'transit_mark':
-        layer(u > .67, dark)
-        band = np.mod(u*4.7 + v*.62, 1.)
-        zone = (u > .23) & (u < .61)
-        layer(zone & (band < .32), a1)
-        layer(zone & (band > .34) & (band < .42), a2)
-        layer((v > .64) & (v < .70), secondary)
-    elif skin_id == 'chrome_crest':
-        layer((u < .35) | ((v > .23) & (v < .44)), a1, 'chrome')
-        layer((diagonal > .67) & (diagonal < .77), a2, 'metal')
-        layer((diagonal > .77) & (diagonal < .82), dark)
-    return rgb, finish
+    axes = dict(u=u, v=v, w=w)
+    accents = {slot: _rgb(value['color']) for slot, value in recipe['accents'].items()}
+
+    def color_for(slot):
+        if slot == 'base':
+            return base
+        if slot in accents:
+            return accents[slot]
+        if slot in ('MT_Detail', 'MT_Secondary'):
+            return _contrast(slot, base, colors)
+        return _rgb(colors.get(slot, slot))
+
+    for layer in recipe['layers']:
+        if layer['type'] == 'blend':
+            mix = np.clip((axes[layer['axis']]-layer['lo'])/(layer['hi']-layer['lo']), 0, 1)
+            mix = (mix*layer['strength'])[..., None]
+            rgb[:] = color_for(layer['from'])*(1-mix) + color_for(layer['to'])*mix
+        elif layer['type'] == 'region':
+            mask = _region_mask(layer['mask'], axes)
+            rgb[mask] = color_for(layer['color'])
+            finish[mask] = FINISH[layer['finish']]
+            if 'material' in layer:
+                materials[mask] = textures.material(layer['material'])['id']
+        else:
+            raise ValueError(f"Unsupported Codex skin layer: {layer['type']}")
+    return (rgb, finish, materials) if return_materials else (rgb, finish)
+
+
+def _region_mask(mask, axes):
+    kind = mask['kind']
+    if kind in ('all', 'any'):
+        children = [_region_mask(child, axes) for child in mask['of']]
+        return np.logical_and.reduce(children) if kind == 'all' else np.logical_or.reduce(children)
+    if kind == 'ellipse_rings':
+        radius = np.sqrt(sum(((axes[axis]-center)*scale)**2
+                             for axis, center, scale in zip(('u','v'),mask['center'],mask['scale'])))
+        return np.logical_or.reduce([(radius > lo) & (radius < hi) for lo,hi in mask['ranges']])
+    if kind == 'diagonal':
+        value = axes['u'] + mask['k']*axes['v']
+    elif kind == 'sawtooth':
+        value = np.mod(axes['u']*mask['fu']+axes['v']*mask['fv'], 1.)
+    elif kind in axes:
+        value = axes[kind]
+    else:
+        raise ValueError(f'Unknown catalogue mask kind: {kind}')
+    result = np.ones_like(value, dtype=bool)
+    if mask.get('lo') is not None:
+        result &= value > mask['lo']
+    if mask.get('hi') is not None:
+        result &= value < mask['hi']
+    return result
 
 
 def _inside(points, polygon):
@@ -239,9 +246,9 @@ def _attach(model, patch, recipe):
         xy = [(cx+side*x*width, cy+y*height) for x,y in points]
         item = decal('z+' if side > 0 else 'z-', z+side*offset, xy, color)
         host.decals.append(_trim(item, recipe, owner, kind))
-    polygon([(-.49,-.46),(.49,-.46),(.49,.20),(-.49,.20)], .025, '#24313C', 'badge')
-    number = {'circuit_bloom':'07','tidal_pulse':'18','gilt_vector':'03',
-              'transit_mark':'23','chrome_crest':'08'}[recipe['id']]
+    decor = textures.skin(recipe['id'])['decor']
+    polygon([(-.49,-.46),(.49,-.46),(.49,.20),(-.49,.20)], .025, decor['badge']['color'], 'badge')
+    number = decor['number']
     for at, digit in enumerate(number):
         for segment in _DIGITS[digit]:
             a,b = np.asarray(_SEGMENTS[segment])
@@ -251,8 +258,10 @@ def _attach(model, patch, recipe):
             points = [((p[0]+at)*.31-.35, p[1]*.50-.39) for p in points]
             polygon(points, .05, recipe['accent2'])
     # A compact split-chevron emblem is the family's own design signature.
+    if decor['emblem'] != 'split_chevron':
+        raise ValueError(f"Unknown catalogue emblem: {decor['emblem']}")
     polygon([(.29,-.37),(.43,-.17),(.29,.03),(.32,-.17)], .05, recipe['accent1'])
-    rib_count = 5 if recipe['id']=='chrome_crest' else 3
+    rib_count = decor['trim']['count']
     for at in range(rib_count):
         x = cx + (at-(rib_count-1)/2)*width*.135
         w = width*.047
@@ -263,16 +272,15 @@ def _attach(model, patch, recipe):
         item = prism(profile, recipe['accent1'], z-side*.02, z+side*depth)
         item.material = 'metal'
         item.role = 'medium'
-        item = _trim(item, recipe, owner, 'fin' if recipe['id']=='chrome_crest' else 'rib',
-                     'chrome' if recipe['id']=='chrome_crest' else 'gold' if recipe['id']=='gilt_vector' else 'metal')
+        item = _trim(item, recipe, owner, decor['trim']['kind'], decor['trim']['finish'])
         model.append(item)
 
 
 def apply_skin(model, skin_id):
     """Copy all geometry, declare masks and safely attach badges/ribs to faces."""
-    if skin_id not in _BY_ID:
-        raise ValueError(f'Unknown skin: {skin_id}')
-    recipe = _BY_ID[skin_id]
+    if skin_id not in {row['id'] for row in textures.codex_skins()}:
+        raise ValueError(f'Unknown Codex skin: {skin_id}')
+    recipe = textures.skin_record(textures.skin(skin_id))
     result = deepcopy([part for part in model if not getattr(part, 'skin_trim', False)])
     # Reapplying a skin is idempotent: discard only our old attached details.
     for part in result:

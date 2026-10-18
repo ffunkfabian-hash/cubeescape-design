@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cubeescape-design/weapon-spec/1-codex",
+  "title": "Codex weapon-spec v1 profile",
+  "description": "Independently maintained Codex profile of cubeescape-design/weapon-spec format_version 1. Unknown v1 extension fields remain allowed.",
+  "$defs": {
+    "hex": {"type":"string","pattern":"^#[0-9A-F]{6}$"},
+    "slot": {"enum":["MT_Primary","MT_Secondary","MT_Accent","MT_Metal","MT_Energy","MT_Emission","MT_Detail","SK_Accent1","SK_Accent2"]},
+    "channel": {"enum":["MT_Primary","MT_Secondary","MT_Accent","MT_Metal","MT_Energy","MT_Emission","MT_Detail"]},
+    "vec2": {"type":"array","items":{"type":"number"},"minItems":2,"maxItems":2},
+    "vec3": {"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},
+    "bounds": {"type":"array","items":{"$ref":"#/$defs/vec3"},"minItems":2,"maxItems":2},
+    "channelColors": {"type":"object","required":["MT_Primary","MT_Secondary","MT_Accent","MT_Metal","MT_Energy","MT_Emission","MT_Detail"],"properties":{
+      "MT_Primary":{"$ref":"#/$defs/hex"},"MT_Secondary":{"$ref":"#/$defs/hex"},"MT_Accent":{"$ref":"#/$defs/hex"},"MT_Metal":{"$ref":"#/$defs/hex"},"MT_Energy":{"$ref":"#/$defs/hex"},"MT_Emission":{"$ref":"#/$defs/hex"},"MT_Detail":{"$ref":"#/$defs/hex"}}},
+    "skinColor": {"type":"object","required":["color","finish","source"],"properties":{"color":{"$ref":"#/$defs/hex"},"finish":{"enum":["paint","polished_gold","polished_chrome","neon"]},"source":{"type":"string"}}},
+    "skinLayer": {"type":"object","required":["type","block"],"properties":{
+      "type":{"enum":["side_block","bands","gradient","rings","finish","edge_wear","glyphs","trim"]},
+      "block":{"enum":["farbflaechen","glyphen","streifen","material","schmuck"]},
+      "parts":{"type":"array"},"slot":{"$ref":"#/$defs/slot"},"slots":{"type":"array","items":{"$ref":"#/$defs/slot"},"minItems":1},
+      "dir":{"$ref":"#/$defs/vec3"},"poly_yz_m":{"type":"array","items":{"$ref":"#/$defs/vec2"},"minItems":3},"center_yz_m":{"$ref":"#/$defs/vec2"},
+      "width_m":{"type":"number","minimum":0},"period_m":{"type":"number","minimum":0},"count":{"type":"integer","minimum":1},"steps":{"type":"integer","minimum":2},
+      "coverage":{"type":"number","minimum":0},"width_mm":{"type":"number","minimum":0},"color":{"$ref":"#/$defs/hex"},"kind":{"enum":["ribs","fins"]},
+      "decals":{"type":"array","items":{"type":"object","required":["surface","slot","points_m"],"properties":{"surface":{"enum":["left","right"]},"slot":{"$ref":"#/$defs/slot"},"points_m":{"type":"array","items":{"$ref":"#/$defs/vec3"},"minItems":3}}}}
+    }},
+    "skin": {"type":"object","required":["id","name","hero","blocks","description_de","description_en","accents","slots_used","colors","layers","notes"],"properties":{
+      "id":{"type":"string"},"name":{"type":"string"},"hero":{"type":"boolean"},"blocks":{"type":"array","items":{"enum":["farbflaechen","glyphen","streifen","material","schmuck"]},"minItems":1},
+      "description_de":{"type":"string"},"description_en":{"type":"string"},"accents":{"type":"object","required":["SK_Accent1","SK_Accent2"],"properties":{"SK_Accent1":{"$ref":"#/$defs/skinColor"},"SK_Accent2":{"$ref":"#/$defs/skinColor"}}},
+      "slots_used":{"type":"array","items":{"$ref":"#/$defs/slot"},"minItems":1},"colors":{"type":"object","required":["base","standard","arktis","nacht"],"properties":{
+        "base":{"type":"object","required":["MT_Primary","MT_Secondary","MT_Accent","MT_Metal","MT_Energy","MT_Emission","MT_Detail","SK_Accent1","SK_Accent2"],"additionalProperties":{"$ref":"#/$defs/skinColor"}},
+        "standard":{"type":"object","required":["MT_Primary","MT_Secondary","MT_Accent","MT_Metal","MT_Energy","MT_Emission","MT_Detail","SK_Accent1","SK_Accent2"],"additionalProperties":{"$ref":"#/$defs/skinColor"}},
+        "arktis":{"type":"object","required":["MT_Primary","MT_Secondary","MT_Accent","MT_Metal","MT_Energy","MT_Emission","MT_Detail","SK_Accent1","SK_Accent2"],"additionalProperties":{"$ref":"#/$defs/skinColor"}},
+        "nacht":{"type":"object","required":["MT_Primary","MT_Secondary","MT_Accent","MT_Metal","MT_Energy","MT_Emission","MT_Detail","SK_Accent1","SK_Accent2"],"additionalProperties":{"$ref":"#/$defs/skinColor"}}}},
+      "layers":{"type":"array","items":{"$ref":"#/$defs/skinLayer"},"minItems":1},"notes":{"type":"array","items":{"type":"string"}}
+    }}
+  },
+  "type":"object",
+  "required":["format","format_version","generator","sheet","weapon","element","element_source","units","axes","dimensions_m","anchors","palette","channels_used","parts","moving_parts","robot_fit","sight","decals","textures","skin","summary"],
+  "properties":{
+    "format":{"const":"cubeescape-design/weapon-spec"},"format_version":{"const":1},
+    "generator":{"type":"object","required":["repo","tool","claude_version","codex_version"],"properties":{"repo":{"const":"cubeescape-design"},"tool":{"type":"string"},"claude_version":{"type":["string","null"]},"codex_version":{"type":"string"}}},
+    "sheet":{"type":"object","required":["id","file","variant","variant_name","number","nick","fid"],"properties":{"id":{"type":"string","pattern":"^[A-Za-z0-9_.-]+$"},"file":{"type":"string"},"variant":{"type":"string"},"variant_name":{"type":["string","null"]},"number":{"type":"string"},"nick":{"type":"string"},"fid":{"type":"string"}}},
+    "weapon":{"type":"object","required":["name_de","toolgen_id"],"properties":{"name_de":{"type":"string"},"toolgen_id":{"enum":["pistol","assault_rifle","pulse_rifle","shotgun","sniper_rifle","smg","fusion_rifle","scout_rifle","rocket_launcher","bow"]}}},
+    "element":{"enum":["solar","arc","void","energy",null]},"element_source":{"type":"string"},
+    "units":{"type":"object","required":["model_unit_m","model_length_units","reference_length_m","rule","reference"],"properties":{"model_unit_m":{"type":"number","minimum":0},"model_length_units":{"type":"number","minimum":0},"reference_length_m":{"type":"number","minimum":0},"rule":{"type":"string"},"reference":{"type":"string"}}},
+    "axes":{"type":"object","required":["model","target","matrix_model_to_target","origin","formula"],"properties":{"model":{"type":"object"},"target":{"type":"object"},"matrix_model_to_target":{"type":"array","items":{"$ref":"#/$defs/vec3"},"minItems":3,"maxItems":3},"origin":{"const":"Socket_Hand"},"formula":{"type":"string"}}},
+    "dimensions_m":{"type":"object","required":["weapon","with_sight"],"properties":{"weapon":{"type":"object"},"with_sight":{"type":"object"}}},
+    "anchors":{"type":"object","required":["Socket_Hand","Socket_SupportHand","Socket_Muzzle","Socket_CenterOfMass","Socket_Sight"],"properties":{"Socket_Hand":{"type":"object"},"Socket_SupportHand":{"type":"object"},"Socket_Muzzle":{"type":"object"},"Socket_CenterOfMass":{"type":"object"},"Socket_Sight":{"type":"object"}}},
+    "palette":{"type":"array","minItems":4,"maxItems":4,"items":{"type":"object","required":["id","name","swatches","channels","other_colors","on_sheet","sight_colors"],"properties":{"id":{"enum":["base","standard","arktis","nacht"]},"name":{"type":"string"},"swatches":{"type":"array","items":{"$ref":"#/$defs/hex"},"minItems":4,"maxItems":4},"channels":{"$ref":"#/$defs/channelColors"},"other_colors":{"type":"object"},"on_sheet":{"type":"boolean"},"sight_colors":{"enum":["wie Modell","extrapoliert"]}}}},
+    "channels_used":{"type":"array","items":{"$ref":"#/$defs/channel"}},
+    "parts":{"type":"array","minItems":1,"items":{"type":"object","required":["id","label","channel","channel_source","material","toolgen_material","emissive","sight","color","area_m2","long_axis","bounds_m","moving"],"properties":{"id":{"type":"string","pattern":"^p[0-9]{2,3}$"},"label":{"type":["string","null"]},"channel":{"$ref":"#/$defs/channel"},"channel_source":{"enum":["explicit","role","distributed"]},"material":{"enum":["painted","brushed","rubber","matte","lit","glass"]},"toolgen_material":{"enum":["painted","painted_matte","ceramic","brushed","satin","polished","rough_cast","rubber","energy_glass",null]},"emissive":{"type":"boolean"},"sight":{"type":"boolean"},"color":{"$ref":"#/$defs/hex"},"area_m2":{"type":"number","minimum":0},"long_axis":{"enum":["X","Y","Z"]},"bounds_m":{"$ref":"#/$defs/bounds"},"moving":{"enum":["slide","bolt","cell","fins","coil","pump","lever","hatch",null]}}}},
+    "moving_parts":{"type":"object","required":["source","root_moves","frame","items","note"],"properties":{"source":{"type":"string"},"root_moves":{"const":false},"frame":{"type":"string"},"items":{"type":"array"},"note":{"type":["string","null"]}}},
+    "robot_fit":{"type":"object","required":["source","robot","concept_sheets","applies","reason","targets","sheet_at_target"],"properties":{"source":{"type":"string"},"robot":{"type":"object"},"concept_sheets":{"const":false},"applies":{"type":"boolean"},"reason":{"type":["string","null"]},"targets":{"type":["object","null"]},"sheet_at_target":{"type":["object","null"]}}},
+    "sight":{"type":"object","required":["present","kind","window","source","modular","mount_side","labels","parts","bounds_m","anchor","type","type_source","frame","frame_source","window_geometry","window_geometry_note"],"properties":{"present":{"type":"boolean"},"kind":{"enum":["iron","reflex","holo","scope","energy","pin",null]},"type":{"enum":["standard","holo","precision","reflex","sniper","machine","energy","trace","rocket","iron","pin",null]},"type_source":{"type":"string"},"frame":{"enum":["standard","compact","open","closed","industrial","lightweight",null]},"frame_source":{"type":"string"},"window":{"enum":["none","open","glass","lens",null]},"source":{"type":"string"},"modular":{"type":"boolean"},"mount_side":{"enum":["top","left","right",null]},"labels":{"type":"array","items":{"type":"string"}},"parts":{"type":"array","items":{"type":"string"}},"bounds_m":{"type":["array","null"]},"anchor":{"type":"object"},"window_geometry":{"type":["object","null"],"properties":{"source":{"type":"string"},"elements":{"type":"array","minItems":1,"items":{"type":"object","required":["type","decal","part","emissive","view_axis_m","center_m"],"properties":{"type":{"enum":["decal","part","disc"]},"decal":{"type":["integer","null"]},"part":{"type":"string","pattern":"^p[0-9]{2,3}$"},"emissive":{"type":"boolean"},"view_axis_m":{"$ref":"#/$defs/vec3"},"center_m":{"$ref":"#/$defs/vec3"}}}}}},"window_geometry_note":{"type":["string","null"]}}},
+    "decals":{"type":"array"},"textures":{"type":"object","required":["source","vocabulary","painted","brushed","rubber","matte","lit"]},
+    "skin":{"type":"object","required":["source","hero","catalog","slots","finishes","space","vocabulary","new_pattern_types","items"],"properties":{"source":{"type":"string"},"hero":{"type":"string"},"catalog":{"type":"array","items":{"type":"string"}},"slots":{"type":"object"},"finishes":{"type":"array","items":{"type":"string"}},"space":{"type":"string"},"vocabulary":{"type":"string"},"new_pattern_types":{"type":"object"},"items":{"type":"array","minItems":5,"maxItems":5,"items":{"$ref":"#/$defs/skin"}}}},
+    "summary":{"type":"object","required":["parts","parts_explicit_channel","decals","channels_with_other_colors"]}
+  }
+}
