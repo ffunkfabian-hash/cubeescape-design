@@ -204,8 +204,31 @@ def panel(inner,w,h,label,fid,aria,small=False):
 
 EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Magazin':'magazine','Lauf':'barrel','Mündung':'muzzle','Mündungsbremse':'muzzle brake','Zielfernrohr':'scope on mounting rings','Visier':'sight','Schaft':'stock','Energiezelle':'energy cell','Kühlrippen':'cooling fins','Montageringe':'scope rings','Laufverkleidung':'barrel shroud','Vordergriff':'foregrip','Doppellauf':'double barrel','Trommel':'revolver cylinder','Sehne':'string','Wurfarm':'limb','Pfeil':'arrow','Umlenkrolle':'cam pulley','Pfeilauflage':'arrow rest','Stabilisator':'stabilizer','Rohr':'launch tube','Heckdüse':'rear exhaust','Abgasdüse':'rear exhaust','Raketenrohre':'rocket tubes','Handschutz':'handguard','Tragegriff':'carry handle','Kimme':'rear sight','Korn':'front sight','Ladeleiste':'charge indicator rail','Mündungsring':'muzzle ring','Schaftkappe':'butt plate','Wangenauflage':'cheek rest','Trommelmagazin':'drum magazine','Röhrenmagazin':'tube magazine','Pumpgriff':'pump grip','Kristallkern':'crystal core','Energiekugel':'energy orb','Bündelring':'focusing ring','Fokusring':'focusing ring','Fokusringe':'focusing rings','Laufmantel':'barrel jacket','Feuerkern':'fire core','Oberkiefer':'upper jaw','Unterkiefer':'lower jaw','Visierschiene':'sight rail','Ringvisier':'ring sight','Trichterheck':'flared rear funnel','Sicherungsmodul':'safety module','Rakete':'rocket','Spannmechanik':'cocking mechanism','Bolzen':'bolt','Mittelstück':'riser','Energie-Auge':'energy eye','Kondensator':'capacitor','Emitter':'emitter','Raketenkasten':'rocket pod','Heckkappe':'end cap','Verschluss':'breech','Kastenvisier':'box sight','Laufhülle':'barrel shroud','Laufkasten':'barrel housing','Ladekammer':'charging chamber','Beschleunigerring':'accelerator ring','Energiespule':'energy coil','Abschussrohr':'launch tube','Schalldämpfer':'suppressor','Montage':'mount','Rahmen':'frame','Energiekern':'energy core','Fokuskern':'focus core','Tragebügel mit Visier':'carry handle with sights','Oberlauf':'upper barrel','Unterlauf':'lower barrel','Energiemagazin':'energy magazine','Mittelstück':'riser','Abzugbügel':'trigger guard','Zweibein':'folded bipod','Kompensator':'compensator','Schlitten':'slide','Energiewürfel':'energy cube','Reflexvisier':'reflex sight','Käfig':'cage','Pulswürfel':'pulse cube','Feuerdämpfer':'flash hider','Kondensatorzelle':'capacitor cell','Fächeremitter':'fan emitter','Abschussrohre':'launch tubes','Kammerstängel':'bolt handle','Patronenfenster':'shell window','Klappschaft':'folding stock'}
 
+def prompt_font(texts,width,height,sizes=(18,17,16,15,14)):
+    """Schriftgröße des Prompt-Felds (claude-0.9): größte aus sizes, bei der die Absätze (JetBrains Mono, Zeichenbreite 0,6 em,
+    Zeilenhöhe 1,5) samt zwei Zeilen Reserve in die Höhe passen; Umbruch an Leerzeichen wie im Browser, Bindestriche nicht mitgezählt
+    (der Browser bricht dort zusätzlich, die Schätzung liegt also eher zu hoch)"""
+    def lines(t,cpl):
+        n,cur=1,0
+        for w in t.split(' '):
+            if cur and cur+1+len(w)>cpl:n+=1;cur=len(w)
+            else:cur+=(1 if cur else 0)+len(w)
+        return n
+    for fs in sizes:
+        cpl=int(width/(0.6*fs))
+        if (sum(lines(t,cpl) for t in texts)+2)*fs*1.5<=height:return fs
+    return sizes[-1]
+
 def prompts(d,labels,mats,variant_letter,skin=None):
     pal=', '.join(d['palette']);vs=d.get('vs')
+    import export_spec
+    tp=texprofile.PROFILES.get(export_spec.WEAPONS[d['name']][0])   # Texturprofil des Waffentyps (claude-0.9); Bogen: kein Profil
+    tp_de=tp_en=''
+    if tp:
+        tp_de='; '.join(f"{k} „{tp[f]['text_de']}“" for k,f in (('Gehäuse','housing'),('Metall','metal'),('Gummi','rubber'),('Energie','energy'),('Kantenabnutzung','edge_wear'),('Decals','decals')))
+        en_=lambda f:texcat.material(tp[f]['material'])['name']['en']
+        tp_en=(f"{en_('housing')} housing, {en_('metal')} metal, textured rubber grips, {tp['energy']['color'].replace('_',' ')} energy glass, "
+               f"{tp['edge_wear']['level']} edge wear, decals ({', '.join(tp['decals']['toolgen'])})")
     vn=variants.name(variant_letter)   # englischer Variantenname (ab J), ältere Varianten ohne
     de=(f"Erstelle ein technisches Low-Poly-Concept-Art-Blatt für das Spiel Cube Escape: {d['name']}, Variante {variant_letter}{f' ({vn})' if vn else ''} „{d['nick']}“. "
         f"Form: {d['form']}. {d['desc']} "
@@ -215,7 +238,8 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         "Stil: futuristisch, industrial, Hard-Surface, abgeschrägte Gehäuse, kantige Panzerplatten, klare dunkle Konturen, flache Toon-Schattierung, dunkelblauer Rasterhintergrund. "
         "Konstruktion: Abzug mit Bügel klar erkennbar, Magazin im Schacht, Lauf sichtbar aus dem Gehäuse, konsistente Achsen. Visier bzw. Zielfernrohr NICHT montiert zeichnen, sondern separat als modulares Anbauteil daneben; auf der Waffe bleibt nur die freie Visierschiene als Aufnahme. "
         +(f"Visier: {vs['info']['title']} aus der Visier-Serie ({vs['id']}): {vs['info']['desc']} " if vs else "")
-        +(f"Hauptskin „{skin[0]}“: {skin[1]}. " if skin else "")+
+        +(f"Hauptskin „{skin[0]}“: {skin[1]}. " if skin else "")
+        +(f"Texturprofil: {tp_de}. " if tp_de else "")+
         "Vermeiden: schwebende Teile, unbeabsichtigte Überschneidungen, zufällige Leuchtstreifen, Bloom, Unschärfe, Nebel, realistische Militärwaffen-Kopien.")
     if d['name']=='Raketenwerfer':
         de=de.replace('auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.','auf der Waffe bleibt nur die freie Visierschiene als Aufnahme – seitlich links am Rohr montiert, damit das Rohr die Sichtlinie nicht verdeckt.')
@@ -226,6 +250,7 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         +("Sight rail mounted on the left side of the tube, offset from the bore axis. " if d['name']=='Raketenwerfer' else "")+
         (f"Sight: {VS_EN[vs['id']]} ({vs['id']}, sight series), drawn separately. " if vs else "")+
         (f"Skin \"{skin[0]}\": {skin[2]}. " if skin else "")+
+        (f"Texture profile: {tp_en}. " if tp_en else "")+
         "Hard-surface industrial design, chamfered housings, clean dark outlines, flat cel shading, dark blue grid background, no bloom, no blur, no floating parts.")
     return de,en
 
@@ -426,11 +451,12 @@ def sheet(d,variant_letter):
     d2=dict(d);d2['en_type']=TYPE_EN.get(d['name'],'weapon')
     de,en=prompts(d2,labels,mats,variant_letter,skin=(hero['name'],)+skins.DESC[hero['id']])
     PW=W-2*PAD-DW-MWd-VW-3*G
+    pfs=prompt_font((de,en),PW-56,BH-150)   # Texturprofil verlängert die Prompts: Schrift nur bei Bedarf kleiner (Feld bleibt gleich groß)
     pr=f'''<div style="width:{PW}px;height:{BH}px;box-sizing:border-box;border-radius:18px;border:1px solid #22314A;background:#0B121C;padding:26px 28px;display:flex;flex-direction:column;gap:14px;overflow:hidden">
 <span style="font-family:'Chakra Petch',sans-serif;font-size:19px;letter-spacing:3px;color:#8FA0B3">PROMPT · DEUTSCH</span>
-<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:18px;line-height:1.5;color:#E6ECF2;user-select:all">{_h.escape(de)}</p>
+<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#E6ECF2;user-select:all">{_h.escape(de)}</p>
 <span style="font-family:'Chakra Petch',sans-serif;font-size:19px;letter-spacing:3px;color:#8FA0B3;margin-top:8px">PROMPT · ENGLISCH (BILDGENERATOR)</span>
-<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:18px;line-height:1.5;color:#C7D1DC;user-select:all">{_h.escape(en)}</p></div>'''
+<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#C7D1DC;user-select:all">{_h.escape(en)}</p></div>'''
     pal=''.join(f'<div style="display:flex;align-items:center;gap:10px"><div style="width:50px;height:50px;border-radius:12px;background:{c}"></div><span style="font-size:19px;color:#8FA0B3">{c}</span></div>' for c in d['palette'])
     page=f'''<!doctype html>
 <html lang="de">
