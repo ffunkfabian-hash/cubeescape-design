@@ -112,7 +112,7 @@ def _anchors(meta, model):
         set_anchor('Socket_Muzzle', source='unavailable', reason='No named muzzle, emitter, barrel or arrow tip.')
     optics = [i for i, p in enumerate(model) if p.sight]
     rail = _anchor_candidates(model, {'visierschiene'})
-    if meta.get('sight_mount_model') is not None:
+    if meta.get('sight_mount_model') is not None and meta['slug']!='bow':
         i = rail[0]
         set_anchor('Socket_Sight', i, meta['sight_mount_model'], 'explicit: rail top beneath mount centre')
     elif optics:

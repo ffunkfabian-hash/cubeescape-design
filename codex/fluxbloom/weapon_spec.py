@@ -309,7 +309,8 @@ def make_spec(meta, model, number, record=None):
       'labels':sight['labels'],'parts':sight['parts'],'bounds_m':sight['bounds_m'],'anchor':anchors['Socket_Sight'],
       'window_geometry':wg,'window_geometry_note':wg_note}
     if meta.get('vs_number'):
-        from vs_mount import TO_NATIVE, line_blockers
+        from vs_mount import TO_NATIVE
+        from sight_validation import weapon_aperture_clearance
         from vs_models import DESIGNS
         import numpy as np
         d=DESIGNS[meta['vs_number']];unit=ref['units']['model_unit_m']
@@ -317,14 +318,15 @@ def make_spec(meta, model, number, record=None):
         convert=lambda p:((np.asarray(p)-origin)@np.asarray(MATRIX).T*unit).tolist()
         point=lambda p: None if p is None else mount+(np.asarray(p)@TO_NATIVE.T)/(unit*1000)
         reticle=point(d['reticle']);eye=point(d['eye'])
-        blockers=line_blockers(model,reticle,point((0,d['rear'],d['reticle'][2]))[0])
+        clearance=weapon_aperture_clearance(model,d,mount,unit*1000)
         rail=next(i for i,p in enumerate(model) if p.label=='Visierschiene')
         sight_out['sight_spec']={'id':f"VS{meta['vs_number']:02d}",'file':f"VS{meta['vs_number']:02d}.spec.json",
           'format':'cubeescape-design/sight-spec','mount':'Socket_Mount on Socket_Sight + riser_m',
           'riser_m':meta['vs_riser_m'],'socket_mount_m':convert(mount),'socket_reticle_m':convert(reticle),
           'socket_eye_m':None if eye is None else convert(eye),'line_height_m':d['reticle'][2]*.001+meta['vs_riser_m'],
           'rail':{'part':f'p{rail:03d}','added':meta['vs_rail_added'],'seat':'Rail top, longitudinal centre beneath mount; left side rail for rocket.'},
-          'line_clear_of_weapon':not blockers,'blocked_by':[f'p{model.index(p):03d}' for p in blockers],
+          'line_clear_of_weapon':clearance['line_clear_of_weapon'],'blocked_by':clearance['blocked_by'],
+          'aperture_clearance':clearance,
           'replaced':meta['vs_replaced']}
     robot=ref['robot_fit']; reason=robot['reason'] or 'Konzeptblatt geprüft keine reale Roboterhand, Gelenke, Kollision oder Griffpose.'
     target=robot.get('targets')

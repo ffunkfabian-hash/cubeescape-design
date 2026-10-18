@@ -12,7 +12,7 @@ from vs_models import build_sight,DESIGNS,solid
 from vs_mount import TO_NATIVE,line_blockers
 from collections_codex import load_collection
 from weapon_spec import make_spec,MATRIX
-from sight_validation import aperture_blockers
+from sight_validation import aperture_blockers,weapon_aperture_clearance
 from eng import bounds,Part,prism
 
 REFERENCE=Path(os.environ.get('CODEX_VS_REFERENCE',Path.home()/'Library/Caches/CubeEscapeDesign/vs-reference'))
@@ -111,6 +111,12 @@ class SightSeriesTests(unittest.TestCase):
             c=np.array(DESIGNS[n]['reticle'])@TO_NATIVE.T/unit+mount
             start=mount[0]-DESIGNS[n]['rear']/unit
             self.assertEqual(line_blockers(model,c,start),[])
+            clearance=weapon_aperture_clearance(model,DESIGNS[n],mount,unit)
+            self.assertEqual(clearance['free_rays'],clearance['rays'],(m['variant'],n,clearance))
+            self.assertEqual(clearance['free_fraction'],1.)
+            self.assertEqual(s['sight']['sight_spec']['aperture_clearance'],clearance)
+            self.assertTrue(s['sight']['sight_spec']['line_clear_of_weapon'])
+            self.assertEqual(s['sight']['sight_spec']['blocked_by'],[])
             # Block in front of the mounted optic; declared clear flags cannot hide it.
             p=prism([(start+20,c[1]-2),(start+22,c[1]-2),(start+22,c[1]+2),(start+20,c[1]+2)],'#000000',c[2]-2,c[2]+2)
             self.assertIn(p,line_blockers(model+[p],c,start))
@@ -118,12 +124,64 @@ class SightSeriesTests(unittest.TestCase):
     def test_bow_rear_pin_dot_aligned_with_forward_axis(self):
         for n,m,model in self.rows:
             if n!=10:continue
-            pin=next(p for p in model if p.label=='Visierpin');dot=next(p for p in model if p.label=='Leuchtpunkt')
-            dlo,dhi=bounds([dot]);plo,phi=bounds([pin])
-            self.assertLess(dhi[0],plo[0])
-            self.assertAlmostEqual((dlo[2]+dhi[2])/2,(plo[2]+phi[2])/2)
-            self.assertGreaterEqual((dlo[1]+dhi[1])/2,plo[1])
-            self.assertEqual(int(np.argmin(dhi-dlo)),0)
+            spec=make_spec(m,model,n)
+            pin=next(p for p in spec['parts'] if p['label']=='Visierpin')
+            dot=next(p for p in spec['parts'] if p['label']=='Leuchtpunkt')
+            pc=np.mean(pin['bounds_m'],axis=0);dc=np.mean(dot['bounds_m'],axis=0)
+            # Exported target frame: forward -Y, dot wholly behind the pin.
+            np.testing.assert_allclose(dc[[0,2]],pc[[0,2]],atol=1e-7)
+            self.assertGreater(dot['bounds_m'][0][1],pin['bounds_m'][1][1])
+            self.assertEqual(int(np.argmin(np.ptp(dot['bounds_m'],axis=0))),1)
+            lo,hi=np.array(spec['sight']['bounds_m']);want=(lo+hi)/2;want[2]=lo[2]
+            anchor=spec['anchors']['Socket_Sight']
+            np.testing.assert_allclose(anchor['position_m'],want,atol=.0005)
+            self.assertEqual(spec['sight']['anchor'],anchor)
+            self.assertIn('assembly bottom centre',anchor['source'])
+            self.assertIsNone(anchor['part'])
+
+    def test_weapon_aperture_rejects_off_axis_peg_and_exports_actual_failure(self):
+        n,m,model=next(row for row in self.rows if row[0]==3 and row[1]['variant']=='K')
+        spec=make_spec(m,model,n);mm=spec['units']['model_unit_m']*1000
+        mount=np.array(m['vs_mount_model']);d=DESIGNS[n]
+        c=np.array(d['reticle'])@TO_NATIVE.T/mm+mount
+        x=bounds([p for p in model if not p.sight])[1][0]-2/mm
+        # 0.9 mm peg beyond the objective, displaced from the central ray.
+        peg=Part(solid((x,c[1]-2.9/mm,c[2]+2/mm,x+1/mm,c[1]-2/mm,c[2]+2.9/mm)),
+                 '#000000',label='off-axis counterexample')
+        obstructed=model+[peg]
+        self.assertEqual(line_blockers(obstructed,c,mount[0]-d['rear']/mm),[])
+        actual=weapon_aperture_clearance(obstructed,d,mount,mm)
+        self.assertGreater(actual['free_fraction'],0)
+        self.assertLess(actual['free_fraction'],1)
+        bad=make_spec(m,obstructed,n)['sight']['sight_spec']
+        self.assertFalse(bad['line_clear_of_weapon'])
+        self.assertEqual(bad['aperture_clearance'],actual)
+        self.assertEqual(bad['blocked_by'],[f'p{len(model):03d}'])
+
+    def test_tidal_comb_old_mount_reproduces_810_blocked_rays(self):
+        n,m,model=next(row for row in self.rows if row[0]==3 and row[1]['variant']=='K')
+        from spec import LENGTHS_M
+        lo,hi=bounds([p for p in model if not p.sight]);mm=LENGTHS_M[m['slug']]/(hi[0]-lo[0])*1000
+        old_mount=np.asarray(m['sight_mount_model'])-np.array([0,22/mm,0])
+        old=weapon_aperture_clearance(model,DESIGNS[n],old_mount,mm)
+        self.assertEqual((old['free_rays'],old['rays']),(879,1689))
+        self.assertEqual(old['blocked_by'],['p001'])
+        self.assertAlmostEqual(m['vs_riser_m'],.033)
+
+    def test_weapon_rays_use_geometry_and_start_at_rear_window(self):
+        # A hollow sight frame used as a weapon obstacle: its bbox overlaps
+        # the entire opening, but the real bore must remain transparent.
+        d=DESIGNS[3];shell=deepcopy(next(p for p in build_sight(3) if p.label=='Gehäuse'))
+        shell.sight=False
+        for f in shell.faces:
+            f.vertices=f.vertices@TO_NATIVE.T;f.normal=TO_NATIVE@f.normal
+        self.assertTrue(weapon_aperture_clearance([shell],d,np.zeros(3),1)['line_clear_of_weapon'])
+        c=np.array(d['reticle'])@TO_NATIVE.T
+        rear=-d['rear']
+        behind=Part(solid((rear-5,c[1]-1,c[2]-1,rear-4,c[1]+1,c[2]+1)),'#000000')
+        within=Part(solid((rear+1,c[1]-1,c[2]-1,rear+2,c[1]+1,c[2]+1)),'#000000')
+        self.assertTrue(weapon_aperture_clearance([behind],d,np.zeros(3),1)['line_clear_of_weapon'])
+        self.assertFalse(weapon_aperture_clearance([within],d,np.zeros(3),1)['line_clear_of_weapon'])
 
     def test_no_opaque_sight_volume_penetrates_weapon(self):
         from sight_validation import solids_overlap

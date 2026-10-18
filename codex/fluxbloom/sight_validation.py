@@ -35,6 +35,44 @@ def aperture_blockers(parts,design):
     return len(points),blocked
 
 
+def weapon_aperture_clearance(parts,design,mount,mm):
+    """Trace the complete opening from the eye/rear rim towards target -Y.
+
+    Inputs use native model coordinates (+X forward); mm is mm/model unit.
+    Bounds only reject impossible candidates. Every hit is on an actual face,
+    including rays beginning inside an opaque solid. Sight parts are excluded.
+    """
+    from eng import bounds
+    mount=np.asarray(mount)
+    aperture=aperture_rays(design)
+    points=np.column_stack((mount[1]-aperture[:,1]/mm,mount[2]+aperture[:,0]/mm))
+    rear=max(design['rear'],design['eye'][1] if design['eye'] is not None else design['rear'])
+    start=mount[0]-rear/mm
+    weapons=[(i,p) for i,p in enumerate(parts) if not p.sight and p.material!='glass']
+    end=max([start]+[bounds([p])[1][0] for _,p in weapons])+1000/mm
+    blocked=np.zeros(len(points),bool);blockers=[]
+    for index,part in weapons:
+        lo,hi=bounds([part])
+        candidate=np.all((points>=lo[1:]-1e-9)&(points<=hi[1:]+1e-9),axis=1)
+        if hi[0]<start or lo[0]>end or not candidate.any():continue
+        sample=points[candidate];hit=np.zeros(len(sample),bool);winding=np.zeros(len(sample))
+        for face in part.faces:
+            nx=face.normal[0]
+            if abs(nx)<1e-9:continue
+            inside=inside_many(sample,face.vertices[:,1:])
+            x=face.vertices[0,0]-(sample-face.vertices[0,1:])@face.normal[1:]/nx
+            hit|=inside&(x>=start-1e-9)&(x<=end+1e-9)
+            winding+=inside*(x<start)*(-np.sign(nx))
+        hit|=winding>0
+        if hit.any():
+            blocked[np.flatnonzero(candidate)[hit]]=True
+            blockers.append(f'p{index:03d}')
+    total=len(points);free=int((~blocked).sum())
+    return {'rays':total,'free_rays':free,'free_fraction':free/total,
+            'blocked_by':blockers,'line_clear_of_weapon':not bool(blocked.any()),
+            'step_m':.0005,'margin_m':.0003}
+
+
 def _ray_intervals(part,points):
     events=[]
     for face in part.faces:

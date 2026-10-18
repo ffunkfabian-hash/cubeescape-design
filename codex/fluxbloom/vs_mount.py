@@ -4,6 +4,7 @@ import numpy as np
 from eng import bounds, prism
 from vs_models import DESIGNS, build_sight
 from skins import channel_for, channel_palette
+from sight_validation import weapon_aperture_clearance
 
 SLUGS=('pistol','assault','impulse','shotgun','sniper','smg','fusion','trace','rocket')
 # target-mm to native model: +X forward, +Y down, +Z left.
@@ -15,7 +16,7 @@ def overlaps(a,b,tol=1e-7):
 
 
 def line_blockers(model,center,start):
-    """Exact polygon intersections, ray parallel to native +X, to the muzzle."""
+    """Diagnostic centre ray only; clearance requires weapon_aperture_clearance."""
     from authoring import _inside
     c=np.asarray(center);found=[]
     for p in model:
@@ -70,7 +71,6 @@ def mount_sight(meta,model):
     local_lo,local_hi=bounds(local)
     # Never alter longitudinal reference length when adding the optic.
     seat[0]=np.clip(seat[0],lo[0]+local_hi[1]/mm,hi[0]+local_lo[1]/mm)
-    base=(np.array(d['reticle'])@TO_NATIVE.T)/mm+seat
     # Conservative envelope collision clearance, rounded to 0.5 mm + 0.5 mm air.
     # At zero height the 14 mm clamp slot is checked separately against rail width.
     rise=0.
@@ -86,11 +86,11 @@ def mount_sight(meta,model):
             rise=max(rise,(a[1][1]-b[0][1])*mm+.5)
     if rise>0:rise=math.ceil(rise*2-1e-9)/2
     while True:
-        reticle=base-np.array([0,rise/mm,0])
-        blockers=line_blockers(model,reticle,seat[0]-d['rear']/mm)
-        if not blockers:break
+        mount=seat-np.array([0,rise/mm,0])
+        clearance=weapon_aperture_clearance(model,d,mount,mm)
+        if clearance['line_clear_of_weapon']:break
         rise+=.5
-        if rise>500:raise ValueError('No free sightline')
+        if rise>500:raise ValueError('No free sight aperture')
     mount=seat-np.array([0,rise/mm,0])
     for p in local:
         if p.material!='glass':

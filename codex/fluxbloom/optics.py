@@ -28,10 +28,12 @@ def _bow_optics(meta,model):
     model.append(_block(aperture_x-2,aperture_x+2,floor-3,floor-1,z-half,z+half,metal,'Fenstersockel'))
     cy=floor-(height+3)/2
     pin=_block(aperture_x-1,aperture_x+1,cy,floor-1,z-.6,z+.6,metal,'Visierpin')
-    dot=_block(aperture_x-1.25,aperture_x-1.05,cy-.7,cy+.7,z-.7,z+.7,accent,'Leuchtpunkt','MT_Emission',True)
+    pin_y=(cy+floor-1)/2
+    dot=_block(aperture_x-1.25,aperture_x-1.05,pin_y-.7,pin_y+.7,z-.7,z+.7,accent,'Leuchtpunkt','MT_Emission',True)
     dot.sight_window=True;model.extend([pin,dot])
     meta['sight_type']='pin';meta['sight_frame']='open'
-    meta['sight_mount_model']=[float(x),float(top),float(rail_z)]
+    # Bow Socket_Sight is derived from the complete assembly, not the rail.
+    meta.pop('sight_mount_model',None)
     return model
 
 
