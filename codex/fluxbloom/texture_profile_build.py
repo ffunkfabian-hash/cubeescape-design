@@ -26,6 +26,16 @@ CACHE = Path.home()/'Library/Caches/CubeEscapeDesign/codex-texturprofil'
 BASELINE = Path.home()/'Library/Caches/CubeEscapeDesign/vs-reference/out/full'
 DATA = HERE/'tests/data/texture-profile-validation.json'
 
+# One CLI rounding step (measure_style_probes.measure): width/border 1%,
+# interior lines 0.1%. Even-sized medians can fall halfway between CLI steps;
+# Chromium and librsvg may therefore differ without a meaningful style change.
+STYLE_MEDIAN_TOLERANCE = dict(breite=.01, rand_dunkel=.01, innenlinien=.001)
+
+
+def assert_style_median(family, median, expected):
+    assert all(abs(median[k]-v) <= STYLE_MEDIAN_TOLERANCE[k]+1e-12
+               for k,v in expected.items()), (family,median)
+
 
 def profile_text_bounds(document):
     """Check glyph extents against each tile with the bundled font metrics.
@@ -124,7 +134,7 @@ def main():
             median = {key:float(np.median([r[key] for r in subset]))
                       for key in ('breite','rand_dunkel','innenlinien')}
             expected = dict(breite=.77,rand_dunkel=.53,innenlinien=.078) if letter=='A' else dict(breite=.75,rand_dunkel=.52,innenlinien=.069)
-            assert all(abs(median[k]-v)<1e-9 for k,v in expected.items()), (family,median)
+            assert_style_median(family, median, expected)
             summaries[family]['median'] = median
     for label, entries, cell in (('profiles',profiles,(630,345)), ('materials',material_fields,(630,930))):
         canvas = Image.new('RGB',(cell[0]*3,((len(entries)+2)//3)*cell[1]),'#0E1622')

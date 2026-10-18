@@ -7,6 +7,9 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
+import xml.etree.ElementTree as ET
+
+from PIL import ImageFont
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from texture_profile import profile, TILES
@@ -14,9 +17,52 @@ from texture_catalog import catalog
 from collections_codex import load_collection
 from weapon_spec import make_spec, schema_path
 from sheet import build_sheet
+from profile_panel import panel
+from texture_profile_build import assert_style_median, profile_text_bounds, STYLE_MEDIAN_TOLERANCE
 
 
 class TextureProfileTests(unittest.TestCase):
+    def test_style_median_accepts_chromium_rounding_but_rejects_larger_changes(self):
+        expected = dict(breite=.77, rand_dunkel=.53, innenlinien=.078)
+        self.assertEqual(STYLE_MEDIAN_TOLERANCE, dict(breite=.01, rand_dunkel=.01, innenlinien=.001))
+        assert_style_median('parallax', dict(expected, innenlinien=.0785), expected)
+        fluxbloom = dict(breite=.75, rand_dunkel=.52, innenlinien=.069)
+        assert_style_median('fluxbloom', fluxbloom, fluxbloom)
+        for key, step in STYLE_MEDIAN_TOLERANCE.items():
+            for direction in (-1, 1):
+                with self.subTest(metric=key, direction=direction):
+                    assert_style_median('parallax', dict(expected, **{key:expected[key]+direction*step}), expected)
+                    with self.assertRaises(AssertionError):
+                        assert_style_median('parallax', dict(expected, **{key:expected[key]+direction*step*1.01}), expected)
+
+    def test_decal_glyph_clearance_and_profile_tile_bounds_in_both_layouts(self):
+        from texture_profile import ROWS
+        fonts = Path(__file__).resolve().parents[1]/'fonts'
+        font_files = dict(title='ChakraPetch-Regular.ttf', mono='JetBrainsMono-Regular.ttf', body='Barlow-Regular.ttf')
+        colors = dict(accent='#FF8A2A', housing='#AAAAAA')
+        for compact, viewport in ((False, (0,0,1220,240)), (True, (0,0,591,285))):
+            for tid in ROWS:
+                with self.subTest(compact=compact, weapon=tid):
+                    svg, _ = panel(profile(tid), viewport, compact, colors)
+                    document = '<svg xmlns="http://www.w3.org/2000/svg">'+svg+'</svg>'
+                    self.assertGreater(profile_text_bounds(document), 0)
+                    root = ET.fromstring(document)
+                    ns = {'s':'http://www.w3.org/2000/svg'}
+                    tile = root.find('.//s:g[@data-profile-tile="decals"]', ns)
+                    bounds = []
+                    for text in tile.findall('s:text', ns):
+                        if text.text == 'ID':  # The swatch occupies a separate column.
+                            continue
+                        size = int(text.attrib['font-size'])
+                        self.assertGreaterEqual(size, 11)
+                        font = ImageFont.truetype(str(fonts/font_files[text.attrib['class']]), size)
+                        _,top,_,bottom = font.getbbox(text.text, anchor='ls')
+                        y = float(text.attrib['y'])
+                        bounds.append((y+top, y+bottom))
+                    # Label → ID(s) → caption, measured at glyph edges in both layouts.
+                    for first, second in zip(bounds, bounds[1:]):
+                        self.assertGreaterEqual(second[0]-first[1], 4, (compact, tid, bounds))
+
     def test_nine_type_targets_and_bow_exclusion(self):
         expected = {
             'pistol': ('painted', 'brushed', 'orange', 'subtle', ['symbol_diamond','number_01']),

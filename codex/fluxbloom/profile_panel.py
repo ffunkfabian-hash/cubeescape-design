@@ -63,8 +63,16 @@ def panel(prof, viewport, compact, colors):
         if key == 'decals':
             result += '<rect x="8" y="8" width="86" height="36" rx="5" fill="#1A2A3B"/>'
             result += _text(51, 34, 'ID', 21, colors['accent'], 'mono')
+            # Bundled glyphs need >=4px clearance: label -> IDs -> caption.
+            # Keep single-ID normal tiles intact except where their taller
+            # glyphs need one extra pixel below the label (research already fits).
+            multiple_ids = len(e['toolgen']) > 1
+            id_size = 11 if compact else (13 if multiple_ids else 15)
+            id_y = 32 if compact else (33 if multiple_ids else
+                                      (35 if e['toolgen'] == ['research'] else 36))
+            id_leading = 15 if compact else 16
             for n, identifier in enumerate(e['toolgen']):
-                result += _text(104, 35+n*13, identifier, 11 if compact else 15, family='mono')
+                result += _text(104, id_y+n*id_leading, identifier, id_size, family='mono')
         else:
             color = colors['housing'] if key == 'edge_wear' else colors.get(key, colors['accent'])
             if key == 'energy':
@@ -74,7 +82,10 @@ def panel(prof, viewport, compact, colors):
             result += _text(104, 40, sub, 17 if compact else 21)
         for n, line in enumerate(textwrap.wrap('„'+e['text_de']+'“', width=31 if compact else 39,
                                                 break_long_words=False, break_on_hyphens=False)):
-            result += _text(8, 64+n*20, line, 17 if compact else 19, '#C7D1DC')
+            caption_y = 66 if compact and key == 'decals' else 64
+            if not compact and key == 'decals' and multiple_ids:
+                caption_y = 69
+            result += _text(8, caption_y+n*20, line, 17 if compact else 19, '#C7D1DC')
         result += '</g>'
         records.append(dict(key=key, viewport=[tx,ty,tw,th]))
     return result+'</g>', records
