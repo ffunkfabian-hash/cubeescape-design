@@ -42,6 +42,24 @@ class SightSeriesTests(unittest.TestCase):
             self.assertEqual(d['shape'],window['shape'])
             np.testing.assert_allclose([0,d['rear']*.001,d['reticle'][2]*.001],ref['anchors']['Socket_Sight']['position_m'],atol=.0005)
 
+    def test_eyecup_opening_follows_ocular_radius_not_bore(self):
+        for n in (3,5):
+            d=DESIGNS[n];parts={p.label:p for p in build_sight(n)}
+            ref=self.refs[n]['tube'] if 'tube' in self.refs[n] else None
+            eye_spec=d['eye_radius']*.001
+            if ref:self.assertAlmostEqual(ref['eye_radius_m'],eye_spec,places=6)
+            glass=np.array(bounds([parts['Okularglas']]))
+            glass_r=(glass[1][0]-glass[0][0])/2
+            v=parts['Augenmuschel'].vertices
+            radial=np.hypot(v[:,0]-d['reticle'][0],v[:,2]-d['reticle'][2])
+            inner=radial[radial<radial.max()-1].min()
+            with self.subTest(sight=n):
+                self.assertGreaterEqual(inner,glass_r-1e-6)
+                self.assertGreaterEqual(inner,d['eye_radius']-1e-6)
+                self.assertGreater(inner,d['bore']+.3)
+                np.testing.assert_allclose(np.array(bounds([parts['Augenmuschel']]))*.001,
+                    self.refs[n]['parts'][[q['label'] for q in self.refs[n]['parts']].index('Augenmuschel')]['bounds_m'],atol=.0005)
+
     def test_all_reference_anchors_and_window_centres_half_mm(self):
         for n,m,parts in self.rows:
             if n==10:continue
