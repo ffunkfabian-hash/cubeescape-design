@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.2"
+  "claude_version": "0.7"
  },
  "sheet": {
   "id": "KJ10",
@@ -825,8 +825,21 @@
    [0.0167, -0.1022, 0.3338]
   ],
   "anchor": "Socket_Sight",
-  "window_geometry": null,
-  "window_geometry_note": "kein Fensterelement im Modell (Fenster nur in Bezeichnung/Text)"
+  "window_geometry": {
+   "elements": [
+    {
+     "type": "decal",
+     "decal": 14,
+     "part": "p29",
+     "emissive": true,
+     "view_axis_m": [0.0, -1.0, 0.0],
+     "center_m": [0.0, -0.1022, 0.2983],
+     "face_fraction": 0.066
+    }
+   ],
+   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
+  },
+  "window_geometry_note": null
  },
  "decals": [
   {
@@ -1000,25 +1013,13 @@
   {
    "part": "p29",
    "channel": "MT_Emission",
-   "surface": "left",
+   "surface": "back",
    "emissive": true,
    "color": "#9EE7FF",
    "area_m2": 0.0001567,
    "bounds_m": [
-    [0.0167, -0.1273, 0.292],
-    [0.0167, -0.1147, 0.3046]
-   ]
-  },
-  {
-   "part": "p29",
-   "channel": "MT_Emission",
-   "surface": "right",
-   "emissive": true,
-   "color": "#9EE7FF",
-   "area_m2": 0.0001567,
-   "bounds_m": [
-    [-0.0167, -0.1273, 0.292],
-    [-0.0167, -0.1147, 0.3046]
+    [-0.0063, -0.1022, 0.292],
+    [0.0063, -0.1022, 0.3046]
    ]
   }
  ],
@@ -2738,7 +2739,7 @@
   "skins": 5,
   "parts": 32,
   "parts_explicit_channel": 0,
-  "decals": 16,
+  "decals": 15,
   "channels_with_other_colors": {}
  }
 }

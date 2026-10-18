@@ -67,11 +67,14 @@ def recolor(m,pal,role=None):
         return dark
     m2=copy.deepcopy(m)
     for P in m2.parts:
+        if P.get('glass'):continue   # Glas der Visier-Serie behält seine Tönung (claude-0.7)
         P['col']=mp(P['col'],P['emit'])
         P['dec']=[(a,b,c,mp(d,e),e) for a,b,c,d,e in P['dec']]
     return m2
 
+VS_MATERIAL={'painted':'lack','brushed':'brushed','rubber':'rubber','lit':'light','glass':'glass'}
 def material_of(P):
+    if P.get('material'):return VS_MATERIAL[P['material']]   # Teile der Visier-Serie tragen ihr Material (vsmodels, claude-0.7)
     if P['emit']:return 'light'
     lb=P.get('label') or ''
     if lb in GRIP_LABELS:return 'rubber'
@@ -84,7 +87,7 @@ def material_of(P):
 
 
 # ---------- Cube-Escape-Farbkanäle (Spec-Export, claude-0.2) – das Blatt liest das nicht
-MATERIAL_IDS={'lack':'painted','brushed':'brushed','rubber':'rubber','plastic':'matte','light':'lit'}
+MATERIAL_IDS={'lack':'painted','brushed':'brushed','rubber':'rubber','plastic':'matte','light':'lit','glass':'glass'}
 ROLE_CHANNEL={'light':'MT_Primary','lightx':'MT_Secondary','accd':'MT_Accent','mid':'MT_Secondary','dark':'MT_Detail'}
 def preferred_channel(P,role):
     """Bevorzugter Kanal eines Teils aus Rolle (wie die Farbvarianten des Blatts) und Material."""
@@ -117,12 +120,20 @@ def assign_channels(m,role,area,decal_area,swatches=()):
     def add(key,a,ref):g=groups.setdefault(key,[0,[],key[2]]);g[0]+=a;g[1].append(ref)
     owner={}
     for i,P in enumerate(m.parts):
-        if P.get('channel'):pch[i]=(P['channel'],'explicit');owner.setdefault(P['channel'],P['col'])
+        if P.get('channel'):
+            pch[i]=(P['channel'],'explicit')
+            if not P.get('glass'):owner.setdefault(P['channel'],P['col'])   # Glas (Tönung) belegt keine Kanalfarbe
     by_color={}
+    vs_color={}
     for i,P in enumerate(m.parts):
-        if pch[i]:continue
+        if pch[i]:
+            if P.get('vs_group') and not P['emit'] and not P.get('glass'):
+                vs_color.setdefault(P['col'],{}).setdefault(pch[i][0],0);vs_color[P['col']][pch[i][0]]+=area(P)
+            continue
         pc=preferred_channel(P,role);add((P['col'],pc,bool(P['emit'])),area(P),('p',i))
         if not P['emit']:by_color.setdefault(P['col'],{}).setdefault(pc,0);by_color[P['col']][pc]+=area(P)
+    # Visier-Serie (claude-0.7): Aufkleber in einer Farbe, die nur das Visier trägt, nehmen dessen Kanal (wie bis 0.6 beim alten Visier)
+    for c,v in vs_color.items():by_color.setdefault(c,v)
     for i,P in enumerate(m.parts):
         host=pch[i][0] if pch[i] else preferred_channel(P,role)
         for k,d in enumerate(P['dec']):
@@ -170,10 +181,15 @@ def channel_palettes(full,gun_m,palette,pill,channels):
     for vid,vn,pal in zip(VARIANT_IDS,names,pals):
         mm=full if vid=='base' else recolor(full,pal,role=role)
         acc={ch:{} for ch in channels}
+        gacc={}
         for i,P in enumerate(mm.parts):
+            if P.get('glass'):   # Glas: Tönung des Visiers, Kanalfarbe nur, wenn sonst nichts auf dem Kanal liegt
+                gacc.setdefault(pch[i][0],{});gacc[pch[i][0]][P['col']]=gacc[pch[i][0]].get(P['col'],0)+part_area(P);continue
             a=part_area(P);acc[pch[i][0]][P['col']]=acc[pch[i][0]].get(P['col'],0)+a
             for k,dd in enumerate(P['dec']):
                 da=area2(dd[2]);acc[dch[i][k]][dd[3]]=acc[dch[i][k]].get(dd[3],0)+da
+        for ch,g in gacc.items():
+            if not acc[ch]:acc[ch]=g
         chans={};dev={}
         for ch in channels:
             if not acc[ch]:chans[ch]=None;continue

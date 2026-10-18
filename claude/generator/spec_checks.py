@@ -16,41 +16,15 @@ TOL=1e-3            # m
 GRIP_LABELS=('Griff','Pistolengriff','Griffstück')
 PROJECTILE_LABELS=('Rakete',)
 
-# Bekannte Querfenster (Stand 17.10.2026, claude-0.5.2): Blatt -> Schlüssel der Fensterelemente (dNN = decals[NN], pNN = Teil), deren
-# Funktionsfläche quer zur Laufachse liegt. Generatorfehler der Blätter (Öffnungen und Scheiben in der Seitenansicht gezeichnet und
-# durch die Breite extrudiert); wird mit der Umstellung der Waffenblätter auf die Visier-Serie VS01–VS09 behoben (Entscheidung des
-# Nutzers 17.10.2026: „Test jetzt, Fix mit Umstellung“). Der Test verlangt genau diese Menge: ein neues Querfenster macht ihn rot,
-# ein behobenes ebenso (dann den Eintrag entfernen).
+# Bekannte Querfenster: Blatt -> Schlüssel der Fensterelemente (dNN = decals[NN], pNN = Teil), deren Funktionsfläche quer zur Laufachse
+# liegt. Stand 17.10.2026 (claude-0.5.2): 23 Blätter (Generatorfehler: Öffnungen und Scheiben in der Seitenansicht gezeichnet und durch
+# die Breite extrudiert). Behoben in claude-0.7 (18.10.2026): Waffen 1–9 tragen das Standardvisier der Visier-Serie VS01–VS09
+# (Glasscheiben quer zur Visierlinie), die Bogen-Pins KD10, KF10 und KJ10 leuchten nach vorn. Die Liste ist leer; der Test bleibt und
+# verlangt genau diese Menge: ein neues Querfenster macht ihn rot.
 KNOWN_CROSS_SINCE='17.10.2026'
-KNOWN_CROSS_WINDOWS={}   # wird unten aus der Liste befüllt
-# 19 aus der Sichtprüfung 0.5.1, dazu KC02 (Diopter-Öffnung), KH03 (hintere Lochblende), KD10 und KF10 (Bogen-Pins)
-_KNOWN='''
-KC02 d33 d34
-KC09 p19
-KD01 d36 d37
-KD02 d38 d39
-KD03 d40 d41
-KD04 d34 d35
-KD07 d20 d21
-KD10 d14 d15
-KF06 d20 d21
-KF10 d5 d6 p34
-KG02 d38 d39
-KG04 d18 d19
-KH01 d93 d94 d95 d96
-KH02 d107 d108 d109 d110
-KH03 d61 d62
-KH04 d83 d84 p17 p18
-KH09 d48
-KJ01 d30 d31
-KJ02 d32 d33
-KJ03 d20 d21
-KJ06 d28 d29
-KJ07 d18 d19
-KJ09 d6 d7
-'''
-def _parse_known(txt):return {l.split()[0]:sorted(l.split()[1:]) for l in txt.strip().splitlines()}
-KNOWN_CROSS_WINDOWS.update(_parse_known(_KNOWN))
+KNOWN_CROSS_FIXED='18.10.2026 (claude-0.7)'
+KNOWN_CROSS_WINDOWS={}
+JAW_M=0.003         # Klemmbacken der Halterung (vsmodels.mount) reichen 3 mm unter Socket_Mount, um die Schiene
 
 def _inside(p,b,tol=TOL,axes=(0,1,2)):return all(b[0][a]-tol<=p[a]<=b[1][a]+tol for a in axes)
 def _ext(b):return [b[1][a]-b[0][a] for a in range(3)]
@@ -126,12 +100,41 @@ def direction_problems(sp):
         if sa is None:pr.append('Socket_Sight fehlt')
         else:
             if not sa[2]>h[2]:pr.append(f'Socket_Sight nicht über dem Griff (z={sa[2]})')
-            if sb[0][2]<sa[2]-TOL:pr.append('Visierbaugruppe reicht unter Socket_Sight')
+            if sb[0][2]<sa[2]-TOL-(JAW_M if s.get('sight_spec') else 0):pr.append('Visierbaugruppe reicht unter Socket_Sight')
         if not c[2]>m[2]:pr.append(f'Visier nicht über der Mündungsachse (Mitte z={round(c[2],4)}, Mündung z={m[2]})')
         if s['mount_side']=='left' and not c[0]>m[0]+TOL:pr.append('Visier mount_side left, liegt aber nicht links (+X)')
         if s['mount_side']=='right' and not c[0]<m[0]-TOL:pr.append('Visier mount_side right, liegt aber nicht rechts (−X)')
     # 4. Visierfenster: Funktionsfläche (Scheibe, Öffnung, Ring) mit Durchsicht entlang −Y, über dem Griff
     pr+=window_problems((s.get('window_geometry') or {}).get('elements',[]),parts,sp['decals'],hand_z=h[2])
+    return pr
+
+def vs_problems(sp,vs_spec=None):
+    """Visier der Visier-Serie auf dem Blatt (claude-0.7): Waffen 1–9 tragen das Standardvisier ihres Typs, Socket_Mount liegt über
+    Socket_Sight (nur angehoben um riser_m), Fadenkreuz und Okular in derselben Lage wie im Sight-Spec, das Fenster ist Glas, die
+    Visierlinie frei von der Waffe. vs_spec: VSnn.spec.json (sonst aus OUT gelesen)."""
+    tid=sp['weapon']['toolgen_id'];s=sp['sight'];v=s.get('sight_spec')
+    if tid not in CE_SIGHTS:return [] if v is None else ['Bogen mit Sight-Spec']
+    nr=CE_SIGHTS[tid][0];pr=[]
+    if v is None:return [f'kein Visier der Visier-Serie (VS{nr:02d})']
+    if v['id']!=f'VS{nr:02d}':pr.append(f'{v["id"]} statt VS{nr:02d}')
+    if v['file']!=f'{v["id"]}.spec.json' or v['format']!='cubeescape-design/sight-spec':pr.append('Verweis auf den Sight-Spec (file/format) falsch')
+    if vs_spec is None:
+        with open(os.path.join(OUT,v['file']),encoding='utf-8') as f:vs_spec=json.load(f)
+    if s['type']!=vs_spec['sight']['type'] or s['frame']!=vs_spec['sight']['frame']:pr.append('Typ/Rahmen weichen vom Sight-Spec ab')
+    sa=sp['anchors']['Socket_Sight']['position_m'];mo=v['socket_mount_m']
+    if any(abs(mo[a]-sa[a])>TOL for a in (0,1)) or abs(mo[2]-sa[2]-v['riser_m'])>TOL:pr.append('Socket_Mount liegt nicht über Socket_Sight (+ riser_m)')
+    va=vs_spec['anchors']
+    for key,k2 in (('socket_reticle_m','Socket_Reticle'),('socket_eye_m','Socket_Eye')):
+        if (v[key] is None)!=(va[k2] is None):pr.append(f'{k2} fehlt oder zu viel');continue
+        if v[key] is None:continue
+        want=[va[k2]['position_m'][a]-va['Socket_Mount']['position_m'][a]+mo[a] for a in range(3)]
+        if any(abs(v[key][a]-want[a])>TOL for a in range(3)):pr.append(f'{k2} weicht vom Sight-Spec ab')
+    parts={p['id']:p for p in sp['parts']}
+    gl=[p for p in s['parts'] if parts[p]['material']=='glass']
+    els=s['window_geometry']['elements'] if s['window_geometry'] else []
+    if not gl or sorted(e['part'] for e in els)!=sorted(gl):pr.append('Fenster sind nicht genau die Glasscheiben')
+    if not v['line_clear_of_weapon']:pr.append('Waffe ragt in die Visierlinie: '+', '.join(v['blocked_by']))
+    if abs(s['bounds_m'][1][1]-s['bounds_m'][0][1]-vs_spec['dimensions_m']['length'])>TOL:pr.append('Visierlänge weicht vom Sight-Spec ab')
     return pr
 
 # Zielbild Cube Escape, Docs/EQUIPMENT.md › „Visiere je Waffe“ (Stand CE 8ae12b15, 17.10.2026): Nr., Visier, Durchsicht.
@@ -174,13 +177,16 @@ def main(argv):
     res={}
     for s in sheetmodels.SHEETS:
         with open(os.path.join(OUT,f'{s}.spec.json'),encoding='utf-8') as f:sp=json.load(f)
-        res[s]=dict(direction=direction_problems(sp),sight_hints=sight_target_hints(sp),
+        res[s]=dict(direction=direction_problems(sp),sight_hints=sight_target_hints(sp),vs=vs_problems(sp),
                     window_gap=sp['sight']['window_geometry_note'] if sp['sight']['window'] not in (None,'none') and not sp['sight']['window_geometry'] else None)
     if '--json' in argv:print(json.dumps(res,ensure_ascii=False,indent=1));return 0
     print('Richtung (Fehler, außer bekannte):')
     for s,r in res.items():
         known=known_ok(s,r['direction']) and r['direction']
         for p in r['direction']:print(f'  {s}: {p}'+('  [bekannt]' if known else ''))
+    vs=[f'{s}: {p}' for s,r in res.items() for p in r['vs']]
+    print(f'Visier-Serie auf den Blättern (vs_problems): {len(vs)} Befunde')
+    for p in vs:print('  '+p)
     hints=[h for r in res.values() for h in r['sight_hints']]
     print(f'Visier gegen CE-Zielbild ({CE_SOURCE}): {len(hints)} Hinweise')
     for h in hints:print('  '+h)

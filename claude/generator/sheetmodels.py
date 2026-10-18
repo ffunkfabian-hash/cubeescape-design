@@ -5,12 +5,13 @@ Liefert dasselbe Wörterbuch, das views.card() nach reg/<fid>.pkl schreibt und b
 Die Bauwege spiegeln die Bauskripte (build_v01, build_c25, build_c, build_d15, build_d, build_f15, build_f610,
 build_g15, build_g610, build_h15, build_h610); Varianten mit lib='jlib' (ab J) haben kein Kartenskript, ihr Modell kommt direkt aus jlib; deren Konstanten (INFO, D, Aufruf von card) werden per ast gelesen,
 damit die Skripte unverändert bleiben und beim Import nichts bauen.
+Ab claude-0.7 ersetzt vsmount.apply() das Visier der Waffen 1–9 durch das Standardvisier der Visier-Serie VS01–VS09.
 """
 from cepaths import E3D
 import ast,importlib,os,re,sys
 sys.path.insert(0,E3D)
 from eng import copy_channels
-import variants
+import variants,vsmount
 
 VARS=variants.LETTERS
 NUMS=[f'{i:02d}' for i in range(1,11)]
@@ -102,4 +103,4 @@ def load(sheet):
     mm=re.search(r'VARIANTE\s+([A-Z])\s*·\s*„([^“]+)“',d['sub'])
     assert mm.group(1)==v,(sheet,d['sub'])
     d['V']=v;d['nick']=mm.group(2).title();d['sheet']=sheet
-    return d
+    return vsmount.apply(d)   # Visier der Visier-Serie VS01–VS09 (claude-0.7), Bögen unverändert

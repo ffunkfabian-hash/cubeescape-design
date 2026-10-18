@@ -3,8 +3,9 @@
 Stand claude-0.6 (17.10.2026). Je Visier der Waffen 1–9 gibt es ein Blatt `VSnn.dc.html` und einen Steckbrief `VSnn.spec.json` in
 `claude/output/sheets/`. Beide entstehen aus **einem** Modell je Visier (`claude/generator/vsmodels.py`), Ansichten und Daten sind
 deshalb deckungsgleich. Die Serie ist das Visier-Zielbild (Entscheidung des Nutzers 17.10.2026, [ENTSCHEIDUNGEN.md](ENTSCHEIDUNGEN.md)).
-Die 60 Waffenblätter und ihr Weapon-Spec ([weapon-spec.md](weapon-spec.md)) sind unverändert. Eine eigene Sitzung stellt sie danach auf
-die Serie um.
+Seit claude-0.7 tragen die Waffenblätter 1–9 das Standardvisier ihres Typs aus dieser Serie (dasselbe Modell, Farben der Waffe); der
+Weapon-Spec verweist mit `sight.sight_spec` auf `VSnn.spec.json` ([weapon-spec.md › Visier der Visier-Serie](weapon-spec.md#visier-der-visier-serie)).
+Der Sight-Spec selbst ist unverändert (claude-0.6).
 
 - Schema: [sight-spec.schema.json](sight-spec.schema.json). Test: `python3 claude/generator/test_sight_spec.py` (ohne numpy).
 - Erzeugen: `python3 claude/generator/export_sight.py` (`--check` vergleicht nur). Blätter (Bildstufe, Mac, `heavy_lock`):

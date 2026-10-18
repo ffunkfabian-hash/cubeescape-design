@@ -2,6 +2,13 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.7
+- Waffenblätter 1–9 (C, D, F, G, H, J) tragen das Standardvisier ihres Typs aus der Visier-Serie VS01–VS09 (`vsmount.py`, Modell aus
+  `vsmodels.py`, Farben über die MT_-Kanäle der Waffe, Sitz auf der Visierschiene; 15 Blätter mit neuer Schiene, 5 mit Erhöhung).
+- Spec (additiv, format_version 1): `sight.sight_spec` (Verweis `VSnn.spec.json`, Lage, Erhöhung, Anker), `material: glass`; Typ/Rahmen aus der Serie.
+- Die 23 Querfenster sind behoben (`KNOWN_CROSS_WINDOWS` leer), Bogen-Pins fluchten entlang −Y, Visier-Hinweise 0; Test `VisierSerie`.
+- Bericht [claude/docs/versions/0.7.md](claude/docs/versions/0.7.md).
+
 ## claude-0.6
 - Visier-Serie VS01–VS09: je Waffe 1–9 ein Blatt im XL-Stil aus einem Modell (`vsmodels.py`, `vsheet.py`, `build_vs.py`): Isometrie,
   Seite/Oben/Rück mit Visierlinie und Ankern, Durchsicht im Spiel, vier Varianten, Fadenkreuze (nur Bild), Bausteine.

@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.2"
+  "claude_version": "0.7"
  },
  "sheet": {
   "id": "KH01",
@@ -57,11 +57,11 @@
   },
   "with_sight": {
    "length": 0.243,
-   "height": 0.1587,
-   "width": 0.0234,
+   "height": 0.1751,
+   "width": 0.0261,
    "bounds_m": [
-    [-0.0117, -0.2019, -0.0527],
-    [0.0117, 0.0411, 0.106]
+    [-0.0125, -0.2019, -0.0527],
+    [0.0136, 0.0411, 0.1224]
    ]
   }
  },
@@ -85,16 +85,16 @@
    "part": "p11"
   },
   "Socket_CenterOfMass": {
-   "position_m": [0.0, -0.0452, 0.0417],
-   "model": [359.45, 295.89, 0.0],
+   "position_m": [0.0, -0.0456, 0.0433],
+   "model": [360.23, 292.92, 0.01],
    "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert",
    "part": null
   },
   "Socket_Sight": {
-   "position_m": [0.0, -0.0471, 0.0846],
-   "model": [363.0, 218.5, 0.0],
-   "source": "Unterkante Mitte der Visierbaugruppe (montierte Lage)",
-   "part": null
+   "position_m": [0.0, -0.051, 0.0849],
+   "model": [370.0, 218.0, 0.0],
+   "source": "Oberkante der Visierschiene p09 unter der Mitte der Halterung (Socket_Mount von VS01)",
+   "part": "p09"
   }
  },
  "palette": [
@@ -112,17 +112,11 @@
     "MT_Secondary": "#E8B10C",
     "MT_Accent": "#1C1E22",
     "MT_Metal": "#3B3F45",
-    "MT_Energy": null,
+    "MT_Energy": "#1C1E22",
     "MT_Emission": null,
     "MT_Detail": "#3B3F45"
    },
    "other_colors": {
-    "MT_Accent": [
-     {
-      "color": "#7FC8E8",
-      "share": 0.017
-     }
-    ],
     "MT_Metal": [
      {
       "color": "#5A6068",
@@ -153,17 +147,11 @@
     "MT_Secondary": "#2B2E33",
     "MT_Accent": "#2B2E33",
     "MT_Metal": "#2B2E33",
-    "MT_Energy": null,
+    "MT_Energy": "#F28C28",
     "MT_Emission": null,
     "MT_Detail": "#2B2E33"
    },
    "other_colors": {
-    "MT_Accent": [
-     {
-      "color": "#F28C28",
-      "share": 0.017
-     }
-    ],
     "MT_Metal": [
      {
       "color": "#A3A7AD",
@@ -188,17 +176,11 @@
     "MT_Secondary": "#3A4452",
     "MT_Accent": "#3A4452",
     "MT_Metal": "#3A4452",
-    "MT_Energy": null,
+    "MT_Energy": "#22D3EE",
     "MT_Emission": null,
     "MT_Detail": "#3A4452"
    },
    "other_colors": {
-    "MT_Accent": [
-     {
-      "color": "#22D3EE",
-      "share": 0.017
-     }
-    ],
     "MT_Metal": [
      {
       "color": "#AEBBCA",
@@ -223,17 +205,11 @@
     "MT_Secondary": "#141518",
     "MT_Accent": "#141518",
     "MT_Metal": "#141518",
-    "MT_Energy": null,
+    "MT_Energy": "#FF5A36",
     "MT_Emission": null,
     "MT_Detail": "#141518"
    },
    "other_colors": {
-    "MT_Accent": [
-     {
-      "color": "#FF5A36",
-      "share": 0.017
-     }
-    ],
     "MT_Metal": [
      {
       "color": "#2C2F35",
@@ -250,6 +226,7 @@
   "MT_Secondary",
   "MT_Accent",
   "MT_Metal",
+  "MT_Energy",
   "MT_Detail"
  ],
  "parts": [
@@ -471,37 +448,253 @@
   },
   {
    "id": "p12",
-   "label": "Reflexvisier",
-   "channel": "MT_Accent",
-   "channel_source": "distributed",
-   "material": "matte",
-   "toolgen_material": "painted_matte",
-   "emissive": false,
-   "sight": true,
-   "color": "#1C1E22",
-   "area_m2": 0.001293,
-   "long_axis": "Y",
-   "bounds_m": [
-    [-0.0055, -0.0632, 0.0846],
-    [0.0055, -0.0311, 0.0915]
-   ],
-   "moving": null
-  },
-  {
-   "id": "p13",
-   "label": "Reflexvisier",
+   "label": "Halterung",
    "channel": "MT_Metal",
-   "channel_source": "role",
+   "channel_source": "explicit",
    "material": "brushed",
    "toolgen_material": "brushed",
    "emissive": false,
    "sight": true,
    "color": "#3B3F45",
-   "area_m2": 0.001931,
+   "area_m2": 0.001657,
    "long_axis": "Y",
    "bounds_m": [
-    [-0.0061, -0.0632, 0.0913],
-    [0.0061, -0.0311, 0.106]
+    [-0.01, -0.065, 0.0849],
+    [0.01, -0.037, 0.0909]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p13",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "emissive": false,
+   "sight": true,
+   "color": "#3B3F45",
+   "area_m2": 0.000258,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.007, -0.061, 0.0819],
+    [0.01, -0.041, 0.0849]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p14",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "emissive": false,
+   "sight": true,
+   "color": "#3B3F45",
+   "area_m2": 0.000258,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.01, -0.061, 0.0819],
+    [-0.007, -0.041, 0.0849]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p15",
+   "label": "Klemmschraube",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C1E22",
+   "area_m2": 7.4e-05,
+   "long_axis": "Z",
+   "bounds_m": [
+    [0.01, -0.0534, 0.0851],
+    [0.0126, -0.0486, 0.0899]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p16",
+   "label": "Gehäuse",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#E8B10C",
+   "area_m2": 0.002173,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.011, -0.066, 0.0909],
+    [0.011, -0.035, 0.0999]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p17",
+   "label": "Abdeckung",
+   "channel": "MT_Primary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#9AA1A9",
+   "area_m2": 0.000241,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.011, -0.056, 0.0924],
+    [0.0122, -0.038, 0.0979]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p18",
+   "label": "Abdeckung",
+   "channel": "MT_Primary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#9AA1A9",
+   "area_m2": 0.000241,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0122, -0.056, 0.0924],
+    [-0.011, -0.038, 0.0979]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p19",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C1E22",
+   "area_m2": 0.000202,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0125, -0.0635, 0.0994],
+    [0.0125, -0.0635, 0.1224]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p20",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C1E22",
+   "area_m2": 0.000202,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0125, -0.057, 0.0994],
+    [0.0125, -0.057, 0.1224]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p21",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C1E22",
+   "area_m2": 0.000573,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0125, -0.0635, 0.0994],
+    [0.0125, -0.057, 0.1224]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p22",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C1E22",
+   "area_m2": 0.000466,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.01, -0.0635, 0.1019],
+    [0.01, -0.057, 0.1199]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p23",
+   "label": "Glas",
+   "channel": "MT_Detail",
+   "channel_source": "explicit",
+   "material": "glass",
+   "toolgen_material": null,
+   "emissive": false,
+   "sight": true,
+   "color": "#3D9BEA",
+   "area_m2": 0.000798,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0106, -0.0605, 0.1013],
+    [0.0106, -0.0605, 0.1205]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p24",
+   "label": "Emitter",
+   "channel": "MT_Energy",
+   "channel_source": "explicit",
+   "material": "lit",
+   "toolgen_material": "energy_glass",
+   "emissive": true,
+   "sight": true,
+   "color": "#1C1E22",
+   "area_m2": 7e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0022, -0.046, 0.0999],
+    [0.0022, -0.041, 0.1013]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p25",
+   "label": "Bedienknopf",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C1E22",
+   "area_m2": 6.1e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.0122, -0.048, 0.0929],
+    [0.0136, -0.042, 0.0959]
    ],
    "moving": null
   }
@@ -565,67 +758,80 @@
   "present": true,
   "kind": "reflex",
   "window": "glass",
-  "source": "Bezeichnung Reflexvisier",
+  "source": "Visier-Serie VS01 (Kompaktes Reflex-Visier), Modell claude/generator/vsmodels.py",
   "modular": true,
   "mount_side": "top",
   "type": "reflex",
-  "type_source": "aus kind abgeleitet (bestehendes Blatt; Zielfernrohr am Scharfschützengewehr = sniper)",
-  "frame": "closed",
-  "frame_source": "Regel aus window nach Sichtprüfung 0.5.1 (glass closed, lens standard, open open, none null)",
+  "type_source": "Visier-Serie VS01 (Kompaktes Reflex-Visier): Standardvisier des Waffentyps (Entscheidung des Nutzers 17.10.2026 „Danach Waffenblätter umstellen“)",
+  "frame": "compact",
+  "frame_source": "Visier-Serie VS01 (Kompaktes Reflex-Visier)",
   "labels": [
-   "Reflexvisier"
+   "Abdeckung",
+   "Bedienknopf",
+   "Emitter",
+   "Gehäuse",
+   "Glas",
+   "Halterung",
+   "Klemmschraube",
+   "Rahmen"
   ],
   "parts": [
    "p12",
-   "p13"
+   "p13",
+   "p14",
+   "p15",
+   "p16",
+   "p17",
+   "p18",
+   "p19",
+   "p20",
+   "p21",
+   "p22",
+   "p23",
+   "p24",
+   "p25"
   ],
   "bounds_m": [
-   [-0.0061, -0.0632, 0.0846],
-   [0.0061, -0.0311, 0.106]
+   [-0.0125, -0.066, 0.0819],
+   [0.0136, -0.035, 0.1224]
   ],
   "anchor": "Socket_Sight",
   "window_geometry": {
    "elements": [
     {
-     "type": "decal",
-     "decal": 93,
-     "part": "p13",
+     "type": "part",
+     "decal": null,
+     "part": "p23",
      "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [0.0061, -0.0477, 0.0976],
-     "face_fraction": 0.4
-    },
-    {
-     "type": "decal",
-     "decal": 94,
-     "part": "p13",
-     "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [-0.0061, -0.0477, 0.0976],
-     "face_fraction": 0.4
-    },
-    {
-     "type": "decal",
-     "decal": 95,
-     "part": "p13",
-     "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [0.0061, -0.0477, 0.0976],
-     "face_fraction": 0.186
-    },
-    {
-     "type": "decal",
-     "decal": 96,
-     "part": "p13",
-     "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [-0.0061, -0.0477, 0.0976],
-     "face_fraction": 0.186
+     "view_axis_m": [0.0, -1.0, 0.0],
+     "center_m": [0.0, -0.0605, 0.1109]
     }
    ],
-   "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
+   "source": "Glasscheiben des Visiers als Funktionsfläche (wie Sight-Spec window_geometry); Achse aus der Geometrie"
   },
-  "window_geometry_note": null
+  "window_geometry_note": null,
+  "sight_spec": {
+   "id": "VS01",
+   "file": "VS01.spec.json",
+   "format": "cubeescape-design/sight-spec",
+   "variant": "Kanalfarben der Waffe (Basis-Palette des Blatts)",
+   "mount": "Socket_Mount des Sight-Specs = Socket_Sight dieses Specs, angehoben um riser_m; Achsen gleich (vorn −Y, oben +Z)",
+   "riser_m": 0.0,
+   "socket_mount_m": [0.0, -0.051, 0.0849],
+   "socket_reticle_m": [0.0, -0.0605, 0.1109],
+   "socket_eye_m": null,
+   "line_height_m": 0.026,
+   "rail": {
+    "part": "p09",
+    "added": false,
+    "seat": "Mitte der Visierschiene"
+   },
+   "line_clear_of_weapon": true,
+   "blocked_by": [],
+   "replaced": [
+    "Reflexvisier"
+   ]
+  }
  },
  "decals": [
   {
@@ -1694,102 +1900,6 @@
    "bounds_m": [
     [-0.0039, -0.2022, 0.0621],
     [0.0039, -0.2022, 0.0699]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Metal",
-   "surface": "left",
-   "emissive": false,
-   "color": "#3B3F45",
-   "area_m2": 4.4e-06,
-   "bounds_m": [
-    [0.0055, -0.0367, 0.0871],
-    [0.0055, -0.0343, 0.0894]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Metal",
-   "surface": "right",
-   "emissive": false,
-   "color": "#3B3F45",
-   "area_m2": 4.4e-06,
-   "bounds_m": [
-    [-0.0055, -0.0367, 0.0871],
-    [-0.0055, -0.0343, 0.0894]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Metal",
-   "surface": "left",
-   "emissive": false,
-   "color": "#3B3F45",
-   "area_m2": 4.4e-06,
-   "bounds_m": [
-    [0.0055, -0.06, 0.0871],
-    [0.0055, -0.0576, 0.0894]
-   ]
-  },
-  {
-   "part": "p12",
-   "channel": "MT_Metal",
-   "surface": "right",
-   "emissive": false,
-   "color": "#3B3F45",
-   "area_m2": 4.4e-06,
-   "bounds_m": [
-    [-0.0055, -0.06, 0.0871],
-    [-0.0055, -0.0576, 0.0894]
-   ]
-  },
-  {
-   "part": "p13",
-   "channel": "MT_Accent",
-   "surface": "left",
-   "emissive": false,
-   "color": "#1C1E22",
-   "area_m2": 0.0001887,
-   "bounds_m": [
-    [0.0061, -0.0599, 0.0938],
-    [0.0061, -0.0355, 0.1015]
-   ]
-  },
-  {
-   "part": "p13",
-   "channel": "MT_Accent",
-   "surface": "right",
-   "emissive": false,
-   "color": "#1C1E22",
-   "area_m2": 0.0001887,
-   "bounds_m": [
-    [-0.0061, -0.0599, 0.0938],
-    [-0.0061, -0.0355, 0.1015]
-   ]
-  },
-  {
-   "part": "p13",
-   "channel": "MT_Accent",
-   "surface": "left",
-   "emissive": false,
-   "color": "#7FC8E8",
-   "area_m2": 8.77e-05,
-   "bounds_m": [
-    [0.0061, -0.0577, 0.0954],
-    [0.0061, -0.0377, 0.0999]
-   ]
-  },
-  {
-   "part": "p13",
-   "channel": "MT_Accent",
-   "surface": "right",
-   "emissive": false,
-   "color": "#7FC8E8",
-   "area_m2": 8.77e-05,
-   "bounds_m": [
-    [-0.0061, -0.0577, 0.0954],
-    [-0.0061, -0.0377, 0.0999]
    ]
   }
  ],
@@ -3208,25 +3318,21 @@
  },
  "summary": {
   "skins": 5,
-  "parts": 14,
-  "parts_explicit_channel": 0,
-  "decals": 97,
+  "parts": 26,
+  "parts_explicit_channel": 14,
+  "decals": 89,
   "channels_with_other_colors": {
    "base": [
-    "MT_Accent",
     "MT_Detail",
     "MT_Metal"
    ],
    "standard": [
-    "MT_Accent",
     "MT_Metal"
    ],
    "arktis": [
-    "MT_Accent",
     "MT_Metal"
    ],
    "nacht": [
-    "MT_Accent",
     "MT_Metal"
    ]
   }

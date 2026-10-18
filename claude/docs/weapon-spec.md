@@ -1,10 +1,10 @@
 # Weapon-Spec der Konzeptblätter (`KXnn.spec.json`, format_version 1)
 
-Stand 17.10.2026 (claude-0.2, Feld `skin` seit claude-0.3, `moving_parts`, Fenstergeometrie und Richtungstest seit claude-0.5, `robot_fit` seit claude-0.5.1, `sight.type`/`frame` und `parts[].toolgen_material` seit claude-0.5.2). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
+Stand 18.10.2026 (claude-0.2, Feld `skin` seit claude-0.3, `moving_parts`, Fenstergeometrie und Richtungstest seit claude-0.5, `robot_fit` seit claude-0.5.1, `sight.type`/`frame` und `parts[].toolgen_material` seit claude-0.5.2, Visier der Visier-Serie mit `sight.sight_spec` seit claude-0.7). Neben jedem Konzeptblatt `claude/output/sheets/KXnn.dc.html` liegt `KXnn.spec.json` mit den
 Werten des Blatts als Daten, damit Toolgen (und Cube Escape) sie nicht aus dem Bild lesen müssen. Die Blätter bleiben das
 Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesbare Fassung.
 
-- Erzeugen: `python3 claude/generator/export_spec.py` (alle 50) bzw. `… KC01 KD05`; prüfen: `… --check` (Exit 1 bei veraltet).
+- Erzeugen: `python3 claude/generator/export_spec.py` (alle 60) bzw. `… KC01 KD05`; prüfen: `… --check` (Exit 1 bei veraltet).
 - Test: `python3 claude/generator/test_spec.py` (Schema, Stimmigkeit, Aktualität, Richtung mit Gegenbeweis; ohne numpy, ohne Bildstufe, ~25 s).
 - Befunde und Hinweise lesen: `python3 claude/generator/spec_checks.py` (Richtung, Visier gegen das CE-Zielbild, Fenster ohne Geometrie).
 - Schema: [weapon-spec.schema.json](weapon-spec.schema.json). Quelle der Werte: dieselben Python-Modelle wie das Blatt
@@ -29,7 +29,7 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | `parts[]` | `id` (p00 …, Reihenfolge des Modells), `label` (deutsche Bauteilbezeichnung oder `null`), `channel`, `channel_source`, `material`, `emissive`, `sight`, `color` (Basis), `area_m2`, `long_axis`, `bounds_m`, `moving` (Art aus `moving_parts` oder `null`; claude-0.5), `toolgen_material` (claude-0.5.2) |
 | `moving_parts` | (claude-0.5, optional) bewegliche Teile wie Toolgens Use-Clip – siehe [Bewegliche Teile](#bewegliche-teile) |
 | `robot_fit` | (claude-0.5.1, optional) Größe in der Roboterhand: Zielzahlen mit Quelle und das Blatt daran gemessen – siehe [Größe in der Roboterhand](#größe-in-der-roboterhand) |
-| `sight` | `present`, `kind`, `window`, `source`, `modular` (immer separat), `mount_side`, `labels`, `parts`, `bounds_m`, `anchor`, `window_geometry` (Fensterelemente mit Durchsichtachse oder `null`), `window_geometry_note` (Grund bei `null`; beide claude-0.5), `type`, `frame` mit `type_source`/`frame_source` (claude-0.5.2, siehe [Visier-Vokabular](#visier-vokabular)) |
+| `sight` | `present`, `kind`, `window`, `source`, `modular` (immer separat), `mount_side`, `labels`, `parts`, `bounds_m`, `anchor`, `window_geometry` (Fensterelemente mit Durchsichtachse oder `null`), `window_geometry_note` (Grund bei `null`; beide claude-0.5), `type`, `frame` mit `type_source`/`frame_source` (claude-0.5.2, siehe [Visier-Vokabular](#visier-vokabular)), `sight_spec` (claude-0.7, Waffen 1–9: [Visier der Visier-Serie](#visier-der-visier-serie)) |
 | `decals[]` | `part`, `channel`, `surface` (left/right/front/back/top), `emissive`, `color`, `area_m2`, `bounds_m` |
 | `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns` |
 | `skin` | (claude-0.3, optional) fünf Skins je Waffe aus einem Katalog von neun, der erste ist der Hauptskin des Blatts – siehe [Skins](#skins) |
@@ -59,7 +59,8 @@ Farben sind sRGB-Hex `#RRGGBB` wie im Cube-Escape-Design (`Docs/EQUIPMENT.md` �
   über unbezeichnete Teile, die die Mündungsachse schneiden und vorn anschließen (Mündungskappe, Leuchtkopf, Pfeilspitze); eine Rakete
   im Rohr samt Teilen in ihrem Querschnitt ist Geschoss und zählt nicht. Betroffen: 17 Blätter, bis 7,2 cm weiter vorn (KD10).
 - `Socket_CenterOfMass`: Näherung, Hüllquader-Volumen je Teil gewichtet, Visier montiert.
-- `Socket_Sight`: Unterkante Mitte der Visierbaugruppe in montierter Lage; ohne Visier Oberkante der Visierschiene.
+- `Socket_Sight`: Waffen 1–9 (seit claude-0.7) Oberkante der Visierschiene unter der Mitte der Halterung = `Socket_Mount` des
+  Sight-Specs (bei einer Erhöhung darunter); Bögen: Unterkante Mitte der Visierbaugruppe in montierter Lage.
 - Toolgen prüft Anker gegen sein eigenes Netz; die Werte hier sind das Zielbild, kein Ersatz für diese Prüfung.
 
 ## Kanäle
@@ -86,12 +87,12 @@ Stand 17.10.2026: alle Zuordnungen heuristisch (0 ausdrücklich); 34 Kanäle in 
 ## Material, Visier, Aufkleber, Texturen
 
 - `material`: `painted` (lackiert), `brushed` (gebürstet), `rubber` (gummiert), `matte` (matter Kunststoff), `lit` (beleuchtet) –
-  dieselbe Zuordnung wie die Materialansicht des Blatts (`material_of`).
+  dieselbe Zuordnung wie die Materialansicht des Blatts (`material_of`); seit claude-0.7 `glass` (Glasscheiben der Visier-Serie,
+  `toolgen_material: null`). Teile der Visier-Serie tragen das Material ihres Sight-Specs.
 - `sight.kind` im Toolgen-Wortschatz `hold.sight_kind` (`iron`, `reflex`, `holo`, `scope`, `energy`) plus `pin` (Bogen-Pinvisier);
   `window`: `none` (Kimme/Korn), `open` (Ring, Lochblende, Klappvisier ohne Glas), `glass` (flache Scheibe), `lens` (runde Optik).
-  Festgelegt je Blatt in `export_spec.SIGHTS` mit Quelle (Bezeichnung, Text des Blatts, Kommentar/Geometrie im Modell).
-  `mount_side`: `left` bei den Raketenwerfern (Schiene links am Rohr), sonst `top`. Alle 50 Blätter haben ein separates
-  Visier (KD01, KD04, KD10 seit claude-0.1.1).
+  Waffen 1–9: aus dem Typ der Visier-Serie (unten); Bögen: je Blatt in `export_spec.SIGHTS` (ab J `META['sight']`) mit Quelle.
+  `mount_side`: `left` bei den Raketenwerfern (Schiene links am Rohr), sonst `top`. Alle 60 Blätter haben ein separates Visier.
 - `decals`: jeder Aufkleber des Modells (beidseitige als zwei Einträge), Fläche nach Ebene: `left` (+X), `right` (−X), `front` (−Y),
   `back` (+Y), `top` (+Z).
 - `textures`: Muster der Materialansicht des Blatts (`xl.make_texture`) in mm: gebürstet → `brushed` entlang `long_axis` des Teils,
@@ -184,10 +185,38 @@ Entscheidung des Nutzers (17.10.2026, claude-0.5.2), additiv: `kind` bleibt Tool
 - `frame`: Rahmen-Variante des Visier-Blatts: `standard`, `compact`, `open`, `closed`, `industrial`, `lightweight`; `null` ohne Rahmen
   (Kimme/Korn). Bestehende Blätter: Regel aus `window` nach der Sichtprüfung 0.5.1 (Scheibe im Kasten `closed`, Röhre `standard`,
   Ring/Lochblende `open`); die Visier-Serie VS01–VS09 setzt Typ und Rahmen ausdrücklich.
-- Bestehende Blätter: `type` aus `kind` (Zielfernrohr am Scharfschützengewehr `sniper`, sonst `precision`). Ziel je Waffe:
-  `spec_checks.CE_SIGHTS`; Abweichungen als Hinweise (Stand 0.5.2: 41, weil `machine`, `energy`, `trace`, `rocket` noch kein Blatt hat).
+- Bis claude-0.6 kam `type` aus `kind` (Zielfernrohr am Scharfschützengewehr `sniper`, sonst `precision`); Abweichungen vom Ziel
+  (`spec_checks.CE_SIGHTS`) standen als Hinweise im Bericht (0.5.2: 41). Seit claude-0.7 tragen die Waffen 1–9 das Visier der Serie,
+  der Hinweis „Visier weicht vom Zielbild ab“ entfällt (0 Hinweise); die Prüfung bleibt.
 - `parts[].toolgen_material`: Toolgen `surface_recipes.json` › `materials`: painted → painted, brushed → brushed, rubber → rubber,
-  matte → painted_matte, lit → energy_glass. Die Decal-Zuordnung zu Toolgens Katalog (`decals.json`) ist offen.
+  matte → painted_matte, lit → energy_glass, glass → `null` (claude-0.7). Die Decal-Zuordnung zu Toolgens Katalog (`decals.json`) ist offen.
+
+## Visier der Visier-Serie
+
+Seit claude-0.7 (Entscheidung des Nutzers „Danach Waffenblätter umstellen“, 17.10.2026) trägt jedes Blatt der Waffen 1–9 das
+Standardvisier seines Typs aus der Visier-Serie VS01–VS09 ([sight-spec.md](sight-spec.md)); die bisherigen Visierteile (Kimme/Korn,
+Kästen, Röhren) sind entfallen. Bögen haben kein VS-Ziel und behalten ihr Pin-Visier; Pin und Leuchtpunkt fluchten seit claude-0.7 entlang −Y (Leuchtpunkt auf der
+Rückseite, zum Schützen; KF10 als Ring quer zur Laufachse).
+
+- **Eine Wahrheit:** `vsmount.py` lädt das Modell aus `vsmodels.py` (mm), rechnet es mit `model_unit_m` in Modelleinheiten um und setzt
+  `Socket_Mount` auf die Oberkante der Visierschiene unter der Mitte der Halterung (Raketenwerfer: Seitenschiene links am Rohr).
+  Die Halterung sitzt längs auf der Mitte der Schiene. Blätter ohne Schiene bekommen eine (`rail.added`, 6 mm über der höchsten Stelle
+  der Waffe unter der Halterung, 14 mm breit); längs sitzt das Visier dann wie das bisherige (ein Block: dessen Mitte; Kimme und Korn:
+  Halterung ab der Kimme; nur Korn: Mitte des Gehäuses), immer innerhalb der Waffenlänge, damit Länge und Maßstab gleich bleiben.
+- **Erhöhung:** Kein Teil des Visiers darf in die Waffe ragen; die Klemmbacken der Halterung (3 mm unter `Socket_Mount`) dürfen nur die
+  Schiene umfassen. Sonst steht das Visier auf einem Distanzstück „Erhöhung“ (Teil des Visiers, MT_Metal, auf 0,5 mm gerundet plus
+  0,5 mm Luft): `riser_m`. Die Erhöhung steht nur auf dem Teil der Schiene, über den die Waffe nicht hinausragt (Seitenschiene am Rohr).
+- **Farben:** je Teil die Kanalfarbe der Waffe in der Basis-Palette (wie bis claude-0.6 gerechnet, damit die Kanäle der Waffe bleiben);
+  nutzt die Waffe den Kanal nicht, gilt der erste belegte aus `xlroles.FALLBACK`, und das Teil bekommt diesen Kanal. Leuchtteile bleiben
+  auf MT_Energy/MT_Emission; hat die Waffe keinen Leuchtkanal, leuchten sie in ihrer MT_Accent-Farbe. Aufkleber in einer Farbe, die nur
+  das Visier trägt, nehmen dessen Kanal. Glas behält die Tönung des Sight-Specs (`material: glass`, zählt nur dann zur Kanalfarbe, wenn sonst nichts auf dem Kanal liegt).
+- **`window_geometry`:** die Glasscheiben (`type: part`), Achse aus der Geometrie, wie im Sight-Spec.
+- **`sight.sight_spec`:** `id`, `file` (`VSnn.spec.json`), `format`, `mount`, `riser_m`, `socket_mount_m`, `socket_reticle_m`,
+  `socket_eye_m` (Röhren, sonst `null`), `line_height_m` (Visierlinie über `Socket_Sight`), `rail` (`part`, `added`, `seat` = Herleitung der
+  Lage), `line_clear_of_weapon` / `blocked_by` (kein Teil der Waffe vor dem Visier über der Visierlinie), `replaced` (Bezeichnungen des
+  bisherigen Visiers). Achsen wie im Sight-Spec (vorn −Y, oben +Z); `p_waffe = socket_mount_m + (p_sight − Socket_Mount_sight)`.
+- **Prüfung:** `spec_checks.vs_problems` (VS-Nummer = Waffennummer, Typ/Rahmen, Anker gegen den Sight-Spec, Glas als Fenster, freie
+  Visierlinie, Länge) und `test_spec.VisierSerie` (dazu: kein Visierteil steckt in der Waffe, Farben aus den Kanälen, Gegenbeweise).
 
 ## Größe in der Roboterhand
 
@@ -217,15 +246,15 @@ Cube Escape 0.82 › Stufe 2) als Daten. Roboter-Konzeptblätter gibt es nicht (
   `window_geometry`, auch die Visier-Serie VS01–VS09): Die Durchsicht ist die flache bzw. dünnste Achse der Scheibe, Öffnung oder des
   Rings selbst, nicht die Rotation oder der Hüllquader des Visiers; sie muss Y sein, `view_axis_m` muss dazu passen (−Y).
   Befundtexte: „Fenster quer [key]“, „Fensterachse [key]“, „Fenster [key] unter dem Griff“; `key` = `dNN` (decals[NN]) oder Teil-ID.
-  **Bekannte Querfenster** (`KNOWN_CROSS_WINDOWS`, Stand 17.10.2026): 23 Blätter – die 19 aus der Sichtprüfung, dazu KC02, KH03 und die
-  Bogen-Pins KD10, KF10. Ursache ist der Generator: Öffnungen und Scheiben in der Seitenansicht gezeichnet und durch die Breite
-  extrudiert. Behoben wird das mit der Umstellung der Waffenblätter auf VS01–VS09 (Entscheidung des Nutzers: „Test jetzt, Fix mit
-  Umstellung“). Der Test verlangt genau diese Menge; ein neues Querfenster macht ihn rot, ein behobenes auch (Eintrag entfernen).
+  **Bekannte Querfenster** (`KNOWN_CROSS_WINDOWS`): Stand 17.10.2026 23 Blätter – die 19 aus der Sichtprüfung, dazu KC02, KH03 und die
+  Bogen-Pins KD10, KF10 (Generatorfehler: Öffnungen und Scheiben in der Seitenansicht gezeichnet und durch die Breite extrudiert).
+  Behoben in claude-0.7 (18.10.2026) mit der Umstellung auf VS01–VS09 und den entlang −Y fluchtenden Bogen-Pins; die Liste
+  ist leer. Der Test bleibt und verlangt genau diese Menge; ein neues Querfenster macht ihn rot.
   Gegenbeweis je Fall im Test (Seitenscheibe, Ring/Platte, Leuchtteil oben, falsche Achse, neues Querfenster auf sauberem Blatt).
 - **`window_geometry`**: Aufkleber vorn/hinten auf Visierteilen, Seitenaufkleber ab `PANE_MIN_FRACTION` (7,5 %) der Teilfläche als
   Scheibe oder Öffnung (`face_fraction`), leuchtende Visierteile (`type: part`) und Scheiben/Ringe/Platten (`type: disc`: zwei ähnliche
   Ausdehnungen, die dritte höchstens 40 %; nur bei `window` open/lens, wo der Ring die Öffnung ist – das Modell kennt keine Löcher); `view_axis_m` aus der Geometrie. Ohne solches Element `null` mit Grund (Stand 0.5.2: KJ04,
-  KJ10).
+  KJ10; seit claude-0.7 keins). Waffen 1–9: Glasscheiben der Visier-Serie.
 - **Visier-Zielbild:** `spec_checks.CE_SIGHTS` gibt die Tabelle aus Cube Escape `Docs/EQUIPMENT.md` › Visiere je Waffe wieder
   (Art und Fenster, die dazu passen). Abweichungen sind **Hinweise**, kein Fehler; ob ein Blatt geändert wird, entscheidet der Nutzer.
   Der Test vergleicht die Tabelle mit der CE-Datei, wenn das Repo lokal liegt (`CE_EQUIPMENT` setzt den Pfad).

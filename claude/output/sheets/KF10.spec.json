@@ -4,7 +4,7 @@
  "generator": {
   "repo": "cubeescape-design",
   "tool": "claude/generator/export_spec.py",
-  "claude_version": "0.5.2"
+  "claude_version": "0.7"
  },
  "sheet": {
   "id": "KF10",
@@ -86,13 +86,13 @@
   },
   "Socket_CenterOfMass": {
    "position_m": [0.0323, 0.0741, -0.0083],
-   "model": [357.09, 302.67, -0.32],
+   "model": [357.08, 302.67, -0.32],
    "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert",
    "part": null
   },
   "Socket_Sight": {
-   "position_m": [0.0333, -0.1423, 0.1119],
-   "model": [427.0, 263.85, 0.0],
+   "position_m": [0.0333, -0.13, 0.1119],
+   "model": [423.0, 263.85, 0.0],
    "source": "Unterkante Mitte der Visierbaugruppe (montierte Lage)",
    "part": null
   }
@@ -819,10 +819,10 @@
    "sight": true,
    "color": "#FF5D8F",
    "area_m2": 0.010695,
-   "long_axis": "Y",
+   "long_axis": "X",
    "bounds_m": [
-    [0.0209, -0.2136, 0.1119],
-    [0.0457, -0.1516, 0.1729]
+    [0.0023, -0.1888, 0.1119],
+    [0.0642, -0.164, 0.1729]
    ],
    "moving": null
   },
@@ -1005,7 +1005,7 @@
   "present": true,
   "kind": "pin",
   "window": "open",
-  "source": "Geometrie f10.py: leuchtender Pin-Ring am Bogen",
+  "source": "Geometrie f10.py: leuchtender Pin-Ring am Bogen, quer zur Laufachse (claude-0.7)",
   "modular": true,
   "mount_side": "top",
   "type": "pin",
@@ -1020,8 +1020,8 @@
    "p34"
   ],
   "bounds_m": [
-   [0.0178, -0.2136, 0.1119],
-   [0.0488, -0.0711, 0.1729]
+   [0.0023, -0.1888, 0.1119],
+   [0.0642, -0.0711, 0.1729]
   ],
   "anchor": "Socket_Sight",
   "window_geometry": {
@@ -1031,26 +1031,17 @@
      "decal": 5,
      "part": "p34",
      "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [0.0457, -0.1826, 0.1424],
-     "face_fraction": 0.125
-    },
-    {
-     "type": "decal",
-     "decal": 6,
-     "part": "p34",
-     "emissive": false,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [0.0209, -0.1826, 0.1424],
-     "face_fraction": 0.125
+     "view_axis_m": [0.0, -1.0, 0.0],
+     "center_m": [0.0333, -0.1888, 0.1424],
+     "face_fraction": 0.126
     },
     {
      "type": "part",
      "decal": null,
      "part": "p34",
      "emissive": true,
-     "view_axis_m": [-1.0, 0.0, 0.0],
-     "center_m": [0.0333, -0.1826, 0.1424]
+     "view_axis_m": [0.0, -1.0, 0.0],
+     "center_m": [0.0332, -0.1764, 0.1424]
     }
    ],
    "source": "Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; Achse aus der Geometrie"
@@ -1121,25 +1112,13 @@
   {
    "part": "p34",
    "channel": "MT_Detail",
-   "surface": "left",
+   "surface": "front",
    "emissive": false,
    "color": "#1B1A2E",
    "area_m2": 0.000474,
    "bounds_m": [
-    [0.0457, -0.195, 0.13],
-    [0.0457, -0.1702, 0.1548]
-   ]
-  },
-  {
-   "part": "p34",
-   "channel": "MT_Detail",
-   "surface": "right",
-   "emissive": false,
-   "color": "#1B1A2E",
-   "area_m2": 0.000474,
-   "bounds_m": [
-    [0.0209, -0.195, 0.13],
-    [0.0209, -0.1702, 0.1548]
+    [0.0209, -0.1888, 0.13],
+    [0.0457, -0.1888, 0.1548]
    ]
   }
  ],
@@ -2785,32 +2764,32 @@
       "pattern": "trim",
       "kind": "fins",
       "slot": "SK_Accent1",
-      "attach": "p00",
+      "attach": "p35",
       "count": 3,
       "toolgen_similar": null,
       "parts": [
        {
-        "profile_yz_m": [[0.2005, 0.4952], [0.1759, 0.4952], [0.2047, 0.5535], [0.2294, 0.5535]],
+        "profile_yz_m": [[-0.2664, 0.0062], [-0.291, 0.0062], [-0.2621, 0.0633], [-0.2375, 0.0633]],
         "x_m": [0.0169, 0.0497],
         "bounds_m": [
-         [0.0169, 0.1759, 0.4952],
-         [0.0497, 0.2294, 0.5535]
+         [0.0169, -0.291, 0.0062],
+         [0.0497, -0.2375, 0.0633]
         ]
        },
        {
-        "profile_yz_m": [[0.1488, 0.4921], [0.1242, 0.4921], [0.1531, 0.553], [0.1777, 0.553]],
+        "profile_yz_m": [[-0.318, 0.0062], [-0.3427, 0.0062], [-0.3138, 0.0633], [-0.2892, 0.0633]],
         "x_m": [0.0169, 0.0497],
         "bounds_m": [
-         [0.0169, 0.1242, 0.4921],
-         [0.0497, 0.1777, 0.553]
+         [0.0169, -0.3427, 0.0062],
+         [0.0497, -0.2892, 0.0633]
         ]
        },
        {
-        "profile_yz_m": [[0.0971, 0.4742], [0.0725, 0.4742], [0.1014, 0.5421], [0.126, 0.5421]],
+        "profile_yz_m": [[-0.3697, 0.0062], [-0.3943, 0.0062], [-0.3655, 0.0633], [-0.3409, 0.0633]],
         "x_m": [0.0169, 0.0497],
         "bounds_m": [
-         [0.0169, 0.0725, 0.4742],
-         [0.0497, 0.126, 0.5421]
+         [0.0169, -0.3943, 0.0062],
+         [0.0497, -0.3409, 0.0633]
         ]
        }
       ]
@@ -2840,7 +2819,7 @@
   "skins": 5,
   "parts": 43,
   "parts_explicit_channel": 0,
-  "decals": 7,
+  "decals": 6,
   "channels_with_other_colors": {}
  }
 }
