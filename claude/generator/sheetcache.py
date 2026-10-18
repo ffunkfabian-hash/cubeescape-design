@@ -41,13 +41,15 @@ CODE_PARTS={
  # vsmodels: ganzes Modul ('*'). Es liefert nicht nur das Modell (load), sondern auch Rahmen, Module, Tönungen, Farben, die
  # vsheet.sheet für alle Varianten zeichnet und xl._sight_view (TINTS) liest.
  'vsmodels':'*',
+ # texcat: ganzes Modul; der Inhalt des Texturkatalogs steht über texcat.fingerprint() im Schlüssel (code_key)
+ 'texcat':'*',
 }
 NOT_HASHED={('variants','name_problems'):'prüft nur Namen beim Anlegen einer Variante (new_variant.py), schreibt nichts'}
 # Module, deren Ausgabe als Daten im Schlüssel steht (Modell, Sight-Spec) – ihr Quelltext zählt nur über diese Daten
 DATA_MODULES={'cepaths','vsmount','export_sight','export_spec'}
 # Module je Blattart. xl und vsheet rufen sich gegenseitig auf (xl._sight_view nutzt vsheet.DRAW_ALPHA und vsmodels.TINTS,
 # vsheet nutzt xl.panel/_callouts/ISO), darum haben beide Arten dieselbe Liste.
-COMMON=['xl','xlroles','eng','raster','skins','skinraster','fontcss','variants','vsheet','vsmodels']
+COMMON=['xl','xlroles','eng','raster','skins','skinraster','fontcss','variants','vsheet','vsmodels','texcat']
 CODE_MODULES={'weapon':COMMON,'vs':COMMON}
 ENTRY_MODULES={'weapon':'xl','vs':'vsheet'}
 
@@ -107,6 +109,8 @@ def code_key(kind):
     if kind not in _code_cache:
         h=hashlib.sha256()
         for mod in CODE_MODULES[kind]:h.update(f'{mod}:{code_digest(mod)};'.encode())
+        import texcat
+        h.update(('catalog:'+texcat.fingerprint()+';').encode())   # Muster, Oberflächen, Abnutzung, Claude-Skins des Katalogs
         h.update(env_fingerprint().encode())
         _code_cache[kind]=h.hexdigest()
     return _code_cache[kind]

@@ -13,7 +13,7 @@ sys.path.insert(0,E3D)
 import sheetmodels,variants
 from eng import CHANNELS,split_sight
 from xlroles import MATERIAL_IDS,color_roles,material_of,assign_channels,channel_palettes
-import skins as SK
+import skins as SK,texcat,texprofile
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
@@ -66,7 +66,11 @@ def sight_frame(window):
     Ring/Lochblende = open, Kimme/Korn ohne Rahmen = null."""
     return {'glass':'closed','lens':'standard','open':'open'}.get(window)
 # Material der Teile im Wortschatz von Toolgen data/surface_recipes.json › materials (claude-0.5.2)
-TOOLGEN_MATERIAL={'painted':'painted','brushed':'brushed','rubber':'rubber','matte':'painted_matte','lit':'energy_glass','glass':None}   # Klarglas: in Toolgen noch kein Material (wie Sight-Spec)
+def _catalog_material(spec_id):
+    """Katalog-Material (docs/textures/catalog.json) zur Material-ID im Spec; Klarglas hat keines (in Toolgen noch kein Material, wie Sight-Spec)"""
+    return None if spec_id=='glass' else texcat.material_of_alias(spec_id,'spec')
+TEXTURE_ID={k:(m['id'] if (m:=_catalog_material(k)) else None) for k in ('painted','brushed','rubber','matte','lit','glass')}   # Spec-Material -> Katalog-ID
+TOOLGEN_MATERIAL={k:(m['toolgen_material'] if (m:=_catalog_material(k)) else None) for k in TEXTURE_ID}
 
 HAND_LABELS=('Griff','Pistolengriff','Griffstück')
 SUPPORT_LABELS=('Vordergriff','Pumpgriff')
@@ -362,6 +366,18 @@ def vs_sight(v,sight_parts,gun,ids,F,unit):
 
 def _hex(c):return c.upper() if c.startswith('#') else c
 
+def _scale(name,full):
+    """Maßstab des Blatts: (Meter je Modelleinheit, Modelllänge in Einheiten, Regeltext)"""
+    tid,ref_len,_=WEAPONS[name]
+    bbf=_bb(_verts(full.parts));ext=[bbf[1][k]-bbf[0][k] for k in range(3)]
+    if tid=='bow':model_len=max(ext);rule='größte Ausdehnung des Modells (Visier montiert) = Toolgen-Bogen, größte Ausdehnung'
+    else:model_len=ext[0];rule='Länge entlang der Mündungsachse (Modell x, Visier montiert) = Toolgen-Länge des Waffentyps'
+    return ref_len/model_len,model_len,rule
+
+def model_unit(name,full):
+    """Meter je Modelleinheit des Blatts (Spec units.model_unit_m); xl.sheet rechnet damit die Katalog-Muster in Modelleinheiten um"""
+    return _scale(name,full)[0]
+
 def build(sheet):
     d=sheetmodels.load(sheet)
     full=d['m'];gun_m,sight_m=split_sight(full)
@@ -369,11 +385,8 @@ def build(sheet):
     allparts=list(enumerate(full.parts))
     ids=[f'p{i:02d}' for i in range(len(full.parts))]
     gun=[(i,P) for i,P in allparts if not P.get('sight')];sight_parts=[(i,P) for i,P in allparts if P.get('sight')]
-    # Maßstab
-    bbf=_bb(_verts(full.parts));ext=[bbf[1][k]-bbf[0][k] for k in range(3)]
-    if tid=='bow':model_len=max(ext);rule='größte Ausdehnung des Modells (Visier montiert) = Toolgen-Bogen, größte Ausdehnung'
-    else:model_len=ext[0];rule='Länge entlang der Mündungsachse (Modell x, Visier montiert) = Toolgen-Länge des Waffentyps'
-    unit=ref_len/model_len
+    # Maßstab (model_unit: dieselbe Regel für Spec und Blatt)
+    unit,model_len,rule=_scale(d['name'],full)
     an,notes=_anchors(d,gun,sight_parts,allparts,ids)
     F=Frame(unit,an['Socket_Hand'][0])
     # Kanäle und Paletten je Variante (xlroles.channel_palettes, auch für die Skins)
@@ -385,7 +398,7 @@ def build(sheet):
     for i,P in allparts:
         bb=_bb(_verts([P]));ext=[bb[1][k]-bb[0][k] for k in range(3)]
         parts.append(dict(id=ids[i],label=P.get('label'),channel=pch[i][0],channel_source=pch[i][1],
-                          material=MATERIAL_IDS[material_of(P)],toolgen_material=TOOLGEN_MATERIAL[MATERIAL_IDS[material_of(P)]],emissive=bool(P['emit']),sight=bool(P.get('sight')),
+                          material=MATERIAL_IDS[material_of(P)],toolgen_material=TOOLGEN_MATERIAL[MATERIAL_IDS[material_of(P)]],texture=TEXTURE_ID[MATERIAL_IDS[material_of(P)]],emissive=bool(P['emit']),sight=bool(P.get('sight')),
                           color=_hex(P['col']),area_m2=round(_area(P)*unit*unit,6),long_axis=AXIS_NAMES[ext.index(max(ext))],
                           bounds_m=F.bb(bb),moving=moving_of.get(i)))
     decals=[];decal_index={}
@@ -443,6 +456,7 @@ def build(sheet):
         sight=sight,
         decals=decals,
         textures=textures(unit),
+        **({'texture_profile':texprofile.profile(tid)} if texprofile.profile(tid) else {}),   # Bogen: kein Eintrag im Textur-Blatt
         skin=skin_spec(sheet,full,d,palette,F,ids,unit),
         summary=dict(skins=5,parts=len(parts),parts_explicit_channel=sum(1 for c in pch if c[1]=='explicit'),decals=len(decals),
                      channels_with_other_colors={p['id']:sorted(p['other_colors']) for p in palette if p['other_colors']}),
@@ -451,19 +465,23 @@ def build(sheet):
 def textures(unit):
     """Muster der Material-Ansicht des Blatts (xl.make_texture) als Zielbild für Toolgens Bake, im Wortschatz von
     Toolgen data/surface_recipes.json › patterns (knurl/brushed/grain; Größen in mm, Werkzeugrahmen Socket_Hand).
-    brightness = Helligkeitsfaktor auf die Kanalfarbe im Blatt; Längen sind Weltlängen am Modell (keine UV).
-    Wellenachsen im Zielrahmen: Blatt-y -> Z, Blatt-(x+z) -> X−Y (Richtung, Vorzeichen egal: Kosinus)."""
-    mm=lambda v:round(v*unit*1000,3)
+    Seit claude-0.8 stehen die Werte im Texturkatalog (docs/textures/catalog.json, mm am echten Objekt) und gelten für jede Waffe gleich;
+    das Blatt rechnet sie mit `units.model_unit_m` in Modelleinheiten um. brightness = Helligkeitsfaktor auf die Kanalfarbe im Blatt;
+    Längen sind Weltlängen am Modell (keine UV). Wellenachsen im Zielrahmen: Blatt-y -> Z, Blatt-(x+z) -> X−Y (Richtung, Vorzeichen egal: Kosinus)."""
+    c=texcat.load();g=texcat.pattern('gloss_gradient');b=texcat.pattern('brushed');k=texcat.pattern('knurl');n=texcat.pattern('grain')
+    axis={'height':'Z','length+width':'X-Y'}
     return dict(
-        source='xl.make_texture (Materialansicht des Blatts), Modelleinheiten mal model_unit_m',
+        source='docs/textures/catalog.json (patterns, materials) über claude/generator/texcat.py; das Blatt rechnet mit units.model_unit_m um',
         vocabulary='Toolgen data/surface_recipes.json › patterns',
-        painted=dict(toolgen_pattern=None,look='weicher Glanzverlauf, kein Relief',brightness=[0.87,1.13],
-                     waves=[dict(axis='Z',wavelength_mm=mm(2*math.pi*26),amplitude=0.09),
-                            dict(axis='X-Y',wavelength_mm=mm(2*math.pi*55),amplitude=0.04)]),
-        brushed=dict(toolgen_pattern='brushed',direction='long_axis',size_mm=mm(2*math.pi/(7.3*0.9)),brightness=[0.87,1.13],
-                     cross_wavelengths_mm=[mm(2*math.pi/(3.1*0.9)),mm(2*math.pi/(7.3*0.9)),mm(2*math.pi/(13.1*0.9))],weights=[0.5,0.3,0.2]),
-        rubber=dict(toolgen_pattern='knurl',direction='Flächenebene, ±45°',size_mm=mm(4.0),brightness=[0.66,1.0]),
-        matte=dict(toolgen_pattern='grain',size_mm=mm(1/1.3),brightness=[0.955,1.045]),
+        catalog=dict(file='docs/textures/catalog.json',format=c['format'],format_version=c['format_version'],claude_version=c['claude_version'],
+                     sha256_claude_parts=texcat.fingerprint(),
+                     ids=dict(painted=TEXTURE_ID['painted'],brushed=TEXTURE_ID['brushed'],rubber=TEXTURE_ID['rubber'],matte=TEXTURE_ID['matte'],lit=TEXTURE_ID['lit'])),
+        painted=dict(toolgen_pattern=None,look='weicher Glanzverlauf, kein Relief',brightness=list(g['contrast']['brightness']),
+                     waves=[dict(axis=axis['+'.join(w['axes'])],wavelength_mm=round(w['wavelength_mm'],3),amplitude=w['amplitude']) for w in g['params']['waves']]),
+        brushed=dict(toolgen_pattern='brushed',direction='long_axis',size_mm=b['size_mm'],brightness=list(b['contrast']['brightness']),
+                     cross_wavelengths_mm=[w['wavelength_mm'] for w in b['params']['waves']],weights=[w['weight'] for w in b['params']['waves']]),
+        rubber=dict(toolgen_pattern='knurl',direction='Flächenebene, ±45°',size_mm=k['size_mm'],brightness=list(k['contrast']['brightness'])),
+        matte=dict(toolgen_pattern='grain',size_mm=n['size_mm'],brightness=list(n['contrast']['brightness'])),
         lit=dict(toolgen_pattern=None,look='leuchtend, Kanalfarbe als Emission, kein Muster'),
     )
 
@@ -524,12 +542,12 @@ def skin_spec(sheet,full,d,palette,F,ids,unit):
                 e['requested']=rq;e['requested_reason']=f'Kontrastregel: Abstand zur Körperfarbe {rs["body_color"]} unter {SK.MIN_CONTRAST} (RGB 0..1)'
             if t=='glyphs':e['slots']=L['slots']
             layers.append(e)
-        items.append(dict(id=sid,name=rs['name'],hero=sid==sids[0],blocks=SK.summary(rs),
+        items.append(dict(id=sid,catalog_id=sid,name=rs['name'],hero=sid==sids[0],blocks=SK.summary(rs),
                           description_de=SK.DESC[sid][0],description_en=SK.DESC[sid][1],
                           accents={a:dict(color=c,finish=f) for a,(c,f) in rs['accents'].items()},
                           slots_used=used,colors=cols,layers=layers,notes=rs['notes']))
-    return dict(source='claude/generator/skins.py (Katalog, Auflösung), Zeichnung xl.py/skinraster.py (Feld SKIN/MUSTER, Hauptskin in Isometrie, Orthos, Farbvarianten)',
-                hero=sids[0],catalog=[s_['id'] for s_ in SK.CATALOG],
+    return dict(source='docs/textures/catalog.json (Skins, Oberflächen, Abnutzung) über claude/generator/texcat.py; Auflösung skins.py, Zeichnung xl.py/skinraster.py (Feld SKIN/MUSTER, Hauptskin in Isometrie, Orthos, Farbvarianten)',
+                hero=sids[0],catalog_id=sids[0],catalog=[s_['id'] for s_ in SK.CATALOG],
                 slots=dict(channels=list(CHANNELS),accents=list(SK.ACCENTS),
                            rule='MT_-Kanäle färben mit der Variante um (unbelegter Kanal: Farbfeld der Blatt-Palette, source swatch); SK_Accent1/2 fest je Skin'),
                 finishes=list(SK.FINISHES),space='Objektraum (Toolgen-Rahmen, m), keine UV; Sichtteile ohne Skin',

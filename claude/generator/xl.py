@@ -9,7 +9,7 @@ from eng import *
 import raster
 from xlroles import *
 from xlroles import _rgb,_hex,_lum,_sat,_mix
-import skins,variants
+import skins,variants,texcat
 from skinraster import skin_texture
 
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
@@ -17,38 +17,42 @@ ORTHO=[('SEITENANSICHT LINKS',0,0),('SEITENANSICHT RECHTS',180,0),('VORDERANSICH
 DETAIL_LABELS=['Abzug','Abzugbügel','Bügel','Griff','Pistolengriff','Griffstück','Magazin','Energiemagazin']
 DETAIL_FRAME_EXTRA=['Pfeilauflage']  # Bogen: Pfeilauflage am Griff gehört mit in den Rahmen des Detailfelds
 
-def make_texture(seed=3):
-    """Texturen im Objektraum: Muster hängen an Bauteil-Koordinaten (nicht an der Bildrichtung)."""
+def make_texture(seed=3,unit_m=None):
+    """Texturen im Objektraum: Muster hängen an Bauteil-Koordinaten (nicht an der Bildrichtung). Seit claude-0.8 stehen Muster und
+    Maße im Texturkatalog (docs/textures/catalog.json, mm am Objekt); unit_m = Modelleinheit des Blatts (Spec units.model_unit_m,
+    Meter je Modelleinheit) rechnet sie in Modelleinheiten um, ohne Angabe gilt der Startwert des Katalogs."""
+    P=texcat.sheet_patterns(unit_m)
+    AX={'length':0,'height':1,'width':2}
     def tex(col,pb,idb,decm,parts,SS,world=None,nrm=None):
         h,w=pb.shape
         keys=['lack','brushed','rubber','plastic','light']
-        lut=np.array([keys.index(material_of(P)) for P in parts]+[-1],np.int16)
+        lut=np.array([keys.index(material_of(P_)) for P_ in parts]+[-1],np.int16)
         mat=np.where(pb>=0,lut[np.clip(pb,0,len(parts))],-1);mat[decm]=-1
         out=col.copy()
         WX,WY,WZ=world;NX,NY,NZ=np.abs(nrm[0]),np.abs(nrm[1]),np.abs(nrm[2])
+        C=(WX,WY,WZ)
         # Längsachse je Teil
         ax=np.zeros(len(parts)+1,np.int8)
-        for i,P in enumerate(parts):
-            vs=[q for f in P['F'] for q in f['v']]
+        for i,P_ in enumerate(parts):
+            vs=[q for f in P_['F'] for q in f['v']]
             ext=[max(q[k] for q in vs)-min(q[k] for q in vs) for k in range(3)]
             ax[i]=int(np.argmax(ext))
         A=ax[np.clip(pb,0,len(parts))]
-        C=[WX,WY,WZ]
         def hsh(t):return np.sin(t*12.9898)*43758.5453%1.0
-        # gebürstet: Schleifspuren entlang der Längsachse -> Muster hängt nur von den beiden Querachsen ab
+        # gebürstet: Schleifspuren entlang der Längsachse -> Muster hängt nur von den beiden Querachsen ab (Summe der Querachsen)
         q1=np.where(A==0,WY,np.where(A==1,WX,WX));q2=np.where(A==0,WZ,np.where(A==1,WZ,WY))
-        t=q1*0.9+q2*0.9
-        br=0.5*np.sin(t*3.1)+0.3*np.sin(t*7.3+1.7)+0.2*np.sin(t*13.1+0.4)
-        br=1+0.13*br
+        qq=q1+q2
+        br=1+P['brushed']['amp']*sum(wt*np.sin(k*qq+ph) for k,ph,wt in P['brushed']['waves'])
         # gummiert: Rautenrändel in der Flächenebene
         domx=NX>=np.maximum(NY,NZ);domy=(NY>=np.maximum(NX,NZ))&~domx
         u=np.where(domx,WY,WX);v=np.where(domx,WZ,np.where(domy,WZ,WY))
-        p=4.0
-        rb=1-0.34*((np.floor((u+v)/p)%2==0)&(np.floor((u-v)/p)%2==0))
+        p=P['knurl']['cell']
+        rb=1-P['knurl']['dark']*((np.floor((u+v)/p)%2==0)&(np.floor((u-v)/p)%2==0))
         # lackiert: weicher Glanzverlauf über die Höhe des Bauteils
-        g=1+0.09*np.cos(WY/26.0)+0.04*np.cos((WX+WZ)/55.0)
+        g=1+sum(wv['amp']*np.cos(wv['k']*sum(C[AX[a]] for a in wv['axes'])) for wv in P['gloss'])
         # matt: feines Korn, fest am Objekt
-        pl=1+0.09*(hsh(np.floor(WX*1.3)*0.37+np.floor(WY*1.3)*1.91+np.floor(WZ*1.3)*3.7)-0.5)
+        gc=P['grain']['cell'];h0,h1,h2=P['grain']['hash']
+        pl=1+P['grain']['amp']*(hsh(np.floor(WX/gc)*h0+np.floor(WY/gc)*h1+np.floor(WZ/gc)*h2)-0.5)
         for k,f in ((0,g),(1,br),(2,rb),(3,pl)):
             mk=mat==k
             out[mk]=np.clip(out[mk]*f[mk][:,None],0,255)
@@ -273,6 +277,8 @@ def skin_row(rsl,skinned,full,center,cw,ch,fid,name):
 def sheet(d,variant_letter):
     full=d['m'];center=d['center'];fid='x'+d['fid'];col=d['col']
     m,ms=split_sight(full)
+    import export_spec   # Modelleinheit des Blatts (Meter je Einheit) für die Katalog-Muster in mm
+    unit_m=export_spec.model_unit(d['name'],full)
     # ---------- Skins (claude-0.3): fünf je Blatt, der erste ist der Hauptskin (Isometrie, Orthos, Farbvarianten)
     sid=f'K{variant_letter}{d["num"]}'
     rsl=[skins.resolve(full,k,sid,d['num'],d['palette']) for k in skins.pick(sid,full,d['num'],d['palette'])];hero=rsl[0]
@@ -332,7 +338,7 @@ def sheet(d,variant_letter):
     MWd=1180;mh=BH-190
     me,mhh=extent(m,ISO[1],ISO[2],center)
     msc=min((MWd-90)/me,(mh-90)/mhh)
-    mv=svgview(m,ISO[1],ISO[2],center,MWd,mh,msc,ow=3.0,texture=make_texture())
+    mv=svgview(m,ISO[1],ISO[2],center,MWd,mh,msc,ow=3.0,texture=make_texture(unit_m=unit_m))
     used={}
     for P in m.parts:
         k=material_of(P);used.setdefault(k,P['col'])

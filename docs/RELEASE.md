@@ -1,5 +1,5 @@
 Claude-Konzeptblätter für Cube Escape (Ordner `claude/`): Waffenblätter XL je Claude-Variante (Liste in
-`claude/generator/variants.py`, Stand claude-0.7: C, D, F, G, H, J) und die Visier-Serie VS01–VS09. Jedes Blatt kommt mit einem
+`claude/generator/variants.py`, Stand claude-0.8: C, D, F, G, H, J) und die Visier-Serie VS01–VS09. Jedes Blatt kommt mit einem
 maschinenlesbaren Steckbrief (`*.spec.json`) aus demselben Modell. Was sich geändert hat, steht in `CHANGELOG.md`.
 
 - `claude-konzeptblaetter-<Variante>-<Version>.zip`: Waffenblätter (`sheets/*.dc.html`), Steckbriefe (`*.spec.json`) und Schriften (`fonts/`, SIL OFL)

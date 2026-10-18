@@ -11,82 +11,31 @@ Muster liegen im Objektraum (Seitenprojektion bzw. Richtung im Modell), nicht in
 Objekt-Koordinaten in Blender backen.
 """
 import math,copy
-import variants
+import variants,texcat
 from eng import CHANNELS,Model,rect,circ
 from xlroles import color_roles,material_of,part_area,METAL_LABELS,DARK_LABELS,GRIP_LABELS,_mix
 
 ACCENTS=('SK_Accent1','SK_Accent2')
 SLOTS=CHANNELS+ACCENTS
-FINISHES=('paint','polished_gold','polished_chrome','neon')
+FINISHES=texcat.finish_ids()
 BLOCKS={'farbflaechen':'Farbflächen','glyphen':'Glyphen/Zahlen','streifen':'Streifen/Verläufe/Ringe',
         'material':'Gold/Chrom + Abnutzung','schmuck':'Schmuckteile'}
 LAYER_BLOCK={'side_block':'farbflaechen','bands':'streifen','gradient':'streifen','rings':'streifen','glyphs':'glyphen',
              'finish':'material','edge_wear':'material','trim':'schmuck'}
-BARE_METAL='#9AA2AC'      # Farbe der Kantenabnutzung (blankes Metall, gedämpft)
+BARE_METAL=texcat.bare_metal()      # Farbe der Kantenabnutzung (blankes Metall, gedämpft; Katalog wear.bare_metal)
 # Rückfall, wenn ein Kanal an der Waffe nicht belegt ist: Farbfeld der Blatt-Palette (hell, mittel, dunkel, Akzent)
 SWATCH_FALLBACK={'MT_Primary':0,'MT_Secondary':1,'MT_Metal':1,'MT_Detail':2,'MT_Accent':3,'MT_Energy':3,'MT_Emission':3}
 
-GOLD='#E2B04A';CHROME='#C9D2DC';WHITE='#F2F4F6';INK='#15171A';HAZARD='#F2C230';NEON='#6CF2FF'
 
-# ---------- Katalog. Lagen in normierten Koordinaten des Waffenkörpers: u 0..1 von hinten nach vorn (Modell x),
-# v 0..1 von oben nach unten (Modell y). Bänder/Verläufe: Richtung im Modell, Lage/Breite als Anteil der Körperausdehnung
-# entlang dieser Richtung. Ziele: body (Gehäuseflächen), metal (Läufe, Mündungen, Metallteile).
-CATALOG=[
- dict(id='rennstreifen',name='Rennstreifen',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(WHITE,'paint')},
-      layers=[dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='bands',dir=(0,0,1),at=0.28,width=0.13,period=0.31,count=2,slots=['MT_Accent']),
-              dict(type='bands',dir=(0,1,0),at=0.36,width=0.12,count=1,slots=['MT_Accent']),
-              dict(type='bands',dir=(0,1,0),at=0.52,width=0.035,count=1,slots=['SK_Accent2']),
-              dict(type='glyphs',items='num',height=0.30,at=(0.28,0.66),slots=['SK_Accent2']),
-              dict(type='edge_wear',target='body',width=0.014,coverage=0.17)]),
- dict(id='goldglyphe',name='Goldglyphe',accents={'SK_Accent1':(GOLD,'polished_gold'),'SK_Accent2':('#8A6420','paint')},
-      layers=[dict(type='side_block',poly=[(-0.1,-0.1),(1.1,-0.1),(1.1,1.1),(-0.1,1.1)],slot='MT_Detail'),
-              dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='bands',dir=(0,1,0),at=0.18,width=0.03,count=1,slots=['SK_Accent1']),
-              dict(type='glyphs',items='runes6',height=0.20,at=(0.55,0.45),slots=['SK_Accent1']),
-              dict(type='trim',kind='fins',count=3,slot='SK_Accent1',at=0.85),
-              dict(type='edge_wear',target='body',width=0.013,coverage=0.24)]),
- dict(id='warnblock',name='Warnblock',accents={'SK_Accent1':(HAZARD,'paint'),'SK_Accent2':(INK,'paint')},
-      layers=[dict(type='bands',dir=(1,-1,0),at=0.0,width=0.045,period=0.09,count=40,slots=['SK_Accent1','SK_Accent2'],
-                   window=[(0.74,-0.1),(1.1,-0.1),(1.1,1.1),(0.74,1.1)]),
-              dict(type='side_block',poly=[(-0.1,-0.1),(0.22,-0.1),(0.22,1.1),(-0.1,1.1)],slot='MT_Secondary'),
-              dict(type='glyphs',items='chevron+num',height=0.26,at=(0.48,0.55),slots=['SK_Accent2']),
-              dict(type='edge_wear',target='body',width=0.019,coverage=0.42)]),
- dict(id='zweiton',name='Zweiton-Diagonale',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(WHITE,'paint')},
-      layers=[dict(type='side_block',poly=[(0.40,-0.1),(1.1,-0.1),(1.1,1.1),(0.62,1.1)],slot='MT_Detail'),
-              dict(type='bands',along=((0.40,-0.1),(0.62,1.1)),width=0.025,slots=['MT_Accent']),
-              dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='glyphs',items='cube',height=0.36,at=(0.22,0.5),slots=['SK_Accent2','MT_Accent','SK_Accent1']),
-              dict(type='edge_wear',target='body',width=0.012,coverage=0.14)]),
- dict(id='stufenblock',name='Stufenblock',accents={'SK_Accent1':(GOLD,'polished_gold'),'SK_Accent2':(INK,'paint')},
-      layers=[dict(type='side_block',poly=[(-0.1,0.62),(0.34,0.62),(0.34,0.40),(0.68,0.40),(0.68,0.18),(1.1,0.18),(1.1,1.1),(-0.1,1.1)],slot='MT_Detail'),
-              dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='glyphs',items='num',height=0.22,at=(0.80,0.62),slots=['MT_Primary']),
-              dict(type='trim',kind='ribs',count=4,slot='SK_Accent1',at=(0.18,0.35)),
-              dict(type='edge_wear',target='body',width=0.013,coverage=0.21)]),
- dict(id='zielringe',name='Zielringe',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(WHITE,'paint')},
-      layers=[dict(type='rings',center=(0.42,0.48),r0=0.10,width=0.11,gap=0.11,count=4,slots=['MT_Accent','SK_Accent2']),
-              dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='glyphs',items='runes4',height=0.14,at=(0.80,0.30),slots=['MT_Accent']),
-              dict(type='edge_wear',target='body',width=0.012,coverage=0.14)]),
- dict(id='glutverlauf',name='Glutverlauf',accents={'SK_Accent1':('#3A3F47','polished_chrome'),'SK_Accent2':(NEON,'neon')},
-      layers=[dict(type='gradient',dir=(1,0,0),start=0.30,end=0.95,steps=5,slots=['MT_Primary','MT_Accent']),
-              dict(type='bands',dir=(0,1,0),at=0.66,width=0.03,period=0.07,count=2,slots=['SK_Accent2']),
-              dict(type='trim',kind='ribs',count=5,slot='SK_Accent1',at=(0.12,0.40)),
-              dict(type='edge_wear',target='body',width=0.012,coverage=0.17)]),
- dict(id='chromrippe',name='Chromrippe',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(INK,'paint')},
-      layers=[dict(type='side_block',poly=[(-0.1,-0.1),(1.1,-0.1),(1.1,1.1),(-0.1,1.1)],slot='MT_Detail'),
-              dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='bands',dir=(0,1,0),at=0.84,width=0.08,count=1,slots=['MT_Accent']),
-              dict(type='trim',kind='ribs',count=6,slot='SK_Accent1',at=(0.45,0.40)),
-              dict(type='trim',kind='fins',count=2,slot='SK_Accent1',at=0.85),
-              dict(type='edge_wear',target='body',width=0.016,coverage=0.28)]),
- dict(id='glyphenband',name='Glyphenband',accents={'SK_Accent1':(CHROME,'polished_chrome'),'SK_Accent2':(NEON,'neon')},
-      layers=[dict(type='finish',target='metal',slot='SK_Accent1'),
-              dict(type='glyphs',items='runes7',height=0.16,at=(0.55,0.42),slots=['SK_Accent2'],band='MT_Detail'),
-              dict(type='edge_wear',target='body',width=0.012,coverage=0.14)]),
-]
+# ---------- Katalog (claude-0.8): die neun Skins lesen wir aus dem gemeinsamen Texturkatalog docs/textures/catalog.json (texcat.py).
+# Lagen in normierten Koordinaten des Waffenkörpers: u 0..1 von hinten nach vorn (Modell x), v 0..1 von oben nach unten (Modell y).
+# Bänder/Verläufe: Richtung im Modell, Lage/Breite als Anteil der Körperausdehnung entlang dieser Richtung. Ziele: body (Gehäuseflächen),
+# metal (Läufe, Mündungen, Metallteile). Bis claude-0.7 stand der Katalog hier; Regressionsanker: claude/tests/data/skins-legacy-0.7.json.
+CATALOG=texcat.claude_skins()
 BY_ID={s['id']:s for s in CATALOG}
+
+# Skins mit dunklem Gehäuse (Beschreibung im Katalog: „dunkles Gehäuse“/„dunkles Band“); Black Ice bevorzugt sie als Hauptskin
+DARK_SKINS=('goldglyphe','chromrippe','glyphenband')
 
 def pick(sheet,full=None,num=None,palette=None):
     """fünf Skins je Blatt; der erste ist der Hauptskin (Isometrie, Orthos, Farbvarianten). Reihenfolge: Drehung des Katalogs
@@ -96,7 +45,9 @@ def pick(sheet,full=None,num=None,palette=None):
     order=[CATALOG[(st+2*j)%len(CATALOG)]['id'] for j in range(len(CATALOG))]
     if full is not None:
         miss={sid:sum(1 for t in resolve(full,sid,sheet,num,palette)['notes'] if not t.startswith(('finish','Kontrast'))) for sid in order}
-        order=sorted(order,key=lambda sid:miss[sid])
+        # Black Ice (J, claude-0.8): bei gleich vielen Lücken zuerst die Skins mit dunklem Gehäuse (Stealth-Serie); sonst unverändert
+        dark=DARK_SKINS if sheet[1]=='J' else ()
+        order=sorted(order,key=lambda sid:(miss[sid],sid not in dark))
     return order[:5]
 
 # ---------- Glyphen: eigene Segmentziffern (schräg), eigene Runen, Embleme. Zeichenbox 1×2 (Ziffern/Runen), 2×2 (Embleme).
@@ -485,27 +436,8 @@ def summary(rs):
         if k not in b:b.append(k)
     return [k for k in BLOCKS if k in b]
 
-# Kurzbeschreibung je Skin für die Prompts des Blatts (deutsch, englisch)
-DESC={
- 'rennstreifen':('zwei Rennstreifen in Akzentfarbe über die Oberseite, Seitenband mit weißer Zierlinie, große schräge Segmentnummer, Läufe poliertes Chrom, leichte Kantenabnutzung',
-                 'two accent racing stripes over the top, side band with white pinstripe, large slanted segment number, polished chrome barrels, light edge wear'),
- 'goldglyphe':('dunkles Gehäuse, poliertes Gold an Läufen und Mündung, goldene Runenzeile und Zierlinie, goldene Finnen, Kantenabnutzung',
-               'dark body, polished gold barrels and muzzle, row of gold glyphs and gold pinstripe, gold fins, edge wear'),
- 'warnblock':('gelb-schwarze Warnstreifen vorn, Heckblock in Zweitfarbe, Winkel-Emblem mit Nummer, starke Kantenabnutzung',
-              'yellow-black hazard stripes at the front, rear block in secondary color, chevron emblem with number, heavy edge wear'),
- 'zweiton':('diagonale Zweifarb-Teilung mit Akzentlinie, Würfel-Emblem, Chrom an Läufen',
-            'diagonal two-tone split with accent line, cube emblem, chrome barrels'),
- 'stufenblock':('gestufte Farbblöcke dunkel unter hell, Gold an Metallteilen, goldene Rippen, Segmentnummer',
-                'stepped color blocks dark below light, gold metal parts, gold ribs, segment number'),
- 'zielringe':('konzentrische Ringe in Akzentfarbe und Weiß auf der Seite, kleine Runen, Chrom an Läufen',
-              'concentric accent and white rings on the side, small glyphs, chrome barrels'),
- 'glutverlauf':('gestufter Farbverlauf von der Grundfarbe zur Akzentfarbe nach vorn, zwei leuchtende Neonlinien, dunkle Chromrippen',
-                'stepped color gradient from base to accent toward the muzzle, two glowing neon lines, dark chrome ribs'),
- 'chromrippe':('dunkles Gehäuse, Chromrippen an der Seite, Chromfinnen, Akzentband unten, Kantenabnutzung',
-               'dark body, chrome side ribs, chrome fins, accent band along the bottom, edge wear'),
- 'glyphenband':('dunkles Band mit leuchtender Neon-Runenzeile über die Seite, Chrom an Läufen',
-                'dark side band with a glowing neon glyph row, chrome barrels'),
-}
+# Kurzbeschreibung je Skin für die Prompts des Blatts (deutsch, englisch), aus dem Katalog
+DESC=texcat.claude_skin_descriptions()
 SLOT_DE={'MT_Primary':'Primär','MT_Secondary':'Sekundär','MT_Accent':'Akzent','MT_Metal':'Metall','MT_Energy':'Energie',
          'MT_Emission':'Leuchte','MT_Detail':'Detail','SK_Accent1':'Skin-Akzent 1','SK_Accent2':'Skin-Akzent 2'}
 FINISH_DE={'paint':'Lack','polished_gold':'Gold poliert','polished_chrome':'Chrom poliert','neon':'Neon'}

@@ -232,7 +232,14 @@
    }
   },
   "textures": {
-   "type": "object", "required": ["source", "vocabulary", "painted", "brushed", "rubber", "matte", "lit"]
+   "type": "object", "required": ["source", "vocabulary", "painted", "brushed", "rubber", "matte", "lit"],
+   "properties": {"catalog": {"description": "claude-0.8, optional: Texturkatalog docs/textures/catalog.json (file, format, format_version, claude_version, sha256_claude_parts, ids)", "type": "object"}}
+  },
+  "texture_profile": {
+   "description": "claude-0.8, optional (nicht beim Bogen): Texturprofil des Waffentyps aus dem Textur-Blatt des Nutzers; weapon-spec.md › Texturprofil",
+   "type": "object", "required": ["housing", "metal", "rubber", "energy", "edge_wear", "decals", "source"],
+   "properties": {"edge_wear": {"type": "object", "required": ["level"], "properties": {"level": {"enum": ["subtle", "medium", "strong"]}}},
+                  "decals": {"type": "object", "required": ["toolgen"], "properties": {"toolgen": {"type": "array", "items": {"type": "string"}, "minItems": 1}}}}
   },
   "skin": {
    "description": "claude-0.3, optional (ältere Specs ohne): fünf Skins je Waffe, der erste ist der Hauptskin des Blatts; Beschreibung in weapon-spec.md › Skins",

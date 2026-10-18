@@ -57,8 +57,7 @@ python3 docs/textures/check_catalog.py            # schnell, nur Standardbibliot
 - Nach jeder Änderung: `make_swatches.py`, dann `check_catalog.py` (beide Ergebnisse committen).
 
 ## Stand und Grenzen
-- Claudes Pipeline (`xl.py`, `skinraster.py`, `skins.py`) liest den Katalog **noch nicht**; die Werte sind heutige Claude-Werte, in mm
-  umgerechnet. Die Umstellung ist ein eigener Schritt mit Bildstufe (Blätter ändern sich leicht: Musterfeinheit je Waffe).
-- Codex' Muster (`raster.texture_factor`, `_finish_surface`) weichen von Claudes ab (Modelleinheiten, Reflexionskeulen); in Teil C
-  gleicht Codex an den Katalog an. Seine fünf Skins stehen als `origin: codex` im Katalog, so wie der Code sie heute beschreibt.
-- Die Zuordnung `parts[].texture` und `skin.catalog_id` im Weapon-Spec (additiv) und das optionale Lesen durch Toolgen sind eigene Aufträge.
+- Claudes Pipeline liest den Katalog seit claude-0.8 (`claude/generator/texcat.py`): Muster der Materialansicht (`xl.make_texture`), Skins (`skins.CATALOG`),
+  Tonleitern und Abnutzung (`skinraster.py`) kommen aus `catalog.json`; die Blätter änderten sich dabei (Musterfeinheit je Waffe, Bericht [0.8](../../claude/docs/versions/0.8.md)). Test: `claude/tests/test_texcat.py`.
+- Codex liest den Katalog seit codex-0.1.2/0.2.2 (PR #3, `codex/fluxbloom/texture_catalog.py`); seine fünf Skins stehen als `origin: codex` im Katalog, so wie der Code sie beschreibt.
+- Die Zuordnung `parts[].texture` und `skin.catalog_id` steht im Weapon-Spec (Claude seit 0.8, Codex seit PR #3). Das optionale Lesen durch Toolgen ist ein eigener Auftrag.

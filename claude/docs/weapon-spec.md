@@ -26,12 +26,13 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | `anchors` | `Socket_Hand`, `Socket_SupportHand`, `Socket_Muzzle`, `Socket_CenterOfMass`, `Socket_Sight`: `position_m` (Toolgen-Rahmen), `model` (Modelleinheiten), `source`, `part` (Teil, aus dem der Anker stammt; claude-0.5); nicht ableitbar → `null` mit Grund |
 | `palette` | vier Farbvarianten des Blatts (`base`, `standard`, `arktis`, `nacht`): `swatches` (Blatt), `channels` (7 MT-Slots → sRGB-Hex oder `null`), `other_colors` (weitere Farben im Kanal mit Flächenanteil) |
 | `channels_used` | Kanäle, die Teile oder Aufkleber belegen |
-| `parts[]` | `id` (p00 …, Reihenfolge des Modells), `label` (deutsche Bauteilbezeichnung oder `null`), `channel`, `channel_source`, `material`, `emissive`, `sight`, `color` (Basis), `area_m2`, `long_axis`, `bounds_m`, `moving` (Art aus `moving_parts` oder `null`; claude-0.5), `toolgen_material` (claude-0.5.2) |
+| `parts[]` | `id` (p00 …, Reihenfolge des Modells), `label` (deutsche Bauteilbezeichnung oder `null`), `channel`, `channel_source`, `material`, `emissive`, `sight`, `color` (Basis), `area_m2`, `long_axis`, `bounds_m`, `moving` (Art aus `moving_parts` oder `null`; claude-0.5), `toolgen_material` (claude-0.5.2), `texture` (claude-0.8: Material-ID im Texturkatalog `docs/textures/catalog.json`, `null` bei Glas) |
 | `moving_parts` | (claude-0.5, optional) bewegliche Teile wie Toolgens Use-Clip – siehe [Bewegliche Teile](#bewegliche-teile) |
 | `robot_fit` | (claude-0.5.1, optional) Größe in der Roboterhand: Zielzahlen mit Quelle und das Blatt daran gemessen – siehe [Größe in der Roboterhand](#größe-in-der-roboterhand) |
 | `sight` | `present`, `kind`, `window`, `source`, `modular` (immer separat), `mount_side`, `labels`, `parts`, `bounds_m`, `anchor`, `window_geometry` (Fensterelemente mit Durchsichtachse oder `null`), `window_geometry_note` (Grund bei `null`; beide claude-0.5), `type`, `frame` mit `type_source`/`frame_source` (claude-0.5.2, siehe [Visier-Vokabular](#visier-vokabular)), `sight_spec` (claude-0.7, Waffen 1–9: [Visier der Visier-Serie](#visier-der-visier-serie)) |
 | `decals[]` | `part`, `channel`, `surface` (left/right/front/back/top), `emissive`, `color`, `area_m2`, `bounds_m` |
-| `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns` |
+| `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns`; seit claude-0.8 aus dem Texturkatalog (`catalog`: Datei, Version, sha256 der gelesenen Teile, Katalog-IDs), für jede Waffe gleich |
+| `texture_profile` | (claude-0.8, optional, nicht beim Bogen) Texturprofil des Waffentyps aus dem Textur-Blatt des Nutzers – siehe [Texturprofil](#texturprofil) |
 | `skin` | (claude-0.3, optional) fünf Skins je Waffe aus einem Katalog von neun, der erste ist der Hauptskin des Blatts – siehe [Skins](#skins) |
 | `summary` | Anzahlen, Kanäle mit Nebenfarben je Variante |
 
@@ -99,6 +100,15 @@ Stand 17.10.2026: alle Zuordnungen heuristisch (0 ausdrücklich); 34 Kanäle in 
   gummiert → `knurl` (Rautenteilung), matt → `grain`, lackiert → Glanzverlauf ohne Relief, leuchtend → ohne Muster.
   Gestaltete Muster (Farbflächen, Glyphen, Streifen über mehrere Teile) stehen im Feld `skin` (claude-0.3).
 
+## Texturprofil
+
+claude-0.8 (Paket 4 der Sightline-Linie): Cube Escape `Docs/Images/EquipmentConcepts/weapon_textures_1-9.webp` („Waffen Texturen 1–9“) legt je Waffe
+sechs Kacheln fest. `texture_profile` überträgt sie in den Wortschatz des Texturkatalogs und der Toolgen-Decals (nicht beim Bogen; Waffen 1–9):
+`housing`, `metal`, `rubber`, `energy` (je `material` = Katalog-ID, `text_de` = Kurztext des Blatts, `energy.color`), `edge_wear.level`
+(`subtle`/`medium`/`strong`, Stufen des Katalogs `wear.levels`), `decals.toolgen` (IDs aus Toolgen `data/decals.json`), `interpretation`
+(Auslegung, wo der Kurztext mehrdeutig war), `source`, `catalog`. Die Konzeptblätter zeichnen das Profil nicht neu (Skins bleiben Sache der
+Pipeline); es ist die Zuordnung für Toolgen. Quelle der Daten: `claude/generator/texprofile.py`, geprüft von `test_texcat.py`.
+
 ## Skins
 
 Wunsch des Nutzers (17.10.2026): Die Waffen bekommen über Material und Kanalfarbe eine Gestaltungsebene mit fünf Bausteinen –
@@ -108,9 +118,9 @@ Aufkleber-Gruppen, **Streifen, Verläufe, konzentrische Ringe**, **poliertes Gol
 Formen (`skins.py`, Segmentziffern, acht Runen, Würfel/Winkel/Ring). Entscheidungen des Nutzers: Katalog mit fünf Skins je
 Waffe; Farben aus den MT_-Kanälen plus zwei feste Skin-Akzente; erst je Familie ein Probeblatt (KC01, KD02, KF05, KG07, KH10).
 
-- **Katalog** (`skins.CATALOG`, 9): `rennstreifen`, `goldglyphe`, `warnblock`, `zweiton`, `stufenblock`, `zielringe`,
+- **Katalog** (seit claude-0.8 aus `docs/textures/catalog.json` gelesen, `skins.CATALOG`, 9; `skin.catalog_id` und `skin.items[].catalog_id` = ID im Katalog): `rennstreifen`, `goldglyphe`, `warnblock`, `zweiton`, `stufenblock`, `zielringe`,
   `glutverlauf`, `chromrippe`, `glyphenband`. Je Blatt fünf (`skins.pick`: Drehung des Katalogs je Blatt, Skins, deren Lagen alle
-  Platz finden, zuerst); `skin.hero` = erster = Hauptskin, im Blatt in Isometrie, Orthos und Farbvarianten, alle fünf im Feld
+  Platz finden, zuerst; Black Ice bevorzugt bei Gleichstand dunkle Skins, seit claude-0.8); `skin.hero` = erster = Hauptskin, im Blatt in Isometrie, Orthos und Farbvarianten, alle fünf im Feld
   **SKIN/MUSTER** (neue untere Reihe, Blatt 4800×4432).
 - **Slots:** die sieben MT_-Kanäle färben mit der Variante um; an der Waffe unbelegte Kanäle nehmen das Farbfeld der Blatt-Palette
   (`source: swatch`: Primary hell, Secondary/Metal mittel, Detail dunkel, Accent/Energy/Emission Akzent). `SK_Accent1`/`SK_Accent2`
@@ -189,7 +199,7 @@ Entscheidung des Nutzers (17.10.2026, claude-0.5.2), additiv: `kind` bleibt Tool
   (`spec_checks.CE_SIGHTS`) standen als Hinweise im Bericht (0.5.2: 41). Seit claude-0.7 tragen die Waffen 1–9 das Visier der Serie,
   der Hinweis „Visier weicht vom Zielbild ab“ entfällt (0 Hinweise); die Prüfung bleibt.
 - `parts[].toolgen_material`: Toolgen `surface_recipes.json` › `materials`: painted → painted, brushed → brushed, rubber → rubber,
-  matte → painted_matte, lit → energy_glass, glass → `null` (claude-0.7). Die Decal-Zuordnung zu Toolgens Katalog (`decals.json`) ist offen.
+  matte → painted_matte, lit → energy_glass, glass → `null` (claude-0.7). Die Decal-Zuordnung zu Toolgens Katalog (`decals.json`) steht seit claude-0.8 je Waffentyp im [Texturprofil](#texturprofil) (`texture_profile.decals.toolgen`); die Aufkleber des Modells (Fenster, Leuchtflächen, Markierungen) haben keine Entsprechung im Toolgen-Katalog und tragen kein Feld.
 
 ## Visier der Visier-Serie
 

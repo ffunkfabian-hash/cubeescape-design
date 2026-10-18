@@ -2,18 +2,24 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
-## Unreleased (Pipeline)
+## claude-0.8
+- Pipeline liest den gemeinsamen Texturkatalog `docs/textures/catalog.json` (`texcat.py`): Muster der Materialansicht in mm am Objekt (mit der Modelleinheit
+  des Blatts umgerechnet, gleiche Rändelung auf jeder Waffe gleich fein), Skins, Tonleitern und Kantenabnutzung aus dem Katalog; Katalog-Inhalt im Cache-Schlüssel.
+- Spec (additiv, format_version 1): `parts[].texture`, `skin.catalog_id`/`items[].catalog_id`, `textures.catalog`; `texture_profile` je Waffentyp (Textur-Blatt:
+  Material-IDs, Abnutzungsstufe, Toolgen-Decals; Waffen 1–9) – damit ist die Decal-Zuordnung zu Toolgen erledigt.
+- Black Ice (J) bevorzugt bei Gleichstand dunkle Hauptskins; andere Varianten unverändert.
 - Inhalts-Cache für Blätter (`claude/generator/sheetcache.py`): `build_all.py`/`build_xl.py`/`build_vs.py` bauen nur Blätter neu, deren Schlüssel
   (Modell, Palette/Skin, Quelltext der schreibenden Funktionen `CODE_PARTS`) sich geändert hat; Cache außerhalb des Repos. `--force` (alles neu, Einträge
   erneuert) und `CE_NO_CACHE=1` (Cache ganz aus) umgehen den Cache; `full`-Check (`test_golden --full`) und Release immer ohne Cache. Test `claude/tests/test_sheetcache.py`.
+- Alle 60 Waffenblätter und Specs neu (Musterfeinheit; KJ: Skin-Auswahl), Visier-Serie unverändert. Bericht [claude/docs/versions/0.8.md](claude/docs/versions/0.8.md).
 
-## codex-0.1.3 / codex-0.2.3 (Unreleased, PR #4)
+## codex-0.1.3 / codex-0.2.3 (PR #4, gemerged)
 - Parallax (0.1.3) und Flux Bloom (0.2.3): KA01–KA09 und KK01–KK09 tragen das Standardvisier VS01–VS09 (nachgebaut nach `VSnn.spec.json`, ±0,5 mm,
   Montage auf der Schiene, Glas, Strahlprüfung über die ganze Öffnung; KK03 mit Erhöhung 33 mm); Bögen behalten den Pin (Pin/Leuchtpunkt entlang −Y,
   `Socket_Sight` Unterkante-Mitte). Das Visier sitzt auf den Blättern nicht auf der Waffe (Hauptansicht „ohne Optik“, Feld „Visier · separat“; Entscheidung 18.10.2026).
 - Claudes `spec_checks` auf allen 20 Specs: 58 → 0 Befunde; Berichte [Parallax](codex/docs/versions/0.1.md), [Flux Bloom](codex/docs/versions/0.2.md).
 
-## codex-0.1.2 / codex-0.2.2 (Unreleased, PR #3)
+## codex-0.1.2 / codex-0.2.2 (PR #3, gemerged)
 - Stilvertrag (Konturen, kameragebundenes Licht, große Orthos langer Waffen), Weapon-Spec v1 (`KAnn.spec.json`/`KKnn.spec.json`) und gemeinsamer Texturkatalog
   `docs/textures/` (physische Mustergrößen, Katalog-IDs); 20 Blätter neu gebaut, Modelle und Paletten unverändert.
 
