@@ -14,6 +14,7 @@ Verbindliche Gestaltungsregeln: [`docs/masterprompt.md`](docs/masterprompt.md) (
 - **Visier separat**: Optik ist ein modulares Anbauteil; auf der Waffe bleibt nur die Visierschiene
   (bei Raketenwerfern seitlich links am Rohr)
 - Material & Texturen im Objektraum (lackiert, gebürstet, gummiert, matt, beleuchtet) mit Musterfeldern
+- Texturprofil des Waffentyps (claude-0.9, Waffen 1–9): Gehäuse, Metall, Gummi, Energie, Kantenabnutzung, Toolgen-Decals
 - Vier Farbvarianten derselben Geometrie (Basis, Cube Escape Standard, Arktis, Nacht)
 - Prompt auf Deutsch und Englisch
 

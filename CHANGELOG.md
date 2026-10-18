@@ -2,6 +2,14 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.9
+- Texturprofil auf den Blättern (Entscheidung des Nutzers 18.10.2026): neues Feld **TEXTURPROFIL** unter der Materialansicht mit sechs Kacheln
+  (Gehäuse, Metall, Gummi, Energie mit Material-ID des Katalogs und Kurztext, Kantenabnutzung mit Stufe, Toolgen-Decals) auf allen 54 Blättern der Waffen 1–9;
+  Bögen ohne Profil und unverändert. Materialansicht dafür niedriger, Blattgröße gleich.
+- Prompts (de/en, Blatt und `claude/prompts/Waffen-Prompts.md`) nennen das Texturprofil (Kurztexte bzw. Materialien, Abnutzung, Toolgen-Decals); Bögen unverändert.
+  Schrift im Prompt-Feld nur bei Bedarf kleiner (`xl.prompt_font`, 18 → 14 px), Feld gleich groß.
+- `texprofile` im Cache-Schlüssel (`sheetcache.COMMON`/`CODE_PARTS`); Spec unverändert (kein Vertragswechsel). Bericht [claude/docs/versions/0.9.md](claude/docs/versions/0.9.md).
+
 ## claude-0.8
 - Pipeline liest den gemeinsamen Texturkatalog `docs/textures/catalog.json` (`texcat.py`): Muster der Materialansicht in mm am Objekt (mit der Modelleinheit
   des Blatts umgerechnet, gleiche Rändelung auf jeder Waffe gleich fein), Skins, Tonleitern und Kantenabnutzung aus dem Katalog; Katalog-Inhalt im Cache-Schlüssel.

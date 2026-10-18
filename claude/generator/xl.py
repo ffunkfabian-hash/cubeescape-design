@@ -9,7 +9,7 @@ from eng import *
 import raster
 from xlroles import *
 from xlroles import _rgb,_hex,_lum,_sat,_mix
-import skins,variants,texcat
+import skins,variants,texcat,texprofile
 from skinraster import skin_texture
 
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
@@ -74,6 +74,60 @@ def swatch_svg(kind,w,h,col):
         d=''.join(f'<circle cx="{r.uniform(0,w):.1f}" cy="{r.uniform(0,h):.1f}" r="0.9" fill="{_mix(col,"#FFFFFF",0.2)}"/>' for _ in range(120))
         return f'<rect width="{w}" height="{h}" rx="10" fill="{col}"/>{d}'
     return f'<defs><radialGradient id="{cid}"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.35" stop-color="{col}"/><stop offset="1" stop-color="{_mix(col,"#000000",0.55)}"/></radialGradient></defs><rect width="{w}" height="{h}" rx="10" fill="url(#{cid})"/>'
+
+# Texturprofil des Waffentyps auf dem Blatt (claude-0.9, Entscheidung des Nutzers 18.10.2026: „Ja, Texturprofil anzeigen“)
+ENERGY_HEX={'orange':'#FF8A2A','blue':'#3D8BFF','violet':'#A15CFF','light_blue':'#7FD4FF','cyan':'#22E3E8'}
+WEAR_DE={'subtle':'dezent','medium':'mittel','strong':'stark'}
+PROFILE_TILES=[('housing','GEHÄUSE'),('metal','METALL'),('rubber','GUMMI'),('energy','ENERGIE'),('edge_wear','KANTENABNUTZUNG'),('decals','DECALS')]
+
+def _profile_swatch(key,e,w,h,cols):
+    """Musterfeld einer Profil-Kachel: Material-ID des Katalogs (Gehäuse/Metall/Gummi/Energie), Abnutzungsstufe, Toolgen-Decals"""
+    if key=='edge_wear':
+        lv=texcat.wear_levels();order=sorted(lv,key=lambda k:lv[k]['toolgen']);cov=lv[e['level']]['coverage']
+        bare=texcat.bare_metal();base=cols['housing']
+        import random;r=random.Random(zlib.crc32(e['level'].encode()))
+        # Lackfläche, oben eine harte Kante mit blankem Metall; Anteil der Flecken = coverage der Stufe
+        chips=''.join(f'<rect x="{x}" y="0" width="{r.uniform(3,9):.1f}" height="{r.uniform(3,6+20*cov):.1f}" rx="1.5" fill="{bare}"/>' for x in range(2,w-60,7) if r.random()<cov*2.2)
+        meter=''.join(f'<rect x="{w-54+i*18}" y="{h-6-(12+i*10)}" width="14" height="{12+i*10}" rx="2" fill="{_mix(cols["accent"],"#0E1622",0 if i<=order.index(e["level"]) else 0.75)}"/>' for i in range(3))
+        return f'<rect width="{w}" height="{h}" rx="8" fill="{base}"/><rect width="{w-62}" height="4" fill="{_mix(base,"#FFFFFF",0.25)}"/>{chips}<rect x="{w-62}" y="0" width="62" height="{h}" fill="#0E1622" opacity="0.55"/>{meter}'
+    if key=='decals':
+        ids=e['toolgen'][:2];fs=12
+        tx=''.join(f'<text x="{w/2}" y="{h/2+(i-(len(ids)-1)/2)*16+4:.0f}" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-size="{fs}" fill="#E6ECF2">{_h.escape(t)}</text>' for i,t in enumerate(ids))
+        return f'<rect width="{w}" height="{h}" rx="8" fill="#0B121C" stroke="{cols["accent"]}" stroke-width="1.2" stroke-dasharray="5 4"/>{tx}'
+    mid=e['material'];col=ENERGY_HEX.get(e.get('color'),cols['accent']) if key=='energy' else cols[key]
+    kind={'painted':'lack','brushed':'brushed','rubber':'rubber','painted_matte':'plastic','energy_glass':'light'}.get(mid)
+    if kind:return swatch_svg(kind,w,h,col)
+    cid=f'pf{mid}{zlib.crc32(col.encode())%9999}'
+    if mid=='ceramic':   # Keramik: heller, weicher Verlauf mit feinen Plattenfugen
+        fug=''.join(f'<line x1="{x}" y1="0" x2="{x}" y2="{h}" stroke="{_mix(col,"#000000",0.18)}" stroke-width="1"/>' for x in range(w//3,w,w//3))
+        return f'<defs><linearGradient id="{cid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{_mix(col,"#FFFFFF",0.45)}"/><stop offset="1" stop-color="{_mix(col,"#FFFFFF",0.1)}"/></linearGradient></defs><rect width="{w}" height="{h}" rx="10" fill="url(#{cid})"/>{fug}'
+    if mid=='satin':     # satiniert: flacher, breiter Schimmer
+        return f'<defs><linearGradient id="{cid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{_mix(col,"#000000",0.12)}"/><stop offset="0.5" stop-color="{_mix(col,"#FFFFFF",0.12)}"/><stop offset="1" stop-color="{_mix(col,"#000000",0.12)}"/></linearGradient></defs><rect width="{w}" height="{h}" rx="10" fill="url(#{cid})"/>'
+    if mid=='polished':  # poliert: harter Glanzstreifen
+        return f'<defs><linearGradient id="{cid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{_mix(col,"#000000",0.3)}"/><stop offset="0.44" stop-color="{col}"/><stop offset="0.5" stop-color="#FFFFFF"/><stop offset="0.56" stop-color="{col}"/><stop offset="1" stop-color="{_mix(col,"#000000",0.35)}"/></linearGradient></defs><rect width="{w}" height="{h}" rx="10" fill="url(#{cid})"/>'
+    # Rauguss: grobe helle und dunkle Poren
+    import random;r=random.Random(11)
+    d=''.join(f'<circle cx="{r.uniform(0,w):.1f}" cy="{r.uniform(0,h):.1f}" r="{r.uniform(0.8,2.2):.1f}" fill="{_mix(col,"#000000" if r.random()<0.6 else "#FFFFFF",0.3)}"/>' for _ in range(90))
+    return f'<rect width="{w}" height="{h}" rx="10" fill="{col}"/>{d}'
+
+def profile_strip(prof,type_de,w,h,cols):
+    """Leiste TEXTURPROFIL unter der Materialansicht: sechs Kacheln aus texprofile (Gehäuse, Metall, Gummi, Energie, Abnutzung, Decals)"""
+    G_=12;tw=(w-32-5*G_)//6;sh=44
+    tiles=''
+    for key,cap in PROFILE_TILES:
+        e=prof[key]
+        if key=='edge_wear':sub='Stufe '+WEAR_DE[e['level']]
+        elif key=='decals':sub='Toolgen-Decals'
+        else:sub=texcat.material(e['material'])['name']['de']
+        sub=sub[:1].upper()+sub[1:]
+        sw=f'<svg width="{tw}" height="{sh}" viewBox="0 0 {tw} {sh}" role="img" aria-label="{_h.escape(cap.title()+": "+sub)}">{_profile_swatch(key,e,tw,sh,cols)}</svg>'
+        tiles+=(f'<div style="display:flex;flex-direction:column;gap:5px;width:{tw}px;min-width:0">{sw}'
+                f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:13px;letter-spacing:1.4px;color:#8FA0B3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{cap}</span>'
+                f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:16px;font-weight:600;color:#E6ECF2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{_h.escape(sub)}</span>'
+                f'<span style="font-size:15px;line-height:1.2;color:#C7D1DC;overflow:hidden;max-height:36px">„{_h.escape(e["text_de"])}“</span></div>')
+    return (f'<div style="width:{w}px;height:{h}px;box-sizing:border-box;border-radius:18px;border:1px solid #22314A;background:#111A27;padding:12px 16px;display:flex;flex-direction:column;gap:10px;overflow:hidden;flex-shrink:0">'
+            f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:16px;letter-spacing:3px;color:#8FA0B3;white-space:nowrap">TEXTURPROFIL · {_h.escape(type_de.upper())} · TEXTUR-BLATT WAFFEN 1–9</span>'
+            f'<div style="display:flex;gap:{G_}px">{tiles}</div></div>')
 
 def _bbox(parts):
     vs=[q for P in parts for f in P['F'] for q in f['v']]
@@ -150,8 +204,31 @@ def panel(inner,w,h,label,fid,aria,small=False):
 
 EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Magazin':'magazine','Lauf':'barrel','Mündung':'muzzle','Mündungsbremse':'muzzle brake','Zielfernrohr':'scope on mounting rings','Visier':'sight','Schaft':'stock','Energiezelle':'energy cell','Kühlrippen':'cooling fins','Montageringe':'scope rings','Laufverkleidung':'barrel shroud','Vordergriff':'foregrip','Doppellauf':'double barrel','Trommel':'revolver cylinder','Sehne':'string','Wurfarm':'limb','Pfeil':'arrow','Umlenkrolle':'cam pulley','Pfeilauflage':'arrow rest','Stabilisator':'stabilizer','Rohr':'launch tube','Heckdüse':'rear exhaust','Abgasdüse':'rear exhaust','Raketenrohre':'rocket tubes','Handschutz':'handguard','Tragegriff':'carry handle','Kimme':'rear sight','Korn':'front sight','Ladeleiste':'charge indicator rail','Mündungsring':'muzzle ring','Schaftkappe':'butt plate','Wangenauflage':'cheek rest','Trommelmagazin':'drum magazine','Röhrenmagazin':'tube magazine','Pumpgriff':'pump grip','Kristallkern':'crystal core','Energiekugel':'energy orb','Bündelring':'focusing ring','Fokusring':'focusing ring','Fokusringe':'focusing rings','Laufmantel':'barrel jacket','Feuerkern':'fire core','Oberkiefer':'upper jaw','Unterkiefer':'lower jaw','Visierschiene':'sight rail','Ringvisier':'ring sight','Trichterheck':'flared rear funnel','Sicherungsmodul':'safety module','Rakete':'rocket','Spannmechanik':'cocking mechanism','Bolzen':'bolt','Mittelstück':'riser','Energie-Auge':'energy eye','Kondensator':'capacitor','Emitter':'emitter','Raketenkasten':'rocket pod','Heckkappe':'end cap','Verschluss':'breech','Kastenvisier':'box sight','Laufhülle':'barrel shroud','Laufkasten':'barrel housing','Ladekammer':'charging chamber','Beschleunigerring':'accelerator ring','Energiespule':'energy coil','Abschussrohr':'launch tube','Schalldämpfer':'suppressor','Montage':'mount','Rahmen':'frame','Energiekern':'energy core','Fokuskern':'focus core','Tragebügel mit Visier':'carry handle with sights','Oberlauf':'upper barrel','Unterlauf':'lower barrel','Energiemagazin':'energy magazine','Mittelstück':'riser','Abzugbügel':'trigger guard','Zweibein':'folded bipod','Kompensator':'compensator','Schlitten':'slide','Energiewürfel':'energy cube','Reflexvisier':'reflex sight','Käfig':'cage','Pulswürfel':'pulse cube','Feuerdämpfer':'flash hider','Kondensatorzelle':'capacitor cell','Fächeremitter':'fan emitter','Abschussrohre':'launch tubes','Kammerstängel':'bolt handle','Patronenfenster':'shell window','Klappschaft':'folding stock'}
 
+def prompt_font(texts,width,height,sizes=(18,17,16,15,14)):
+    """Schriftgröße des Prompt-Felds (claude-0.9): größte aus sizes, bei der die Absätze (JetBrains Mono, Zeichenbreite 0,6 em,
+    Zeilenhöhe 1,5) samt zwei Zeilen Reserve in die Höhe passen; Umbruch an Leerzeichen wie im Browser, Bindestriche nicht mitgezählt
+    (der Browser bricht dort zusätzlich, die Schätzung liegt also eher zu hoch)"""
+    def lines(t,cpl):
+        n,cur=1,0
+        for w in t.split(' '):
+            if cur and cur+1+len(w)>cpl:n+=1;cur=len(w)
+            else:cur+=(1 if cur else 0)+len(w)
+        return n
+    for fs in sizes:
+        cpl=int(width/(0.6*fs))
+        if (sum(lines(t,cpl) for t in texts)+2)*fs*1.5<=height:return fs
+    return sizes[-1]
+
 def prompts(d,labels,mats,variant_letter,skin=None):
     pal=', '.join(d['palette']);vs=d.get('vs')
+    import export_spec
+    tp=texprofile.PROFILES.get(export_spec.WEAPONS[d['name']][0])   # Texturprofil des Waffentyps (claude-0.9); Bogen: kein Profil
+    tp_de=tp_en=''
+    if tp:
+        tp_de='; '.join(f"{k} „{tp[f]['text_de']}“" for k,f in (('Gehäuse','housing'),('Metall','metal'),('Gummi','rubber'),('Energie','energy'),('Kantenabnutzung','edge_wear'),('Decals','decals')))
+        en_=lambda f:texcat.material(tp[f]['material'])['name']['en']
+        tp_en=(f"{en_('housing')} housing, {en_('metal')} metal, textured rubber grips, {tp['energy']['color'].replace('_',' ')} energy glass, "
+               f"{tp['edge_wear']['level']} edge wear, decals ({', '.join(tp['decals']['toolgen'])})")
     vn=variants.name(variant_letter)   # englischer Variantenname (ab J), ältere Varianten ohne
     de=(f"Erstelle ein technisches Low-Poly-Concept-Art-Blatt für das Spiel Cube Escape: {d['name']}, Variante {variant_letter}{f' ({vn})' if vn else ''} „{d['nick']}“. "
         f"Form: {d['form']}. {d['desc']} "
@@ -161,7 +238,8 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         "Stil: futuristisch, industrial, Hard-Surface, abgeschrägte Gehäuse, kantige Panzerplatten, klare dunkle Konturen, flache Toon-Schattierung, dunkelblauer Rasterhintergrund. "
         "Konstruktion: Abzug mit Bügel klar erkennbar, Magazin im Schacht, Lauf sichtbar aus dem Gehäuse, konsistente Achsen. Visier bzw. Zielfernrohr NICHT montiert zeichnen, sondern separat als modulares Anbauteil daneben; auf der Waffe bleibt nur die freie Visierschiene als Aufnahme. "
         +(f"Visier: {vs['info']['title']} aus der Visier-Serie ({vs['id']}): {vs['info']['desc']} " if vs else "")
-        +(f"Hauptskin „{skin[0]}“: {skin[1]}. " if skin else "")+
+        +(f"Hauptskin „{skin[0]}“: {skin[1]}. " if skin else "")
+        +(f"Texturprofil: {tp_de}. " if tp_de else "")+
         "Vermeiden: schwebende Teile, unbeabsichtigte Überschneidungen, zufällige Leuchtstreifen, Bloom, Unschärfe, Nebel, realistische Militärwaffen-Kopien.")
     if d['name']=='Raketenwerfer':
         de=de.replace('auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.','auf der Waffe bleibt nur die freie Visierschiene als Aufnahme – seitlich links am Rohr montiert, damit das Rohr die Sichtlinie nicht verdeckt.')
@@ -172,6 +250,7 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         +("Sight rail mounted on the left side of the tube, offset from the bore axis. " if d['name']=='Raketenwerfer' else "")+
         (f"Sight: {VS_EN[vs['id']]} ({vs['id']}, sight series), drawn separately. " if vs else "")+
         (f"Skin \"{skin[0]}\": {skin[2]}. " if skin else "")+
+        (f"Texture profile: {tp_en}. " if tp_en else "")+
         "Hard-surface industrial design, chamfered housings, clean dark outlines, flat cel shading, dark blue grid background, no bloom, no blur, no floating parts.")
     return de,en
 
@@ -335,7 +414,10 @@ def sheet(d,variant_letter):
     sp=sight_panel(ms,center,DW,ph,fid,d['name'],col,vs=d.get('vs'))
     det=f'<div style="display:flex;flex-direction:column;gap:20px;width:{DW}px">{det}{sp}</div>'
     # Material
-    MWd=1180;mh=BH-190
+    MWd=1180
+    prof=texprofile.PROFILES.get(export_spec.WEAPONS[d['name']][0])   # Bogen: kein Profil, Feld wie bis 0.8
+    PH=176 if prof else 0
+    mh=BH-190-(PH+18 if prof else 0)
     me,mhh=extent(m,ISO[1],ISO[2],center)
     msc=min((MWd-90)/me,(mh-90)/mhh)
     mv=svgview(m,ISO[1],ISO[2],center,MWd,mh,msc,ow=3.0,texture=make_texture(unit_m=unit_m))
@@ -346,7 +428,11 @@ def sheet(d,variant_letter):
     for nm,k in MATS:
         if k not in used:continue
         sw+=f'<div style="display:flex;flex-direction:column;gap:8px;width:210px"><svg width="210" height="96" viewBox="0 0 210 96" role="img" aria-label="Muster {nm.lower()}">{swatch_svg(k,210,96,used[k])}</svg><span style="font-family:\'Chakra Petch\',sans-serif;font-size:16px;letter-spacing:1.5px;color:#C7D1DC;line-height:1.25">{nm}</span></div>'
-    matp=f'<div style="display:flex;flex-direction:column;gap:18px;width:{MWd}px">{panel(mv,MWd,mh,"MATERIAL & TEXTUREN",fid,d["name"]+" Materialansicht mit Texturen")}<div style="display:flex;gap:18px">{sw}</div></div>'
+    pstrip=''
+    if prof:   # Farben der Kacheln aus dem Blatt (Basis-Palette), Energie in der Farbe des Profils
+        pcols=dict(housing=used.get('lack',d['palette'][0]),metal=used.get('brushed','#8C96A3'),rubber=used.get('rubber','#2A2F36'),accent=col)
+        pstrip=profile_strip(prof,d['name'],MWd,PH,pcols)
+    matp=f'<div style="display:flex;flex-direction:column;gap:18px;width:{MWd}px">{panel(mv,MWd,mh,"MATERIAL & TEXTUREN",fid,d["name"]+" Materialansicht mit Texturen")}<div style="display:flex;gap:18px">{sw}</div>{pstrip}</div>'
     # Farbvarianten
     VW=1380;vw=(VW-24)//2;vh=(BH-24)//2
     vs=''
@@ -365,11 +451,12 @@ def sheet(d,variant_letter):
     d2=dict(d);d2['en_type']=TYPE_EN.get(d['name'],'weapon')
     de,en=prompts(d2,labels,mats,variant_letter,skin=(hero['name'],)+skins.DESC[hero['id']])
     PW=W-2*PAD-DW-MWd-VW-3*G
+    pfs=prompt_font((de,en),PW-56,BH-150)   # Texturprofil verlängert die Prompts: Schrift nur bei Bedarf kleiner (Feld bleibt gleich groß)
     pr=f'''<div style="width:{PW}px;height:{BH}px;box-sizing:border-box;border-radius:18px;border:1px solid #22314A;background:#0B121C;padding:26px 28px;display:flex;flex-direction:column;gap:14px;overflow:hidden">
 <span style="font-family:'Chakra Petch',sans-serif;font-size:19px;letter-spacing:3px;color:#8FA0B3">PROMPT · DEUTSCH</span>
-<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:18px;line-height:1.5;color:#E6ECF2;user-select:all">{_h.escape(de)}</p>
+<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#E6ECF2;user-select:all">{_h.escape(de)}</p>
 <span style="font-family:'Chakra Petch',sans-serif;font-size:19px;letter-spacing:3px;color:#8FA0B3;margin-top:8px">PROMPT · ENGLISCH (BILDGENERATOR)</span>
-<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:18px;line-height:1.5;color:#C7D1DC;user-select:all">{_h.escape(en)}</p></div>'''
+<p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#C7D1DC;user-select:all">{_h.escape(en)}</p></div>'''
     pal=''.join(f'<div style="display:flex;align-items:center;gap:10px"><div style="width:50px;height:50px;border-radius:12px;background:{c}"></div><span style="font-size:19px;color:#8FA0B3">{c}</span></div>' for c in d['palette'])
     page=f'''<!doctype html>
 <html lang="de">
