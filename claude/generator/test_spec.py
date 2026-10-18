@@ -48,8 +48,10 @@ def load(sheet):return json.loads(_read(export_spec.path(sheet)))
 
 class SpecFiles(unittest.TestCase):
     def test_all_present_and_current(self):
-        """10 Dateien je Variante, jede gleich der Ausgabe des Exporters (sonst: python3 claude/generator/export_spec.py)."""
-        self.assertEqual(len(sheetmodels.SHEETS),10*len(variants.LETTERS))
+        """10 Dateien je Variante plus die neuen Waffentypen (claude-0.10, wtypes.NEW_SHEETS), jede gleich der Ausgabe des Exporters
+        (sonst: python3 claude/generator/export_spec.py)."""
+        import wtypes
+        self.assertEqual(len(sheetmodels.SHEETS),10*len(variants.LETTERS)+sum(len(v) for v in wtypes.NEW_SHEETS.values()))
         stale=[s for s in sheetmodels.SHEETS if not os.path.exists(export_spec.path(s)) or
                _read(export_spec.path(s))!=export_spec.dumps(export_spec.build(s))]
         self.assertEqual(stale,[],'veraltet oder fehlend – python3 claude/generator/export_spec.py')
@@ -332,10 +334,11 @@ class MovingParts(unittest.TestCase):
     """moving_parts (claude-0.5): Arten und Achsen wie Toolgens Use-Clip, Wurzel fest, Zuordnung nur über Bezeichnungen."""
     def test_moving(self):
         for s in sheetmodels.SHEETS:
-            sp=load(s);mv=sp['moving_parts'];tid=sp['weapon']['toolgen_id']
+            sp=load(s);mv=sp['moving_parts'];import wtypes;tid=wtypes.key(sp['weapon']['name_de'])
             with self.subTest(sheet=s):
                 self.assertIs(mv['root_moves'],False)
                 self.assertEqual([e['kind'] for e in mv['items']],export_spec.WEAPON_MOTIONS[tid])
+                self.assertEqual(all(e.get('proposed') for e in mv['items']),True if sp['weapon']['toolgen_id'] is None else not mv['items'])
                 self.assertEqual(mv['note'] is None,bool(mv['items']))
                 per={p['id']:p['moving'] for p in sp['parts']}
                 for e in mv['items']:
@@ -386,6 +389,8 @@ class RobotFit(unittest.TestCase):
             with self.subTest(sheet=s):
                 self.assertIs(r['concept_sheets'],False)
                 self.assertEqual([r['robot'][k]['value'] for k in ('height_m','hand_m','arm_m')],[1.5,0.09,0.42])
+                if tid is None:   # neue Typen (claude-0.10): nicht im Waffensatz von Cube Escape
+                    self.assertFalse(r['applies']);self.assertIn('neuer Designtyp',r['reason']);self.assertIsNone(r['targets']);continue
                 if tid in ('pistol','bow'):
                     self.assertFalse(r['applies']);self.assertTrue(r['reason']);self.assertIsNone(r['sheet_at_target'])
                     if tid=='pistol':self.assertEqual(r['targets']['length_min_m']['value'],0.24)
@@ -406,7 +411,7 @@ class SightTargets(unittest.TestCase):
     """Visier gegen das CE-Zielbild: nur Hinweise (kein Fehler); die Tabelle hier muss zu Cube Escape passen."""
     def test_hints_are_hints(self):
         import spec_checks
-        self.assertEqual(set(spec_checks.CE_SIGHTS),{t for t,_,_ in export_spec.WEAPONS.values()}-{'bow'})
+        self.assertEqual(set(spec_checks.CE_SIGHTS),{t for t,_,_ in export_spec.WEAPONS.values()}-{'bow',None})
         for s in sheetmodels.SHEETS:
             h=spec_checks.sight_target_hints(load(s))
             self.assertIsInstance(h,list);self.assertLessEqual(len(h),1)
@@ -430,15 +435,15 @@ class VisierSerie(unittest.TestCase):
             sp=load(s)
             with self.subTest(sheet=s):
                 self.assertEqual(spec_checks.vs_problems(sp),[])
-                if sp['weapon']['toolgen_id']=='bow':self.assertNotIn('sight_spec',sp['sight']);continue
+                if sp['weapon']['toolgen_id']=='bow' or not sp['sight']['present']:self.assertNotIn('sight_spec',sp['sight']);continue   # Bogen, Nahkampf (0.10)
                 d=sp['dimensions_m'];self.assertEqual(d['with_sight']['length'],d['weapon']['length'])   # Maßstab bleibt der Waffe
                 self.assertNotIn('Kimme',sp['sight']['labels']);self.assertNotIn('Korn',sp['sight']['labels'])
     def test_models(self):
-        import vsmount
+        import vsmount,wtypes
         for s in sheetmodels.SHEETS:
             d=sheetmodels.load(s);v=d['vs']
             with self.subTest(sheet=s):
-                if d['name']=='Bogen':self.assertIsNone(v);continue
+                if d['name']=='Bogen' or d['name'] in wtypes.MELEE:self.assertIsNone(v);continue   # Schwert/Glefe (claude-0.10): kein Visier
                 gun=[P for P in d['m'].parts if not P.get('sight')];sight=[P for P in d['m'].parts if P.get('sight')]
                 self.assertEqual(sum(1 for P in gun if P.get('label')=='Visierschiene'),1)
                 rail=d['m'].parts[v['rail_part']];self.assertEqual(rail.get('label'),'Visierschiene')

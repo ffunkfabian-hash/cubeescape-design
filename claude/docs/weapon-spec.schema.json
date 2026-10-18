@@ -9,6 +9,7 @@
   "vec2": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
   "poly2": {"type": "array", "items": {"$ref": "#/$defs/vec2"}, "minItems": 3},
   "partId": {"type": "string", "pattern": "^p[0-9]{2,}$"},
+  "text2": {"type": "object", "required": ["de", "en"], "properties": {"de": {"type": "string"}, "en": {"type": "string"}}},
   "skinLayer": {
    "type": "object", "required": ["type", "block"],
    "properties": {
@@ -55,8 +56,9 @@
   "motion": {
    "type": "object", "required": ["kind", "name_de", "toolgen_node", "motions", "parts", "labels", "match", "source"],
    "properties": {
-    "kind": {"enum": ["slide", "bolt", "cell", "fins", "coil", "pump", "lever", "hatch"]},
+    "kind": {"enum": ["slide", "bolt", "cell", "fins", "coil", "pump", "lever", "hatch", "cylinder", "hammer", "rails", "breech", "drum", "feed_cover", "cocking", "string", "shield"]},
     "name_de": {"type": "string"}, "toolgen_node": {"type": "string"},
+    "proposed": {"description": "claude-0.10, optional: Art eines neuen Waffentyps, in Toolgen kein Use-Clip; toolgen_node ist ein Vorschlag", "const": true},
     "motions": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["type", "axis"],
                 "properties": {"type": {"enum": ["translate", "rotate"]}, "axis": {"$ref": "#/$defs/vec3"}}}},
     "parts": {"type": ["array", "null"], "items": {"type": "string", "pattern": "^p[0-9]{2,3}$"}},
@@ -98,7 +100,16 @@
   },
   "weapon": {
    "type": "object", "required": ["name_de", "toolgen_id"],
-   "properties": {"toolgen_id": {"enum": ["pistol", "assault_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "smg", "fusion_rifle", "scout_rifle", "rocket_launcher", "bow"]}}
+   "properties": {"toolgen_id": {"description": "Toolgen-Werkzeug; null bei neuen Designtypen ohne Toolgen-Werkzeug (claude-0.10, KG11 … KG22, toolgen_status not_connected)",
+                                 "enum": ["pistol", "assault_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "smg", "fusion_rifle", "scout_rifle", "rocket_launcher", "bow", null]},
+                  "design_type": {"description": "claude-0.10, optional: Designtyp nach dem Destiny-2-Abgleich (claude/generator/wtypes.py); scout_rifle = Scout-Gewehr, trace_rifle = Spurgewehr",
+                                  "enum": ["sidearm", "auto_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "submachine_gun", "fusion_rifle", "trace_rifle", "rocket_launcher", "combat_bow",
+                                           "scout_rifle", "hand_cannon", "linear_fusion_rifle", "grenade_launcher_special", "grenade_launcher_heavy", "machine_gun", "sword", "glaive", "heavy_crossbow"]},
+                  "design_type_de": {"type": "string"}, "destiny_type": {"type": "string"}, "type_source": {"type": "string"},
+                  "subtype": {"enum": ["rocket_assisted", "slug", "breech_loaded", "drum_loaded", null]},
+                  "ammo_class": {"description": "Munitionsklasse in Destiny 2, nur Einordnung", "enum": ["primary", "special", "heavy"]},
+                  "toolgen_status": {"enum": ["tool", "not_connected"]},
+                  "note": {"description": "Hinweis, wenn die Bauweise eines bestehenden Blatts vom Typnamen abweicht (ID und Typ bleiben)", "type": "string"}}
   },
   "element": {"enum": ["solar", "arc", "void", "energy", null]},
   "element_source": {"type": "string"},
@@ -159,7 +170,7 @@
      "area_m2": {"type": "number", "minimum": 0},
      "long_axis": {"enum": ["X", "Y", "Z"]},
      "bounds_m": {"$ref": "#/$defs/bounds"},
-     "moving": {"description": "claude-0.5, optional: Art der Bewegung (moving_parts) oder null", "enum": ["slide", "bolt", "cell", "fins", "coil", "pump", "lever", "hatch", null]}
+     "moving": {"description": "claude-0.5, optional: Art der Bewegung (moving_parts) oder null", "enum": ["slide", "bolt", "cell", "fins", "coil", "pump", "lever", "hatch", "cylinder", "hammer", "rails", "breech", "drum", "feed_cover", "cocking", "string", "shield", null]}
     }
    }
   },
@@ -239,7 +250,14 @@
    "description": "claude-0.8, optional (nicht beim Bogen): Texturprofil des Waffentyps aus dem Textur-Blatt des Nutzers; weapon-spec.md › Texturprofil",
    "type": "object", "required": ["housing", "metal", "rubber", "energy", "edge_wear", "decals", "source"],
    "properties": {"edge_wear": {"type": "object", "required": ["level"], "properties": {"level": {"enum": ["subtle", "medium", "strong"]}}},
-                  "decals": {"type": "object", "required": ["toolgen"], "properties": {"toolgen": {"type": "array", "items": {"type": "string"}, "minItems": 1}}}}
+                  "decals": {"type": "object", "required": ["toolgen"], "properties": {"toolgen": {"type": "array", "items": {"type": "string"}, "minItems": 1}}},
+                  "derived_from": {"description": "claude-0.10, neue Typen: Toolgen-Typ, von dem das vorgeschlagene Profil abgeleitet ist (nicht im Textur-Blatt)", "type": "string"}}
+  },
+  "operation": {
+   "description": "claude-0.10, optional (neue Waffentypen): Bedienung wie im Blattfeld BEDIENUNG; weapon-spec.md › Bedienung",
+   "type": "object", "required": ["reload", "action", "fire", "ammo_class", "source"],
+   "properties": {"reload": {"$ref": "#/$defs/text2"}, "action": {"$ref": "#/$defs/text2"}, "fire": {"$ref": "#/$defs/text2"},
+                  "ammo_class": {"enum": ["primary", "special", "heavy"]}, "source": {"type": "string"}}
   },
   "skin": {
    "description": "claude-0.3, optional (ältere Specs ohne): fünf Skins je Waffe, der erste ist der Hauptskin des Blatts; Beschreibung in weapon-spec.md › Skins",

@@ -45,6 +45,12 @@ Neue Varianten bekommen einen englischen Namen (Regel in `CLAUDE.md`/`AGENTS.md`
 Waffen je Variante: Pistole, Sturmgewehr, Impulsgewehr, Schrotflinte, Scharfschützengewehr, Maschinenpistole,
 Fusionsgewehr, Spurgewehr, Raketenwerfer, Bogen.
 
+**Neue Waffentypen (claude-0.10, Abgleich mit Destiny 2, [claude/docs/waffentypen.md](claude/docs/waffentypen.md)):** in Variante G die Blätter
+KG11 Scout-Gewehr, KG12 Handfeuerwaffe, KG13 Lineares Fusionsgewehr, KG14 Spezial-Granatwerfer, KG15 Schwerer Granatwerfer, KG16 Maschinengewehr,
+KG17 Schwert, KG18 Glefe, KG19 Schwere Armbrust, KG20 Raketenpistole, KG21 Raketen-Impulsgewehr, KG22 Slug-Schrotflinte (Modelle `g11.py`–`g22.py`,
+Bauhelfer `tlib.py`, Typenkatalog `wtypes.py`). Sie haben ein zusätzliches Feld **BEDIENUNG** und sind in Toolgen/Cube Escape noch nicht angebunden
+(`toolgen_id` null). Das Spurgewehr (KX08) heißt bei Toolgen `scout_rifle`; das echte Scout-Gewehr ist KG11.
+
 ## Struktur
 
 Die Stände sind **nach Erzeuger getrennt**: `claude/` enthält ausschließlich Claudes Pipeline und Konzepte,
@@ -65,6 +71,7 @@ claude/                  nur Claude
     dmods.py dmodels.py  Modelle Variante D
     f01–f10.py g01–g10.py h01–h10.py
     jlib.py j01–j10.py   Facetten-Bausteine und Modelle Variante J „Black Ice“
+    wtypes.py tlib.py    Typenkatalog (Destiny-Abgleich) und Bauhelfer der neuen Typen; g11–g22.py ihre Modelle (claude-0.10)
     variants.py          Varianten-Register (Buchstabe, Name, Idee); new_variant.py legt neue Varianten an
     build_*.py           Bauskripte je Variante, build_all.py baut alles; preview.py nimmt die Vorschauen auf
     export_spec.py       Spec je Blatt (KXnn.spec.json); test_spec.py, spec_checks.py (Richtung, Visier gegen CE-Zielbild)

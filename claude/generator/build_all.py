@@ -31,6 +31,8 @@ for v in variants.LETTERS:   # jlib-Varianten (ab J): keine Karten, build_xl lä
 fid={'C':['v01']+[f'c{n}' for n in N[1:]],'D':[f'd{n}' for n in N],'F':[f'f{n}' for n in N],'G':[f'g{n}' for n in N],'H':[f'h{n}' for n in N]}
 for v in variants.LETTERS:
     fid.setdefault(v,[f'{v.lower()}{n}' for n in N])
+import wtypes
+for v,nums in wtypes.NEW_SHEETS.items():fid[v]+=[f'{v.lower()}{n}' for n in nums]   # neue Waffentypen (claude-0.10): nur XL-Blatt, keine Karten
 # Schritte, die gitignorierte alte Karten als Vorlage lesen: fehlt die Vorlage, wird der Schritt übersprungen (XL-Blätter brauchen sie nicht)
 NEEDS={'render_dx05.py':['D05.dc.html','X05.dc.html'],'make_v2d.py':[f'V{n}.dc.html' for n in N]}
 def run_seq(cmds):

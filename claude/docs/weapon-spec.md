@@ -18,7 +18,7 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 |---|---|
 | `format`, `format_version` | `cubeescape-design/weapon-spec`, `1` |
 | `sheet` | `id` (KC01 …), `file`, `variant` (Kennbuchstabe C/D/F/G/H/J …), `variant_name` (englischer Name der Variante, z. B. „Black Ice“; `null` bei C–H; ab claude-0.4, additiv), `number`, `nick`, `fid` |
-| `weapon` | `name_de`, `toolgen_id` (pistol, assault_rifle, pulse_rifle, shotgun, sniper_rifle, smg, fusion_rifle, scout_rifle, rocket_launcher, bow) |
+| `weapon` | `name_de`, `toolgen_id` (pistol, assault_rifle, pulse_rifle, shotgun, sniper_rifle, smg, fusion_rifle, scout_rifle, rocket_launcher, bow; `null` bei neuen Typen ohne Toolgen-Werkzeug, claude-0.10); seit claude-0.10 additiv: `design_type`, `design_type_de`, `destiny_type`, `subtype`, `ammo_class`, `toolgen_status`, `type_source`, `note` – siehe [Designtyp](#designtyp) |
 | `element` | `solar`/`arc`/`void`/`energy` je Waffentyp nach Entscheidung des Nutzers (17.10.2026, Toolgen `docs/ENTSCHEIDUNGEN.md`); Bogen `null` (nicht festgelegt) |
 | `units` | `model_unit_m` (Faktor Modelleinheit → m), `model_length_units`, `reference_length_m`, `rule`, `reference` |
 | `axes` | Modellachsen, Ziel Toolgen/Blender, Matrix, Ursprung `Socket_Hand` |
@@ -33,10 +33,45 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | `decals[]` | `part`, `channel`, `surface` (left/right/front/back/top), `emissive`, `color`, `area_m2`, `bounds_m` |
 | `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns`; seit claude-0.8 aus dem Texturkatalog (`catalog`: Datei, Version, sha256 der gelesenen Teile, Katalog-IDs), für jede Waffe gleich |
 | `texture_profile` | (claude-0.8, optional, nicht beim Bogen) Texturprofil des Waffentyps aus dem Textur-Blatt des Nutzers – siehe [Texturprofil](#texturprofil) |
+| `operation` | (claude-0.10, optional, neue Typen) Bedienung: Nachladen, Spannen/Aufladen, Feuern (de/en), Munitionsklasse – siehe [Bedienung](#bedienung) |
 | `skin` | (claude-0.3, optional) fünf Skins je Waffe aus einem Katalog von neun, der erste ist der Hauptskin des Blatts – siehe [Skins](#skins) |
 | `summary` | Anzahlen, Kanäle mit Nebenfarben je Variante |
 
 Farben sind sRGB-Hex `#RRGGBB` wie im Cube-Escape-Design (`Docs/EQUIPMENT.md` › Farbkanäle).
+
+## Designtyp
+
+claude-0.10 ([waffentypen.md](waffentypen.md), Quelle der Werte `claude/generator/wtypes.py`): Abgleich mit dem Destiny-2-Katalog. `design_type`
+macht die Bedeutung ausdrücklich, ohne `toolgen_id` zu ändern: Pistole = `sidearm`, Sturmgewehr = `auto_rifle`, Spurgewehr = `trace_rifle`
+(Toolgen-ID bleibt `scout_rifle`), Bogen = `combat_bow`. Neue Typen (Blätter KG11 … KG22, Variante G): `scout_rifle` (echtes Scout-Gewehr),
+`hand_cannon`, `linear_fusion_rifle`, `grenade_launcher_special` (Kipplauf), `grenade_launcher_heavy` (Trommel), `machine_gun`, `sword`,
+`glaive`, `heavy_crossbow`; Untertypen mit `subtype`: Raketenpistole (`sidearm`, `rocket_assisted`), Raketen-Impulsgewehr (`pulse_rifle`,
+`rocket_assisted`), Slug-Schrotflinte (`shotgun`, `slug`). Bei neuen Typen sind `toolgen_id` und `element` `null`, `toolgen_status` ist
+`not_connected`, `robot_fit.applies` false; die Bezugslänge ist eine Schätzung (`units.reference`). `note` steht bei bestehenden Blättern,
+deren Bauweise vom Typnamen abweicht (KF01 Revolver, KC10 Armbrust, KH08/KJ08 Spurgewehre mit Magazin); ID und Typ bleiben.
+`ammo_class` ist die Munitionsklasse in Destiny (primary/special/heavy), nur Einordnung.
+
+**Für Abnehmer:** `toolgen_id` kann seit claude-0.10 `null` sein (12 neue Specs). Wer nur Toolgen-Werkzeuge braucht, filtert auf
+`toolgen_status == "tool"` oder liest die Specs KX01–KX10; die Fassung ohne neue Typen ist Release `claude-v0.9`.
+
+## Bedienung
+
+`operation` (claude-0.10, neue Typen) steht gleich im Blattfeld **BEDIENUNG** unter dem Texturprofil: `reload` (Nachladen), `action`
+(Spannen, Aufladen, Mechanik), `fire` (Feuern, Einsatz), je `de`/`en`, dazu `ammo_class`. Quelle: `META['op']` im Modell (`g11.py` …).
+Die beweglichen Teile stehen in `moving_parts`; neue Arten tragen `proposed: true` (Toolgen hat keinen Use-Clip dafür):
+
+| `kind` | Typ | Knoten (Vorschlag) | Bewegung | Bezeichnung |
+|---|---|---|---|---|
+| `cylinder` | Handfeuerwaffe | `Anim_Cylinder` | rotate um Y (je Schuss), rotate um Z (ausschwenken) | Trommel |
+| `hammer` | Handfeuerwaffe | `Anim_Hammer` | rotate um X | Hahn |
+| `rails` | Lineares Fusionsgewehr | `Anim_Rails` | translate ±Z (auseinander) | Beschleunigerschiene |
+| `breech` | Spezial-Granatwerfer | `Anim_Breech` | rotate um X | Kipplauf |
+| `drum` | Schwerer Granatwerfer | `Anim_Drum` | rotate um Y | Granattrommel |
+| `feed_cover` | Maschinengewehr | `Anim_FeedCover` | rotate um X | Zuführdeckel |
+| `cocking`, `string` | Schwere Armbrust | `Anim_Cocking`, `Anim_String` | rotate um X; translate +Y | Spannhebel; Sehne |
+| `shield` | Glefe | `Anim_Shield` | rotate um Y | Schildflügel |
+
+Bestehende Arten (`bolt`, `slide`) bei neuen Typen tragen ebenfalls `proposed: true`. Das Schwert hat keine beweglichen Teile (`note`).
 
 ## Achsen und Maßstab
 
