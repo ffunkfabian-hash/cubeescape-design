@@ -73,10 +73,13 @@ class CanonicalWeaponSpecTests(unittest.TestCase):
                 self.assertLessEqual(abs(spec['units']['model_unit_m']*spec['units']['model_length_units']-length),.0005)
                 self.assertEqual(spec['format'],'cubeescape-design/weapon-spec')
                 self.assertIsNone(spec['generator']['claude_version'])
-                self.assertEqual(spec['generator']['codex_version'],'0.2.2' if meta['variant']=='K' else '0.1.2')
+                self.assertEqual(spec['generator']['codex_version'],'0.2.3' if meta['variant']=='K' else '0.1.3')
                 self.assertEqual(spec['sheet']['file'],f"K{meta['variant']}{number:02d}.html")
                 self.assertEqual(spec['sheet']['id'],f"K{meta['variant']}{number:02d}")
                 self.assertEqual(len(spec['palette']),4)
+                baseline=json.loads((HERE/'tests/data/style-contract-baseline.json').read_text())
+                family='parallax' if meta['variant']=='A' else 'fluxbloom'
+                self.assertEqual(spec['palette'][0]['channels'],baseline['collections'][family][meta['slug']]['base_channels'])
                 self.assertEqual(len(spec['skin']['items']),5)
                 self.assertEqual(set(spec['anchors']),{'Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight'})
                 ids={part['id'] for part in spec['parts']}
@@ -94,18 +97,16 @@ class CanonicalWeaponSpecTests(unittest.TestCase):
                     np.testing.assert_allclose(part['bounds_m'][0],target.min(axis=0),atol=1e-6)
                     np.testing.assert_allclose(part['bounds_m'][1],target.max(axis=0),atol=1e-6)
                 self.assertTrue(spec['sight']['window_geometry']['elements'])
-                self.assertEqual(spec['sight']['window'],'open')
-                aperture=next(p for p in model if getattr(p,'window_geometry',None))
+                self.assertEqual(spec['sight']['window'], 'lens' if meta['slug'] in ('impulse','sniper') else 'open' if meta['slug']=='bow' else 'glass')
+                aperture=next(p for p in model if getattr(p,'sight_window',False))
                 source_index=model.index(aperture)
                 element=next(e for e in spec['sight']['window_geometry']['elements'] if e['part']==f'p{source_index:03d}')
-                center=np.asarray(aperture.window_geometry['center_model'])
+                vertices=aperture.vertices
+                center=(vertices.min(axis=0)+vertices.max(axis=0))/2
                 hand=np.asarray(spec['anchors']['Socket_Hand']['model'])
                 expected_center=(center-hand) @ np.asarray(MATRIX).T * spec['units']['model_unit_m']
-                normal=np.asarray(aperture.window_geometry['normal_model'])
-                expected_axis=np.asarray(MATRIX) @ (normal/np.linalg.norm(normal))
-                if expected_axis[1]>0: expected_axis=-expected_axis
                 np.testing.assert_allclose(element['center_m'],expected_center,atol=1e-7)
-                np.testing.assert_allclose(element['view_axis_m'],expected_axis,atol=1e-7)
+                np.testing.assert_allclose(element['view_axis_m'],[0,-1,0],atol=1e-7)
                 self.assertEqual(element['type'],'part')
                 for skin in spec['skin']['items']:
                     self.assertEqual(set(skin['slots_used']),set(CHANNELS)|{'SK_Accent1','SK_Accent2'})
@@ -246,7 +247,7 @@ class CanonicalWeaponSpecTests(unittest.TestCase):
         materials={row['id'] for row in catalog()['materials']}; skins={row['id'] for row in catalog()['skins']}
         for number,meta,model in self.rows:
             spec=self.spec_for(number,meta,model)
-            self.assertTrue(all(part['texture'] in materials for part in spec['parts']))
+            self.assertTrue(all(part['texture'] in materials or (part['material']=='glass' and part['texture'] is None) for part in spec['parts']))
             self.assertEqual(spec['skin']['catalog_id'],spec['skin']['hero'])
             for item in spec['skin']['items']:
                 self.assertEqual(item['catalog_id'],item['id']); self.assertIn(item['catalog_id'],skins)

@@ -5,7 +5,7 @@
     "repo": "cubeescape-design",
     "tool": "codex/fluxbloom/weapon_spec.py",
     "claude_version": null,
-    "codex_version": "0.2.2"
+    "codex_version": "0.2.3"
   },
   "sheet": {
     "id": "KK10",
@@ -136,28 +136,28 @@
     },
     "Socket_Sight": {
       "position_m": [
-        0.06555303,
+        0.0,
         -0.144602273,
-        0.210155303
+        0.217867424
       ],
       "model": [
         65.0,
-        -26.0,
-        17.0
+        -28.0,
+        0.0
       ],
-      "source": "inferred: mounted sight assembly bottom centre",
-      "part": null
+      "source": "explicit: rail top beneath mount centre",
+      "part": "p018"
     },
     "Socket_CenterOfMass": {
       "position_m": [
-        0.004100715,
-        0.074744238,
-        0.100289121
+        0.0038852,
+        0.075517484,
+        0.09989175
       ],
       "model": [
-        8.116425435,
-        2.491819434,
-        1.063446617
+        7.915898127,
+        2.594870418,
+        1.007556698
       ],
       "source": "approximation: solid part bounding-box volume weighted; sight included; uniform density, not physical mass",
       "part": null
@@ -221,7 +221,7 @@
         "MT_Detail": [
           {
             "color": "#A3A7AD",
-            "area_m2": 0.01193734082122058
+            "area_m2": 0.010034082786326202
           }
         ]
       },
@@ -256,7 +256,7 @@
         "MT_Detail": [
           {
             "color": "#AEBBCA",
-            "area_m2": 0.01193734082122058
+            "area_m2": 0.010034082786326202
           }
         ]
       },
@@ -291,7 +291,7 @@
         "MT_Detail": [
           {
             "color": "#2C2F35",
-            "area_m2": 0.01193734082122058
+            "area_m2": 0.010034082786326202
           }
         ]
       },
@@ -1318,13 +1318,13 @@
       "emissive": false,
       "sight": true,
       "color": "#E451AE",
-      "area_m2": 0.033105218770285216,
+      "area_m2": 0.029655563582039135,
       "long_axis": "X",
       "bounds_m": [
         [
           -0.019280303,
           -0.179306818,
-          0.210155303
+          0.217867424
         ],
         [
           0.134962121,
@@ -1345,13 +1345,13 @@
       "emissive": false,
       "sight": true,
       "color": "#263C42",
-      "area_m2": 0.0059686704106102885,
+      "area_m2": 0.005017041393163099,
       "long_axis": "X",
       "bounds_m": [
         [
           0.096401515,
           -0.133034091,
-          0.210155303
+          0.217867424
         ],
         [
           0.134962121,
@@ -1372,13 +1372,13 @@
       "emissive": false,
       "sight": true,
       "color": "#263C42",
-      "area_m2": 0.005968670410610292,
+      "area_m2": 0.005017041393163103,
       "long_axis": "X",
       "bounds_m": [
         [
           0.096401515,
           -0.179306818,
-          0.210155303
+          0.217867424
         ],
         [
           0.134962121,
@@ -1522,6 +1522,60 @@
         ]
       ],
       "moving": null
+    },
+    {
+      "id": "p045",
+      "label": "Visierpin",
+      "channel": "MT_Metal",
+      "channel_source": "explicit",
+      "material": "brushed",
+      "texture": "brushed",
+      "toolgen_material": "brushed",
+      "emissive": false,
+      "sight": true,
+      "color": "#E451AE",
+      "area_m2": 0.0012933223836608684,
+      "long_axis": "Z",
+      "bounds_m": [
+        [
+          0.113368182,
+          -0.163882576,
+          0.248715909
+        ],
+        [
+          0.117995455,
+          -0.156170455,
+          0.298844697
+        ]
+      ],
+      "moving": null
+    },
+    {
+      "id": "p046",
+      "label": "Leuchtpunkt",
+      "channel": "MT_Emission",
+      "channel_source": "explicit",
+      "material": "lit",
+      "texture": "energy_glass",
+      "toolgen_material": "energy_glass",
+      "emissive": true,
+      "sight": true,
+      "color": "#A5E759",
+      "area_m2": 7.251690635284455e-05,
+      "long_axis": "Z",
+      "bounds_m": [
+        [
+          0.112982576,
+          -0.155977652,
+          0.296145455
+        ],
+        [
+          0.118381061,
+          -0.155206439,
+          0.301543939
+        ]
+      ],
+      "moving": null
     }
   ],
   "moving_parts": {
@@ -1603,7 +1657,9 @@
       "Visierfuß",
       "Fensterrahmen",
       "Fensterstrebe",
-      "Fenstersockel"
+      "Fenstersockel",
+      "Visierpin",
+      "Leuchtpunkt"
     ],
     "parts": [
       "p037",
@@ -1613,13 +1669,15 @@
       "p041",
       "p042",
       "p043",
-      "p044"
+      "p044",
+      "p045",
+      "p046"
     ],
     "bounds_m": [
       [
         -0.019280303,
         -0.179306818,
-        0.210155303
+        0.217867424
       ],
       [
         0.150386364,
@@ -1629,25 +1687,25 @@
     ],
     "anchor": {
       "position_m": [
-        0.06555303,
+        0.0,
         -0.144602273,
-        0.210155303
+        0.217867424
       ],
       "model": [
         65.0,
-        -26.0,
-        17.0
+        -28.0,
+        0.0
       ],
-      "source": "inferred: mounted sight assembly bottom centre",
-      "part": null
+      "source": "explicit: rail top beneath mount centre",
+      "part": "p018"
     },
     "window_geometry": {
       "elements": [
         {
           "type": "part",
           "decal": null,
-          "part": "p041",
-          "emissive": false,
+          "part": "p046",
+          "emissive": true,
           "view_axis_m": [
             0.0,
             -1.0,
@@ -1655,12 +1713,12 @@
           ],
           "center_m": [
             0.115681818,
-            -0.160026515,
+            -0.155592045,
             0.298844697
           ]
         }
       ],
-      "source": "Explicit open clear apertures from codex/fluxbloom/optics.py; no physical glass surface."
+      "source": "Physical glass panes of the independently authored VS model; bow: rear luminous pin surface."
     },
     "window_geometry_note": null
   },
@@ -8026,8 +8084,8 @@
     ]
   },
   "summary": {
-    "parts": 45,
-    "parts_explicit_channel": 45,
+    "parts": 47,
+    "parts_explicit_channel": 47,
     "decals": 0,
     "channels_with_other_colors": {
       "base": [

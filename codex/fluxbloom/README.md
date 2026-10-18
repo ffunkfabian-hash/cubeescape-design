@@ -92,3 +92,8 @@ Die Spec enthält konservative Use-Clip-Zuordnungen anhand der dokumentierten Ba
 mit Grund auf null. Offene Aperturen sind als solche beschrieben, es wird kein physisches Glas erfunden.
 Die vollständigen Skin-Rezepte sind über Katalog-IDs erreichbar. V1 beschreibt nicht jede dynamische Ersatzfarbe,
 kontinuierliche Mischung oder elliptische Ringmaske; die präzisen Grenzen stehen in den Skin-Notizen.
+
+Teil D (18.10.2026): Waffen 1–9 tragen eigenständig rekonstruierte VS01–VS09 nach den Sight-Specs;
+Bögen behalten ihren rückseitig leuchtenden Pin. Bildnachweise und Grenzen stehen im Versionsbericht.
+Mac-Prüfweg unter `heavy_lock`: `python codex/fluxbloom/vs_build.py`, danach `--full`.
+`--capture-engine rsvg` ist ein expliziter SVG-Ersatz bei gesperrtem Chromium und bestätigt keine Browser-QA.

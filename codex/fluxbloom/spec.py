@@ -112,7 +112,10 @@ def _anchors(meta, model):
         set_anchor('Socket_Muzzle', source='unavailable', reason='No named muzzle, emitter, barrel or arrow tip.')
     optics = [i for i, p in enumerate(model) if p.sight]
     rail = _anchor_candidates(model, {'visierschiene'})
-    if optics:
+    if meta.get('sight_mount_model') is not None:
+        i = rail[0]
+        set_anchor('Socket_Sight', i, meta['sight_mount_model'], 'explicit: rail top beneath mount centre')
+    elif optics:
         lo, hi = bounds([model[i] for i in optics]); point = (lo + hi) / 2; point[1] = hi[1]
         set_anchor('Socket_Sight', point=point, source='inferred: mounted sight assembly bottom centre')
         result['Socket_Sight']['parts'] = [f'p{i:03d}' for i in optics]
@@ -215,7 +218,8 @@ def _sight(meta, model, convert, anchors):
         view = M[:, axis] if unique else None
         if view is not None and view[1] > 0:
             view = -view
-        elements.append(dict(part=f'p{i:03d}', label=p.label,
+        elements.append(dict(type='part', part=f'p{i:03d}', label=p.label,
+                             center_m=_vec(convert((lo+hi)/2)),
                              source='explicit: part.sight_window' if explicit else 'inferred: named optical surface',
                              bounds_m=_dimensions([p], convert)['bounds_m'],
                              model_thin_axis='XYZ'[axis] if unique else None,
@@ -247,12 +251,17 @@ def _palettes(meta, model, exported, record):
             areas = {}
             for p, data in zip(model, exported):
                 if data['channel'] == channel:
+                    if p.material=='glass' and any(q.material!='glass' and _channel(q)[0]==channel for q in model):continue
                     color = p.color if variant['name'] == 'BASIS' else role_colors.get(p.role, p.color)
                     areas[color] = areas.get(color, 0.) + data['area_m2']
             ordered = sorted(areas, key=lambda c: (-areas[c], c))
             entries[channel] = dict(color=ordered[0] if ordered else default[channel],
                                     source='largest surface area in channel' if ordered else 'swatch fallback; channel unused',
                                     other_colors=[dict(color=c, area_m2=areas[c]) for c in ordered[1:]])
+            if meta.get('vs_number'):
+                color=meta['vs_base_channels'][channel] if variant['name']=='BASIS' else default[channel]
+                entries[channel] = dict(color=color,source='explicit existing weapon palette swatch mapping; VS parts follow these slots',
+                    other_colors=[dict(color=c,area_m2=areas[c]) for c in ordered if c!=color])
         result.append(dict(name=variant['name'], swatches=list(colors), channels=entries,
                            sight_colors='palette remap metadata; mounted optic rendering is documented by sheet'))
     return result

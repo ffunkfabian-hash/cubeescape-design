@@ -17,6 +17,6 @@ class StyleBaselineTests(unittest.TestCase):
             for meta,model in actual:
                 with self.subTest(family=family,weapon=meta['slug']):
                     previous=expected[meta['slug']]
-                    self.assertEqual(geometry_hash(model),previous['geometry_sha256'])
+                    self.assertEqual(geometry_hash([p for p in model if not p.sight]),previous['weapon_geometry_sha256'])
                     self.assertEqual(meta['palette'],previous['palette'])
                     self.assertEqual(meta['name'],previous['name'])

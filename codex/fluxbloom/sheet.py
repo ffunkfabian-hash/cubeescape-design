@@ -388,15 +388,23 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
     parts.append(_text(dx+40, dy+922, "Komplettes Modell im Tiefentest", 23, MUTED, "mono"))
 
     ox,oy,ow,oh = panels["optic"]
-    parts.append(_panel(ox,oy,ow,oh, "04", "OPTIK · SEPARAT", "BASIS · HALTER / KLEMME" if extended else "BASIS · INKLUSIVE HALTER / KLEMME"))
+    parts.append(_panel(ox,oy,ow,oh, "04", "VISIER · SEPARAT", "BASIS · HALTER / KLEMME" if extended else "BASIS · INKLUSIVE HALTER / KLEMME"))
     sight_type = str(meta.get("sight_type", "Klassenbezogene Moduloptik"))
     if optics:
-        optic_iso = render(optics, yaw=-45, pitch=35.264, size=(ow-80, 390), textured=True, ow=OUTLINE_WIDTHS["optic"], shadow=False)
-        optic_side = render(optics, yaw=0, pitch=0, size=(ow-80, 270), textured=True, ow=OUTLINE_WIDTHS["optic"], shadow=False)
-        parts.append(_image(optic_iso.image, ox+40, oy+150))
-        parts.append(_image(optic_side.image, ox+40, oy+570))
-        parts.append(_text(ox+40, oy+548, "ISOMETRIE", 22, MUTED, "mono"))
-        parts.append(_text(ox+40, oy+876, "SEITE / AUFNAHME", 22, MUTED, "mono"))
+        cell=(int((ow-100)/2),650)
+        for i,(yaw,pitch,label) in enumerate(((-45,35.264,"ISOMETRIE"),
+                ((90 if is_bow else 0),0,"RÜCK / PIN" if is_bow else "SEITE"))):
+            projected=_project(_vertices(optics),yaw,pitch)
+            low,high=projected.min(axis=0),projected.max(axis=0)
+            optic_center=((low+high)/2)@rotation_matrix(yaw,pitch)
+            extent=np.maximum(high-low,1e-6)
+            optic_scale=min((cell[0]-28)/extent[0],(cell[1]-40)/extent[1])
+            if not meta.get('vs_number'):optic_scale=min(optic_scale,6*DISPLAY_UNITS_PER_MODEL_UNIT)
+            view=render(optics,yaw=yaw,pitch=pitch,size=cell,center=optic_center,scale=optic_scale,
+                        textured=True,ow=OUTLINE_WIDTHS["optic"],shadow=False)
+            x=ox+40+i*(cell[0]+20)
+            parts.append(_image(view.image,x,oy+180))
+            parts.append(_text(x,oy+876,label,22,MUTED,"mono"))
     else:
         parts.append(_wrapped(ox+60, oy+310, "Keine separate Optik im Modell. Aufnahme und Ausrichtung an der Waffe bleiben sichtbar.", width=32 if extended else 45, size=25 if extended else 31, leading=35 if extended else 41))
     parts.append(_wrapped(ox+40, oy+922, sight_type, width=35 if extended else 57, size=24, leading=29, max_lines=1))
