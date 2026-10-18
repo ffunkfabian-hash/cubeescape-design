@@ -184,6 +184,40 @@ def _finish_surface(values, colors, finishes, world, face, shade, *, body_height
     return values
 
 
+def _glass_pass(image, flattened, rotation, center, factor, depth):
+    """Depth-tested, two-sided optical surfaces after opaque shading/contours.
+
+    No texture or hatching: tint alpha plus a soft upper-left highlight and a
+    one-output-pixel pale rim. Glass never writes opaque depth or face IDs.
+    """
+    h,w=depth.shape;surfaces=[]
+    for _,part,_ in flattened:
+        if part.material!='glass':continue
+        for face in part.faces:
+            view=(face.vertices-center)@rotation.T;normal=rotation@face.normal
+            if abs(normal[2])<=1e-4:continue
+            surfaces.append((float(view[:,2].mean()),part,view,normal))
+    for _,part,view,normal in sorted(surfaces,key=lambda row:row[0]):
+        screen=view[:,:2]*factor+[w/2,h/2]
+        x0=max(0,int(np.floor(screen[:,0].min()))-2);x1=min(w,int(np.ceil(screen[:,0].max()))+3)
+        y0=max(0,int(np.floor(screen[:,1].min()))-2);y1=min(h,int(np.ceil(screen[:,1].max()))+3)
+        if x1<=x0 or y1<=y0:continue
+        mask_image=Image.new('1',(x1-x0,y1-y0))
+        ImageDraw.Draw(mask_image).polygon([tuple(p) for p in screen-[x0,y0]],fill=1)
+        mask=np.asarray(mask_image,dtype=bool);yy,xx=np.mgrid[y0:y1,x0:x1]
+        vx=(xx+.5-w/2)/factor;vy=(yy+.5-h/2)/factor
+        vz=(np.dot(normal,view[0])-normal[0]*vx-normal[1]*vy)/normal[2]
+        visible=mask&(vz>=depth[y0:y1,x0:x1]-1e-5)
+        gradient=np.clip(1-((xx-x0)/max(1,x1-x0)+(yy-y0)/max(1,y1-y0))*.5,0,1)
+        opacity=(getattr(part,'glass_alpha',.34)+gradient*.07)*visible
+        color=_rgb(part.color);rgb=np.broadcast_to(color,(*mask.shape,3)).copy()
+        rim=visible&(distance_transform_edt(mask)<=2)  # supersampling is 2x
+        rgb[rim]=color*.35+255*.65;opacity[rim]=max(235/255,getattr(part,'glass_alpha',.34))
+        layer=Image.fromarray(np.dstack((rgb,(opacity*255))).astype(np.uint8),'RGBA')
+        image.alpha_composite(layer,(x0,y0))
+    return image
+
+
 def render(model, yaw=-45, pitch=35.264, size=(1000, 600), scale=None,
            center=None, textured=False, palette=None, skin=None, ow=3.0,
            shadow=False, glow=True, display_units=1.0, *, model_unit_m=None):
@@ -233,6 +267,7 @@ def render(model, yaw=-45, pitch=35.264, size=(1000, 600), scale=None,
     emission = np.zeros((h, w, 3), dtype=np.uint8)
     surface_id = 0
     for owner, part, detail in flattened:
+        if part.material=='glass':continue
         groups = {}
         mapped = (palette or {}).get(channel_for(part), (palette or {}).get(part.role, part.color))
         color = _rgb(part.color if getattr(part, "skin_fixed", False) else mapped)
@@ -355,6 +390,7 @@ def render(model, yaw=-45, pitch=35.264, size=(1000, 600), scale=None,
             halo.putalpha(halo_alpha)
             behind = Image.alpha_composite(behind, halo)
         image = Image.alpha_composite(behind, image)
+    image = _glass_pass(image, flattened, rotation, center, factor, depth)
     image = image.resize((width, height), Image.Resampling.LANCZOS)
     part_ids = owner_ids[ss // 2::ss, ss // 2::ss].copy()
     anchors = {}

@@ -268,9 +268,9 @@ def make_spec(meta, model, number, record=None):
     for p in ref['parts']:
         chan=p['channel']; data={'id':p['id'],'label':p['label'],'channel':chan,
           'channel_source':'explicit' if str(p['channel_source']).startswith('explicit') else 'role',
-          'material':{'paint':'painted','metal':'brushed','rubber':'rubber','plastic':'matte','light':'lit'}.get(p['material'],'matte'),
-          'texture':catalog_material(p['material'])['id'],
-          'toolgen_material':{'paint':'painted','metal':'brushed','rubber':'rubber','plastic':'painted_matte','light':'energy_glass'}.get(p['material'],'painted_matte'),
+          'material':{'paint':'painted','metal':'brushed','rubber':'rubber','plastic':'matte','light':'lit','glass':'glass'}.get(p['material'],'matte'),
+          'texture':None if p['material']=='glass' else catalog_material(p['material'])['id'],
+          'toolgen_material':None if p['material']=='glass' else {'paint':'painted','metal':'brushed','rubber':'rubber','plastic':'painted_matte','light':'energy_glass'}.get(p['material'],'painted_matte'),
           'emissive':bool(p['emit']),'sight':bool(p['sight']),'color':_hex(p['color']),'area_m2':max(0,p['area_m2']),
           'long_axis':('Y','Z','X')[max(range(3),key=lambda axis: max(float(v[axis]) for f in model[len(parts)].faces for v in f.vertices)-min(float(v[axis]) for f in model[len(parts)].faces for v in f.vertices))],
           'bounds_m':p['bounds_m'],'moving':None}
@@ -300,15 +300,34 @@ def make_spec(meta, model, number, record=None):
                 win_elements.append({'type':aperture_element['type'],'decal':None,'part':aperture_element['part'],
                   'emissive':bool(model[int(aperture_element['part'][1:])].emit),
                   'view_axis_m':aperture_element['view_axis_m'],'center_m':center})
-    # Codex optic models use open frame clearances/tubes; none supplies a physical glass surface.
-    window_kind='open' if win_elements else sight['window']
-    wg={'elements':win_elements,'source':'Explicit open clear apertures from codex/fluxbloom/optics.py; no physical glass surface.'} if win_elements else None
+    window_kind=sight['window']
+    wg={'elements':win_elements,'source':'Physical glass panes of the independently authored VS model; bow: rear luminous pin surface.'} if win_elements else None
     wg_note=None if wg else 'No functional aperture is declared by this model.'
     sight_out={'present':sight['present'],'kind':sight['kind'],'type':sight['type'],'type_source':sight['type_source'],
       'frame':sight['frame'],'frame_source':sight['frame_source'],'window':window_kind,
       'source':'explicit: optics.py sight frame/aperture geometry','modular':True,'mount_side':sight['mount_side'],
       'labels':sight['labels'],'parts':sight['parts'],'bounds_m':sight['bounds_m'],'anchor':anchors['Socket_Sight'],
       'window_geometry':wg,'window_geometry_note':wg_note}
+    if meta.get('vs_number'):
+        from vs_mount import TO_NATIVE
+        from sight_validation import weapon_aperture_clearance
+        from vs_models import DESIGNS
+        import numpy as np
+        d=DESIGNS[meta['vs_number']];unit=ref['units']['model_unit_m']
+        origin=np.asarray(anchors['Socket_Hand']['model']);mount=np.asarray(meta['vs_mount_model'])
+        convert=lambda p:((np.asarray(p)-origin)@np.asarray(MATRIX).T*unit).tolist()
+        point=lambda p: None if p is None else mount+(np.asarray(p)@TO_NATIVE.T)/(unit*1000)
+        reticle=point(d['reticle']);eye=point(d['eye'])
+        clearance=weapon_aperture_clearance(model,d,mount,unit*1000)
+        rail=next(i for i,p in enumerate(model) if p.label=='Visierschiene')
+        sight_out['sight_spec']={'id':f"VS{meta['vs_number']:02d}",'file':f"VS{meta['vs_number']:02d}.spec.json",
+          'format':'cubeescape-design/sight-spec','mount':'Socket_Mount on Socket_Sight + riser_m',
+          'riser_m':meta['vs_riser_m'],'socket_mount_m':convert(mount),'socket_reticle_m':convert(reticle),
+          'socket_eye_m':None if eye is None else convert(eye),'line_height_m':d['reticle'][2]*.001+meta['vs_riser_m'],
+          'rail':{'part':f'p{rail:03d}','added':meta['vs_rail_added'],'seat':'Rail top, longitudinal centre beneath mount; left side rail for rocket.'},
+          'line_clear_of_weapon':clearance['line_clear_of_weapon'],'blocked_by':clearance['blocked_by'],
+          'aperture_clearance':clearance,
+          'replaced':meta['vs_replaced']}
     robot=ref['robot_fit']; reason=robot['reason'] or 'Konzeptblatt geprüft keine reale Roboterhand, Gelenke, Kollision oder Griffpose.'
     target=robot.get('targets')
     old_at=robot.get('sheet_at_target')
@@ -330,7 +349,7 @@ def make_spec(meta, model, number, record=None):
         for part_id in item['parts'] or []:
             byid[part_id]['moving']=item['kind']
     return {'format':FORMAT,'format_version':VERSION,
-      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':'0.2.2' if meta['variant']=='K' else '0.1.2'},
+      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':'0.2.3' if meta['variant']=='K' else '0.1.3'},
       'sheet':{'id':f"K{meta['variant']}{number:02d}",'file':f"K{meta['variant']}{number:02d}.html",'variant':meta['variant'],'variant_name':meta['variant_name'],'number':f'{number:02d}','nick':meta['name'],'fid':meta['slug']},
       'weapon':{'name_de':meta['kind'],'toolgen_id':tid},'element':element,
       'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Bogen: Element nicht festgelegt.',
