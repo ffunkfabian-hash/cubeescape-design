@@ -47,25 +47,28 @@ nicht *was*.
 
 ## Stilvertrag (Teil A)
 
-Die Werte stammen aus `claude/generator/` (Stand d8a4890; der Glas-Durchgang aus claude-0.6 gilt nur für Visiere). Codex baut die Logik nach der Beschreibung nach und kopiert keine Dateien
+Die Werte stammen aus `claude/generator/` (Stand ebb8f1d, claude-0.7). Quellen sind als Funktion und Abschnitt angegeben, weil sich
+Zeilennummern mit jeder Version verschieben. Codex baut die Logik nach der Beschreibung nach und kopiert keine Dateien
 (Repo-Regel). Pixelangaben beziehen sich auf das ausgegebene Blatt (4800 px breit).
 
 | Merkmal | Claude-Wert | Quelle |
 |---|---|---|
-| Kantenglättung | 2× Supersampling, verkleinert mit Lanczos | `raster.py` `SS=2`, Z. 142 |
+| Kantenglättung | 2× Supersampling, verkleinert mit Lanczos | `raster.py` `SS`, Ende von `rasterview` |
 | Konturfarbe | `#0A0A0D` | `eng.py` `OL` |
-| Konturbreite `ow` | Hauptansicht 4,6 · Orthos und Material 3,0 · Optik und Skin-Karten 2,6 · Farbvarianten 2,4 | `xl.py` Z. 211, 239, 271, 282, 315, 331 |
-| Konturarten | Innenkanten (Grenze zwischen Flächen-IDs) ≈ `ow`·0,8 px; Silhouette ≈ `ow`·1,25 px, halb außen, halb innen; Flächen einer glatten Gruppe (Zylindermantel, gerundetes Profil) ohne Linie dazwischen | `raster.py` Z. 101–113 |
+| Konturbreite `ow` | Hauptansicht 4,6 · Orthos und Material 3,0 · Optik und Skin-Karten 2,6 · Farbvarianten 2,4 | `xl.py` `ow=` in `sheet`, `obox`, `_sight_view`, `skin_row` |
+| Konturarten | Innenkanten (Grenze zwischen Flächen-IDs) ≈ `ow`·0,8 px; Silhouette ≈ `ow`·1,25 px, halb außen, halb innen; Flächen einer glatten Gruppe (Zylindermantel, gerundetes Profil) ohne Linie dazwischen | `raster.rasterview` › „Konturen“ |
 | Licht | **kameragebunden**: Richtung (−0,35, −0,8, 0,5), normiert, im Bildraum, für jede Ansicht gleich (oben links vorn) | `eng.py` `LV`, `shadef` |
 | Tonstufen | Skalarprodukt d: > 0,75 → ×1,28 · > 0,45 → ×1,08 · > 0,1 → ×0,88 · sonst ×0,62. Wirkt auf die HLS-Helligkeit: f < 1 ergibt l·f, f > 1 ergibt l + (1−l)·(f−1)·0,9. Farbton und Sättigung bleiben | `eng.py` `lum`, `shadef` |
-| Leuchtteile | ohne Schattierung; Schein dahinter: Gauß σ = 4 px (bei 2× SS: 8), Deckkraft höchstens 0,3 | `raster.py` Z. 115–121 |
-| Bodenschatten | Ellipse unter dem Modell: rx = 0,45 · Modellbreite, ry = max(8, 14 · Maßstab), Schwarz mit Deckkraft 0,32, 14 px unter der Unterkante. In Hauptansicht, Orthos, Material, Farbvarianten und Skins; nicht in Detail und Optik | `raster.py` Z. 145–146 |
+| Leuchtteile | ohne Schattierung; Schein dahinter: Gauß σ = 4 px (bei 2× SS: 8), Deckkraft höchstens 0,3 | `raster.rasterview` › „Glow“ |
+| Bodenschatten | Ellipse unter dem Modell: rx = 0,45 · Modellbreite, ry = max(8, 14 · Maßstab), Schwarz mit Deckkraft 0,32, 14 px unter der Unterkante. In Hauptansicht, Orthos, Material, Farbvarianten und Skins; nicht in Detail und Optik | `raster.rasterview` › `sh_y`, `shd` |
 | Rundung | Profilecken mit r = 8 Modelleinheiten in 4 Segmenten (`roundpoly`); bei facettierten Serien Fase b = 4 | `eng.py`, `jlib.py` |
-| Hauptansicht | Feld 2700 × 1800; Maßstab = min((2700−200)/Breite, (1800−420)/Höhe, 6), höchstens 6 | `xl.py` Z. 266–270 |
-| Orthos | gemeinsamer Maßstab und Bezugspunkt (Mitte des Hüllquaders). Ist die halbe Breite der linken Seitenansicht größer als die doppelte halbe Höhe (lange Waffe), stehen Links, Rechts, Oben und Unten in **vollen Zeilen** und Vorne/Hinten nebeneinander; sonst Raster 2 × 3. Bezugslinien `#4A6080` 1,4 px gestrichelt 8/8, Mittellinie `#2E405A` 1,2 px 2/8 | `xl.py` Z. 280–300 |
+| Hauptansicht | Feld 2700 × 1800; Maßstab = min((2700−200)/Breite, (1800−420)/Höhe, 6), höchstens 6 | `xl.sheet` › `MW,MH`, `sm` |
+| Orthos | gemeinsamer Maßstab und Bezugspunkt (Mitte des Hüllquaders). Ist die halbe Breite der linken Seitenansicht größer als die doppelte halbe Höhe (lange Waffe), stehen Links, Rechts, Oben und Unten in **vollen Zeilen** und Vorne/Hinten nebeneinander; sonst Raster 2 × 3. Bezugslinien `#4A6080` 1,4 px gestrichelt 8/8, Mittellinie `#2E405A` 1,2 px 2/8 | `xl.sheet` › `obox` und folgende Aufteilung |
+| Glas (seit claude-0.7) | Glasscheiben werden **nach** Kontur und Schattierung als getönte, durchscheinende Fläche aufgelegt, nur wo sie vor undurchsichtigen Teilen liegen. Deckkraft je Tönung (Standard 0,34) plus weicher Glanzverlauf von oben links bis +0,07, **keine Schraffur** (Wunsch des Nutzers, 18.10.2026); helle Kante 1 px aus 35 % Tönung und 65 % Weiß, Deckkraft ≥ 235/255 | `raster._glass_pass`, `xl._sight_view` |
+| Feld „Visier · separat“ (seit claude-0.7) | Isometrie und Seite nebeneinander, Konturbreite 2,6, ohne Bodenschatten. Ein Visier der Visier-Serie füllt das Feld (keine Maßstabsgrenze), sonst höchstens Maßstab 6. Beim Bogen Rückansicht statt Seite (Leuchtpunkt, wie ihn der Schütze sieht) | `xl.sight_panel` |
 | Etiketten | Pille 46 px hoch, rx 23, Breite = 13,5 px · Zeichen + 40, Fläche `#0E1622`, Rand 1,8 px in Variantenfarbe, Chakra Petch 19 px Gewicht 600. Hinweislinie mit Knick bei 35 %, `#E6ECF2` 1,8 px, Deckkraft 0,9, Ankerpunkt r 6 mit Rand `#0A0A0D` 2 px | `xl.py` `_callouts` |
 | Felder | rx 18, Rand 1 px `#22314A`, Fläche `#111A27`, Raster 40 px `#1A2636`; Feldtitel Chakra Petch 19 px, Sperrung 3 px, `#8FA0B3` | `xl.py` `panel`, `DEFS` |
-| Blatt | 4800 × 4432, Rand 80, Abstand 32, Grund `#0E1622`; Kopf: Nummer Chakra Petch 140 px/700 in Variantenfarbe, Titel 74 px/700 mit Sperrung 6 px, Palette als Pille rechts | `xl.py` Z. 361–372 |
+| Blatt | 4800 × 4432, Rand 80, Abstand 32, Grund `#0E1622`; Kopf: Nummer Chakra Petch 140 px/700 in Variantenfarbe, Titel 74 px/700 mit Sperrung 6 px, Palette als Pille rechts | `xl.sheet` › HTML-Kopf |
 | Auslieferung | WebP-Qualität 60; Schriften als Dateien mit OFL-Lizenz | `raster.py` `WEBP_QUALITY`, ENTSCHEIDUNGEN |
 
 **Abnahmemaße** (Claude misst mit `claude/generator/style_metrics.py`, Median über zehn Blätter je Serie, Feld der Hauptansicht;
@@ -84,6 +87,12 @@ Inhalt wie [auftrag-codex-spec.md](auftrag-codex-spec.md) › Inhalt je Datei, e
   ([Skins](weapon-spec.md#skins)), Visier mit `type`/`frame`/`window` und `window_geometry` ([Visier-Vokabular](weapon-spec.md#visier-vokabular)),
   `moving_parts` ([Bewegliche Teile](weapon-spec.md#bewegliche-teile)), `robot_fit`.
 - Was sich nicht ableiten lässt, steht als `null` mit Grund im Spec, wie bei Claude. Nichts raten.
+- Seit claude-0.7 (additiv, `format_version` 1): `parts[].material` kennt `glass` (Glasscheiben, `toolgen_material: null`); Glas zählt
+  als Fenster in `window_geometry`. `Socket_Sight` ist bei Claude jetzt die Oberkante der Visierschiene unter der Mitte der Halterung.
+  `sight.sight_spec` verweist auf ein Visier der Visier-Serie (`VSnn.spec.json`); Codex lässt das Feld weg, solange es keine VS-Visiere
+  verwendet ([Visier der Visier-Serie](weapon-spec.md#visier-der-visier-serie)).
+- **Offen (Nutzer):** Sollen auch die Codex-Blätter das Standardvisier der Visier-Serie VS01–VS09 tragen? Bei Claude gilt das seit
+  claude-0.7 nach der Entscheidung vom 17.10.2026 für die Waffen 1–9. Bis zur Entscheidung behält Codex seine eigenen Optiken.
 - `CodexDesignReference` darf als zusätzliche Datei bleiben, ist aber nicht die Übergabe an Toolgen.
 - Format-Änderungswünsche (neue Felder, andere Bedeutung) meldet Codex an Claude oder den Nutzer und legt sie nicht selbst fest.
 
