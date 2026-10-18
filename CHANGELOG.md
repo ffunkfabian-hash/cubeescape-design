@@ -13,6 +13,10 @@ Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `cod
   erneuert) und `CE_NO_CACHE=1` (Cache ganz aus) umgehen den Cache; `full`-Check (`test_golden --full`) und Release immer ohne Cache. Test `claude/tests/test_sheetcache.py`.
 - Alle 60 Waffenblätter und Specs neu (Musterfeinheit; KJ: Skin-Auswahl), Visier-Serie unverändert. Bericht [claude/docs/versions/0.8.md](claude/docs/versions/0.8.md).
 
+## codex-0.1.4 / codex-0.2.4 (PR #5, gemerged)
+- Parallax und Flux Bloom: Die Augenmuschel von VS03/VS05 öffnet mit dem Okularradius statt mit dem Bohrungsradius (Öffnung ≥ Okularglas, Außenmaße ±0,5 mm);
+  betroffen KA03/KA05/KK03/KK05. Claudes `spec_checks`: 0 Befunde; Stilwerte unverändert. (Befund der Zweitprüfung von PR #4.)
+
 ## codex-0.1.3 / codex-0.2.3 (PR #4, gemerged)
 - Parallax (0.1.3) und Flux Bloom (0.2.3): KA01–KA09 und KK01–KK09 tragen das Standardvisier VS01–VS09 (nachgebaut nach `VSnn.spec.json`, ±0,5 mm,
   Montage auf der Schiene, Glas, Strahlprüfung über die ganze Öffnung; KK03 mit Erhöhung 33 mm); Bögen behalten den Pin (Pin/Leuchtpunkt entlang −Y,
