@@ -7,6 +7,7 @@ Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `cod
   `vsmodels.py`, Farben über die MT_-Kanäle der Waffe, Sitz auf der Visierschiene; 15 Blätter mit neuer Schiene, 5 mit Erhöhung).
 - Spec (additiv, format_version 1): `sight.sight_spec` (Verweis `VSnn.spec.json`, Lage, Erhöhung, Anker), `material: glass`; Typ/Rahmen aus der Serie.
 - Die 23 Querfenster sind behoben (`KNOWN_CROSS_WINDOWS` leer), Bogen-Pins fluchten entlang −Y, Visier-Hinweise 0; Test `VisierSerie`.
+- Glas ohne Schraffur (Wunsch des Nutzers): getönte Fläche mit weichem Glanz; VS01–VS09 neu gebaut.
 - Bericht [claude/docs/versions/0.7.md](claude/docs/versions/0.7.md).
 
 ## claude-0.6
