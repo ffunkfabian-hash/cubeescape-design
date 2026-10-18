@@ -14,7 +14,9 @@
               ["python3", "claude/generator/test_spec.py"],
               ["python3", "claude/generator/export_sight.py", "--check"],
               ["python3", "claude/generator/test_sight_spec.py"],
-              ["python3", "claude/tests/test_golden.py"]],
+              ["python3", "claude/tests/test_golden.py"],
+              ["python3", "-m", "py_compile", "docs/textures/make_swatches.py", "docs/textures/check_catalog.py"],
+              ["python3", "docs/textures/check_catalog.py"]],
     "full": [["python3", "claude/generator/build_all.py", "--nur-xl"],
              ["python3", "claude/tests/test_golden.py", "--full"]]
   },
