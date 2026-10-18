@@ -7,6 +7,16 @@ Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `cod
   (Modell, Palette/Skin, Quelltext der schreibenden Funktionen `CODE_PARTS`) sich geändert hat; Cache außerhalb des Repos. `--force` (alles neu, Einträge
   erneuert) und `CE_NO_CACHE=1` (Cache ganz aus) umgehen den Cache; `full`-Check (`test_golden --full`) und Release immer ohne Cache. Test `claude/tests/test_sheetcache.py`.
 
+## codex-0.1.3 / codex-0.2.3 (Unreleased, PR #4)
+- Parallax (0.1.3) und Flux Bloom (0.2.3): KA01–KA09 und KK01–KK09 tragen das Standardvisier VS01–VS09 (nachgebaut nach `VSnn.spec.json`, ±0,5 mm,
+  Montage auf der Schiene, Glas, Strahlprüfung über die ganze Öffnung; KK03 mit Erhöhung 33 mm); Bögen behalten den Pin (Pin/Leuchtpunkt entlang −Y,
+  `Socket_Sight` Unterkante-Mitte). Das Visier sitzt auf den Blättern nicht auf der Waffe (Hauptansicht „ohne Optik“, Feld „Visier · separat“; Entscheidung 18.10.2026).
+- Claudes `spec_checks` auf allen 20 Specs: 58 → 0 Befunde; Berichte [Parallax](codex/docs/versions/0.1.md), [Flux Bloom](codex/docs/versions/0.2.md).
+
+## codex-0.1.2 / codex-0.2.2 (Unreleased, PR #3)
+- Stilvertrag (Konturen, kameragebundenes Licht, große Orthos langer Waffen), Weapon-Spec v1 (`KAnn.spec.json`/`KKnn.spec.json`) und gemeinsamer Texturkatalog
+  `docs/textures/` (physische Mustergrößen, Katalog-IDs); 20 Blätter neu gebaut, Modelle und Paletten unverändert.
+
 ## claude-0.7
 - Waffenblätter 1–9 (C, D, F, G, H, J) tragen das Standardvisier ihres Typs aus der Visier-Serie VS01–VS09 (`vsmount.py`, Modell aus
   `vsmodels.py`, Farben über die MT_-Kanäle der Waffe, Sitz auf der Visierschiene; 15 Blätter mit neuer Schiene, 5 mit Erhöhung).
