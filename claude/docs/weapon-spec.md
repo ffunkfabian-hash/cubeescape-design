@@ -106,8 +106,8 @@ claude-0.8 (Paket 4 der Sightline-Linie): Cube Escape `Docs/Images/EquipmentConc
 sechs Kacheln fest. `texture_profile` überträgt sie in den Wortschatz des Texturkatalogs und der Toolgen-Decals (nicht beim Bogen; Waffen 1–9):
 `housing`, `metal`, `rubber`, `energy` (je `material` = Katalog-ID, `text_de` = Kurztext des Blatts, `energy.color`), `edge_wear.level`
 (`subtle`/`medium`/`strong`, Stufen des Katalogs `wear.levels`), `decals.toolgen` (IDs aus Toolgen `data/decals.json`), `interpretation`
-(Auslegung, wo der Kurztext mehrdeutig war), `source`, `catalog`. Die Konzeptblätter zeichnen das Profil nicht neu (Skins bleiben Sache der
-Pipeline); es ist die Zuordnung für Toolgen. Quelle der Daten: `claude/generator/texprofile.py`, geprüft von `test_texcat.py`.
+(Auslegung, wo der Kurztext mehrdeutig war), `source`, `catalog`. Es ist die Zuordnung für Toolgen; seit claude-0.9 zeigen
+die Blätter es im Feld **TEXTURPROFIL** unter der Materialansicht (sechs Kacheln, Entscheidung des Nutzers 18.10.2026; Skins bleiben Sache der Pipeline). Quelle der Daten: `claude/generator/texprofile.py`, geprüft von `test_texcat.py`.
 
 ## Skins
 

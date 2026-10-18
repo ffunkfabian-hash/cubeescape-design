@@ -4,7 +4,7 @@ Quelle: Cube Escape `Docs/Images/EquipmentConcepts/weapon_textures_1-9.webp` (�
 Oberflächen · Details; Stand der Quelle in Cube Escape `Docs/EQUIPMENT.md`). Je Waffe stehen dort sechs Kacheln mit Kurztext: Gehäuse, Metall,
 Gummi, Energie/Leuchten, Kantenabnutzung, Decals. Dieses Modul überträgt sie in den Wortschatz des Texturkatalogs (docs/textures/catalog.json)
 und der Toolgen-Decals (Toolgen data/decals.json): Material-IDs des Katalogs, Abnutzungsstufe (subtle/medium/strong), Toolgen-Decals.
-Es ist reine Datenübergabe an den Spec (`texture_profile`); die Konzeptblätter zeichnen es nicht neu (Skins bleiben Sache der Pipeline).
+Datenübergabe an den Spec (`texture_profile`); seit claude-0.9 zeigen die Blätter es im Feld TEXTURPROFIL (xl.profile_strip), Skins bleiben Sache der Pipeline.
 Wo der Kurztext mehrdeutig ist, steht die Auslegung in `interpretation`; maßgeblich bleibt das Blatt des Nutzers.
 Ohne numpy.
 """
