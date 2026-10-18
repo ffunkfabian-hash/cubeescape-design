@@ -187,9 +187,9 @@ class StyleContractTests(unittest.TestCase):
                 self.assertEqual(record['textures']['model_unit_m'],physical)
                 self.assertEqual(record['panel_viewports']['orthographic'][3],1770 if index==0 else 2770)
                 if index==8:
-                    self.assertEqual(record['material_viewport'],[1586,2370,591,300])
+                    self.assertEqual(record['material_viewport'],[1586,2370,591,210])
                     self.assertEqual(record['detail']['viewport'],[180,2390,591,630])
-                    self.assertTrue(all(sample['viewport'][2:]==[110,75] for sample in record['material_samples']))
+                    self.assertTrue(all(sample['viewport'][2:]==[80,48] for sample in record['material_samples']))
                     self.assertTrue(all(p['viewport'][2:]==[280,270] for p in record['palette_variants']))
                     for section in ('detail','optic','material','palette'):
                         self.assertEqual(record['panel_viewports'][section][1:],[2240,671,960])

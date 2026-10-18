@@ -348,8 +348,11 @@ def make_spec(meta, model, number, record=None):
     for item in moving['items']:
         for part_id in item['parts'] or []:
             byid[part_id]['moving']=item['kind']
-    return {'format':FORMAT,'format_version':VERSION,
-      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':'0.2.3' if meta['variant']=='K' else '0.1.3'},
+    from texture_profile import profile
+    texture_target = profile(tid)
+    return {**({'texture_profile': texture_target} if texture_target else {}),
+      'format':FORMAT,'format_version':VERSION,
+      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':('0.2.5' if meta['variant']=='K' else '0.1.5') if texture_target else ('0.2.3' if meta['variant']=='K' else '0.1.3')},
       'sheet':{'id':f"K{meta['variant']}{number:02d}",'file':f"K{meta['variant']}{number:02d}.html",'variant':meta['variant'],'variant_name':meta['variant_name'],'number':f'{number:02d}','nick':meta['name'],'fid':meta['slug']},
       'weapon':{'name_de':meta['kind'],'toolgen_id':tid},'element':element,
       'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Bogen: Element nicht festgelegt.',

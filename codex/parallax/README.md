@@ -24,3 +24,13 @@ Teil D (18.10.2026): Waffen 1–9 tragen eigenständig rekonstruierte VS01–VS0
 Bögen behalten ihren rückseitig leuchtenden Pin. Bildnachweise und Grenzen stehen im Versionsbericht.
 Mac-Prüfweg unter `heavy_lock`: `python codex/fluxbloom/vs_build.py`, danach `--full`.
 `--capture-engine rsvg` ist ein expliziter SVG-Ersatz bei gesperrtem Chromium und bestätigt keine Browser-QA.
+
+
+## 0.1.5 · Texturprofil
+
+Die Waffen 1–9 tragen sechs Profilkacheln unter der Materialansicht: Gehäuse, Metall, Gummi,
+Energie, Kantenabnutzung und Toolgen-Decals. Der Spec enthält dieselben Typvorgaben als
+`texture_profile`; der Bogen bleibt unverändert ohne Profil. Die Kacheln sind eine schematische
+Materiallegende für den Abnehmer, die Muster darüber zeigen weiterhin echte Modellteile.
+Bildbau und Prüfwerte: `python codex/fluxbloom/texture_profile_build.py --full` unter `heavy_lock`.
+Siehe [Versionsbericht](../docs/versions/0.1.md).

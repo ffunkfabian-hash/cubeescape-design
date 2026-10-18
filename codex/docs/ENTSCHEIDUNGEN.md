@@ -11,3 +11,4 @@ Ergänzend zu den gemeinsamen Entscheidungen unter `claude/docs/ENTSCHEIDUNGEN.m
 | 18.10.2026 | Vier Stilproben freigegeben, alle 20 Blätter umstellen | Nutzerantwort „Ja, alle 20 umstellen“ auf die Probe-Freigabefrage |
 | 18.10.2026 | Teil C freigegeben: gemeinsamer Texturkatalog von main 0e62096, physische mm und additive Spec-Katalogverweise | Direkter Nutzerauftrag „Teil C freigegeben“; docs/textures/ nur lesen |
 | 18.10.2026 | Teil D: Waffen 1–9 mit eigenständig nach Sight-Spec rekonstruierten VS01–VS09; Bogen-Pin längs −Y, Glas und Visierfeld nach Claude 0.7 | Direkter Nutzerauftrag „Teil D – Visiere der Visier-Serie auf den Codex-Blättern“ |
+| 18.10.2026 | Texturprofil des Nutzerblatts für Waffen 1–9 additiv in Weapon-Spec v1 und als sechs Kacheln unter der Materialansicht; Bögen ohne Profil | Direkter Nutzerauftrag und `claude/docs/auftrag-codex-texturprofil.md`; Modelle, Paletten, Skins und Visiere unverändert |
