@@ -42,7 +42,7 @@ DESIGNS = {
         shape='round', opening=(34.4, 34.4, 17.2),
         reticle=(0.0, -60.0, 25.0),
         rear=65.0, eye=(0.0, 58.0, 25.0),
-        bore=11.9, tint='#3D9BEA', alpha=0.28, parts=[
+        bore=11.9, eye_radius=12.5, tint='#3D9BEA', alpha=0.28, parts=[
             ('Halterung', 'MT_Metal', 'brushed', (-11.0, -31.0, -3.0, 11.0, 31.0, 6.0)),
             ('Klemmschraube', 'MT_Accent', 'painted', (11.0, -2.4, 0.2, 13.6, 2.4, 5.0)),
             ('Gehäuse', 'MT_Secondary', 'painted', (-17.4, -45.0, 7.6, 17.4, 59.0, 42.4)),
@@ -78,7 +78,7 @@ DESIGNS = {
         shape='round', opening=(45.400000000000006, 45.400000000000006, 22.700000000000003),
         reticle=(0.0, -103.0, 27.0),
         rear=102.0, eye=(0.0, 95.0, 27.0),
-        bore=12.9, tint='#3D9BEA', alpha=0.28, parts=[
+        bore=12.9, eye_radius=14.0, tint='#3D9BEA', alpha=0.28, parts=[
             ('Halterung', 'MT_Metal', 'brushed', (-11.0, -54.0, -3.0, 11.0, 54.0, 6.0)),
             ('Klemmschraube', 'MT_Accent', 'painted', (11.0, -2.4, 0.2, 13.6, 2.4, 5.0)),
             ('Gehäuse', 'MT_Secondary', 'painted', (-22.9, -66.0, 4.1, 22.9, 96.0, 49.9)),
@@ -254,6 +254,12 @@ def build_sight(number):
                 # part; the independently modelled housing joins them.
                 faces=_join(shell([*lo,*first_hi],(w,h),'round',center),
                             shell([*rear_lo,*rear_hi],(bore*2,bore*2),'round',center))
+            elif label=='Augenmuschel':
+                # Eyepiece opening follows the ocular radius (Sight-Spec
+                # eye_radius_m), never narrower than the ocular glass itself.
+                glass=next(b for l,_,_,b in d['parts'] if l=='Okularglas')
+                eye_r=max(d['eye_radius'],(glass[3]-glass[0])/2)
+                faces=shell(box,(eye_r*2,eye_r*2),'round',center)
             else:
                 faces=shell(box,(bore*2,bore*2),'round',center)
         elif label in ('Verstellturm','Turmkappe'):
