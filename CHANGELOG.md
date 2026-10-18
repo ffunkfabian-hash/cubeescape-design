@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## codex-0.1.5 / codex-0.2.5 (PR #7, gemerged)
+- Parallax (0.1.5) und Flux Bloom (0.2.5): Texturprofil auf den neun Waffenblättern KA01–KA09/KK01–KK09 (Feld TEXTURPROFIL, Material-IDs des
+  Katalogs, Kantenabnutzung, Toolgen-Decals) und additiver Block `texture_profile` im Weapon-Spec v1 (`format_version` 1); Bögen KA10/KK10 unverändert.
+- Chromium-QA und Specs auf dem Mac geprüft (97 Tests grün, `spec_checks` 0 Befunde auf 20 Specs); Stilmedian-Prüfung mit Toleranz eines Rundungsschritts.
+  Berichte [Parallax](codex/docs/versions/0.1.md), [Flux Bloom](codex/docs/versions/0.2.md).
+
 ## claude-0.9
 - Texturprofil auf den Blättern (Entscheidung des Nutzers 18.10.2026): neues Feld **TEXTURPROFIL** unter der Materialansicht mit sechs Kacheln
   (Gehäuse, Metall, Gummi, Energie mit Material-ID des Katalogs und Kurztext, Kantenabnutzung mit Stufe, Toolgen-Decals) auf allen 54 Blättern der Waffen 1–9;
