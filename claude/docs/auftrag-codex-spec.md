@@ -3,6 +3,8 @@
 Entwurf von Claude (claude-0.2, 17.10.2026) auf Wunsch des Nutzers („das müssen wir später auch Codex mitteilen“). Erst nach
 Freigabe durch den Nutzer an Codex geben; Vorlage: `~/.claude/templates/auftrag.md`.
 
+> Aufgegangen in [auftrag-codex-angleichung.md](auftrag-codex-angleichung.md) › Teil B (17.10.2026, Stand 0.5.2, Blätter KA/KK).
+
 ## Auftrag
 Für die zehn Blätter der Codex-Pipeline (`codex/parallax/output/<waffe>.html`) je eine `<waffe>.spec.json` im Format
 [weapon-spec.md](weapon-spec.md) (format_version 1) aus den eigenen Python-Modellen erzeugen, damit Toolgen beide Pipelines
