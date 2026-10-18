@@ -79,8 +79,15 @@ def screenshots(paths, target):
             metrics = page.evaluate('''() => ({width:document.documentElement.scrollWidth,
                 height:document.documentElement.scrollHeight, fonts:document.fonts.status,
                 svgImages:document.querySelectorAll('svg image').length,
-                overflow:[...document.querySelectorAll('svg text')].filter(e=>{const b=e.getBoundingClientRect(); return b.left<0 || b.top<0 || b.right>4800 || b.bottom>4432}).map(e=>e.textContent.slice(0,100))})''')
-            if errors or metrics['width'] != 4800 or metrics['height'] != 4432 or metrics['overflow']:
+                overflow:[...document.querySelectorAll('svg text')].filter(e=>{const b=e.getBoundingClientRect(); return b.left<0 || b.top<0 || b.right>4800 || b.bottom>4432}).map(e=>e.textContent.slice(0,100)),
+                profileTiles:document.querySelectorAll('[data-profile-tile]').length,
+                profileOverflow:[...document.querySelectorAll('[data-profile-tile]')].flatMap(tile=>{
+                    const box=tile.querySelector('rect').getBoundingClientRect();
+                    return [...tile.querySelectorAll('text')].filter(t=>{const b=t.getBoundingClientRect();
+                        return b.left<box.left || b.top<box.top || b.right>box.right || b.bottom>box.bottom;
+                    }).map(t=>tile.dataset.profileTile+': '+t.textContent);
+                })})''')
+            if errors or metrics['width'] != 4800 or metrics['height'] != 4432 or metrics['overflow'] or metrics['profileOverflow']:
                 raise RuntimeError(f'{path.name}: browser QA failed {errors} {metrics}')
             filename = target / f'{path.stem}.png'
             page.screenshot(path=str(filename), full_page=True, animations='disabled')
@@ -207,7 +214,7 @@ def main(argv=None):
         cards.append(f'<a href="{html.escape(path.name)}"><img src="previews/{path.stem}.jpg" alt="{html.escape(meta["kind"])}"><span>{path.stem} · {html.escape(meta["name"])} / {html.escape(meta["kind"])}</span></a>')
     gallery_title=f"Codex · {models[0][0]['variant_name']} · {'Probeblätter' if args.probe else 'Konzeptblätter'}"
     (args.output / 'index.html').write_text('<!doctype html><html lang="de"><meta charset="utf-8"><title>'+html.escape(gallery_title)+'</title><style>body{background:#0e1622;color:#ece6da;font:20px sans-serif;padding:40px}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}a{color:#e1d2ff;text-decoration:none}img{width:100%;display:block;border-radius:8px}span{display:block;padding:16px}p{max-width:900px;line-height:1.5}</style><h1>'+html.escape(gallery_title)+'</h1><p>Überarbeitete Waffenformen · kräftige Farbwelten · ein 3D-Modell je Blatt · sechs orthografische Ansichten im selben Maßstab. Gestalterische Referenzen.</p><main>'+''.join(cards)+'</main></html>', encoding='utf-8')
-    manifest = {'version': '0.2.3' if args.collection=='fluxbloom' else '0.1.3', 'name': models[0][0]['variant_name'], 'stage': 'probe' if args.probe else 'full', 'canvas': [4800, 4432],
+    manifest = {'version': '0.2.5' if args.collection=='fluxbloom' else '0.1.5', 'name': models[0][0]['variant_name'], 'stage': 'probe' if args.probe else 'full', 'canvas': [4800, 4432],
                 'records': records, 'browser_qa': captures, 'seconds': round(time.monotonic()-started, 2),
                 'visual_review': 'Manuelle Sichtprüfung der Screenshots erforderlich; automatische Prüfungen ersetzen sie nicht.'}
     (args.output / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')

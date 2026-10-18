@@ -409,15 +409,24 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
         parts.append(_wrapped(ox+60, oy+310, "Keine separate Optik im Modell. Aufnahme und Ausrichtung an der Waffe bleiben sichtbar.", width=32 if extended else 45, size=25 if extended else 31, leading=35 if extended else 41))
     parts.append(_wrapped(ox+40, oy+922, sight_type, width=35 if extended else 57, size=24, leading=29, max_lines=1))
 
+    from texture_profile import profile
+    from weapon_spec import TOOLGEN
+    from profile_panel import panel as profile_panel
+    texture_target = profile(TOOLGEN[slug][0])
+    profile_records = []
+    profile_viewport = None
     mx,my,mw,mh = panels["material"]
     parts.append(_panel(mx,my,mw,mh, "05", "MATERIAL & OBJEKTTEXTUR", "BASIS · MODELLTEILE" if extended else "BASIS · TATSÄCHLICHE MODELLTEILE"))
-    material_size = (mw-80,300 if extended else 440)
+    material_size = (mw-80, (210 if extended else 300) if texture_target else (300 if extended else 440))
     textured = render(weapon, yaw=-45, pitch=35.264, size=material_size, textured=True, ow=OUTLINE_WIDTHS["material"], shadow=True)
     parts.append(_image(textured.image, mx+40, my+130))
     material_records = []
     for i, (key, material_name, fallback_channel) in enumerate(MATERIALS):
         x,y = (mx+40,my+460+i*90) if extended else (mx+40+(i%2)*620,my+590+(i//2)*110)
         patch_w,patch_h = (110,75) if extended else (145,94)
+        if texture_target:
+            x,y = (mx+40,my+355+i*56) if extended else (mx+40+(i%2)*620,my+450+(i//2)*76)
+            patch_w,patch_h = (80,48) if extended else (110,65)
         text_x = x+patch_w+17
         candidates = [p for p in weapon if getattr(p, "material", "paint") == key]
         if key == "light":
@@ -436,12 +445,20 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
             source = "Im Basismodell nicht verwendet"
             channel = "—"
             material_records.append({"material": key, "label": None, "channel": None, "reason": "not_present", "viewport": [x,y,patch_w,patch_h]})
-        parts.append(_text(text_x, y+23 if extended else y+26, material_name, 21 if extended else 25, INK))
-        parts.append(_wrapped(text_x, y+47 if extended else y+56, source, width=35 if extended else 33, size=19 if extended else 22, leading=24, max_lines=1))
-        parts.append(_wrapped(text_x, y+69 if extended else y+83, channel, width=43 if extended else 35, size=16 if extended else 18, leading=20, max_lines=1))
-    parts.append(_wrapped(mx+40 if extended else 2960, my+914 if extended else 3090,
-                          "Objektfeste Körnung und Bürstung." if extended else "Objektfeste Körnung und Bürstung. Kontrollierte Lichtflächen; kein Überstrahlen.",
-                          width=42 if extended else 40, size=19 if extended else 25, leading=24 if extended else 31, max_lines=2 if extended else 3))
+        parts.append(_text(text_x, y+18 if texture_target else (y+23 if extended else y+26), material_name, (18 if extended else 22) if texture_target else (21 if extended else 25), INK))
+        parts.append(_wrapped(text_x, y+36 if texture_target else (y+47 if extended else y+56), source, width=35 if extended else 33, size=19 if extended else 22, leading=24, max_lines=1))
+        parts.append(_wrapped(text_x, y+53 if texture_target else (y+69 if extended else y+83), channel, width=43 if extended else 35, size=16 if extended else 18, leading=20, max_lines=1))
+    if texture_target:
+        colors = dict(accent=palette[3])
+        for key, role, fallback in (('housing','paint',palette[0]), ('metal','metal',palette[1]), ('rubber','rubber',palette[2])):
+            colors[key] = next((p.color for p in weapon if getattr(p,'material','paint')==role),fallback)
+        profile_viewport = [mx+40,my+655 if extended else my+695,mw-80,285 if extended else 240]
+        legend,profile_records = profile_panel(texture_target,profile_viewport,extended,colors)
+        parts.append(legend)
+    else:
+        parts.append(_wrapped(mx+40 if extended else 2960, my+914 if extended else 3090,
+                              "Objektfeste Körnung und Bürstung." if extended else "Objektfeste Körnung und Bürstung. Kontrollierte Lichtflächen; kein Überstrahlen.",
+                              width=42 if extended else 40, size=19 if extended else 25, leading=24 if extended else 31, max_lines=2 if extended else 3))
 
     px,py,pw,ph = panels["palette"]
     parts.append(_panel(px,py,pw,ph, "06", "VIER FARBVARIANTEN", "HAUPTSKIN · FESTE AKZENTE" if extended else "HAUPTSKIN · FESTE AKZENTE BLEIBEN"))
@@ -523,6 +540,7 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
             "hero_labels": label_records, "other_components": others, "prompts": prompts,
             "detail": {"yaw": detail_yaw, "pitch": detail_pitch, "scale": detail_scale, "center": detail_center.tolist(),
                        "full_weapon_rendered": True, "skin": None, "viewport": [dx+40,dy+150,*detail_size], "selected_labels": list(dict.fromkeys(getattr(p, "label", "") for p in selected))},
+            **({"texture_profile": texture_target, "texture_profile_viewport": profile_viewport, "texture_profile_tiles": profile_records} if texture_target else {}),
             "material_samples": material_records, "palette_variants": palette_records,
             "textures": {"catalog": "docs/textures/catalog.json", "format_version": 1,
                          "model_unit_m": physical_unit, "scale_source": "Weapon-Spec units.model_unit_m",
