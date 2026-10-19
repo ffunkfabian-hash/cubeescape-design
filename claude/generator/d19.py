@@ -1,10 +1,10 @@
-"""KD19 „Dornwerk“: gedrungene Armbrust mit dicken, nach hinten gezogenen D-Wurfarmen."""
+"""KD19 „Dornwerk“: dunkle Recurve-Armbrust mit offenem Heck und breitem, gepanzertem Querbogen."""
 import math
 from tlib import B, rail
 from eng import rect, circ, roundpoly
 from dmodels import arcband
 
-P, DK, K, A, AL = '#D8DCE0', '#2A2F38', '#1C2027', '#39BFA8', '#CBFFF1'
+P, DK, K, A, AL = '#D8DCE0', '#3A3D44', '#1C2027', '#39BFA8', '#CBFFF1'
 BY = 250
 
 
@@ -17,51 +17,63 @@ def _string(b,p0,p1):
 
 def model():
     b = B(); D = b.D
-    b.P([(82,252),(178,252),(246,272),(246,334),(184,334),(114,358),(82,358)],
-        DK,-25,25,r=12,L='Schaft',
-        dec=[D(roundpoly(rect(100,268,94,22),8),P),D(roundpoly(rect(102,306,72,12),5),K)])
-    b.P(rect(70,246,20,122),K,-28,28,r=8,L='Schaftkappe')
-    b.P(rect(114,238,98,24),DK,-21,21,r=10,L='Wangenauflage',
-        dec=[D(roundpoly(rect(128,243,70,9),4),P)])
-    b.P([(230,260),(574,258),(606,276),(606,334),(246,334),(230,318)],
-        DK,-28,28,r=12,L='Gehäuse',
-        dec=[D(roundpoly(rect(250,276,182,24),9),P),
-             D(roundpoly(rect(464,278,104,10),5),A,True),D(roundpoly(rect(254,314,174,9),4),K)])
-    rail(b,252,364,260,K,DK,w=13)
+    # Offener, abgerundeter Heckrahmen statt des geschlossenen D-Schulterblocks.
+    b.P([(82,252),(174,252),(252,270),(252,292),(174,280),(82,282)],
+        DK,-23,23,r=10,L='Schaft')
+    b.P([(84,326),(164,326),(232,300),(250,312),(178,350),(84,350)],
+        DK,-23,23,r=10,L='Schaft')
+    b.P(rect(70,246,22,112),K,-27,27,r=10,L='Schaftkappe')
+    b.P(rect(110,240,100,22),P,-24,24,r=10,L='Wangenauflage')
+    b.P([(230,260),(568,260),(610,280),(610,326),(248,330),(230,314)],
+        DK,-29,29,r=12,L='Gehäuse')
+    for z0,z1 in ((28,36),(-36,-28)):
+        b.P([(254,276),(424,276),(438,290),(424,304),(254,304)],P,z0,z1,r=10,L='Deckplatte')
+        ds=[D(roundpoly(rect(472,288,72,8),4),A,True)]
+        b.P(rect(458,280,100,26),K,z0,z1,r=9,L='Führungswange',
+            dec=ds if z1>0 else (),xdec=[('z-',z0,*d) for d in ds] if z1<0 else ())
+    rail(b,252,364,260,K,DK,w=14)
     b.P(rect(384,BY+3,240,10),K,-7,7,r=4,L='Führungsrinne')
-    b.P(rect(378,234,38,28),K,-22,22,r=9,L='Schloss',
-        dec=[D(roundpoly(rect(386,240,22,10),4),A,True)])
+    b.P(rect(378,240,40,22),K,-23,23,r=10,L='Schloss',
+        dec=[D(roundpoly(rect(386,245,24,9),4),A,True)])
     b.C(396,662,BY,4.5,AL,n=10,L='Bolzen')
-    b.F(662,690,BY,9,1,A,n=10)
-    b.P([(398,BY),(426,BY-12),(440,BY)],A,-1,1,r=2)
-    b.P(rect(572,256,60,80),K,-34,34,r=12,L='Bogenblock',
-        dec=[D(roundpoly(rect(584,280,34,32),10),P),D(roundpoly(rect(594,289,14,14),6),A,True)])
-    # Einteilige breite Recurve-Bögen statt der schmalen G-Segmente.
+    b.F(662,690,BY,9,1,A,n=10,L='Bolzen')
+    b.P([(398,BY),(426,BY-12),(440,BY)],A,-1,1,r=2,L='Bolzenfeder')
+    b.P([(564,258),(622,258),(638,282),(638,338),(614,352),(564,338)],
+        DK,-35,35,r=12,L='Bogenblock')
+    b.P(rect(570,326,58,26),P,-38,38,r=10,L='Bogenklemme')
+    # Einteilige schwere Recurve-Arme ziehen deutlich zum Schützen zurück.
     for s in (-1,1):
-        b.Y([(590,24*s),(632,24*s),(646,56*s),(632,116*s),(582,174*s),
-             (550,170*s),(580,118*s),(596,72*s)],
-            DK,BY-7,BY+15,r=12,L='Wurfarm',
-            dec=[D(roundpoly([(604,42*s),(624,44*s),(630,66*s),(616,112*s),
-                              (576,158*s),(566,158*s),(596,108*s),(610,68*s)],7),P),
-                 D(roundpoly([(608,62*s),(618,64*s),(606,110*s),(574,150*s),
-                              (570,146*s),(598,104*s)],4),A,True)])
-        _string(b,(566,164*s),(396,2*s))
-    b.P(rect(422,302,176,16),A,28,42,r=7,L='Spannhebel')
-    b.P(circ(594,310,13,14),DK,26,46,
-        dec=[D(circ(594,310,6,12),P)])
-    b.P([(280,332),(336,332),(350,422),(292,428)],K,-23,23,r=12,L='Griff',
-        dec=[D(roundpoly([(298,352),(320,352),(330,404),(308,408)],7),DK)])
-    b.P(arcband(336,440,334,62,10),DK,-8,8,L='Abzugbügel')
+        b.Y([(570,24*s),(626,24*s),(654,66*s),(632,128*s),(532,206*s),
+             (490,210*s),(518,172*s),(588,116*s),(600,72*s)],
+            DK,BY-4,BY+24,r=12,L='Wurfarm')
+        b.Y([(586,44*s),(614,44*s),(634,70*s),(614,122*s),(526,192*s),
+             (512,192*s),(536,162*s),(602,110*s),(612,70*s)],
+            P,BY-10,BY+1,r=10,L='Wurfarmplatte',
+            dec=[D(roundpoly([(604,62*s),(614,66*s),(602,116*s),(528,182*s),
+                              (522,178*s),(592,110*s)],4),A,True)])
+        b.Y([(598,52*s),(634,50*s),(642,70*s),(630,86*s),(602,82*s)],
+            K,BY-10,BY+30,r=8,L='Wurfarmklemme')
+        b.Y([(486,194*s),(518,186*s),(530,206*s),(504,220*s),(488,214*s)],
+            K,BY-8,BY+28,r=8,L='Sehnenanker')
+        _string(b,(504,202*s),(396,2*s))
+    b.P(rect(416,310,184,16),A,29,45,r=7,L='Spannhebel')
+    b.P(circ(594,318,17,16),K,28,49,L='Hebeldrehpunkt',
+        dec=[D(circ(594,318,8,12),P)])
+    b.P(rect(414,306,30,26),K,43,54,r=8,L='Hebelgriff')
+    b.P([(280,328),(336,328),(350,422),(292,428)],K,-24,24,r=12,L='Griff')
+    for z0,z1 in ((23,29),(-29,-23)):
+        b.P([(294,348),(320,348),(334,402),(309,408)],DK,z0,z1,r=8,L='Griffschale')
+    b.P(arcband(336,440,326,62,10),DK,-8,8,L='Abzugbügel')
     b.m.parts[-1].update(nohull=True,hull=False)
-    b.P([(358,334),(372,334),(382,366),(368,370)],A,-6,6,r=4,L='Abzug')
-    b.P([(480,332),(526,332),(522,394),(486,394)],K,-19,19,r=12,L='Vordergriff')
+    b.P([(358,326),(372,326),(382,364),(368,368)],A,-6,6,r=4,L='Abzug')
+    b.P([(480,326),(526,326),(522,394),(486,394)],K,-20,20,r=12,L='Vordergriff')
     return b.m
 
 
 META=dict(num='19',name='Schwere Armbrust',nick='DORNWERK',col=A,
- pill='JADE-SKIN',palette=[P,DK,A,AL],center=(380,330,0),
- desc='Eine gedrungene schwere Armbrust kombiniert einen tiefen Schulterblock mit zwei breiten, weich zurückgezogenen Recurve-Wurfarmen. Jadegrüne Sehnenhälften laufen zum Schloss hinter dem hellen Bolzen; der Spannhebel sitzt links am massiven Bogenblock und der Abzug bleibt frei zugänglich.',
- form='Tiefer Schaft mit Wangenauflage · kompaktes Rundgehäuse · hintere Visierschiene · Schloss · Führungsrinne mit Bolzen · massiver Bogenblock · zwei breite Recurve-Wurfarme · zwei Sehnenhälften · Spannhebel links · freier Abzugsbügel · Vordergriff',
+ pill='JADE-SKIN',palette=[DK,P,A,AL],center=(380,330,0),
+ desc='Ein offener dunkler Heckrahmen trägt das gedrungene Armbrustgehäuse. Vorn breitet sich ein schwerer Querbogen mit weit zurückgezogenen Recurve-Armen aus; helle Wurfarmplatten und dunkle Wurzelklemmen zeigen den Aufbau. Jadegrüne Sehnen laufen von dicken Endankern zum Schloss hinter dem hellen Bolzen; der Spannhebel sitzt links am vorderen Drehpunkt.',
+ form='Offener dunkler Heckrahmen · helle Wangenauflage und Deckplatten · hintere Schiene · Schloss und Bolzenrinne · massiver Querblock · breite Recurve-Wurfarme mit hellen Schalen · Wurzelklemmen · Sehnenanker · zwei Sehnenhälften · linker Spannhebel · freier Abzug',
  op=dict(reload_de='Linken Spannhebel am vorderen Drehpunkt nach vorn-unten schwenken: Sehne ins Schloss ziehen, dann einen Bolzen in die Führungsrinne legen.',
          action_de='Ein Bolzen je Spannung; der verschossene Bolzen bleibt am Trefferort und kann wieder aufgenommen werden.',
          fire_de='Einzelschuss mit hoher Durchschlagskraft; je nach Ausführung Explosiv- oder Widerhaken-Bolzen.',

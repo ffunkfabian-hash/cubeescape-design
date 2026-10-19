@@ -1,64 +1,78 @@
-"""KD15 „Eiswalze“: kurzer schwerer D-Trommelwerfer mit großer Sechskammerwalze."""
+"""KD15 „Eiswalze“: dunkler Buckeltrommelwerfer mit geklemmtem Rohrschaft."""
 import math
 from tlib import B, rail
 from eng import rect, roundpoly
 from dmodels import arcband
 
-P, DK, K, A, AL = '#D8DCE0', '#2A2F38', '#1C2027', '#55CEDB', '#D5FAFF'
+P, MC, DK, K, A, AL = '#D8DCE0', '#3A3D44', '#2A2F38', '#1C2027', '#55CEDB', '#D5FAFF'
 AX, RING = 302, 42
 
 
 def model():
     b = B(); D = b.D
-    b.P([(68,246),(148,246),(190,264),(190,334),(130,344),(76,362),(68,350)],
-        DK,-29,29,r=12,L='Schaft',
-        dec=[D(roundpoly(rect(84,260,68,28),10),P),
-             D(roundpoly(rect(92,316,46,10),5),K)])
-    b.P(rect(50,240,24,128),K,-32,32,r=10,L='Schaftkappe')
-    b.P([(180,236),(292,230),(312,246),(312,372),(196,372),(180,352)],
-        DK,-34,34,r=12,L='Gehäuse',
-        dec=[D(roundpoly([(198,250),(278,244),(290,258),(290,286),(198,292)],10),P),
-             D(roundpoly(rect(208,264,66,10),5),A,True)])
-    b.P(rect(238,310,62,44),K,33,42,r=10,L='Ladeklappe',
-        dec=[D(roundpoly(rect(248,318,42,27),8),P),
-             D(roundpoly(rect(254,328,30,7),3),A,True)])
-    # Die kurze, breite Trommel ist sichtbar größer als der Verschlussblock.
-    b.C(312,416,AX,64,DK,n=18,L='Granattrommel',
-        cap=[(AX,0,59,P,False)]+
-            [(AX-RING*math.cos(k*math.pi/3),RING*math.sin(k*math.pi/3),13,'#050506',False)
+    # Rohr, zwei Klemmen und die separate Kappe ersetzen den üblichen Schulterblock.
+    b.C(66,204,282,12,DK,n=16,L='Schaft')
+    for x in (88,172):
+        b.C(x,x+20,282,18,K,n=16,L='Schaftklemme')
+    b.P(rect(48,246,24,112),K,-29,29,r=11,L='Schaftkappe')
+    b.P(rect(49,258,10,84),P,-30,30,r=8,L='Schulterpolster')
+    b.P(rect(100,253,76,22),P,-20,20,r=10,L='Wangenauflage')
+    b.P(rect(178,267,32,29),MC,-25,25,r=10,L='Schaftaufnahme')
+    b.P([(196,246),(280,236),(312,254),(312,372),(206,372),(186,350),(186,266)],
+        MC,-35,35,r=12,L='Gehäuse')
+    for z0,z1 in ((34,41),(-41,-34)):
+        b.P([(204,259),(270,250),(290,266),(290,288),(204,296)],P,z0,z1,r=10,L='Gehäuseplatte',
+            dec=[D(roundpoly(rect(216,271,56,9),4),A,True)])
+    b.P(rect(242,312,62,42),K,34,44,r=10,L='Ladeklappe',
+        dec=[D(roundpoly(rect(252,322,40,19),8),P)])
+    b.P(rect(275,326,23,10),A,43,51,r=4,L='Klappenriegel')
+    # Ein hoher gerundeter Rücken macht die Trommelmasse auch von der Seite lesbar.
+    b.P([(282,238),(308,216),(354,206),(404,214),(438,234),(444,254),(290,254)],
+        MC,-25,25,r=12,L='Oberbrücke')
+    b.P([(311,215),(350,207),(372,210),(374,224),(320,232)],P,-26,26,r=9,L='Rückenplatte')
+    rail(b,326,390,210,K,DK,w=14)
+    # Kurze, hohe Walze mit echten hellen Stirnringen und dunklen Laufringen.
+    b.C(312,424,AX,68,MC,n=20,L='Granattrommel')
+    b.C(312,323,AX,69,P,n=20,L='Granattrommel')
+    for x in (330,398):
+        b.C(x,x+10,AX,70,K,n=20,L='Granattrommel')
+    b.C(415,426,AX,68,P,n=20,L='Granattrommel',
+        cap=[(AX-RING*math.cos(k*math.pi/3),RING*math.sin(k*math.pi/3),13,'#050506',False)
              for k in range(6)]+[(AX,0,13,K,False),(AX,0,6,A,True)])
-    for x in (324,394):
-        b.C(x,x+9,AX,65,K,n=18,L='Granattrommel')
-    b.C(294,446,AX,10,K,n=12,L='Trommelachse')
-    b.P(rect(296,222,142,20),DK,-22,22,r=8,L='Oberbrücke',
-        dec=[D(roundpoly(rect(312,227,108,9),4),P)])
-    rail(b,212,290,236,K,DK,w=14)
-    b.P([(416,236),(444,236),(450,256),(450,328),(416,328)],DK,-29,29,r=10,L='Laufträger',
-        dec=[D(roundpoly(rect(426,278,14,34),6),P)])
-    b.C(444,554,AX-RING,26,DK,n=16,L='Lauf')
-    b.P(rect(460,242,80,36),DK,-23,23,r=10,L='Lauf',
-        dec=[D(roundpoly(rect(470,248,60,14),6),P),
-             D(roundpoly(rect(476,268,48,6),3),A,True)])
-    b.C(554,580,AX-RING,32,K,n=16,L='Mündung',
-        cap=[(AX-RING,0,26,P,False),(AX-RING,0,20,'#050506',False)])
-    # Der gesamte Abzugsraum bleibt hinter und unter der Trommel frei.
-    b.P([(198,370),(248,370),(268,462),(210,468)],K,-23,23,r=12,L='Griff',
-        dec=[D(roundpoly([(218,388),(232,388),(248,444),(232,448)],6),DK)])
-    b.P(arcband(248,306,370,62,9),DK,-8,8,L='Abzugbügel')
+    for z0,z1 in ((61,69),(-69,-61)):
+        b.P([(344,285),(384,285),(392,296),(388,321),(344,321)],P,z0,z1,r=10,L='Granattrommel',
+            dec=[D(roundpoly(rect(353,298,26,8),4),A,True)])
+    b.C(294,450,AX,10,K,n=12,L='Trommelachse')
+    b.P([(424,236),(446,238),(458,258),(456,316),(440,334),(424,328)],MC,-30,30,r=12,L='Laufträger')
+    b.P(rect(438,281,14,36),P,29,36,r=7,L='Lagerdeckel')
+    b.P(rect(438,281,14,36),P,-36,-29,r=7,L='Lagerdeckel')
+    b.C(448,548,AX-RING,27,MC,n=16,L='Lauf')
+    b.C(452,468,AX-RING,30,DK,n=16,L='Laufbund')
+    b.P(rect(470,238,62,37),P,20,28,r=10,L='Laufplatte',
+        dec=[D(roundpoly(rect(479,251,43,9),4),K)])
+    b.P(rect(470,238,62,37),P,-28,-20,r=10,L='Laufplatte',
+        xdec=[('z-',-28,roundpoly(rect(479,251,43,9),4),K,False)])
+    b.C(546,572,AX-RING,33,K,n=16,L='Mündung',
+        cap=[(AX-RING,0,27,P,False),(AX-RING,0,20,'#050506',False)])
+    # Der Abzug liegt vollständig hinter und unter der Trommel.
+    b.P([(206,368),(250,368),(270,452),(220,466),(204,448)],K,-23,23,r=12,L='Griff')
+    b.P([(220,388),(239,384),(254,439),(230,447)],DK,22,28,r=9,L='Griffschale')
+    b.P([(220,388),(239,384),(254,439),(230,447)],DK,-28,-22,r=9,L='Griffschale')
+    b.P(arcband(250,308,369,60,9),DK,-8,8,L='Abzugbügel')
     b.m.parts[-1].update(nohull=True,hull=False)
-    b.P([(264,371),(276,371),(284,406),(272,410)],A,-6,6,r=4,L='Abzug')
-    b.P([(458,284),(496,284),(490,378),(464,378)],K,-19,19,r=11,L='Vordergriff',
-        dec=[D(roundpoly(rect(468,306,17,42),8),P)])
+    b.P([(266,368),(278,368),(286,404),(274,408)],A,-6,6,r=5,L='Abzug')
+    b.P([(464,282),(502,282),(498,308),(488,378),(462,378),(458,354)],K,-20,20,r=11,L='Vordergriff',
+        dec=[D(roundpoly(rect(468,312,17,43),8),P)])
     return b.m
 
 
 META=dict(num='15',name='Schwerer Granatwerfer',nick='EISWALZE',col=A,
- pill='STASIS-VERSION',palette=[P,DK,A,AL],center=(316,346,0),
- desc='Eine kurze, breite Sechskammerwalze prägt den schweren gerundeten Werfer zwischen Schulterblock und kurzem Laufträger. Helle Deckplatten gliedern das dunkle Gehäuse; die Ladeklappe sitzt links und der Lauf fluchtet mit der oberen Trommelkammer.',
- form='Tiefer Schulterblock · massiger Heckrahmen · Ladeklappe links · breite Granattrommel mit sechs Kammern · Trommelachse · Oberbrücke · kurzer Laufträger · dicker Lauf · Vordergriff · Abzug hinter der Trommel · gebogener Bügel',
+ pill='STASIS-VERSION',palette=[MC,P,A,AL],center=(316,346,0),
+ desc='Eine hohe kurze Granattrommel und der gewölbte Rücken geben dem dunklen Werfer eine bucklige schwere Silhouette. Helle Stirnringe und echte Seitenplatten gliedern die Walze. Hinten trägt ein Rohrschaft mit zwei Klemmen die separate Schulterkappe und Wangenauflage.',
+ form='Rohrschaft · zwei Schaftklemmen · separate Schulterkappe · helle Wangenauflage · dunkles Heckgehäuse mit hellen Platten · Ladeklappe links · hoher Trommelbuckel · Sechskammerwalze · Trommelachse · kurzer dicker Lauf · Vordergriff',
  op=dict(reload_de='Ladeklappe links öffnen, Trommel Kammer für Kammer drehen, sechs Granaten einsetzen und Klappe schließen.',
-         action_de='Nach jedem Schuss dreht das Federwerk in der Trommelachse die Granattrommel um eine Kammer weiter.',
-         fire_de='Sechs schwere Granaten nacheinander; die obere Kammer speist den kurzen Lauf, Zündung beim Aufprall.',
-         reload_en='Open the left loading gate, turn the drum chamber by chamber, insert six grenades and close the gate.',
-         action_en='After each shot, the spring in the axle indexes the grenade drum by one chamber.',
-         fire_en='Fire six heavy grenades in succession; the upper chamber feeds the short barrel, with impact detonation.'))
+         action_de='Nach jedem Schuss dreht das Federwerk in der Trommelachse die schwere Granattrommel eine Kammer weiter.',
+         fire_de='Sechs schwere Granaten nacheinander; die obere Kammer fluchtet mit dem kurzen Lauf, Zündung beim Aufprall.',
+         reload_en='Open the left loading gate, index the drum chamber by chamber, insert six grenades and close the gate.',
+         action_en='After each shot, the spring in the axle indexes the heavy grenade drum by one chamber.',
+         fire_en='Fire six heavy grenades in succession; the upper chamber aligns with the short barrel, with impact detonation.'))

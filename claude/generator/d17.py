@@ -1,43 +1,59 @@
-"""KD17 „Lichtspalter“: breite, kurz geführte D-Energieklinge mit schwerer Wurzel."""
+"""KD17 „Lichtspalter“: dunkler, bauchiger Spalter mit versetzten Deckplatten und rosa Schneide."""
 from tlib import B
 from eng import rect, roundpoly
 
-P, DK, K, A, AL = '#D8DCE0', '#2A2F38', '#1C2027', '#F47BC7', '#FFE0F4'
+P, DK, K, A, AL = '#D8DCE0', '#3A3D44', '#1C2027', '#F47BC7', '#FFE0F4'
 
 
 def model():
     b = B(); D = b.D
-    b.C(104,146,300,23,DK,n=12,L='Knauf',cap=[(300,0,10,A,True)])
-    b.P(rect(142,280,142,40),K,-20,20,r=12,L='Griff',
-        dec=[D(roundpoly(rect(156+22*i,284,11,32),5),DK) for i in range(5)])
-    b.P([(270,250),(326,250),(344,268),(344,334),(326,350),(270,350)],
-        DK,-28,28,r=12,L='Parierblock',
-        dec=[D(roundpoly(rect(280,262,44,18),7),P),D(roundpoly(rect(280,326,44,12),5),P)])
-    b.P(rect(284,284,38,34),K,-30,30,r=9,L='Energiezelle',
-        dec=[D(roundpoly(rect(292,291,22,20),7),A,True),D(roundpoly(rect(299,296,8,10),4),AL,True)])
-    # Eine quer liegende Parierstange, keine Visieraufnahme.
-    b.Y([(280,-72),(308,-68),(330,-28),(330,28),(308,68),(280,72),
-         (292,24),(292,-24)],DK,282,318,r=10,L='Parierstange',
-        dec=[D(roundpoly([(286,42),(304,42),(312,60),(286,63)],5),P),
-             D(roundpoly([(286,-42),(304,-42),(312,-60),(286,-63)],5),P)])
-    b.P([(334,254),(680,242),(764,258),(824,300),(764,342),(680,358),(334,346)],
-        DK,-9,9,r=12,L='Klinge',
-        dec=[D(roundpoly([(354,266),(674,256),(750,270),(790,296),(352,296)],10),P),
-             D(roundpoly([(354,322),(680,336),(756,324),(798,300),(812,300),
-                          (764,338),(680,352),(354,338)],6),A,True),
-             D(roundpoly([(372,329),(678,341),(748,330),(752,334),(678,347),(372,335)],3),AL,True)])
-    b.P([(334,292),(688,286),(754,300),(688,314),(334,308)],K,-14,14,r=8,L='Mittelrippe',
-        dec=[D(roundpoly(rect(370,297,262,6),3),A,True)])
-    b.P([(330,258),(378,258),(392,278),(392,324),(378,344),(330,344)],
-        DK,-19,19,r=10,
-        dec=[D(roundpoly(rect(342,268,30,18),7),P),D(roundpoly(rect(342,316,30,16),6),P)])
+    b.C(94,140,300,27,DK,n=12,L='Knauf',cap=[(300,0,15,K,False),(300,0,8,A,True)])
+    b.C(130,150,300,24,P,n=12,L='Knaufklemme')
+    b.P(rect(144,280,142,40),K,-20,20,r=12,L='Griff')
+    for x in (158,182,206,230,254):
+        b.P(rect(x,278,12,44),DK,-23,23,r=6,L='Griffring')
+    b.P([(274,246),(328,246),(350,264),(350,338),(328,358),(274,358)],
+        DK,-29,29,r=12,L='Parierblock')
+    b.P(rect(288,282,38,38),K,-32,32,r=10,L='Energiezelle',
+        dec=[D(roundpoly(rect(296,290,22,22),7),A,True),D(roundpoly(rect(303,295,8,12),4),AL,True)])
+    for y in (258,330):
+        b.P(rect(280,y,50,16),P,-32,32,r=7,L='Zellenklemme')
+    # Breite Querparierstange mit verdickten Endkappen, keine Visieraufnahme.
+    b.Y([(282,-80),(310,-76),(336,-30),(336,30),(310,76),(282,80),
+         (294,26),(294,-26)],DK,280,322,r=10,L='Parierstange')
+    for s in (-1,1):
+        b.Y([(282,62*s),(316,60*s),(324,76*s),(310,90*s),(280,90*s)],
+            P,278,324,r=8,L='Parierkappe')
+    # Ein gekrümmter breiter Bauch statt der langen, geraden G-Klinge.
+    b.P([(340,250),(486,234),(686,214),(768,228),(834,270),(810,316),
+         (712,374),(528,368),(340,342)],DK,-10,10,r=12,L='Klinge')
+    b.P([(350,328),(530,352),(706,358),(800,302),
+         (810,316),(712,374),(528,368),(350,342)],A,-11,11,r=8,emit=True,L='Leuchtschneide',
+        dec=[D(roundpoly([(388,339),(530,358),(706,364),(776,326),
+                          (780,332),(708,370),(528,364),(388,345)],3),AL,True)])
+    # Die terminale Schneidenkappe definiert die Spitze, unabhängig vom tiefen Schneidenbauch.
+    b.P([(790,314),(820,270),(834,270),(810,316),(800,322)],
+        A,-11,11,r=8,emit=True,L='Klingenspitze')
+    b.P([(340,290),(538,278),(734,274),(776,290),(724,310),(538,312),(340,308)],
+        K,-18,18,r=10,L='Mittelrippe',
+        dec=[D(roundpoly([(382,295),(538,286),(712,284),(730,290),
+                          (710,296),(538,298),(382,303)],4),A,True)])
+    b.P([(332,254),(382,250),(402,274),(402,322),(380,346),(332,340)],
+        K,-23,23,r=10,L='Klingenwurzel')
+    for z0,z1 in ((9,15),(-15,-9)):
+        b.P([(406,256),(534,244),(548,260),(536,278),(406,286)],P,z0,z1,r=10,L='Klingendeckplatte')
+        b.P([(558,240),(682,228),(748,240),(776,260),(742,272),(556,278)],
+            P,z0,z1,r=10,L='Klingendeckplatte')
+        for x,y in ((452,316),(530,322),(608,324)):
+            b.P([(x,y),(x+14,y+2),(x+34,y+30),(x+18,y+28)],
+                K,z0,z1,r=6,L='Klingenrippe')
     return b.m
 
 
 META=dict(num='17',name='Schwert',nick='LICHTSPALTER',col=A,
- pill='PRISMATIC-VERSION',palette=[P,DK,A,AL],center=(464,300,0),
- desc='Eine breite, gerundet zulaufende Energieklinge sitzt auf einer schweren Klingenwurzel mit dunkler Mittelrippe. Helle Deckflächen und die rosa Leuchtschneide gliedern den kompakten Spalter; Energiezelle und seitlich ausladende Parierstange schützen den kräftigen Griff.',
- form='Breite gerundete Klinge · helle Deckflächen · rosa Leuchtschneide · schwere Mittelrippe · verstärkte Klingenwurzel · Parierblock mit Energiezelle · quer liegende Parierstange · dicker Griff · großer Knauf',
+ pill='PRISMATIC-VERSION',palette=[DK,P,A,AL],center=(466,298,0),
+ desc='Ein bauchiger dunkler Spalter mit hochgezogenem Rücken und schwerer Schneidenwölbung. Versetzte helle Deckplatten sitzen als eigene Schalen über dem Klingenkörper; eine breite rosa Leuchtschneide folgt dem unteren Bogen. Mittelrippe, kräftige Wurzel und gekappte Querparierstange leiten die Last zum dicken Ringgriff.',
+ form='Dunkler bauchiger Spalter · hochgezogener Rücken · rosa Schneidenbogen mit eigener Spitze · vier helle Deckplatten · sechs Klingenrippen · schwere Mittelrippe · Klingenwurzel · Energiezelle · gekappte Querparierstange · Ringgriff · Knauf',
  op=dict(reload_de='Die Energiezelle im Parierblock hält die Ladungen für schwere Angriffe; schwere Munition füllt sie auf.',
          action_de='Leichter Schlag ohne Ladung, schwerer Schlag verbraucht eine Ladung; Blocken mit der quer gehaltenen Klinge entlädt die Zelle.',
          fire_de='Nahkampf mit Schlagkombinationen und Sprungangriff; die rosa Schneide leuchtet beim Blocken auf.',

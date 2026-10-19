@@ -4,54 +4,59 @@ from eng import rect, roundpoly
 from dmodels import arcband
 import math
 
+M = '#3A3D44'
 P, DK, K, A, AL = '#D8DCE0', '#2A2F38', '#1C2027', '#C39A63', '#FBE4C3'
 
 
 def model():
     b = B(); D = b.D
-    b.P([(90,246),(170,246),(224,266),(224,326),(174,326),(108,354),(90,354)],
-        DK,-26,26,r=12,L='Schaft',
-        dec=[D(roundpoly(rect(108,258,84,24),9),P),D(roundpoly(rect(110,312,50,10),4),K)])
-    b.P(rect(76,240,20,124),K,-29,29,r=8,L='Schaftkappe')
-    b.P([(210,234),(432,228),(472,250),(472,340),(230,340),(210,320)],
-        DK,-36,36,r=12,L='Gehäuse',
-        dec=[D(roundpoly([(232,250),(410,244),(440,258),(440,286),(232,294)],10),P),
-             D(roundpoly(rect(248,263,144,10),5),A,True),
-             D(roundpoly(rect(238,314,164,12),5),K)])
-    rail(b,244,408,236,K,DK,w=14)
-    b.P(rect(314,288,34,14),K,34,50,r=6,L='Ladehebel',
-        dec=[D(roundpoly(rect(322,291,18,7),3),A)])
-    b.P([(406,336),(460,336),(472,424),(414,430)],K,-24,24,r=10,L='Magazin',
-        dec=[D(roundpoly([(418,350),(450,350),(456,412),(424,414)],8),P),
-             D(roundpoly(rect(424,356,24,50),6),K)]+
-            [D(roundpoly(rect(426,360+14*i,20,8),3),A) for i in range(3)])
-    b.P([(462,254),(586,254),(606,272),(606,316),(588,336),(462,336)],
-        DK,-30,30,r=12,L='Laufmantel',
-        dec=[D(roundpoly(rect(480,264,102,18),7),P)]+
-            [D(roundpoly(rect(484+26*i,294,14,26),5),K) for i in range(4)]+
-            [D(roundpoly(rect(486+26*i,298,10,4),2),A,True) for i in range(4)])
-    b.C(598,684,294,16,K,n=12,L='Lauf')
-    b.C(678,718,294,24,DK,n=12,L='Mündungsbremse',
-        cap=[(294,0,11,K,False)]+
-            [(294+12*math.sin(k*math.pi/3),12*math.cos(k*math.pi/3),1.7,A,False) for k in range(6)])
-    for z0,z1 in ((21,25),(-25,-21)):
-        strip=D(roundpoly(rect(688,286,20,6),3),K)
-        b.P(rect(684,282,28,24),DK,z0,z1,r=6,L='Mündungsbremse',
-            dec=[strip] if z0>0 else (),xdec=[('z-',z0,*strip)] if z0<0 else ())
-    b.P([(260,338),(310,338),(330,438),(274,444)],K,-23,23,r=12,L='Griff',
-        dec=[D(roundpoly([(280,358),(296,358),(311,418),(296,420)],6),DK)])
-    b.P(arcband(310,392,338,68,10),DK,-8,8,L='Abzugbügel')
+    # Der Schaft fällt am hinteren Ende nach unten; kein geschlossener Schulterquader.
+    b.P([(88,274),(118,250),(150,252),(196,272),(242,264),(244,302),(188,306),(140,284),(118,306),(100,366),(78,358)],
+        M,-25,25,r=12,L='Schaft')
+    b.P([(78,322),(104,328),(100,372),(74,366)],K,-28,28,r=10,L='Schaftkappe')
+    b.P([(112,258),(142,260),(188,280),(222,278),(222,290),(182,292),(136,274),(108,280)],P,-26,26,r=8,L='Schaftauflage')
+    b.P(rect(222,264,30,44),K,-28,28,r=10,L='Schaftanschluss')
+    # Der nach vorn abfallende Oberkörper ist ein einziges dunkles Keilvolumen.
+    b.P([(240,244),(328,208),(462,236),(484,260),(484,326),(240,326),(224,306),(224,266)],M,-37,37,r=12,L='Gehäuse')
+    b.P(rect(248,310,226,20),K,-30,30,r=8,L='Unterrahmen')
+    b.P(rect(288,202,58,48),K,-15,15,r=8,L='Schienenbett')
+    rail(b,288,346,208,K,DK,w=14)
+    for z0,z1 in ((36,44),(-44,-36)):
+        marks=[D(roundpoly([(272,258),(326,234),(414,250),(414,266),(272,282)],8),P),D(roundpoly(rect(274,294,128,8),4),A,True)]
+        b.P([(252,254),(326,224),(442,248),(454,266),(454,304),(252,304)],M,z0,z1,r=12,L='Verschlussplatte',
+            dec=marks if z0>0 else (),xdec=[('z-',z0,*d) for d in marks] if z0<0 else ())
+    b.P(rect(308,270,40,16),K,43,59,r=6,L='Ladehebel',dec=[D(rect(316,275,22,5),A)])
+    b.P(rect(410,322,62,22),DK,-27,27,r=8,L='Magazinaufnahme')
+    b.P([(414,338),(466,338),(476,416),(420,424)],K,-24,24,r=10,L='Magazin',
+        dec=[D(roundpoly(rect(426,352,32,52),7),P)]+[D(rect(432,358+13*i,20,7),A) for i in range(3)])
+    b.P(rect(418,414,60,15),M,-27,27,r=6,L='Magazinboden')
+    b.P(rect(394,322,20,20),K,27,40,r=6,L='Magazinriegel')
+    b.C(476,634,282,24,K,n=12,L='Laufbett')
+    b.P([(474,244),(582,250),(614,270),(614,302),(590,322),(474,322)],M,-31,31,r=12,L='Laufmantel')
+    for z0,z1 in ((30,38),(-38,-30)):
+        marks=[D(roundpoly(rect(502,270,74,10),4),K),D(roundpoly(rect(506,290,68,6),3),A,True)]
+        b.P([(490,258),(582,264),(598,278),(590,306),(490,306)],P,z0,z1,r=12,L='Wärmeschutzplatte',
+            dec=marks if z0>0 else (),xdec=[('z-',z0,*d) for d in marks] if z0<0 else ())
+    b.C(606,622,282,32,DK,n=12,L='Laufklemmung')
+    b.C(622,688,282,16,K,n=12,L='Lauf')
+    b.C(650,664,282,21,M,n=12,L='Laufring')
+    b.C(682,720,282,25,M,n=12,L='Mündungsbremse',cap=[(282,0,11,K,False)]+
+        [(282+13*math.sin(k*math.pi/3),13*math.cos(k*math.pi/3),2,A,False) for k in range(6)])
+    for z0,z1 in ((22,27),(-27,-22)):
+        slots=[D(roundpoly(rect(692,274,20,5),2),K),D(roundpoly(rect(692,284,20,5),2),K)]
+        b.P(rect(686,266,30,32),P,z0,z1,r=8,L='Bremsbacke',dec=slots if z0>0 else (),xdec=[('z-',z0,*d) for d in slots] if z0<0 else ())
+    b.P([(260,326),(310,326),(330,426),(274,434)],K,-23,23,r=12,L='Griff')
+    b.P(rect(274,424,56,15),M,-25,25,r=6,L='Griffabschluss')
+    b.P(arcband(310,392,328,68,10),DK,-8,8,L='Abzugbügel')
     b.m.parts[-1].update(nohull=True,hull=False)
-    b.P([(330,339),(343,339),(355,380),(342,386)],A,-6,6,r=4,L='Abzug')
-    b.P([(520,334),(556,334),(554,404),(526,410)],DK,-19,19,r=10,L='Vordergriff',
-        dec=[D(roundpoly(rect(534,350,10,36),4),A,True)])
+    b.P([(330,329),(343,329),(355,370),(342,376)],A,-6,6,r=4,L='Abzug')
+    b.P([(526,318),(560,318),(556,388),(532,394)],K,-19,19,r=10,L='Vordergriff')
     return b.m
 
-
 META=dict(num='22',name='Slug-Schrotflinte',nick='FELSENBRECHER',col=A,
- pill='RELIKT-SKIN',palette=[P,DK,A,AL],center=(398,336,0),
- desc='Eine kompakte Slug-Flinte mit tiefem Schulterblock und schwerem, weich gerundetem Laufmantel. Helle Deckplatten und sandfarbene Leuchtstreifen gliedern die dunklen Massen; das Kastenmagazin zeigt drei Slug-Köpfe, der gezogene Lauf endet in einer breiten Mündungsbremse.',
- form='Tiefer Schulterblock · breites Gehäuse mit heller Deckplatte · Ladehebel links · Kastenmagazin mit Slug-Fenster · gerundeter Laufmantel · gezogener Lauf · Mündungsbremse mit sechs Zügen · gebogener Bügel · Vordergriff',
+ pill='RELIKT-SKIN',palette=[M,P,A,AL],center=(398,336,0),
+ desc='Eine dunkle Slug-Flinte mit hochgezogenem Keilkörper und nach unten gebogenem Hakenschaft. Helle Wärmeschutzplatten umfassen den langen, tiefen Laufmantel; unter dem vorderen Verschluss sitzt das Slug-Magazin. Sandfarbene Fenster führen zur breiten Mündungsbremse.',
+ form='Abgesenkter Hakenschaft · Keilgehäuse · seitliche Verschlussplatten · Ladehebel · Kastenmagazin mit Boden · tiefer Laufmantel · helle Wärmeschutzplatten · freier gezogener Lauf · Mündungsbremse mit Bremsbacken · Vordergriff',
  op=dict(reload_de='Kastenmagazin vor dem Abzug wechseln (5 Slug-Patronen), danach Ladehebel links zurückziehen.',
          action_de='Halbautomatik: ein Einzelgeschoss je Abzug; der Ladehebel spannt nach dem Magazinwechsel.',
          fire_de='Schweres Einzelgeschoss mit hoher Wucht und Präzision auf mittlere Distanz, ohne Streukegel.',

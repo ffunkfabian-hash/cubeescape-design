@@ -1,63 +1,59 @@
-"""KD23 „Hitzestau“: magazinloser D-Thermalblock mit zwei Entlüftungsklappen."""
+"""KD23 „Glutherd“: magazinloser D-Thermalblock mit zwei Entlüftungsklappen."""
 from tlib import B, rail
-from eng import rect, roundpoly
+from eng import rect, roundpoly, circ
 from dmodels import arcband
 
+M = '#3A3D44'
 P, DK, K, A, AL = '#D8DCE0', '#2A2F38', '#1C2027', '#E7AF55', '#FFF0CB'
 AX = 292
 
 
 def model():
     b = B(); D = b.D
-    # Ein geschlossener, tiefer Schulterblock ersetzt den dünnen G-Rahmenschaft.
-    b.P([(102,240),(172,240),(228,260),(228,326),(176,326),(118,350),(102,350)],
-        DK,-26,26,r=12,L='Schaft',
-        dec=[D(roundpoly(rect(120,252,78,26),10),P),D(roundpoly(rect(122,310,44,10),4),K)])
-    b.P(rect(88,234,20,126),K,-29,29,r=8,L='Schaftkappe')
-    b.P([(214,230),(444,224),(480,244),(480,338),(236,338),(214,316)],
-        DK,-36,36,r=12,L='Gehäuse',
-        dec=[D(roundpoly([(236,244),(348,240),(366,254),(366,288),(236,292)],10),P),
-             D(roundpoly(rect(244,318,136,10),4),K)])
-    rail(b,246,424,232,K,DK,w=14)
-    # Die Plasmakammer liegt als symmetrischer, eingelassener Deckel auf dem Gehäuse.
-    for z0,z1 in ((35,40),(-40,-35)):
-        window=[D(roundpoly(rect(250,254,94,24),9),K),
-                D(roundpoly(rect(258,262,78,8),4),A,True),
-                D(roundpoly(rect(266,264,60,4),2),AL,True)]
-        b.P(rect(240,246,114,40),DK,z0,z1,r=10,L='Plasmakammer',
+    # Zwei voneinander getrennte Streben laufen in ein querliegendes Klappgelenk.
+    b.P(rect(82,244,24,116),K,-26,26,r=10,L='Schaftkappe')
+    b.P([(102,248),(228,238),(244,252),(230,272),(102,278)],M,-19,19,r=12,L='Schaft')
+    b.P([(102,330),(222,278),(242,290),(230,308),(108,356)],M,-19,19,r=12,L='Schaft')
+    b.P(circ(238,270,23,18),DK,-29,29,L='Schaftgelenk',dec=[D(circ(238,270,10,12),P)])
+    b.P(rect(216,286,28,18),K,27,38,r=6,L='Schaftverriegelung')
+    b.P([(246,236),(392,228),(434,244),(466,272),(466,332),(246,332),(230,312)],M,-36,36,r=12,L='Gehäuse')
+    b.P(rect(250,310,194,26),K,-30,30,r=10,L='Unterrahmen')
+    rail(b,262,388,238,K,DK,w=14)
+    for z0,z1 in ((35,44),(-44,-35)):
+        window=[D(roundpoly(rect(268,256,86,24),9),K),D(roundpoly(rect(276,264,70,8),4),A,True),D(rect(284,266,54,4),AL,True)]
+        b.P(rect(256,244,110,46),P,z0,z1,r=12,L='Plasmakammer',
             dec=window if z0>0 else (),xdec=[('z-',z0,*d) for d in window] if z0<0 else ())
-    for z0,z1 in ((35,40),(-40,-35)):
-        seg=[D(roundpoly(rect(250+15*i,300,10,7),3),AL if i<4 else A,True) for i in range(8)]
-        b.P(rect(242,294,130,20),K,z0,z1,r=8,L='Hitzeanzeige',
-            dec=seg if z0>0 else (),xdec=[('z-',z0,*d) for d in seg] if z0<0 else ())
-    # Beide Klappen sind eigenständige beschriftete Teile; obere Kante ist die Scharnierlinie.
     for z0,z1 in ((35,43),(-43,-35)):
-        cover=([D(roundpoly(rect(394,250,60,12),5),P)]+
-               [D(roundpoly(rect(394+12*i,276,6,42),3),A,True) for i in range(6)])
-        b.P([(382,240),(466,240),(474,256),(474,326),(382,326)],DK,z0,z1,r=10,L='Entlüftungsklappe',
-            dec=cover if z0>0 else (),xdec=[('z-',z0,*d) for d in cover] if z0<0 else ())
-    # Kurzes, breites Rippenpaket statt langer, filigraner G-Laufstrecke.
-    b.C(470,596,AX,24,K,n=12,L='Hitzespeicher')
-    for x in (478,496,514,532,550,568,586):
-        b.C(x,x+9,AX,41,DK,n=12,L='Kühlrippen')
-        b.m.decal('x+',x+9,roundpoly(rect(AX-30,-13,7,26),3),P,both=False)
-    b.C(594,646,AX,13,K,n=12,L='Lauf')
-    b.C(642,670,AX,25,DK,n=12,L='Fokusring',
-        cap=[(AX,0,15,K,False),(AX,0,7,A,True),(AX,0,3,AL,True)])
-    b.P([(264,336),(314,336),(334,434),(278,440)],K,-23,23,r=12,L='Griff',
-        dec=[D(roundpoly([(284,356),(300,356),(315,414),(300,416)],6),DK)])
-    b.P(arcband(314,400,336,68,10),DK,-8,8,L='Abzugbügel')
+        seg=[D(roundpoly(rect(267+13*i,302,8,7),3),AL if i<4 else A,True) for i in range(8)]
+        b.P(rect(258,294,120,22),K,z0,z1,r=8,L='Hitzeanzeige',
+            dec=seg if z0>0 else (),xdec=[('z-',z0,*d) for d in seg] if z0<0 else ())
+    for z0,z1 in ((35,45),(-45,-35)):
+        vents=[D(roundpoly(rect(398+12*i,266,6,42),3),A,True) for i in range(5)]
+        b.P([(384,246),(444,250),(460,272),(460,324),(384,324)],P,z0,z1,r=12,L='Entlüftungsklappe',
+            dec=vents if z0>0 else (),xdec=[('z-',z0,*d) for d in vents] if z0<0 else ())
+    # Scharnierachsen liegen an den Oberkanten der beiden Klappen.
+    for z in (-41,41):
+        b.C(388,444,250,5,K,n=10,cz=z,L='Klappenscharnier')
+    # Unterschiedliche Rippenradien bauen einen deutlich buckligen Kühlkörper.
+    b.C(450,610,AX,30,K,n=16,L='Hitzespeicher')
+    b.F(450,470,AX,30,40,M,n=16,L='Kühlkörperansatz')
+    for x,r in ((470,40),(488,49),(506,57),(524,61),(542,57),(560,49),(578,40)):
+        b.C(x,x+10,AX,r,M if x in (488,524,560) else P,n=16,L='Kühlrippen')
+    b.F(588,612,AX,40,20,M,n=16,L='Kühlkörperabschluss')
+    b.C(608,654,AX,13,K,n=12,L='Lauf')
+    b.C(648,676,AX,25,M,n=12,L='Fokusring',cap=[(AX,0,15,K,False),(AX,0,7,A,True),(AX,0,3,AL,True)])
+    b.P([(264,330),(314,330),(334,428),(278,436)],K,-23,23,r=12,L='Griff')
+    b.P(rect(278,426,56,15),M,-25,25,r=6,L='Griffabschluss')
+    b.P(arcband(314,400,332,68,10),DK,-8,8,L='Abzugbügel')
     b.m.parts[-1].update(nohull=True,hull=False)
-    b.P([(336,337),(349,337),(362,378),(348,384)],A,-6,6,r=4,L='Abzug')
-    b.P([(426,336),(462,336),(458,406),(432,412)],DK,-19,19,r=10,L='Vordergriff',
-        dec=[D(roundpoly(rect(440,352,10,36),4),A,True)])
+    b.P([(336,333),(349,333),(362,374),(348,380)],A,-6,6,r=4,L='Abzug')
+    b.P([(426,330),(458,330),(454,398),(432,404)],K,-19,19,r=10,L='Vordergriff')
     return b.m
 
-
-META=dict(num='23',name='Hitze-Blaster',nick='HITZESTAU',col=A,
- pill='THERMAL-VERSION',palette=[P,DK,A,AL],center=(380,332,0),
- desc='Ein magazinloser Thermalblock bündelt die Masse in einem tiefen Gehäuse mit heller Deckplatte und kurzem, breitem Rippenpaket. Die Plasmakammer und die segmentierte Hitzeanzeige leuchten warmgelb; zwei seitliche Entlüftungsklappen geben die gespeicherte Hitze ab.',
- form='Tiefer Schulterblock · Gehäuse ohne Magazinschacht · Plasmakammer mit Fenster · segmentierte Hitzeanzeige · zwei seitliche Entlüftungsklappen · kompakter Hitzespeicher · breite Kühlrippen · freier Lauf und Fokusring · gebogener Bügel · Vordergriff',
+META=dict(num='23',name='Hitze-Blaster',nick='GLUTHERD',col=A,
+ pill='THERMAL-VERSION',palette=[M,P,A,AL],center=(380,332,0),
+ desc='Zwei Klappschaft-Streben münden in ein breites Gelenk hinter dem dunklen Thermalgehäuse. Ein rund aufgewölbtes Rippenpaket bildet den schweren Wärmebuckel vor den hellen Entlüftungsklappen. Plasmakammer und segmentierte Anzeige leuchten warmgelb; ein Magazin fehlt vollständig.',
+ form='Zweistreben-Klappschaft mit Gelenk und Riegel · dunkles Thermalgehäuse · helle Plasmakammer · Hitzeanzeige · zwei Entlüftungsklappen mit Scharnierachsen · buckliges Rippenpaket · Lauf und Fokusring · Vordergriff',
  op=dict(reload_de='Kein Magazin: Nachladetaste öffnet beide Entlüftungsklappen; die Munition kommt direkt aus der Reserve.',
          action_de='Jede Salve erhitzt den Hitzespeicher. Die Rippen kühlen dazwischen; bei voller Anzeige folgt eine lange Zwangsentlüftung.',
          fire_de='Plasmabolzen in Salven; Entlüften im mittleren Anzeigebereich verkürzt die Feuerpause.',
