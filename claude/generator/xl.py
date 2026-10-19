@@ -9,7 +9,7 @@ from eng import *
 import raster
 from xlroles import *
 from xlroles import _rgb,_hex,_lum,_sat,_mix
-import skins,variants,texcat,texprofile
+import skins,variants,texcat,texprofile,wtypes
 from skinraster import skin_texture
 
 ISO=('ISOMETRISCHE ANSICHT',-45,35.264)
@@ -110,7 +110,7 @@ def _profile_swatch(key,e,w,h,cols):
     d=''.join(f'<circle cx="{r.uniform(0,w):.1f}" cy="{r.uniform(0,h):.1f}" r="{r.uniform(0.8,2.2):.1f}" fill="{_mix(col,"#000000" if r.random()<0.6 else "#FFFFFF",0.3)}"/>' for _ in range(90))
     return f'<rect width="{w}" height="{h}" rx="10" fill="{col}"/>{d}'
 
-def profile_strip(prof,type_de,w,h,cols):
+def profile_strip(prof,type_de,w,h,cols,ptype=None):
     """Leiste TEXTURPROFIL unter der Materialansicht: sechs Kacheln aus texprofile (Gehäuse, Metall, Gummi, Energie, Abnutzung, Decals)"""
     G_=12;tw=(w-32-5*G_)//6;sh=44
     tiles=''
@@ -126,7 +126,8 @@ def profile_strip(prof,type_de,w,h,cols):
                 f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:16px;font-weight:600;color:#E6ECF2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{_h.escape(sub)}</span>'
                 f'<span style="font-size:15px;line-height:1.2;color:#C7D1DC;overflow:hidden;max-height:36px">„{_h.escape(e["text_de"])}“</span></div>')
     return (f'<div style="width:{w}px;height:{h}px;box-sizing:border-box;border-radius:18px;border:1px solid #22314A;background:#111A27;padding:12px 16px;display:flex;flex-direction:column;gap:10px;overflow:hidden;flex-shrink:0">'
-            f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:16px;letter-spacing:3px;color:#8FA0B3;white-space:nowrap">TEXTURPROFIL · {_h.escape(type_de.upper())} · TEXTUR-BLATT WAFFEN 1–9</span>'
+            f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:16px;letter-spacing:3px;color:#8FA0B3;white-space:nowrap">TEXTURPROFIL · {_h.escape(type_de.upper())} · '
+            +(f'VORSCHLAG · ABGELEITET VON {_h.escape(TYPE_DE_OF.get(src,src).upper())}' if (src:=texprofile.DERIVED_FROM.get(ptype)) else 'TEXTUR-BLATT WAFFEN 1–9')+'</span>'
             f'<div style="display:flex;gap:{G_}px">{tiles}</div></div>')
 
 def _bbox(parts):
@@ -197,12 +198,35 @@ def _callouts(anchors,MW,MH,col,cy_model,k=1.0):
 
 def DEFS(fid):return f'<defs><filter id="gl{fid}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter><pattern id="gr{fid}" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#1A2636" stroke-width="1"/></pattern></defs>'
 
+OP_TILES=[('reload_de','NACHLADEN'),('action_de','SPANNEN · AUFLADEN · MECHANIK'),('fire_de','FEUERN · EINSATZ')]
+def op_strip(op,moving,w,h,col):
+    """Leiste BEDIENUNG (claude-0.10, neue Waffentypen): Nachladen, Mechanik, Feuern aus META['op'], dazu die beweglichen Teile"""
+    G_=12;tw=(w-32-2*G_)//3
+    tiles=''.join(f'<div style="display:flex;flex-direction:column;gap:5px;width:{tw}px;min-width:0">'
+                  f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:13px;letter-spacing:1.4px;color:{col};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{cap}</span>'
+                  f'<span style="font-size:15px;line-height:1.25;color:#E6ECF2;overflow:hidden;max-height:76px">{_h.escape(op[k])}</span></div>' for k,cap in OP_TILES)
+    mv=' · '.join(moving) if moving else 'keine (fest verbunden)'
+    return (f'<div style="width:{w}px;height:{h}px;box-sizing:border-box;border-radius:18px;border:1px solid #22314A;background:#111A27;padding:12px 16px;display:flex;flex-direction:column;gap:8px;overflow:hidden;flex-shrink:0">'
+            f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:16px;letter-spacing:3px;color:#8FA0B3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">BEDIENUNG · BEWEGLICHE TEILE: {_h.escape(mv.upper())}</span>'
+            f'<div style="display:flex;gap:{G_}px">{tiles}</div></div>')
+
 def panel(inner,w,h,label,fid,aria,small=False):
     return f'''<div style="position:relative;width:{w}px;height:{h}px;border-radius:18px;border:1px solid #22314A;background:#111A27;overflow:hidden;flex-shrink:0">
 <svg width="{w}" height="{h}" viewBox="0 0 {w} {h}" style="display:block" role="img" aria-label="{_h.escape(aria)}">{DEFS(fid)}<rect width="{w}" height="{h}" fill="url(#gr{fid})"/>{inner}</svg>
 <span style="position:absolute;left:12px;top:10px;padding:4px 10px;border-radius:8px;background:rgba(14,22,34,0.85);font-family:'Chakra Petch',sans-serif;font-size:{13 if small else 19}px;letter-spacing:3px;color:#8FA0B3">{label}</span></div>'''
 
-EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Magazin':'magazine','Lauf':'barrel','Mündung':'muzzle','Mündungsbremse':'muzzle brake','Zielfernrohr':'scope on mounting rings','Visier':'sight','Schaft':'stock','Energiezelle':'energy cell','Kühlrippen':'cooling fins','Montageringe':'scope rings','Laufverkleidung':'barrel shroud','Vordergriff':'foregrip','Doppellauf':'double barrel','Trommel':'revolver cylinder','Sehne':'string','Wurfarm':'limb','Pfeil':'arrow','Umlenkrolle':'cam pulley','Pfeilauflage':'arrow rest','Stabilisator':'stabilizer','Rohr':'launch tube','Heckdüse':'rear exhaust','Abgasdüse':'rear exhaust','Raketenrohre':'rocket tubes','Handschutz':'handguard','Tragegriff':'carry handle','Kimme':'rear sight','Korn':'front sight','Ladeleiste':'charge indicator rail','Mündungsring':'muzzle ring','Schaftkappe':'butt plate','Wangenauflage':'cheek rest','Trommelmagazin':'drum magazine','Röhrenmagazin':'tube magazine','Pumpgriff':'pump grip','Kristallkern':'crystal core','Energiekugel':'energy orb','Bündelring':'focusing ring','Fokusring':'focusing ring','Fokusringe':'focusing rings','Laufmantel':'barrel jacket','Feuerkern':'fire core','Oberkiefer':'upper jaw','Unterkiefer':'lower jaw','Visierschiene':'sight rail','Ringvisier':'ring sight','Trichterheck':'flared rear funnel','Sicherungsmodul':'safety module','Rakete':'rocket','Spannmechanik':'cocking mechanism','Bolzen':'bolt','Mittelstück':'riser','Energie-Auge':'energy eye','Kondensator':'capacitor','Emitter':'emitter','Raketenkasten':'rocket pod','Heckkappe':'end cap','Verschluss':'breech','Kastenvisier':'box sight','Laufhülle':'barrel shroud','Laufkasten':'barrel housing','Ladekammer':'charging chamber','Beschleunigerring':'accelerator ring','Energiespule':'energy coil','Abschussrohr':'launch tube','Schalldämpfer':'suppressor','Montage':'mount','Rahmen':'frame','Energiekern':'energy core','Fokuskern':'focus core','Tragebügel mit Visier':'carry handle with sights','Oberlauf':'upper barrel','Unterlauf':'lower barrel','Energiemagazin':'energy magazine','Mittelstück':'riser','Abzugbügel':'trigger guard','Zweibein':'folded bipod','Kompensator':'compensator','Schlitten':'slide','Energiewürfel':'energy cube','Reflexvisier':'reflex sight','Käfig':'cage','Pulswürfel':'pulse cube','Feuerdämpfer':'flash hider','Kondensatorzelle':'capacitor cell','Fächeremitter':'fan emitter','Abschussrohre':'launch tubes','Kammerstängel':'bolt handle','Patronenfenster':'shell window','Klappschaft':'folding stock'}
+EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Magazin':'magazine','Lauf':'barrel','Mündung':'muzzle','Mündungsbremse':'muzzle brake','Zielfernrohr':'scope on mounting rings','Visier':'sight','Schaft':'stock','Energiezelle':'energy cell','Kühlrippen':'cooling fins','Montageringe':'scope rings','Laufverkleidung':'barrel shroud','Vordergriff':'foregrip','Doppellauf':'double barrel','Trommel':'revolver cylinder','Sehne':'string','Wurfarm':'limb','Pfeil':'arrow','Umlenkrolle':'cam pulley','Pfeilauflage':'arrow rest','Stabilisator':'stabilizer','Rohr':'launch tube','Heckdüse':'rear exhaust','Abgasdüse':'rear exhaust','Raketenrohre':'rocket tubes','Handschutz':'handguard','Tragegriff':'carry handle','Kimme':'rear sight','Korn':'front sight','Ladeleiste':'charge indicator rail','Mündungsring':'muzzle ring','Schaftkappe':'butt plate','Wangenauflage':'cheek rest','Trommelmagazin':'drum magazine','Röhrenmagazin':'tube magazine','Pumpgriff':'pump grip','Kristallkern':'crystal core','Energiekugel':'energy orb','Bündelring':'focusing ring','Fokusring':'focusing ring','Fokusringe':'focusing rings','Laufmantel':'barrel jacket','Feuerkern':'fire core','Oberkiefer':'upper jaw','Unterkiefer':'lower jaw','Visierschiene':'sight rail','Ringvisier':'ring sight','Trichterheck':'flared rear funnel','Sicherungsmodul':'safety module','Rakete':'rocket','Spannmechanik':'cocking mechanism','Bolzen':'bolt','Mittelstück':'riser','Energie-Auge':'energy eye','Kondensator':'capacitor','Emitter':'emitter','Raketenkasten':'rocket pod','Heckkappe':'end cap','Verschluss':'breech','Kastenvisier':'box sight','Laufhülle':'barrel shroud','Laufkasten':'barrel housing','Ladekammer':'charging chamber','Beschleunigerring':'accelerator ring','Energiespule':'energy coil','Abschussrohr':'launch tube','Schalldämpfer':'suppressor','Montage':'mount','Rahmen':'frame','Energiekern':'energy core','Fokuskern':'focus core','Tragebügel mit Visier':'carry handle with sights','Oberlauf':'upper barrel','Unterlauf':'lower barrel','Energiemagazin':'energy magazine','Mittelstück':'riser','Abzugbügel':'trigger guard','Zweibein':'folded bipod','Kompensator':'compensator','Schlitten':'slide','Energiewürfel':'energy cube','Reflexvisier':'reflex sight','Käfig':'cage','Pulswürfel':'pulse cube','Feuerdämpfer':'flash hider','Kondensatorzelle':'capacitor cell','Fächeremitter':'fan emitter','Abschussrohre':'launch tubes','Kammerstängel':'bolt handle','Patronenfenster':'shell window','Klappschaft':'folding stock',
+ # neue Typen claude-0.10
+ 'Ladehebel':'charging handle','Trommelriegel':'cylinder latch','Hahn':'hammer','Ausstoßerstange':'ejector rod','Kondensatorkammern':'capacitor chambers',
+ 'Beschleunigerschiene':'accelerator rail','Linearkern':'linear core','Spulenringe':'coil rings','Granathalter':'grenade holder','Ersatzgranate':'spare grenade',
+ 'Verriegelungshebel':'locking lever','Scharnier':'hinge','Kipplauf':'break-action barrel','Ladeklappe':'loading gate','Granattrommel':'grenade drum',
+ 'Trommelachse':'drum axle','Laufträger':'barrel carrier','Zuführdeckel':'feed cover','Munitionskasten':'ammo box','Patronengurt':'ammo belt',
+ 'Knauf':'pommel','Parierblock':'guard block','Parierstange':'cross guard','Klinge':'blade','Mittelrippe':'central ridge','Stange':'shaft',
+ 'Klingenfassung':'blade mount','Schildflügel':'shield wings','Schloss':'string latch','Bogenblock':'prod block','Spannhebel':'cocking lever',
+ 'Raketenmagazin':'rocket magazine','Abgasring':'exhaust ring',
+ # neue Typen claude-0.10.1
+ 'Plasmakammer':'plasma chamber','Hitzeanzeige':'heat gauge','Entlüftungsklappe':'vent flap','Hitzespeicher':'heat sink','Raketenvorrat':'micro-missile reserve box',
+ 'Mikrorakete':'micro-missile','Kipprahmen':'top-break frame','Kippriegel':'top-break latch','Streumündung':'flared spread muzzle','Hahnschutz':'hammer shroud'}
 
 def prompt_font(texts,width,height,sizes=(18,17,16,15,14)):
     """Schriftgröße des Prompt-Felds (claude-0.9): größte aus sizes, bei der die Absätze (JetBrains Mono, Zeichenbreite 0,6 em,
@@ -222,7 +246,8 @@ def prompt_font(texts,width,height,sizes=(18,17,16,15,14)):
 def prompts(d,labels,mats,variant_letter,skin=None):
     pal=', '.join(d['palette']);vs=d.get('vs')
     import export_spec
-    tp=texprofile.PROFILES.get(export_spec.WEAPONS[d['name']][0])   # Texturprofil des Waffentyps (claude-0.9); Bogen: kein Profil
+    tp=texprofile.PROFILES.get(wtypes.key(d['name']))   # Texturprofil des Waffentyps (claude-0.9; neue Typen: Vorschlag 0.10); Bogen: kein Profil
+    op=d.get('op');melee=d['name'] in wtypes.MELEE
     tp_de=tp_en=''
     if tp:
         tp_de='; '.join(f"{k} „{tp[f]['text_de']}“" for k,f in (('Gehäuse','housing'),('Metall','metal'),('Gummi','rubber'),('Energie','energy'),('Kantenabnutzung','edge_wear'),('Decals','decals')))
@@ -234,27 +259,47 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         f"Form: {d['form']}. {d['desc']} "
         f"Pflicht-Bauteile, alle sichtbar und nachvollziehbar verbunden: {', '.join(labels)}. "
         f"Farbpalette: {pal}. Materialien: {', '.join(mats)}. "
-        "Ansichten: große isometrische Hauptansicht mit deutschen Bauteil-Beschriftungen, dazu Seitenansicht links und rechts, Vorder-, Rück-, Drauf- und Unteransicht – orthografisch, gleicher Maßstab, gemeinsame Bezugslinien – plus Detailansicht des Abzugsbereichs. "
+        f"Ansichten: große isometrische Hauptansicht mit deutschen Bauteil-Beschriftungen, dazu Seitenansicht links und rechts, Vorder-, Rück-, Drauf- und Unteransicht – orthografisch, gleicher Maßstab, gemeinsame Bezugslinien – plus Detailansicht des {'Griffbereichs' if melee else 'Abzugsbereichs'}. "
         "Stil: futuristisch, industrial, Hard-Surface, abgeschrägte Gehäuse, kantige Panzerplatten, klare dunkle Konturen, flache Toon-Schattierung, dunkelblauer Rasterhintergrund. "
-        "Konstruktion: Abzug mit Bügel klar erkennbar, Magazin im Schacht, Lauf sichtbar aus dem Gehäuse, konsistente Achsen. Visier bzw. Zielfernrohr NICHT montiert zeichnen, sondern separat als modulares Anbauteil daneben; auf der Waffe bleibt nur die freie Visierschiene als Aufnahme. "
+        +(MELEE_DE.get(d['name'],'') if melee else "Konstruktion: Abzug mit Bügel klar erkennbar, Magazin im Schacht, Lauf sichtbar aus dem Gehäuse, konsistente Achsen. Visier bzw. Zielfernrohr NICHT montiert zeichnen, sondern separat als modulares Anbauteil daneben; auf der Waffe bleibt nur die freie Visierschiene als Aufnahme. ")
         +(f"Visier: {vs['info']['title']} aus der Visier-Serie ({vs['id']}): {vs['info']['desc']} " if vs else "")
         +(f"Hauptskin „{skin[0]}“: {skin[1]}. " if skin else "")
-        +(f"Texturprofil: {tp_de}. " if tp_de else "")+
+        +(f"Texturprofil: {tp_de}. " if tp_de else "")
+        +(f"Bedienung: Nachladen – {op['reload_de']}; Mechanik – {op['action_de']}; Feuern – {op['fire_de']}. " if op else "")+
         "Vermeiden: schwebende Teile, unbeabsichtigte Überschneidungen, zufällige Leuchtstreifen, Bloom, Unschärfe, Nebel, realistische Militärwaffen-Kopien.")
     if d['name']=='Raketenwerfer':
         de=de.replace('auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.','auf der Waffe bleibt nur die freie Visierschiene als Aufnahme – seitlich links am Rohr montiert, damit das Rohr die Sichtlinie nicht verdeckt.')
+    if d['name'] in CONSTRUCT_DE:de=de.replace('Magazin im Schacht',CONSTRUCT_DE[d['name']])   # Bauweise ohne Kastenmagazin (claude-0.10.1)
     en_parts=', '.join(EN.get(l,l) for l in labels)
     en=(f"Low-poly sci-fi weapon concept sheet for the game Cube Escape: futuristic {d.get('en_type','weapon')}, variant {variant_letter}{f' ({vn})' if vn else ''} \"{d['nick']}\". "
         f"Visible, logically connected parts: {en_parts}. Color palette {pal}. "
-        "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. Draw the sight/scope detached as a separate modular attachment next to the weapon; the weapon shows only the empty sight rail. "
+        +(MELEE_EN.get(d['name'],'') if melee else "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. Draw the sight/scope detached as a separate modular attachment next to the weapon; the weapon shows only the empty sight rail. ")
         +("Sight rail mounted on the left side of the tube, offset from the bore axis. " if d['name']=='Raketenwerfer' else "")+
         (f"Sight: {VS_EN[vs['id']]} ({vs['id']}, sight series), drawn separately. " if vs else "")+
         (f"Skin \"{skin[0]}\": {skin[2]}. " if skin else "")+
         (f"Texture profile: {tp_en}. " if tp_en else "")+
+        (f"Operation: reload – {op['reload_en']}; mechanism – {op['action_en']}; firing – {op['fire_en']}. " if op else "")+
         "Hard-surface industrial design, chamfered housings, clean dark outlines, flat cel shading, dark blue grid background, no bloom, no blur, no floating parts.")
     return de,en
 
 TYPE_EN={'Pistole':'pistol','Sturmgewehr':'assault rifle','Impulsgewehr':'pulse rifle','Schrotflinte':'shotgun','Scharfschützengewehr':'sniper rifle','Maschinenpistole':'submachine gun','Fusionsgewehr':'fusion rifle','Spurgewehr':'trace rifle','Raketenwerfer':'rocket launcher','Bogen':'bow'}
+TYPE_EN.update({'Scout-Gewehr':'semi-automatic scout rifle','Handfeuerwaffe':'heavy revolver hand cannon','Lineares Fusionsgewehr':'linear fusion rifle',
+ 'Spezial-Granatwerfer':'single-shot break-action grenade launcher','Schwerer Granatwerfer':'drum-fed heavy grenade launcher','Maschinengewehr':'belt-fed machine gun',
+ 'Schwert':'energy sword','Glefe':'glaive polearm with energy emitter','Schwere Armbrust':'heavy crossbow','Raketenpistole':'rocket-assisted sidearm',
+ 'Raketen-Impulsgewehr':'rocket-assisted pulse rifle','Slug-Schrotflinte':'semi-automatic slug shotgun'})   # neue Typen claude-0.10
+TYPE_EN.update({'Hitze-Blaster':'magazine-less heat blaster pulse rifle with heat sink and vent flaps','Mikroraketen-Granatwerfer':'single-shot micro-missile grenade launcher',
+ 'Streuschuss-Handfeuerwaffe':'top-break spread-shot revolver hand cannon'})   # neue Typen claude-0.10.1
+# Konstruktionssatz im Prompt: „Magazin im Schacht“ ersetzt, wo die Waffe kein Kastenmagazin hat (nur Typen ab claude-0.10.1; ältere Blätter bleiben bytegleich)
+CONSTRUCT_DE={'Hitze-Blaster':'kein Magazin, stattdessen Hitzespeicher mit Kühlrippen und zwei seitliche Entlüftungsklappen',
+ 'Mikroraketen-Granatwerfer':'eine Mikrorakete im Abschussrohr, Vorrat im Raketenvorrat links',
+ 'Streuschuss-Handfeuerwaffe':'Trommel mit fünf Schrotkammern im Kipprahmen'}
+TYPE_DE_OF={'pistol':'Pistole','assault_rifle':'Sturmgewehr','pulse_rifle':'Impulsgewehr','shotgun':'Schrotflinte','sniper_rifle':'Scharfschützengewehr',
+ 'smg':'Maschinenpistole','fusion_rifle':'Fusionsgewehr','scout_rifle':'Spurgewehr','rocket_launcher':'Raketenwerfer'}   # Toolgen-ID -> Blattname (Profilherkunft)
+# Nahkampfwaffen (claude-0.10): eigener Konstruktionssatz im Prompt, kein Visier und keine Visierschiene
+MELEE_DE={'Schwert':"Konstruktion: Klinge, Klingenwurzel, Parierblock, Parierstange, Griff und Knauf auf einer Achse fest verbunden; kein Abzug, kein Magazin, kein Visier und keine Visierschiene. ",
+ 'Glefe':"Konstruktion: Klinge mit Emitter, Klingenfassung, Energiezelle, Stange, Vordergriff und hinterer Griff mit Abzug im Bügel auf einer Achse fest verbunden; kein Visier und keine Visierschiene, der Emitter schießt aus der Hüfte. "}
+MELEE_EN={'Schwert':"Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, grip-area detail. Blade, guard block, cross guard, grip and pommel on one axis; no trigger, no magazine, no sight, no rail. ",
+ 'Glefe':"Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, grip-area detail. Blade with emitter, blade mount with shield wings, energy cell, shaft, foregrip and rear grip with trigger on one axis; no sight, no rail, hip-fired emitter. "}
 
 PRIO=['Gehäuse','Griff','Abzug','Magazin','Energiezelle','Energiemagazin','Trommelmagazin','Röhrenmagazin','Lauf','Doppellauf','Mündung','Mündungsbremse','Schaft','Visierschiene','Rohr','Abschussrohr','Abschussrohre','Wurfarm','Sehne','Pfeil','Mittelstück','Umlenkrolle','Pfeilauflage','Handschutz','Laufmantel','Laufverkleidung','Emitter']
 def pick_labels(anchors,n=8):
@@ -300,10 +345,10 @@ def _sight_view(ms,yaw,pitch,center,W,H,sc,vs):
         if P.get('glass'):Q=dict(P);Q['alpha']=a;g.parts.append(Q)
         else:o.parts.append(P)
     return raster.rasterview(o,yaw,pitch,center,W,H,sc,0,2.6,shadow=False,glass=g)
-def sight_panel(ms,center,w,h,fid,name,col,small=False,vs=None):
+def sight_panel(ms,center,w,h,fid,name,col,small=False,vs=None,none_text=None):
     if ms.parts and not vs:ms,_=compact_sight(ms)
     if not ms.parts:
-        inner=f'<text x="{w/2}" y="{h/2}" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" fill="#8FA0B3">Keine Optik – Visierschiene frei</text>'
+        inner=f'<text x="{w/2}" y="{h/2}" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-size="22" fill="#8FA0B3">{_h.escape(none_text or "Keine Optik – Visierschiene frei")}</text>'
         return panel(inner,w,h,'VISIER · SEPARAT',fid,name+' ohne separates Visier')
     hw_=w/2-24
     cap=1e9 if vs else 6   # Visier-Serie: formatfüllend (die Waffenblätter haben je eigenen Maßstab), sonst wie bis 0.6
@@ -410,14 +455,17 @@ def sheet(d,variant_letter):
     DW=900;ph=(BH-20)//2
     dv,dnames=detail_view(m,center,DW,ph)
     if dv is None:dv,dnames='',[]
-    det=panel(dv,DW,ph,'DETAIL · ABZUGSBEREICH ('+(", ".join(dnames) if dnames else "Griff")+')',fid,f"{d['name']} Detailansicht Abzugsbereich von schräg unten")
-    sp=sight_panel(ms,center,DW,ph,fid,d['name'],col,vs=d.get('vs'))
+    melee=d['name'] in wtypes.MELEE   # Schwert/Glefe (claude-0.10): Griffbereich, kein Visier
+    det=panel(dv,DW,ph,('DETAIL · GRIFFBEREICH (' if melee and 'Abzug' not in dnames else 'DETAIL · ABZUGSBEREICH (')+(", ".join(dnames) if dnames else "Griff")+')',fid,f"{d['name']} Detailansicht Abzugsbereich von schräg unten")
+    sp=sight_panel(ms,center,DW,ph,fid,d['name'],col,vs=d.get('vs'),none_text='Kein Visier – Nahkampfwaffe, keine Visierschiene' if melee else None)
     det=f'<div style="display:flex;flex-direction:column;gap:20px;width:{DW}px">{det}{sp}</div>'
     # Material
     MWd=1180
-    prof=texprofile.PROFILES.get(export_spec.WEAPONS[d['name']][0])   # Bogen: kein Profil, Feld wie bis 0.8
+    pkey=wtypes.key(d['name'])
+    prof=texprofile.PROFILES.get(pkey)   # Bogen: kein Profil, Feld wie bis 0.8
     PH=176 if prof else 0
-    mh=BH-190-(PH+18 if prof else 0)
+    OH=150 if d.get('op') else 0          # Leiste BEDIENUNG (claude-0.10, neue Typen)
+    mh=BH-190-(PH+18 if prof else 0)-(OH+18 if OH else 0)
     me,mhh=extent(m,ISO[1],ISO[2],center)
     msc=min((MWd-90)/me,(mh-90)/mhh)
     mv=svgview(m,ISO[1],ISO[2],center,MWd,mh,msc,ow=3.0,texture=make_texture(unit_m=unit_m))
@@ -431,7 +479,8 @@ def sheet(d,variant_letter):
     pstrip=''
     if prof:   # Farben der Kacheln aus dem Blatt (Basis-Palette), Energie in der Farbe des Profils
         pcols=dict(housing=used.get('lack',d['palette'][0]),metal=used.get('brushed','#8C96A3'),rubber=used.get('rubber','#2A2F36'),accent=col)
-        pstrip=profile_strip(prof,d['name'],MWd,PH,pcols)
+        pstrip=profile_strip(prof,d['name'],MWd,PH,pcols,ptype=pkey)
+    if OH:pstrip+=op_strip(d['op'],[wtypes.MOTION_SHORT_DE[k] for k in wtypes.of(d['name'])['motions']],MWd,OH,col)
     matp=f'<div style="display:flex;flex-direction:column;gap:18px;width:{MWd}px">{panel(mv,MWd,mh,"MATERIAL & TEXTUREN",fid,d["name"]+" Materialansicht mit Texturen")}<div style="display:flex;gap:18px">{sw}</div>{pstrip}</div>'
     # Farbvarianten
     VW=1380;vw=(VW-24)//2;vh=(BH-24)//2
@@ -457,6 +506,7 @@ def sheet(d,variant_letter):
 <p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#E6ECF2;user-select:all">{_h.escape(de)}</p>
 <span style="font-family:'Chakra Petch',sans-serif;font-size:19px;letter-spacing:3px;color:#8FA0B3;margin-top:8px">PROMPT · ENGLISCH (BILDGENERATOR)</span>
 <p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#C7D1DC;user-select:all">{_h.escape(en)}</p></div>'''
+    hdr_sight='OHNE VISIER' if melee else 'VISIER SEPARAT'
     pal=''.join(f'<div style="display:flex;align-items:center;gap:10px"><div style="width:50px;height:50px;border-radius:12px;background:{c}"></div><span style="font-size:19px;color:#8FA0B3">{c}</span></div>' for c in d['palette'])
     page=f'''<!doctype html>
 <html lang="de">
@@ -477,7 +527,7 @@ def sheet(d,variant_letter):
 <span style="font-family:'Chakra Petch',sans-serif;font-size:140px;font-weight:700;line-height:1;color:{col}">{d['num']}</span>
 <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
 <span style="font-family:'Chakra Petch',sans-serif;font-size:74px;font-weight:700;letter-spacing:6px;line-height:1.05">{_h.escape(d['name'].upper())} · VARIANTE {_h.escape(variants.title(variant_letter).upper())}</span>
-<span style="font-size:25px;letter-spacing:4px;color:#8FA0B3">„{_h.escape(d['nick'].upper())}“ · KONZEPTBLATT XL · VISIER SEPARAT · HAUPTSKIN {_h.escape(hero['name'].upper())} · {_h.escape(d['form'])}</span>
+<span style="font-size:25px;letter-spacing:4px;color:#8FA0B3">„{_h.escape(d['nick'].upper())}“ · KONZEPTBLATT XL · {hdr_sight} · HAUPTSKIN {_h.escape(hero['name'].upper())} · {_h.escape(d['form'])}</span>
 </div>
 </div>
 <div style="display:flex;align-items:center;gap:30px;flex-shrink:0">

@@ -113,8 +113,13 @@ def vs_problems(sp,vs_spec=None):
     Socket_Sight (nur angehoben um riser_m), Fadenkreuz und Okular in derselben Lage wie im Sight-Spec, das Fenster ist Glas, die
     Visierlinie frei von der Waffe. vs_spec: VSnn.spec.json (sonst aus OUT gelesen)."""
     tid=sp['weapon']['toolgen_id'];s=sp['sight'];v=s.get('sight_spec')
-    if tid not in CE_SIGHTS:return [] if v is None else ['Bogen mit Sight-Spec']
-    nr=CE_SIGHTS[tid][0];pr=[]
+    nr=CE_SIGHTS[tid][0] if tid in CE_SIGHTS else None
+    if tid is None:   # neue Waffentypen (claude-0.10): Visier des verwandten Typs aus wtypes, Nahkampf ohne
+        import wtypes
+        t=wtypes.TYPES.get(sp['weapon']['name_de']) or {}
+        nr=int(t['vs'][2:]) if t.get('vs') else None
+    if nr is None:return [] if v is None else ['Bogen mit Sight-Spec' if tid=='bow' else 'Sight-Spec ohne Visier-Ziel']
+    pr=[]
     if v is None:return [f'kein Visier der Visier-Serie (VS{nr:02d})']
     if v['id']!=f'VS{nr:02d}':pr.append(f'{v["id"]} statt VS{nr:02d}')
     if v['file']!=f'{v["id"]}.spec.json' or v['format']!='cubeescape-design/sight-spec':pr.append('Verweis auf den Sight-Spec (file/format) falsch')

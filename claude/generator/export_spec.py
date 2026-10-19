@@ -13,7 +13,7 @@ sys.path.insert(0,E3D)
 import sheetmodels,variants
 from eng import CHANNELS,split_sight
 from xlroles import MATERIAL_IDS,color_roles,material_of,assign_channels,channel_palettes
-import skins as SK,texcat,texprofile
+import skins as SK,texcat,texprofile,wtypes
 
 FORMAT='cubeescape-design/weapon-spec'
 FORMAT_VERSION=1
@@ -35,7 +35,10 @@ WEAPONS={
  'Raketenwerfer':('rocket_launcher',0.725,'solar'),
  'Bogen':('bow',1.018,None),
 }
+# Neue Waffentypen (claude-0.10, wtypes.NEW): kein Toolgen-Werkzeug, toolgen_id null; Bezugslänge = Schätzung (wtypes.REF_SOURCE)
+WEAPONS.update({n:(None,t['ref_len'],None) for n,t in wtypes.NEW.items()})
 ELEMENT_SOURCE='Nutzer 17.10.2026 (Toolgen docs/ENTSCHEIDUNGEN.md, data/tools.json)'
+ELEMENT_NEW='nicht festgelegt (neuer Designtyp ohne Toolgen-Werkzeug, claude-0.10)'
 
 # Visier je Blatt ohne Visier-Serie (Bögen): (Art, Fenster, Quelle). Art im Toolgen-Wortschatz hold.sight_kind plus pin (Bogen-Pinvisier);
 # Fenster: none (Kimme/Korn), open (offener Ring/Lochblende ohne Glas), glass (flache Scheibe). Quelle: Bezeichnung oder Geometrie im
@@ -77,7 +80,8 @@ SUPPORT_LABELS=('Vordergriff','Pumpgriff')
 GUARD_LABELS=('Handschutz','Laufverkleidung','Laufmantel','Laufhülle')
 MUZZLE_LABELS={'Mündung','Mündungsbremse','Kompensator','Schalldämpfer','Feuerdämpfer','Emitter','Fächeremitter','Mündungsring',
  'Lauf','Doppellauf','Oberlauf','Unterlauf','Rohr','Abschussrohr','Abschussrohre','Raketenrohre','Laufmantel','Laufkasten',
- 'Zinken','Pfeil','Bolzen','Fokusring','Fokusringe','Bündelring','Raketenkasten','Oberkiefer','Unterkiefer','Feuerkern'}
+ 'Zinken','Pfeil','Bolzen','Fokusring','Fokusringe','Bündelring','Raketenkasten','Oberkiefer','Unterkiefer','Feuerkern',
+ 'Kipplauf','Linearkern','Streumündung'}   # Kipplauf, Linearkern: neue Typen claude-0.10 (Streumündung 0.10.1); Schwert ohne Lauf: vorderstes Teil (Klingenspitze), Glefe: Emitter
 SURFACES={'z+':'left','z-':'right','x+':'front','x-':'back','y-':'top','y+':'bottom'}
 VARIANT_IDS=['base','standard','arktis','nacht']
 # Achsen: Modell x = Mündung (vorn), y = unten, z = links  ->  Toolgen/Blender vorn −Y, oben +Z, links +X
@@ -166,15 +170,40 @@ MOTIONS={
  'lever':dict(node='Anim_Bolt',de='Kammerstängel (drehen, zurück, vor, drehen)',motions=[('rotate',[0,1,0]),('translate',[0,1,0])],
               labels=('Kammerstängel','Kammer'),similar=('Verschluss',)),
  'hatch':dict(node='Anim_Hatch',de='Ladeklappe',motions=[('rotate',[1,0,0])],labels=('Ladeklappe','Klappe'),similar=()),
+ # neue Arten (claude-0.10) für die neuen Waffentypen: in Toolgen nicht vorhanden, Knotenname ist ein Vorschlag (proposed)
+ 'cylinder':dict(node='Anim_Cylinder',de='Trommel (dreht je Schuss um eine Kammer, schwenkt zum Laden nach links aus)',
+                 motions=[('rotate',[0,1,0]),('rotate',[0,0,1])],labels=('Trommel',),similar=(),proposed=True),
+ 'hammer':dict(node='Anim_Hammer',de='Hahn (spannt und schlägt vor)',motions=[('rotate',[1,0,0])],labels=('Hahn',),similar=(),proposed=True),
+ 'rails':dict(node='Anim_Rails',de='Beschleunigerschienen (fahren beim Aufladen auseinander, oben +Z, unten −Z)',motions=[('translate',[0,0,1])],
+              labels=('Beschleunigerschiene',),similar=(),proposed=True),
+ 'breech':dict(node='Anim_Breech',de='Kipplauf (kippt am Scharnier nach unten)',motions=[('rotate',[1,0,0])],labels=('Kipplauf',),similar=(),proposed=True),
+ 'drum':dict(node='Anim_Drum',de='Granattrommel (dreht je Schuss um eine Kammer)',motions=[('rotate',[0,1,0])],labels=('Granattrommel',),
+             similar=('Ladeklappe',),proposed=True),
+ 'feed_cover':dict(node='Anim_FeedCover',de='Zuführdeckel (klappt am hinteren Scharnier auf)',motions=[('rotate',[1,0,0])],labels=('Zuführdeckel',),
+                   similar=(),proposed=True),
+ 'cocking':dict(node='Anim_Cocking',de='Spannhebel (schwenkt am vorderen Drehpunkt nach vorn-unten)',motions=[('rotate',[1,0,0])],labels=('Spannhebel',),
+                similar=(),proposed=True),
+ 'string':dict(node='Anim_String',de='Sehne (wird ins Schloss gezogen, schnellt beim Schuss vor)',motions=[('translate',[0,1,0])],labels=('Sehne',),
+               similar=(),proposed=True),
+ 'shield':dict(node='Anim_Shield',de='Schildflügel (klappen beim Blocken aus)',motions=[('rotate',[0,1,0])],labels=('Schildflügel',),similar=(),proposed=True),
+ # claude-0.10.1: Hitze-Blaster (Entlüften statt Nachladen), Streuschuss-Handfeuerwaffe (Kipprahmen)
+ 'vent':dict(node='Anim_Vent',de='Entlüftungsklappen (klappen zum Entlüften seitlich auf, schließen nach dem Abkühlen)',motions=[('rotate',[0,1,0])],
+             labels=('Entlüftungsklappe',),similar=(),proposed=True),
+ 'top_break':dict(node='Anim_TopBreak',de='Kipprahmen (Lauf und Trommel kippen am vorderen Scharnier nach unten, Sternauswerfer hebt die Hülsen)',
+                  motions=[('rotate',[1,0,0])],labels=('Kipprahmen','Trommel','Lauf','Streumündung'),similar=(),proposed=True),   # Baugruppe kippt gemeinsam
 }
 WEAPON_MOTIONS={'pistol':['slide'],'assault_rifle':['bolt'],'pulse_rifle':['cell'],'shotgun':['pump'],'sniper_rifle':['lever'],
  'smg':['bolt'],'fusion_rifle':['fins','coil'],'scout_rifle':['bolt'],'rocket_launcher':['hatch'],'bow':[]}
+WEAPON_MOTIONS.update({wtypes.key(n):t['motions'] for n,t in wtypes.NEW.items()})   # neue Typen (claude-0.10), Schlüssel wtypes.key
+PROPOSED_SOURCE='Vorschlag claude-0.10 für einen neuen Waffentyp (in Toolgen kein Use-Clip): Art und Achse aus der Bedienung des Blatts'
 
-def moving_parts(tid,allparts,ids):
-    """moving_parts (claude-0.5) und je Teil die Art: Zuordnung über die Bezeichnungen des Modells, Visierteile ausgenommen."""
+def moving_parts(tid,allparts,ids,name=None):
+    """moving_parts (claude-0.5) und je Teil die Art: Zuordnung über die Bezeichnungen des Modells, Visierteile ausgenommen.
+    tid: Schlüssel der Tabelle WEAPON_MOTIONS (Toolgen-ID, bei neuen Typen wtypes.key)."""
     items=[];per={}
     for kind in WEAPON_MOTIONS[tid]:
         M=MOTIONS[kind];e=dict(kind=kind,name_de=M['de'],toolgen_node=M['node'],motions=[dict(type=t,axis=a) for t,a in M['motions']])
+        if M.get('proposed') or (name and wtypes.is_new(name)):e['proposed']=True   # neuer Typ: Use-Clip in Toolgen gibt es noch nicht
         for match,labs in (('label',M['labels']),('similar',M['similar'])):
             hit=[(i,P) for i,P in allparts if not P.get('sight') and P.get('label') in labs]
             if hit:
@@ -188,6 +217,10 @@ def moving_parts(tid,allparts,ids):
                      source=f'nicht ableitbar: kein Teil mit Bezeichnung {"/".join(M["labels"]+M["similar"])} im Modell (Mechanik im Gehäuse nicht gezeichnet)')
         items.append(e)
     note=None if items else 'keine Use-Clip-Mechanik: der Bogen gehört nicht zu Toolgens Waffen 1–9'
+    if name and wtypes.is_new(name):
+        note=None if items else 'keine beweglichen Teile: Klinge, Griff und Parierstange sind fest verbunden (Nahkampfwaffe)'
+        return dict(source=PROPOSED_SOURCE,root_moves=False,frame='Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse',
+                    items=items,note=note),per
     return dict(source=MOTION_SOURCE,root_moves=False,frame='Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse',
                 items=items,note=note),per
 
@@ -206,6 +239,9 @@ def robot_fit(tid,anchors,parts,dims,muzzle_part):
     if tid=='pistol':
         return dict(base,applies=False,reason='Pistole von der Roboter-Variante ausgenommen: Maßstab genügt, Becher-Griff sitzt ('+CE_S2+')',
                     targets=dict(length_min_m=_v(0.24,CE_EQ+' › Begründung (1): knapp drei Handlängen')),sheet_at_target=None)
+    if tid is None:
+        return dict(base,applies=False,reason='neuer Designtyp (claude-0.10), nicht im Waffensatz von Cube Escape; Zielmaße legt Cube Escape bei einer Anbindung fest',
+                    targets=None,sheet_at_target=None)
     if tid not in ROBOT_LENGTH:
         return dict(base,applies=False,reason='nicht im Waffensatz von Cube Escape (Bogen: Referenzmodell, kein Spielwerkzeug)',
                     targets=None,sheet_at_target=None)
@@ -331,9 +367,12 @@ def _anchors(d,gun,sight_parts,allparts,ids):
 def _area(P):return sum(_area3(f['v']) for f in P['F'])
 
 SIGHT_SPEC_FORMAT='cubeescape-design/sight-spec'
-def _side(sb,gun):
-    gz=_center(_bb(_verts([P for _,P in gun])))[2];return 'left' if sb[0][2]>gz+5 else 'right' if sb[1][2]<gz-5 else 'top'
-def vs_sight(v,sight_parts,gun,ids,F,unit):
+def _side(sb,gun,by_receiver=False):
+    """Lage des Visiers quer zur Waffe; by_receiver (neue Typen claude-0.10): Bezug ist das Gehäuse, damit seitliche Anbauten
+    (Munitionskasten des Maschinengewehrs) die Mitte nicht verschieben"""
+    rec=[P for _,P in gun if P.get('label')=='Gehäuse'] if by_receiver else []
+    gz=_center(_bb(_verts(rec or [P for _,P in gun])))[2];return 'left' if sb[0][2]>gz+5 else 'right' if sb[1][2]<gz-5 else 'top'
+def vs_sight(v,sight_parts,gun,ids,F,unit,new=False):
     """Visierblock eines Blatts mit dem Standardvisier der Visier-Serie (claude-0.7, vsmount.py): Typ und Rahmen aus der Serie,
     Fenster = Glasscheiben (wie der Sight-Spec), Verweis auf VSnn.spec.json mit Lage auf der Waffe."""
     info=v['info'];st=info['type'];kind,window=SIGHT_TYPES[st]
@@ -347,7 +386,7 @@ def vs_sight(v,sight_parts,gun,ids,F,unit):
                        center_m=[r4((b[0][a]+b[1][a])/2) for a in range(3)]))
     src=f'Visier-Serie {v["id"]} ({info["title"]})'
     tube=geo.get('tube')
-    return dict(present=True,kind=kind,window=window,source=src+', Modell claude/generator/vsmodels.py',modular=True,mount_side=_side(sb,gun),
+    return dict(present=True,kind=kind,window=window,source=src+', Modell claude/generator/vsmodels.py',modular=True,mount_side=_side(sb,gun,new),
                 type=st,type_source=f'{src}: Standardvisier des Waffentyps (Entscheidung des Nutzers 17.10.2026 „Danach Waffenblätter umstellen“)',
                 frame=info['frame'],frame_source=src,
                 labels=sorted({P.get('label') for _,P in sight_parts if P.get('label')}),parts=[ids[i] for i,_ in sight_parts],
@@ -371,6 +410,7 @@ def _scale(name,full):
     tid,ref_len,_=WEAPONS[name]
     bbf=_bb(_verts(full.parts));ext=[bbf[1][k]-bbf[0][k] for k in range(3)]
     if tid=='bow':model_len=max(ext);rule='größte Ausdehnung des Modells (Visier montiert) = Toolgen-Bogen, größte Ausdehnung'
+    elif tid is None:model_len=ext[0];rule='Länge entlang der Mündungsachse (Modell x, Visier montiert) = Bezugslänge des Designtyps (Schätzung claude-0.10)'
     else:model_len=ext[0];rule='Länge entlang der Mündungsachse (Modell x, Visier montiert) = Toolgen-Länge des Waffentyps'
     return ref_len/model_len,model_len,rule
 
@@ -392,7 +432,7 @@ def build(sheet):
     # Kanäle und Paletten je Variante (xlroles.channel_palettes, auch für die Skins)
     palette,pch=channel_palettes(full,gun_m,d['palette'],d['pill'],CHANNELS)
     dch=[[c for c,_ in row] for row in assign_channels(full,color_roles(gun_m),_area,lambda dd:_area2(dd[2]),d['palette'])[1]]
-    moving,moving_of=moving_parts(tid,allparts,ids)
+    moving,moving_of=moving_parts(wtypes.key(d['name']),allparts,ids,d['name'])
     # Teile
     parts=[]
     for i,P in allparts:
@@ -409,7 +449,7 @@ def build(sheet):
                                area_m2=round(_area2(pts)*unit*unit,7),bounds_m=F.bb(_bb(v3))))
     # Visier
     if d.get('vs'):
-        sight=vs_sight(d['vs'],sight_parts,gun,ids,F,unit)
+        sight=vs_sight(d['vs'],sight_parts,gun,ids,F,unit,wtypes.is_new(d['name']))
     elif sight_parts:
         kind,window,ssrc=SIGHTS[sheet] if sheet in SIGHTS else (*d['sight'],f"META sight in {d['fid']}.py")
         sb=_bb(_verts([P for _,P in sight_parts]));gb=_bb(_verts([P for _,P in gun]))
@@ -422,6 +462,7 @@ def build(sheet):
                    bounds_m=F.bb(sb),anchor='Socket_Sight')
         sight['window_geometry'],sight['window_geometry_note']=window_geometry(window,sight_parts,ids,F,decal_index)
     else:
+        ssrc=('kein Visier: Nahkampfwaffe, Schuss aus der Hüfte (claude-0.10)' if d['name'] in wtypes.MELEE else 'kein Visier im Modell')
         sight=dict(present=False,kind=None,window=None,source=ssrc,modular=True,mount_side=None,labels=[],parts=[],bounds_m=None,
                    type=None,type_source='kein Visier',frame=None,frame_source='kein Visier',
                    anchor='Socket_Sight' if 'Socket_Sight' in an else None,window_geometry=None,window_geometry_note='kein Visier')
@@ -439,10 +480,10 @@ def build(sheet):
         format=FORMAT,format_version=FORMAT_VERSION,
         generator=dict(repo='cubeescape-design',tool='claude/generator/export_spec.py',claude_version=CLAUDE_VERSION),
         sheet=dict(id=sheet,file=f'{sheet}.dc.html',variant=d['V'],variant_name=variants.name(d['V']),number=d['num'],nick=d['nick'],fid=d['fid']),
-        weapon=dict(name_de=d['name'],toolgen_id=tid),
-        element=element,element_source=ELEMENT_SOURCE if element else 'nicht festgelegt (Toolgen-Bogen ohne Element)',
+        weapon=dict(name_de=d['name'],toolgen_id=tid,**wtypes.spec(d['name'],sheet)),
+        element=element,element_source=ELEMENT_SOURCE if element else ELEMENT_NEW if tid is None else 'nicht festgelegt (Toolgen-Bogen ohne Element)',
         units=dict(model_unit_m=round(unit,8),model_length_units=round(model_len,2),reference_length_m=ref_len,rule=rule,
-                   reference='Toolgen 0.13 Weltmodell '+tid+', qa_game.json bounds_lod0.source_bounds_m (Messung 17.10.2026)'),
+                   reference=('Toolgen 0.13 Weltmodell '+tid+', qa_game.json bounds_lod0.source_bounds_m (Messung 17.10.2026)') if tid else wtypes.REF_SOURCE),
         axes=dict(model=dict(x='vorn (Mündung)',y='unten',z='links'),target=dict(system='Toolgen/Blender',forward='-Y',up='+Z',left='+X',unit='m'),
                   matrix_model_to_target=M2B,origin='Socket_Hand',
                   formula='p_m = model_unit_m * M · (p_model − Socket_Hand.model)'),
@@ -456,11 +497,20 @@ def build(sheet):
         sight=sight,
         decals=decals,
         textures=textures(unit),
-        **({'texture_profile':texprofile.profile(tid)} if texprofile.profile(tid) else {}),   # Bogen: kein Eintrag im Textur-Blatt
+        **({'texture_profile':texprofile.profile(wtypes.key(d['name']))} if texprofile.profile(wtypes.key(d['name'])) else {}),   # Bogen: kein Eintrag im Textur-Blatt
+        **({'operation':operation(d)} if d.get('op') else {}),   # Bedienung (claude-0.10, neue Typen)
         skin=skin_spec(sheet,full,d,palette,F,ids,unit),
         summary=dict(skins=5,parts=len(parts),parts_explicit_channel=sum(1 for c in pch if c[1]=='explicit'),decals=len(decals),
                      channels_with_other_colors={p['id']:sorted(p['other_colors']) for p in palette if p['other_colors']}),
     )
+
+def operation(d):
+    """Bedienung des Blatts (claude-0.10, neue Waffentypen): Nachladen, Spannen/Aufladen, Feuern auf Deutsch und Englisch, wie im Feld
+    BEDIENUNG des Blatts; dazu die Munitionsklasse in Destiny (nur Einordnung)"""
+    o=d['op']
+    return dict(reload=dict(de=o['reload_de'],en=o['reload_en']),action=dict(de=o['action_de'],en=o['action_en']),
+                fire=dict(de=o['fire_de'],en=o['fire_en']),ammo_class=wtypes.of(d['name'])['ammo'],
+                source=f"META['op'] in {d['fid']}.py (Blattfeld BEDIENUNG); Bewegungen: moving_parts")
 
 def textures(unit):
     """Muster der Material-Ansicht des Blatts (xl.make_texture) als Zielbild für Toolgens Bake, im Wortschatz von

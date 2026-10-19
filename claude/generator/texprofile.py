@@ -39,12 +39,54 @@ PROFILES={
                       'strong','Stark, realistisch',['hazard_stripes','warning_triangle'],'Warnzeichen','Decals: Warnzeichen plus die Warnstreifen der Schrotflinte'),
 }   # Bogen: kein Eintrag im Blatt (Waffen 1–9)
 
+# Neue Waffentypen (claude-0.10 und 0.10.1, Schlüssel wtypes.key): nicht im Textur-Blatt des Nutzers. Vorschlag von Claude im selben Wortschatz,
+# abgeleitet vom verwandten Typ des Blatts (derived_from); Kurztexte von Claude. Maßgeblich bleibt eine spätere Festlegung des Nutzers.
+SOURCE_NEW=('Vorschlag claude-0.10 (kein Eintrag im Textur-Blatt weapon_textures_1-9.webp): abgeleitet vom verwandten Typ (derived_from), '
+            'Katalog-Wortschatz docs/textures/catalog.json, Toolgen-Decals data/decals.json')
+NEW={
+ '+scout_rifle':('sniper_rifle',_P('Glatt, präzise','painted','Fein gebürstet','brushed','Minimal, griffig','Hellblau, ruhig','light_blue',
+                 'subtle','Leicht, sauber',['serial_s07','tech_lines'],'Seriennummer, Linien')),
+ '+hand_cannon':('pistol',_P('Lackiert, schwer','painted','Poliert, massiv','polished','Griffschalen, strukturiert','Orange, Hitze','orange',
+                 'medium','Mittel, Holster-Spuren',['number_01','symbol_diamond'],'Nummer, Symbol')),
+ '+linear_fusion_rifle':('fusion_rifle',_P('Hochtechnologie, glatt','painted','Präzise, clean','satin','Technisch, lamellen','Violett, gebündelt','violet',
+                         'subtle','Gezielt, dezent',['research','fusion_px7'],'Forschung, Typkennung','Kennung fusion_px7 aus Toolgens Fusionsgewehr übernommen')),
+ '+grenade_launcher_special':('shotgun',_P('Robust, matt','painted_matte','Massiv, angeraut','rough_cast','Griffzonen','Orange, Zünder','orange',
+                              'medium','Mittel, Einsatz',['warning_triangle','number_01'],'Warnzeichen, Nummer')),
+ '+grenade_launcher_heavy':('rocket_launcher',_P('Schwer, robust','painted_matte','Massiv, angeraut','rough_cast','Stoßdämpfend','Orange, Hitze','orange',
+                            'strong','Stark, realistisch',['hazard_stripes','warning_triangle'],'Warnstreifen, Warnzeichen')),
+ '+machine_gun':('assault_rifle',_P('Feldausrüstung, matt','painted_matte','Industrie-Finish','brushed','Griffzonen, Gurtführung','Blau, Tech-Elemente','blue',
+                 'strong','Stark, Dauereinsatz',['mil_ar2','hazard_stripes'],'Militärisch, Warnstreifen','Metall „Industrie-Finish“ wie Sturmgewehr als gebürstet gedeutet')),
+ '+sword':('pulse_rifle',_P('Keramik, glatt','ceramic','Klinge poliert','polished','Gewickelter Griff','Cyan, Schneide','cyan',
+           'medium','Mittel, Klingenkante',['symbol_diamond','tech_lines'],'Symbol, Linien','Klinge als poliertes Metall, Parierblock als Keramik')),
+ '+glaive':('pulse_rifle',_P('Keramik-Look','ceramic','Dunkel, satiniert','satin','Griffzonen','Cyan, Klinge','cyan',
+            'subtle','Kontrolliert',['tech_ring'],'Tech-Symbole')),
+ '+heavy_crossbow':('sniper_rifle',_P('Robust, matt','painted_matte','Gebürstet, Spannteile','brushed','Griffig','Orange, Bolzen','orange',
+                    'medium','Mittel, Spannspuren',['arrow_triangle','serial_s07'],'Pfeil, Seriennummer')),
+ '+sidearm:rocket_assisted':('pistol',_P('Lackiert, leicht matt','painted','Gebürstet, Abgasspuren','brushed','Griffig, strukturiert','Orange, Raketen','orange',
+                             'medium','Mittel, Abgasspuren',['warning_triangle','number_01'],'Warnzeichen, Nummer')),
+ '+pulse_rifle:rocket_assisted':('pulse_rifle',_P('Keramik-Look','ceramic','Dunkel, satiniert','satin','Strukturiert','Orange, Raketen','orange',
+                                 'medium','Mittel, Abgasspuren',['tech_ring','warning_triangle'],'Tech-Symbol, Warnzeichen')),
+ '+shotgun:slug':('shotgun',_P('Strapazierfähig, matt','painted_matte','Rau, massiv','rough_cast','Griffzonen','Orange, kräftig','orange',
+                  'medium','Mittel, abgenutzt',['serial_s07','hazard_stripes'],'Seriennummer, Warnstreifen')),
+ # claude-0.10.1
+ '+pulse_rifle:dynamic_heat':('pulse_rifle',_P('Keramik, hitzefest','ceramic','Angelaufen, satiniert','satin','Strukturiert','Orange, Hitze','orange',
+                               'medium','Mittel, Hitzespuren',['tech_ring','warning_triangle'],'Tech-Symbol, Warnzeichen',
+                               'Angelaufenes Metall der Kühlrippen als satiniert gedeutet')),
+ '+grenade_launcher_special:micro_missile':('rocket_launcher',_P('Schwer, robust','painted_matte','Massiv, angeraut','rough_cast','Stoßdämpfend','Orange, Raketen','orange',
+                                            'medium','Mittel, Abgasspuren',['hazard_stripes','arrow_triangle'],'Warnstreifen, Pfeil')),
+ '+hand_cannon:spread_shot':('shotgun',_P('Lackiert, schwer','painted','Poliert, massiv','polished','Griffschalen, strukturiert','Orange, kräftig','orange',
+                              'strong','Stark, Schrotspuren',['hazard_stripes','number_01'],'Warnstreifen, Nummer')),
+}
+DERIVED_FROM={k:v[0] for k,v in NEW.items()}
+PROFILES.update({k:v[1] for k,v in NEW.items()})
+
 def profile(tid):
-    """Texturprofil des Waffentyps (Spec-Feld `texture_profile`) oder None (Bogen)"""
+    """Texturprofil des Waffentyps (Spec-Feld `texture_profile`) oder None (Bogen); tid = wtypes.key (Toolgen-ID bzw. +Designtyp)"""
     p=PROFILES.get(tid)
     if p is None:return None
     out={k:(dict(v) if isinstance(v,dict) else v) for k,v in p.items() if k!='interpretation'}
     out['interpretation']=p['interpretation']
-    out['source']=SOURCE
+    out['source']=SOURCE_NEW if tid in NEW else SOURCE
+    if tid in NEW:out['derived_from']=DERIVED_FROM[tid]
     out['catalog']=dict(file='docs/textures/catalog.json',wear_levels=sorted(texcat.wear_levels()))
     return out

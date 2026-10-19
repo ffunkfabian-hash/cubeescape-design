@@ -2,6 +2,20 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.10.1
+- Drei Lücken aus 0.10 als eigene Konzepte in Variante G: KG23 Hitze-Blaster (Impulsgewehr ohne Magazin, Hitzespeicher, Entlüftungsklappen),
+  KG24 Mikroraketen-Granatwerfer (einschüssig, Abschussrohr, Raketenvorrat), KG25 Streuschuss-Handfeuerwaffe (Kipprahmen-Revolver, Streumündung).
+- Spec additiv: Untertypen `dynamic_heat`, `micro_missile`, `spread_shot`; Bewegungsarten `vent`, `top_break` (Vorschlag); bestehende 72 Blätter bytegleich.
+  Bericht [claude/docs/versions/0.10.md › 0.10.1](claude/docs/versions/0.10.md#patch-0101--lücken-kg23kg25).
+
+## claude-0.10
+- Abgleich mit dem Destiny-2-Katalog (17 Typen, schwere Armbrust seit 2025, Untertypen): Bestands- und Maßnahmenübersicht
+  [claude/docs/waffentypen.md](claude/docs/waffentypen.md); `weapon.design_type` u. a. in allen Specs (additiv), Spurgewehr = `trace_rifle`.
+- Zwölf neue Konzepte in Variante G (KG11–KG22): Scout-Gewehr, Handfeuerwaffe, lineares Fusionsgewehr, Spezial- und schwerer Granatwerfer,
+  Maschinengewehr, Schwert, Glefe, schwere Armbrust, Raketenpistole, Raketen-Impulsgewehr, Slug-Schrotflinte; neues Blattfeld BEDIENUNG, Spec `operation`.
+- Neue Typen nicht angebunden: `toolgen_id` null, Bewegungen als Vorschlag (`proposed`), Texturprofile abgeleitet; bestehende 60 Blätter bytegleich.
+  Bericht [claude/docs/versions/0.10.md](claude/docs/versions/0.10.md).
+
 ## codex-0.1.5 / codex-0.2.5 (PR #7, gemerged)
 - Parallax (0.1.5) und Flux Bloom (0.2.5): Texturprofil auf den neun Waffenblättern KA01–KA09/KK01–KK09 (Feld TEXTURPROFIL, Material-IDs des
   Katalogs, Kantenabnutzung, Toolgen-Decals) und additiver Block `texture_profile` im Weapon-Spec v1 (`format_version` 1); Bögen KA10/KK10 unverändert.

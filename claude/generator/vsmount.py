@@ -5,7 +5,8 @@ Maßstab des Waffen-Specs in Modelleinheiten umgerechnet und so gesetzt, dass So
 Visierschiene liegt (Raketenwerfer: seitliche Schiene links am Rohr, wie bisher). Die alten Visierteile des Blatts entfallen.
 Farben: je MT_-Kanal die Kanalfarbe der Waffe (Basis-Palette des Blatts, xlroles.channel_palettes); nutzt die Waffe einen Kanal nicht,
 gilt der erste belegte aus xlroles.FALLBACK, und das Teil bekommt diesen Kanal. Glas behält die Tönung des Visiers.
-Bögen haben kein VS-Ziel und behalten ihr Pin-Visier.
+Bögen haben kein VS-Ziel und behalten ihr Pin-Visier. Neue Waffentypen (claude-0.10) tragen das Visier aus wtypes (verwandter Typ),
+Schwert und Glefe keines.
 
 Ohne numpy (Spec-Export ohne Bildstufe). Aufruf: sheetmodels.load() und build_xl.py (Kartenweg über reg/*.pkl).
 """
@@ -15,6 +16,8 @@ from eng import Model,CHANNELS
 from xlroles import FALLBACK,channel_palettes
 
 VS_OF={s['weapon']:f'VS{s["num"]}' for s in V.SERIES}   # Waffe (Blattname) -> Standardvisier
+import wtypes
+VS_OF.update({n:t['vs'] for n,t in wtypes.NEW.items() if t['vs']})   # neue Waffentypen (claude-0.10): Visier des verwandten Typs
 RAIL_H_MM=6.0        # neue Visierschiene (Blätter ohne Schiene): Höhe über der höchsten Stelle der Waffe unter der Halterung
 RAIL_W_MM=14.0       # Breite (zwischen den Klemmbacken der Halterung, vsmodels.mount: Backen 3 mm innen)
 JAW_MM=3.0           # Klemmbacken reichen so weit unter Socket_Mount (vsmodels.mount)

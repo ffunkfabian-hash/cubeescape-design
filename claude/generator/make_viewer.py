@@ -50,7 +50,8 @@ def collect_sheets():
             "number": str(s.get("number") or sid[2:4]),
             "nick": s.get("nick") or "",
             "weapon": w.get("name_de") or "",
-            "weapon_id": w.get("toolgen_id") or "",
+            "weapon_id": " ".join(x for x in (w.get("toolgen_id"), w.get("design_type"), w.get("destiny_type"),
+                                              "" if w.get("toolgen_id") or not w.get("design_type") else "neu nicht-angebunden") if x),   # claude-0.10: Designtyp suchbar
             "skin": skin.get("hero") or "",
             "element": d.get("element") if isinstance(d.get("element"), str) else "",
             "sheet": s.get("file") or f"{sid}.dc.html",
