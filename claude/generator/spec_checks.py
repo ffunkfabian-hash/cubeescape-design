@@ -153,7 +153,7 @@ CE_SIGHTS={
  'sniper_rifle':(5,'Hochpräzisions-Visier','runde Röhre, Zoom',{'scope'},{'lens'},'sniper'),
  'smg':(6,'kompakt und schnell','offenes Fenster',{'reflex','holo'},{'glass','open'},'machine'),
  'fusion_rifle':(7,'technologisches Visier mit Energierahmen','breites Fenster',{'energy','holo'},{'glass','open'},'energy'),
- 'scout_rifle':(8,'Zielverfolgungs-Visier','Fenster mit Markierung',{'holo','reflex'},{'glass','open'},'trace'),
+ 'trace_rifle':(8,'Zielverfolgungs-Visier','Fenster mit Markierung',{'holo','reflex'},{'glass','open'},'trace'),
  'rocket_launcher':(9,'Weitbereichs-Visier','breites Fenster',{'holo','reflex','energy'},{'glass','open'},'rocket'),
 }
 CE_SOURCE='Cube Escape Docs/EQUIPMENT.md › Visiere je Waffe (CE 8ae12b15, 17.10.2026)'

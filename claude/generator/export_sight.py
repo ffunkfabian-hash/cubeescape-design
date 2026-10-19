@@ -13,7 +13,7 @@ import vsmodels as V
 from export_spec import SIGHT_TYPES,TOOLGEN_MATERIAL,FORMAT as WEAPON_FORMAT,CLAUDE_VERSION as _WEAPON_VERSION,dumps,r4,_area3,_newell
 
 FORMAT='cubeescape-design/sight-spec'
-FORMAT_VERSION=1
+FORMAT_VERSION=2
 CLAUDE_VERSION='0.6'
 M2B=[[0,0,1],[-1,0,0],[0,-1,0]]   # Modell (vorn x, unten y, links z) -> Blender (vorn −Y, oben +Z, links +X), wie export_spec
 UNIT=0.001                          # Modelleinheit = 1 mm

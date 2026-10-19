@@ -1,7 +1,7 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://github.com/ffunkfabian-hash/cubeescape-design/claude/docs/sight-spec.schema.json",
- "title": "cubeescape-design/sight-spec, format_version 1",
+ "title": "cubeescape-design/sight-spec, format_version 2",
  "description": "Beschreibung: claude/docs/sight-spec.md. Erzeugt von claude/generator/export_sight.py aus claude/generator/vsmodels.py; geprüft von claude/generator/test_sight_spec.py (Teilmenge von JSON Schema wie beim Weapon-Spec: type, required, properties, items, enum, const, pattern, minimum, minItems, maxItems, additionalProperties nur, wenn gesetzt). Unbekannte Felder sind erlaubt (Erweiterung innerhalb format_version 1). Rahmen: Blender, vorn −Y, oben +Z, links +X, Meter, Ursprung Socket_Mount.",
  "$defs": {
   "vec3": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
@@ -30,13 +30,13 @@
               "glass", "tube", "module", "anchors", "sight_line", "window_geometry", "parts", "reticle_variants", "reticle_color", "variants", "source"],
  "properties": {
   "format": {"const": "cubeescape-design/sight-spec"},
-  "format_version": {"const": 1},
+  "format_version": {"const": 2},
   "generator": {"type": "object", "required": ["repo", "tool", "claude_version", "model"]},
   "sheet": {"type": "object", "required": ["id", "file", "series", "number"],
             "properties": {"id": {"type": "string", "pattern": "^VS0[1-9]$"}, "series": {"const": "VS"}, "file": {"type": "string", "pattern": "^VS0[1-9]\\.dc\\.html$"}}},
   "weapon": {"type": "object", "required": ["number", "name_de", "toolgen_id", "weapon_spec"],
              "properties": {"number": {"type": "integer", "minimum": 1},
-                            "toolgen_id": {"enum": ["pistol", "assault_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "smg", "fusion_rifle", "scout_rifle", "rocket_launcher"]},
+                            "toolgen_id": {"enum": ["pistol", "assault_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "smg", "fusion_rifle", "trace_rifle", "rocket_launcher"]},
                             "weapon_spec": {"type": "object", "required": ["format", "match", "sheets"],
                                             "properties": {"format": {"const": "cubeescape-design/weapon-spec"}, "match": {"const": "weapon.toolgen_id"},
                                                            "sheets": {"type": "array", "items": {"type": "string", "pattern": "^K[A-Z][0-9]{2}$"}, "minItems": 1}}}}},

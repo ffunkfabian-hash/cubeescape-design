@@ -42,8 +42,8 @@ Blätter bleiben bytegleich.
 Je Blatt: eigene Silhouette und Mechanik (keine Umfärbung), Feld BEDIENUNG (Nachladen, Spannen/Aufladen, Feuern) wie Claudes `operation`, Texturprofil
 nach `texprofile.NEW` (als „Vorschlag, abgeleitet“ kennzeichnen), Prompts de/en. Spec: `toolgen_id` `null`, `toolgen_status` `not_connected`, `element` `null`,
 `operation`, `moving_parts` mit `proposed: true`. Bezugslängen wie `wtypes.TYPES[…]['ref_len']`.
-**Achtung `scout_rifle`:** Der Nutzer hat am 19.10.2026 entschieden, dass Toolgen das Spurgewehr in `trace_rifle` umbenennt; bis das in Toolgen umgesetzt
-ist, bleibt `toolgen_id` des Spurgewehrs `scout_rifle` und das Scout-Gewehr hat `toolgen_id` `null`.
+**Achtung `scout_rifle`:** Der Nutzer hat am 19.10.2026 entschieden, dass Toolgen das Spurgewehr in `trace_rifle` umbenennt; das ist
+mit Toolgen 0.17.0 / claude-0.12 umgesetzt (`toolgen_id` des Spurgewehrs `trace_rifle`); das Scout-Gewehr hat weiter `toolgen_id` `null`.
 
 ## Zuständigkeit
 - Dateien: nur `codex/` (Pipeline, Modelle, Tests, `codex/docs/versions/`). Nicht anfassen: `claude/`, `docs/`; Wurzeldateien (CHANGELOG-Zeilen) als Änderungswunsch im PR.

@@ -33,7 +33,7 @@ PROFILES={
           'medium','Mittel, authentisch',['arrows_chevron','arrow_triangle'],'Taktisch, Pfeile','Metall „Dunkel, genutzt“ als gebürstet gedeutet'),
  'fusion_rifle':_P('Hochtechnologie, glatt','painted','Präzise, clean','satin','Technisch, lamellen','Violett, intensiv','violet',
                    'subtle','Gezielt, dezent',['research'],'Forschungs-Symbol','Metall „Präzise, clean“ als satiniert gedeutet'),
- 'scout_rifle':_P('Glatt, sauber','painted','Premium, poliert','polished','Minimal','Blau, kontinuierlich','blue',
+ 'trace_rifle':_P('Glatt, sauber','painted','Premium, poliert','polished','Minimal','Blau, kontinuierlich','blue',
                   'subtle','Leicht, sauber',['tech_lines'],'Tech, Linien'),
  'rocket_launcher':_P('Schwer, robust','painted_matte','Massiv, angeraut','rough_cast','Stoßdämpfend','Orange, Hitze','orange',
                       'strong','Stark, realistisch',['hazard_stripes','warning_triangle'],'Warnzeichen','Decals: Warnzeichen plus die Warnstreifen der Schrotflinte'),

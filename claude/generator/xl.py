@@ -295,7 +295,7 @@ CONSTRUCT_DE={'Hitze-Blaster':'kein Magazin, stattdessen Hitzespeicher mit Kühl
  'Mikroraketen-Granatwerfer':'eine Mikrorakete im Abschussrohr, Vorrat im Raketenvorrat links',
  'Streuschuss-Handfeuerwaffe':'Trommel mit fünf Schrotkammern im Kipprahmen'}
 TYPE_DE_OF={'pistol':'Pistole','assault_rifle':'Sturmgewehr','pulse_rifle':'Impulsgewehr','shotgun':'Schrotflinte','sniper_rifle':'Scharfschützengewehr',
- 'smg':'Maschinenpistole','fusion_rifle':'Fusionsgewehr','scout_rifle':'Spurgewehr','rocket_launcher':'Raketenwerfer'}   # Toolgen-ID -> Blattname (Profilherkunft)
+ 'smg':'Maschinenpistole','fusion_rifle':'Fusionsgewehr','trace_rifle':'Spurgewehr','rocket_launcher':'Raketenwerfer'}   # Toolgen-ID -> Blattname (Profilherkunft)
 # Nahkampfwaffen (claude-0.10): eigener Konstruktionssatz im Prompt, kein Visier und keine Visierschiene
 MELEE_DE={'Schwert':"Konstruktion: Klinge, Klingenwurzel, Parierblock, Parierstange, Griff und Knauf auf einer Achse fest verbunden; kein Abzug, kein Magazin, kein Visier und keine Visierschiene. ",
  'Glefe':"Konstruktion: Klinge mit Emitter, Klingenfassung, Energiezelle, Stange, Vordergriff und hinterer Griff mit Abzug im Bügel auf einer Achse fest verbunden; kein Visier und keine Visierschiene, der Emitter schießt aus der Hüfte. "}
