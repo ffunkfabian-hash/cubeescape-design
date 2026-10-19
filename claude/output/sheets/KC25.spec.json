@@ -1,0 +1,3116 @@
+{
+ "format": "cubeescape-design/weapon-spec",
+ "format_version": 1,
+ "generator": {
+  "repo": "cubeescape-design",
+  "tool": "claude/generator/export_spec.py",
+  "claude_version": "0.7"
+ },
+ "sheet": {
+  "id": "KC25",
+  "file": "KC25.dc.html",
+  "variant": "C",
+  "variant_name": null,
+  "number": "25",
+  "nick": "Muschelhieb",
+  "fid": "c25"
+ },
+ "weapon": {
+  "name_de": "Streuschuss-Handfeuerwaffe",
+  "toolgen_id": null,
+  "design_type": "hand_cannon",
+  "design_type_de": "Streuschuss-Handfeuerwaffe (Spread-Shot-Rahmen, Schrotladung)",
+  "destiny_type": "Hand Cannon (Spread Shot Frame)",
+  "subtype": "spread_shot",
+  "ammo_class": "primary",
+  "toolgen_status": "not_connected",
+  "type_source": "Destiny-2-Katalog, Stand 18.10.2026: destinytracker.com/destiny-2/db/items/weapon (17 Typen), Wikipedia „Destiny 2: The Edge of Fate“ (schwere Armbrust), Untertypen siehe claude/docs/waffentypen.md"
+ },
+ "element": null,
+ "element_source": "nicht festgelegt (neuer Designtyp ohne Toolgen-Werkzeug, claude-0.10)",
+ "units": {
+  "model_unit_m": 0.00073878,
+  "model_length_units": 406.08,
+  "reference_length_m": 0.3,
+  "rule": "Länge entlang der Mündungsachse (Modell x, Visier montiert) = Bezugslänge des Designtyps (Schätzung claude-0.10)",
+  "reference": "Schätzung claude-0.10: Proportion zu den Toolgen-0.13-Längen verwandter Typen (Bericht claude/docs/versions/0.10.md › Maße), kein Toolgen-Modell"
+ },
+ "axes": {
+  "model": {
+   "x": "vorn (Mündung)",
+   "y": "unten",
+   "z": "links"
+  },
+  "target": {
+   "system": "Toolgen/Blender",
+   "forward": "-Y",
+   "up": "+Z",
+   "left": "+X",
+   "unit": "m"
+  },
+  "matrix_model_to_target": [[0, 0, 1], [-1, 0, 0], [0, -1, 0]],
+  "origin": "Socket_Hand",
+  "formula": "p_m = model_unit_m * M · (p_model − Socket_Hand.model)"
+ },
+ "dimensions_m": {
+  "weapon": {
+   "length": 0.3,
+   "height": 0.1839,
+   "width": 0.0518,
+   "bounds_m": [
+    [-0.0259, -0.2652, -0.0522],
+    [0.0259, 0.0348, 0.1317]
+   ]
+  },
+  "with_sight": {
+   "length": 0.3,
+   "height": 0.2214,
+   "width": 0.0518,
+   "bounds_m": [
+    [-0.0259, -0.2652, -0.0522],
+    [0.0259, 0.0348, 0.1692]
+   ]
+  }
+ },
+ "anchors": {
+  "Socket_Hand": {
+   "position_m": [0.0, 0.0, 0.0],
+   "model": [252.04, 376.24, 0.0],
+   "source": "Mitte von p00 (Griff)",
+   "part": "p00"
+  },
+  "Socket_SupportHand": {
+   "position_m": null,
+   "model": null,
+   "source": "nicht ableitbar (kein Vordergriff, zweiter Griff oder Handschutz vor dem Griff)",
+   "part": null
+  },
+  "Socket_Muzzle": {
+   "position_m": [0.0, -0.2652, 0.0837],
+   "model": [611.0, 263.0, 0.0],
+   "source": "vorderstes bezeichnetes Mündungs-/Laufteil: Vorderkante von p13 (Streumündung), Querschnittsmitte",
+   "part": "p13"
+  },
+  "Socket_CenterOfMass": {
+   "position_m": [0.0, -0.0787, 0.0599],
+   "model": [358.57, 295.1, 0.0],
+   "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert",
+   "part": null
+  },
+  "Socket_Sight": {
+   "position_m": [0.0, -0.0879, 0.1317],
+   "model": [371.0, 198.0, 0.0],
+   "source": "Oberkante der Visierschiene p08 unter der Mitte der Halterung (Socket_Mount von VS01)",
+   "part": "p08"
+  }
+ },
+ "palette": [
+  {
+   "id": "base",
+   "name": "BASIS · MALACHIT · FLIEDER · PFIRSICH",
+   "swatches": [
+    "#237965",
+    "#B795CA",
+    "#FFB59A",
+    "#1C2A29"
+   ],
+   "channels": {
+    "MT_Primary": "#237965",
+    "MT_Secondary": "#B795CA",
+    "MT_Accent": "#FFB59A",
+    "MT_Metal": "#1C2A29",
+    "MT_Energy": null,
+    "MT_Emission": "#FFB59A",
+    "MT_Detail": "#1C2A29"
+   },
+   "other_colors": {},
+   "on_sheet": true,
+   "sight_colors": "wie Modell"
+  },
+  {
+   "id": "standard",
+   "name": "CUBE ESCAPE STANDARD",
+   "swatches": [
+    "#ECE6DA",
+    "#A3A7AD",
+    "#2B2E33",
+    "#F28C28"
+   ],
+   "channels": {
+    "MT_Primary": "#ECE6DA",
+    "MT_Secondary": "#F3EFE7",
+    "MT_Accent": "#2B2E33",
+    "MT_Metal": "#A3A7AD",
+    "MT_Energy": null,
+    "MT_Emission": "#F4A14F",
+    "MT_Detail": "#A3A7AD"
+   },
+   "other_colors": {},
+   "on_sheet": true,
+   "sight_colors": "extrapoliert"
+  },
+  {
+   "id": "arktis",
+   "name": "ARKTIS",
+   "swatches": [
+    "#F3F6F9",
+    "#AEBBCA",
+    "#3A4452",
+    "#22D3EE"
+   ],
+   "channels": {
+    "MT_Primary": "#F3F6F9",
+    "MT_Secondary": "#F7F9FB",
+    "MT_Accent": "#3A4452",
+    "MT_Metal": "#AEBBCA",
+    "MT_Energy": null,
+    "MT_Emission": "#4ADBF1",
+    "MT_Detail": "#AEBBCA"
+   },
+   "other_colors": {},
+   "on_sheet": true,
+   "sight_colors": "extrapoliert"
+  },
+  {
+   "id": "nacht",
+   "name": "NACHT",
+   "swatches": [
+    "#4A4E57",
+    "#2C2F35",
+    "#141518",
+    "#FF5A36"
+   ],
+   "channels": {
+    "MT_Primary": "#4A4E57",
+    "MT_Secondary": "#898C92",
+    "MT_Accent": "#141518",
+    "MT_Metal": "#2C2F35",
+    "MT_Energy": null,
+    "MT_Emission": "#FF785A",
+    "MT_Detail": "#2C2F35"
+   },
+   "other_colors": {},
+   "on_sheet": true,
+   "sight_colors": "extrapoliert"
+  }
+ ],
+ "channels_used": [
+  "MT_Primary",
+  "MT_Secondary",
+  "MT_Accent",
+  "MT_Metal",
+  "MT_Emission",
+  "MT_Detail"
+ ],
+ "parts": [
+  {
+   "id": "p00",
+   "label": "Griff",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "rubber",
+   "toolgen_material": "rubber",
+   "texture": "rubber",
+   "emissive": false,
+   "sight": false,
+   "color": "#237965",
+   "area_m2": 0.016199,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0155, -0.0348, -0.0522],
+    [0.0155, 0.0348, 0.0522]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p01",
+   "label": "Rahmen",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "texture": "brushed",
+   "emissive": false,
+   "sight": false,
+   "color": "#237965",
+   "area_m2": 0.023595,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0163, -0.1519, 0.0249],
+    [0.0163, 0.0219, 0.0939]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p02",
+   "label": "Hahnschutz",
+   "channel": "MT_Detail",
+   "channel_source": "role",
+   "material": "matte",
+   "toolgen_material": "painted_matte",
+   "texture": "painted_matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1C2A29",
+   "area_m2": 0.003443,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0096, -0.0423, 0.0898],
+    [0.0096, 0.0056, 0.1096]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p03",
+   "label": "Kipprahmen",
+   "channel": "MT_Secondary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#B795CA",
+   "area_m2": 0.013257,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.014, -0.176, 0.074],
+    [0.014, -0.0311, 0.1184]
+   ],
+   "moving": "top_break"
+  },
+  {
+   "id": "p04",
+   "label": "Kipprahmen",
+   "channel": "MT_Secondary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#B795CA",
+   "area_m2": 0.006235,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0148, -0.1689, 0.0411],
+    [0.0148, -0.1405, 0.0908]
+   ],
+   "moving": "top_break"
+  },
+  {
+   "id": "p05",
+   "label": "Scharnier",
+   "channel": "MT_Detail",
+   "channel_source": "role",
+   "material": "matte",
+   "toolgen_material": "painted_matte",
+   "texture": "painted_matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1C2A29",
+   "area_m2": 0.002526,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0185, -0.1559, 0.0297],
+    [0.0185, -0.1381, 0.0475]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p06",
+   "label": "Kippriegel",
+   "channel": "MT_Accent",
+   "channel_source": "distributed",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#FFB59A",
+   "area_m2": 0.001231,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0052, -0.0478, 0.0932],
+    [0.0052, -0.0265, 0.113]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p07",
+   "label": "Schienensockel",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#237965",
+   "area_m2": 0.004279,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0089, -0.1162, 0.1069],
+    [0.0089, -0.0613, 0.125]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p08",
+   "label": "Visierschiene",
+   "channel": "MT_Metal",
+   "channel_source": "role",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "texture": "brushed",
+   "emissive": false,
+   "sight": false,
+   "color": "#1C2A29",
+   "area_m2": 0.002749,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0074, -0.1108, 0.1199],
+    [0.0074, -0.065, 0.1317]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p09",
+   "label": "Trommel",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#237965",
+   "area_m2": 0.017878,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0259, -0.1344, 0.0423],
+    [0.0259, -0.0495, 0.094]
+   ],
+   "moving": "top_break"
+  },
+  {
+   "id": "p10",
+   "label": "Achsstift",
+   "channel": "MT_Detail",
+   "channel_source": "role",
+   "material": "matte",
+   "toolgen_material": "painted_matte",
+   "texture": "painted_matte",
+   "emissive": false,
+   "sight": false,
+   "color": "#1C2A29",
+   "area_m2": 0.002523,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0037, -0.1463, 0.0644],
+    [0.0037, -0.0399, 0.0718]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p11",
+   "label": "Lauf",
+   "channel": "MT_Metal",
+   "channel_source": "role",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "texture": "brushed",
+   "emissive": false,
+   "sight": false,
+   "color": "#1C2A29",
+   "area_m2": 0.003645,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0089, -0.2201, 0.0748],
+    [0.0089, -0.1625, 0.0925]
+   ],
+   "moving": "top_break"
+  },
+  {
+   "id": "p12",
+   "label": "Laufschiene",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#237965",
+   "area_m2": 0.002639,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0074, -0.2214, 0.0904],
+    [0.0074, -0.1661, 0.1011]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p13",
+   "label": "Streumündung",
+   "channel": "MT_Secondary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#B795CA",
+   "area_m2": 0.007668,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0257, -0.2652, 0.0718],
+    [0.0257, -0.2172, 0.0955]
+   ],
+   "moving": "top_break"
+  },
+  {
+   "id": "p14",
+   "label": "Abzug",
+   "channel": "MT_Accent",
+   "channel_source": "distributed",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#FFB59A",
+   "area_m2": 0.001027,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0044, -0.0675, 0.0037],
+    [0.0044, -0.0506, 0.0282]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p15",
+   "label": null,
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#237965",
+   "area_m2": 0.002706,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0052, -0.0975, -0.0128],
+    [0.0052, -0.0207, -0.0062]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p16",
+   "label": null,
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#237965",
+   "area_m2": 0.001516,
+   "long_axis": "Z",
+   "bounds_m": [
+    [-0.0052, -0.0982, -0.0128],
+    [0.0052, -0.0916, 0.029]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p17",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "texture": "brushed",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C2A29",
+   "area_m2": 0.001657,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.01, -0.1019, 0.1317],
+    [0.01, -0.0739, 0.1377]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p18",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "texture": "brushed",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C2A29",
+   "area_m2": 0.000258,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.007, -0.0979, 0.1287],
+    [0.01, -0.0779, 0.1317]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p19",
+   "label": "Halterung",
+   "channel": "MT_Metal",
+   "channel_source": "explicit",
+   "material": "brushed",
+   "toolgen_material": "brushed",
+   "texture": "brushed",
+   "emissive": false,
+   "sight": true,
+   "color": "#1C2A29",
+   "area_m2": 0.000258,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.01, -0.0979, 0.1287],
+    [-0.007, -0.0779, 0.1317]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p20",
+   "label": "Klemmschraube",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#FFB59A",
+   "area_m2": 7.4e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.01, -0.0903, 0.1319],
+    [0.0126, -0.0855, 0.1367]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p21",
+   "label": "Gehäuse",
+   "channel": "MT_Secondary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#B795CA",
+   "area_m2": 0.002173,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.011, -0.1029, 0.1377],
+    [0.011, -0.0719, 0.1467]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p22",
+   "label": "Abdeckung",
+   "channel": "MT_Primary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#237965",
+   "area_m2": 0.000241,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.011, -0.0929, 0.1392],
+    [0.0122, -0.0749, 0.1447]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p23",
+   "label": "Abdeckung",
+   "channel": "MT_Primary",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#237965",
+   "area_m2": 0.000241,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0122, -0.0929, 0.1392],
+    [-0.011, -0.0749, 0.1447]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p24",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#FFB59A",
+   "area_m2": 0.000202,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0125, -0.1004, 0.1462],
+    [0.0125, -0.1004, 0.1692]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p25",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#FFB59A",
+   "area_m2": 0.000202,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0125, -0.0939, 0.1462],
+    [0.0125, -0.0939, 0.1692]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p26",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#FFB59A",
+   "area_m2": 0.000573,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0125, -0.1004, 0.1462],
+    [0.0125, -0.0939, 0.1692]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p27",
+   "label": "Rahmen",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#FFB59A",
+   "area_m2": 0.000466,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.01, -0.1004, 0.1487],
+    [0.01, -0.0939, 0.1667]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p28",
+   "label": "Glas",
+   "channel": "MT_Detail",
+   "channel_source": "explicit",
+   "material": "glass",
+   "toolgen_material": null,
+   "texture": null,
+   "emissive": false,
+   "sight": true,
+   "color": "#3D9BEA",
+   "area_m2": 0.000798,
+   "long_axis": "X",
+   "bounds_m": [
+    [-0.0106, -0.0974, 0.1481],
+    [0.0106, -0.0974, 0.1673]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p29",
+   "label": "Emitter",
+   "channel": "MT_Emission",
+   "channel_source": "explicit",
+   "material": "lit",
+   "toolgen_material": "energy_glass",
+   "texture": "energy_glass",
+   "emissive": true,
+   "sight": true,
+   "color": "#FFB59A",
+   "area_m2": 7e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [-0.0022, -0.0829, 0.1467],
+    [0.0022, -0.0779, 0.1481]
+   ],
+   "moving": null
+  },
+  {
+   "id": "p30",
+   "label": "Bedienknopf",
+   "channel": "MT_Accent",
+   "channel_source": "explicit",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": true,
+   "color": "#FFB59A",
+   "area_m2": 6.1e-05,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.0122, -0.0849, 0.1397],
+    [0.0136, -0.0789, 0.1427]
+   ],
+   "moving": null
+  }
+ ],
+ "moving_parts": {
+  "source": "Vorschlag claude-0.10 für einen neuen Waffentyp (in Toolgen kein Use-Clip): Art und Achse aus der Bedienung des Blatts",
+  "root_moves": false,
+  "frame": "Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse",
+  "items": [
+   {
+    "kind": "top_break",
+    "name_de": "Kipprahmen (Lauf und Trommel kippen am vorderen Scharnier nach unten, Sternauswerfer hebt die Hülsen)",
+    "toolgen_node": "Anim_TopBreak",
+    "motions": [
+     {
+      "type": "rotate",
+      "axis": [1, 0, 0]
+     }
+    ],
+    "proposed": true,
+    "parts": [
+     "p03",
+     "p04",
+     "p09",
+     "p11",
+     "p13"
+    ],
+    "labels": [
+     "Kipprahmen",
+     "Lauf",
+     "Streumündung",
+     "Trommel"
+    ],
+    "match": "label",
+    "source": "Bezeichnung „Kipprahmen“ (p03), „Kipprahmen“ (p04), „Trommel“ (p09), „Lauf“ (p11), „Streumündung“ (p13)"
+   }
+  ],
+  "note": null
+ },
+ "robot_fit": {
+  "source": "Cube Escape Docs/EQUIPMENT.md › Größe in der Roboterhand (0.82); Cube Escape Docs/versions/0.82.md › Stufe 2 (Auftrag an Toolgen) (CE 677841ff, 17.10.2026)",
+  "robot": {
+   "height_m": {
+    "value": 1.5,
+    "source": "Cube Escape Docs/EQUIPMENT.md › Größe in der Roboterhand (0.82) › Maße des Roboters"
+   },
+   "hand_m": {
+    "value": 0.09,
+    "source": "Cube Escape Docs/EQUIPMENT.md › Größe in der Roboterhand (0.82) › Maße des Roboters"
+   },
+   "arm_m": {
+    "value": 0.42,
+    "source": "Cube Escape Docs/EQUIPMENT.md › Größe in der Roboterhand (0.82) › Maße des Roboters"
+   }
+  },
+  "concept_sheets": false,
+  "concept_sheets_reason": "keine Roboter-Konzeptblätter (Entscheidung des Nutzers 17.10.2026)",
+  "applies": false,
+  "reason": "neuer Designtyp (claude-0.10), nicht im Waffensatz von Cube Escape; Zielmaße legt Cube Escape bei einer Anbindung fest",
+  "targets": null,
+  "sheet_at_target": null
+ },
+ "sight": {
+  "present": true,
+  "kind": "reflex",
+  "window": "glass",
+  "source": "Visier-Serie VS01 (Kompaktes Reflex-Visier), Modell claude/generator/vsmodels.py",
+  "modular": true,
+  "mount_side": "top",
+  "type": "reflex",
+  "type_source": "Visier-Serie VS01 (Kompaktes Reflex-Visier): Standardvisier des Waffentyps (Entscheidung des Nutzers 17.10.2026 „Danach Waffenblätter umstellen“)",
+  "frame": "compact",
+  "frame_source": "Visier-Serie VS01 (Kompaktes Reflex-Visier)",
+  "labels": [
+   "Abdeckung",
+   "Bedienknopf",
+   "Emitter",
+   "Gehäuse",
+   "Glas",
+   "Halterung",
+   "Klemmschraube",
+   "Rahmen"
+  ],
+  "parts": [
+   "p17",
+   "p18",
+   "p19",
+   "p20",
+   "p21",
+   "p22",
+   "p23",
+   "p24",
+   "p25",
+   "p26",
+   "p27",
+   "p28",
+   "p29",
+   "p30"
+  ],
+  "bounds_m": [
+   [-0.0125, -0.1029, 0.1287],
+   [0.0136, -0.0719, 0.1692]
+  ],
+  "anchor": "Socket_Sight",
+  "window_geometry": {
+   "elements": [
+    {
+     "type": "part",
+     "decal": null,
+     "part": "p28",
+     "emissive": false,
+     "view_axis_m": [0.0, -1.0, 0.0],
+     "center_m": [0.0, -0.0974, 0.1577]
+    }
+   ],
+   "source": "Glasscheiben des Visiers als Funktionsfläche (wie Sight-Spec window_geometry); Achse aus der Geometrie"
+  },
+  "window_geometry_note": null,
+  "sight_spec": {
+   "id": "VS01",
+   "file": "VS01.spec.json",
+   "format": "cubeescape-design/sight-spec",
+   "variant": "Kanalfarben der Waffe (Basis-Palette des Blatts)",
+   "mount": "Socket_Mount des Sight-Specs = Socket_Sight dieses Specs, angehoben um riser_m; Achsen gleich (vorn −Y, oben +Z)",
+   "riser_m": 0.0,
+   "socket_mount_m": [0.0, -0.0879, 0.1317],
+   "socket_reticle_m": [0.0, -0.0974, 0.1577],
+   "socket_eye_m": null,
+   "line_height_m": 0.026,
+   "rail": {
+    "part": "p08",
+    "added": false,
+    "seat": "Mitte der Visierschiene"
+   },
+   "line_clear_of_weapon": true,
+   "blocked_by": [],
+   "replaced": []
+  }
+ },
+ "decals": [
+  {
+   "part": "p00",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.000854,
+   "bounds_m": [
+    [0.0155, -0.0181, -0.0394],
+    [0.0155, 0.0168, 0.0288]
+   ]
+  },
+  {
+   "part": "p00",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.000854,
+   "bounds_m": [
+    [-0.0155, -0.0181, -0.0394],
+    [-0.0155, 0.0168, 0.0288]
+   ]
+  },
+  {
+   "part": "p03",
+   "channel": "MT_Emission",
+   "surface": "left",
+   "emissive": true,
+   "color": "#FFB59A",
+   "area_m2": 0.0002479,
+   "bounds_m": [
+    [0.014, -0.1519, 0.0916],
+    [0.014, -0.0427, 0.1125]
+   ]
+  },
+  {
+   "part": "p03",
+   "channel": "MT_Emission",
+   "surface": "right",
+   "emissive": true,
+   "color": "#FFB59A",
+   "area_m2": 0.0002479,
+   "bounds_m": [
+    [-0.014, -0.1519, 0.0916],
+    [-0.014, -0.0427, 0.1125]
+   ]
+  },
+  {
+   "part": "p04",
+   "channel": "MT_Primary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#237965",
+   "area_m2": 0.0002132,
+   "bounds_m": [
+    [0.0148, -0.1575, 0.0507],
+    [0.0148, -0.1459, 0.08]
+   ]
+  },
+  {
+   "part": "p04",
+   "channel": "MT_Primary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#237965",
+   "area_m2": 0.0002132,
+   "bounds_m": [
+    [-0.0148, -0.1575, 0.0507],
+    [-0.0148, -0.1459, 0.08]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "left",
+   "emissive": false,
+   "color": "#FFB59A",
+   "area_m2": 5.89e-05,
+   "bounds_m": [
+    [0.0185, -0.1514, 0.0342],
+    [0.0185, -0.1426, 0.043]
+   ]
+  },
+  {
+   "part": "p05",
+   "channel": "MT_Accent",
+   "surface": "right",
+   "emissive": false,
+   "color": "#FFB59A",
+   "area_m2": 5.89e-05,
+   "bounds_m": [
+    [-0.0185, -0.1514, 0.0342],
+    [-0.0185, -0.1426, 0.043]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [0.0074, -0.0753, 0.1272],
+    [0.0074, -0.0709, 0.1302]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [-0.0074, -0.0753, 0.1272],
+    [-0.0074, -0.0709, 0.1302]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [0.0074, -0.0857, 0.1272],
+    [0.0074, -0.0812, 0.1302]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [-0.0074, -0.0857, 0.1272],
+    [-0.0074, -0.0812, 0.1302]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [0.0074, -0.096, 0.1272],
+    [0.0074, -0.0916, 0.1302]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [-0.0074, -0.096, 0.1272],
+    [-0.0074, -0.0916, 0.1302]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [0.0074, -0.1064, 0.1272],
+    [0.0074, -0.1019, 0.1302]
+   ]
+  },
+  {
+   "part": "p08",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 1.31e-05,
+   "bounds_m": [
+    [-0.0074, -0.1064, 0.1272],
+    [-0.0074, -0.1019, 0.1302]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Accent",
+   "surface": "front",
+   "emissive": false,
+   "color": "#FFB59A",
+   "area_m2": 0.0001366,
+   "bounds_m": [
+    [-0.0066, -0.1344, 0.077],
+    [0.0066, -0.1344, 0.0903]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Accent",
+   "surface": "front",
+   "emissive": false,
+   "color": "#FFB59A",
+   "area_m2": 0.0001366,
+   "bounds_m": [
+    [0.0081, -0.1344, 0.0663],
+    [0.0214, -0.1344, 0.0796]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Accent",
+   "surface": "front",
+   "emissive": false,
+   "color": "#FFB59A",
+   "area_m2": 0.0001366,
+   "bounds_m": [
+    [0.0025, -0.1344, 0.0489],
+    [0.0158, -0.1344, 0.0622]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Accent",
+   "surface": "front",
+   "emissive": false,
+   "color": "#FFB59A",
+   "area_m2": 0.0001366,
+   "bounds_m": [
+    [-0.0158, -0.1344, 0.0489],
+    [-0.0025, -0.1344, 0.0622]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Accent",
+   "surface": "front",
+   "emissive": false,
+   "color": "#FFB59A",
+   "area_m2": 0.0001366,
+   "bounds_m": [
+    [-0.0214, -0.1344, 0.0663],
+    [-0.0081, -0.1344, 0.0796]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Detail",
+   "surface": "front",
+   "emissive": false,
+   "color": "#1C2A29",
+   "area_m2": 4.22e-05,
+   "bounds_m": [
+    [-0.0037, -0.1344, 0.08],
+    [0.0037, -0.1344, 0.0874]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Detail",
+   "surface": "front",
+   "emissive": false,
+   "color": "#1C2A29",
+   "area_m2": 4.22e-05,
+   "bounds_m": [
+    [0.0111, -0.1344, 0.0692],
+    [0.0184, -0.1344, 0.0766]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Detail",
+   "surface": "front",
+   "emissive": false,
+   "color": "#1C2A29",
+   "area_m2": 4.22e-05,
+   "bounds_m": [
+    [0.0054, -0.1344, 0.0519],
+    [0.0128, -0.1344, 0.0593]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Detail",
+   "surface": "front",
+   "emissive": false,
+   "color": "#1C2A29",
+   "area_m2": 4.22e-05,
+   "bounds_m": [
+    [-0.0128, -0.1344, 0.0519],
+    [-0.0054, -0.1344, 0.0593]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Detail",
+   "surface": "front",
+   "emissive": false,
+   "color": "#1C2A29",
+   "area_m2": 4.22e-05,
+   "bounds_m": [
+    [-0.0184, -0.1344, 0.0692],
+    [-0.0111, -0.1344, 0.0766]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.0002348,
+   "bounds_m": [
+    [-0.0251, -0.1271, 0.0756],
+    [-0.0251, -0.0575, 0.0821]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.0002348,
+   "bounds_m": [
+    [-0.0251, -0.1271, 0.066],
+    [-0.0251, -0.0575, 0.0725]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Secondary",
+   "surface": "right",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.0002348,
+   "bounds_m": [
+    [-0.0251, -0.1271, 0.0564],
+    [-0.0251, -0.0575, 0.0629]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.0002348,
+   "bounds_m": [
+    [0.0251, -0.1271, 0.0756],
+    [0.0251, -0.0575, 0.0821]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.0002348,
+   "bounds_m": [
+    [0.0251, -0.1271, 0.066],
+    [0.0251, -0.0575, 0.0725]
+   ]
+  },
+  {
+   "part": "p09",
+   "channel": "MT_Secondary",
+   "surface": "left",
+   "emissive": false,
+   "color": "#B795CA",
+   "area_m2": 0.0002348,
+   "bounds_m": [
+    [0.0251, -0.1271, 0.0564],
+    [0.0251, -0.0575, 0.0629]
+   ]
+  },
+  {
+   "part": "p13",
+   "channel": "MT_Primary",
+   "surface": "top",
+   "emissive": false,
+   "color": "#237965",
+   "area_m2": 0.0003624,
+   "bounds_m": [
+    [-0.017, -0.2608, 0.0955],
+    [0.017, -0.2238, 0.0955]
+   ]
+  },
+  {
+   "part": "p13",
+   "channel": "MT_Detail",
+   "surface": "front",
+   "emissive": false,
+   "color": "#1C2A29",
+   "area_m2": 0.000374,
+   "bounds_m": [
+    [-0.0163, -0.2652, 0.0777],
+    [0.0163, -0.2652, 0.0896]
+   ]
+  },
+  {
+   "part": "p13",
+   "channel": "MT_Emission",
+   "surface": "front",
+   "emissive": true,
+   "color": "#FFB59A",
+   "area_m2": 9.2e-06,
+   "bounds_m": [
+    [-0.0113, -0.2652, 0.0819],
+    [-0.0079, -0.2652, 0.0854]
+   ]
+  },
+  {
+   "part": "p13",
+   "channel": "MT_Emission",
+   "surface": "front",
+   "emissive": true,
+   "color": "#FFB59A",
+   "area_m2": 9.2e-06,
+   "bounds_m": [
+    [-0.0017, -0.2652, 0.0819],
+    [0.0017, -0.2652, 0.0854]
+   ]
+  },
+  {
+   "part": "p13",
+   "channel": "MT_Emission",
+   "surface": "front",
+   "emissive": true,
+   "color": "#FFB59A",
+   "area_m2": 9.2e-06,
+   "bounds_m": [
+    [0.0079, -0.2652, 0.0819],
+    [0.0113, -0.2652, 0.0854]
+   ]
+  }
+ ],
+ "textures": {
+  "source": "docs/textures/catalog.json (patterns, materials) über claude/generator/texcat.py; das Blatt rechnet mit units.model_unit_m um",
+  "vocabulary": "Toolgen data/surface_recipes.json › patterns",
+  "catalog": {
+   "file": "docs/textures/catalog.json",
+   "format": "cubeescape-design/texture-catalog",
+   "format_version": 1,
+   "claude_version": "0.6.1",
+   "sha256_claude_parts": "b418ae38b85c798f7b6d95adc928fc7708e71eedf5238497ebe40dba1a54c446",
+   "ids": {
+    "painted": "painted",
+    "brushed": "brushed",
+    "rubber": "rubber",
+    "matte": "painted_matte",
+    "lit": "energy_glass"
+   }
+  },
+  "painted": {
+   "toolgen_pattern": null,
+   "look": "weicher Glanzverlauf, kein Relief",
+   "brightness": [0.87, 1.13],
+   "waves": [
+    {
+     "axis": "Z",
+     "wavelength_mm": 228.419,
+     "amplitude": 0.09
+    },
+    {
+     "axis": "X-Y",
+     "wavelength_mm": 483.194,
+     "amplitude": 0.04
+    }
+   ]
+  },
+  "brushed": {
+   "toolgen_pattern": "brushed",
+   "direction": "long_axis",
+   "size_mm": 1.337,
+   "brightness": [0.87, 1.13],
+   "cross_wavelengths_mm": [3.149, 1.337, 0.745],
+   "weights": [0.5, 0.3, 0.2]
+  },
+  "rubber": {
+   "toolgen_pattern": "knurl",
+   "direction": "Flächenebene, ±45°",
+   "size_mm": 5.593,
+   "brightness": [0.66, 1.0]
+  },
+  "matte": {
+   "toolgen_pattern": "grain",
+   "size_mm": 1.076,
+   "brightness": [0.955, 1.045]
+  },
+  "lit": {
+   "toolgen_pattern": null,
+   "look": "leuchtend, Kanalfarbe als Emission, kein Muster"
+  }
+ },
+ "texture_profile": {
+  "housing": {
+   "material": "painted",
+   "text_de": "Lackiert, schwer"
+  },
+  "metal": {
+   "material": "polished",
+   "text_de": "Poliert, massiv"
+  },
+  "rubber": {
+   "material": "rubber",
+   "text_de": "Griffschalen, strukturiert"
+  },
+  "energy": {
+   "material": "energy_glass",
+   "color": "orange",
+   "text_de": "Orange, kräftig"
+  },
+  "edge_wear": {
+   "level": "strong",
+   "text_de": "Stark, Schrotspuren"
+  },
+  "decals": {
+   "toolgen": [
+    "hazard_stripes",
+    "number_01"
+   ],
+   "text_de": "Warnstreifen, Nummer"
+  },
+  "interpretation": null,
+  "source": "Vorschlag claude-0.10 (kein Eintrag im Textur-Blatt weapon_textures_1-9.webp): abgeleitet vom verwandten Typ (derived_from), Katalog-Wortschatz docs/textures/catalog.json, Toolgen-Decals data/decals.json",
+  "derived_from": "shotgun",
+  "catalog": {
+   "file": "docs/textures/catalog.json",
+   "wear_levels": [
+    "medium",
+    "strong",
+    "subtle"
+   ]
+  }
+ },
+ "operation": {
+  "reload": {
+   "de": "Kippriegel drücken, Rahmen mit Trommel und Lauf am vorderen Scharnier abkippen, fünf Hülsen auswerfen, Schrotpatronen einsetzen, schließen",
+   "en": "press the top latch, tip frame with cylinder and barrel down on the front hinge, eject five cases, load shot shells and close"
+  },
+  "action": {
+   "de": "Double Action: jeder Abzug spannt den verdeckten Hahn und dreht die Trommel zur nächsten der fünf Kammern",
+   "en": "double action: each trigger pull cocks the shrouded hammer and indexes the next of five chambers"
+  },
+  "fire": {
+   "de": "Ein kurzer Streuschuss je Abzug; die obere Kammer fluchtet mit dem Lauf, die breite Mündung fächert die Schrotladung flach",
+   "en": "one close-range spread per pull; the upper chamber aligns with the barrel, the wide muzzle fans the pellets flat"
+  },
+  "ammo_class": "primary",
+  "source": "META['op'] in c25.py (Blattfeld BEDIENUNG); Bewegungen: moving_parts"
+ },
+ "skin": {
+  "source": "docs/textures/catalog.json (Skins, Oberflächen, Abnutzung) über claude/generator/texcat.py; Auflösung skins.py, Zeichnung xl.py/skinraster.py (Feld SKIN/MUSTER, Hauptskin in Isometrie, Orthos, Farbvarianten)",
+  "hero": "chromrippe",
+  "catalog_id": "chromrippe",
+  "catalog": [
+   "rennstreifen",
+   "goldglyphe",
+   "warnblock",
+   "zweiton",
+   "stufenblock",
+   "zielringe",
+   "glutverlauf",
+   "chromrippe",
+   "glyphenband"
+  ],
+  "slots": {
+   "channels": [
+    "MT_Primary",
+    "MT_Secondary",
+    "MT_Accent",
+    "MT_Metal",
+    "MT_Energy",
+    "MT_Emission",
+    "MT_Detail"
+   ],
+   "accents": [
+    "SK_Accent1",
+    "SK_Accent2"
+   ],
+   "rule": "MT_-Kanäle färben mit der Variante um (unbelegter Kanal: Farbfeld der Blatt-Palette, source swatch); SK_Accent1/2 fest je Skin"
+  },
+  "finishes": [
+   "paint",
+   "polished_gold",
+   "polished_chrome",
+   "neon"
+  ],
+  "space": "Objektraum (Toolgen-Rahmen, m), keine UV; Sichtteile ohne Skin",
+  "vocabulary": "Toolgen data/surface_recipes.json › patterns kennt nur Relief (knurl, grooves, lamellae, seams, brushed, grain); Skin-Muster sind neue Typen (new_pattern_types)",
+  "new_pattern_types": {
+   "side_block": "Farbfläche: Polygon in der Seitenprojektion (Punkte [Y, Z] in m), durch die ganze Breite (X) extrudiert; Teile im Polygon tragen den Slot",
+   "bands": "Streifen: t = p · dir (m, Ursprung Socket_Hand); Band k (0 ≤ k < count) bei t0_m + k·period_m ≤ t < … + width_m, Slot slots[k mod n]; optional nur im Fenster window (wie side_block)",
+   "gradient": "Verlauf: s = (p · dir − t0_m) / (t1_m − t0_m), auf 0..1 begrenzt, in steps Stufen; Farbe gemischt von slots[0] nach slots[1] (Toon-Stufen, keine Kanal-Maske)",
+   "rings": "konzentrische Ringe um die Achse X durch center [Y, Z]: Abstand r in der Seitenprojektion; Ring k bei r0_m + k·(width_m+gap_m) ≤ r < … + width_m, Slot slots[k mod n]",
+   "finish": "ganzes Teil im Slot; Oberfläche des Slots (polished_gold/polished_chrome: hochglänzend metallisch, Glanzstreifen im Blatt nur Zeichnung)",
+   "edge_wear": "Kantenabnutzung: blankes Metall (color) entlang harter Kanten bis width_mm, fleckig mit Anteil coverage (Blender: Pointiness/AO-Maske)",
+   "glyph_decals": "Glyphen/Zahlen/Embleme als flache Aufkleber: Polygone mit Punkten [X, Y, Z] in m auf der Seitenfläche (left +X, right −X, rechte Seite gespiegelt lesbar)",
+   "trim": "Schmuckteile als zusätzliche Prismen: Profil [Y, Z] in m, extrudiert über x_m [X0, X1]; ribs (Rippen an der Seite), fins (Finnen oben)"
+  },
+  "items": [
+   {
+    "id": "chromrippe",
+    "catalog_id": "chromrippe",
+    "name": "Chromrippe",
+    "hero": true,
+    "blocks": [
+     "farbflaechen",
+     "streifen",
+     "material",
+     "schmuck"
+    ],
+    "description_de": "dunkles Gehäuse, Chromrippen an der Seite, Chromfinnen, Akzentband unten, Kantenabnutzung",
+    "description_en": "dark body, chrome side ribs, chrome fins, accent band along the bottom, edge wear",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#C9D2DC",
+      "finish": "polished_chrome"
+     },
+     "SK_Accent2": {
+      "color": "#15171A",
+      "finish": "paint"
+     }
+    },
+    "slots_used": [
+     "MT_Accent",
+     "MT_Detail",
+     "SK_Accent1"
+    ],
+    "colors": {
+     "base": {
+      "MT_Accent": {
+       "color": "#FFB59A",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#1C2A29",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Accent": {
+       "color": "#2B2E33",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#A3A7AD",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Accent": {
+       "color": "#3A4452",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#AEBBCA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Accent": {
+       "color": "#141518",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#2C2F35",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "side_block",
+      "block": "farbflaechen",
+      "pattern": "side_block",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "slot": "MT_Detail",
+      "poly_yz_m": [[0.0038, 0.1388], [-0.2896, 0.1388], [-0.2896, -0.0266], [0.0038, -0.0266]]
+     },
+     {
+      "type": "finish",
+      "block": "material",
+      "parts": [
+       "p01",
+       "p08",
+       "p11"
+      ],
+      "slot": "SK_Accent1",
+      "target": "metal"
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "dir": [0.0, 0.0, -1.0],
+      "t0_m": -0.0092,
+      "width_m": 0.011,
+      "period_m": 0.011,
+      "count": 1,
+      "slots": [
+       "MT_Accent"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "trim",
+      "block": "schmuck",
+      "pattern": "trim",
+      "kind": "ribs",
+      "slot": "SK_Accent1",
+      "attach": "p01",
+      "count": 6,
+      "toolgen_similar": "lamellae",
+      "parts": [
+       {
+        "profile_yz_m": [[0.0081, 0.08], [0.0044, 0.08], [0.0044, 0.057], [0.0081, 0.057]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, 0.0044, 0.057],
+         [0.0181, 0.0081, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.0081, 0.08], [0.0044, 0.08], [0.0044, 0.057], [0.0081, 0.057]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, 0.0044, 0.057],
+         [-0.0158, 0.0081, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0005, 0.08], [-0.0043, 0.08], [-0.0043, 0.057], [-0.0005, 0.057]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0043, 0.057],
+         [0.0181, -0.0005, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0005, 0.08], [-0.0043, 0.08], [-0.0043, 0.057], [-0.0005, 0.057]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0043, 0.057],
+         [-0.0158, -0.0005, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0092, 0.08], [-0.0129, 0.08], [-0.0129, 0.057], [-0.0092, 0.057]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0129, 0.057],
+         [0.0181, -0.0092, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0092, 0.08], [-0.0129, 0.08], [-0.0129, 0.057], [-0.0092, 0.057]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0129, 0.057],
+         [-0.0158, -0.0092, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0178, 0.08], [-0.0216, 0.08], [-0.0216, 0.057], [-0.0178, 0.057]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0216, 0.057],
+         [0.0181, -0.0178, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0178, 0.08], [-0.0216, 0.08], [-0.0216, 0.057], [-0.0178, 0.057]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0216, 0.057],
+         [-0.0158, -0.0178, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0265, 0.08], [-0.0303, 0.08], [-0.0303, 0.057], [-0.0265, 0.057]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0303, 0.057],
+         [0.0181, -0.0265, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0265, 0.08], [-0.0303, 0.08], [-0.0303, 0.057], [-0.0265, 0.057]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0303, 0.057],
+         [-0.0158, -0.0265, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0352, 0.08], [-0.0389, 0.08], [-0.0389, 0.057], [-0.0352, 0.057]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0389, 0.057],
+         [0.0181, -0.0352, 0.08]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0352, 0.08], [-0.0389, 0.08], [-0.0389, 0.057], [-0.0352, 0.057]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0389, 0.057],
+         [-0.0158, -0.0352, 0.08]
+        ]
+       }
+      ]
+     },
+     {
+      "type": "trim",
+      "block": "schmuck",
+      "pattern": "trim",
+      "kind": "fins",
+      "slot": "SK_Accent1",
+      "attach": "p12",
+      "count": 2,
+      "toolgen_similar": null,
+      "parts": [
+       {
+        "profile_yz_m": [[-0.1894, 0.0995], [-0.1967, 0.0995], [-0.1881, 0.1167], [-0.1808, 0.1167]],
+        "x_m": [-0.0049, 0.0049],
+        "bounds_m": [
+         [-0.0049, -0.1967, 0.0995],
+         [0.0049, -0.1808, 0.1167]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.2048, 0.0962], [-0.2121, 0.0962], [-0.2035, 0.1158], [-0.1962, 0.1158]],
+        "x_m": [-0.0049, 0.0049],
+        "bounds_m": [
+         [-0.0049, -0.2121, 0.0962],
+         [0.0049, -0.1962, 0.1158]
+        ]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "width_mm": 1.252,
+      "coverage": 0.28,
+      "color": "#9AA2AC"
+     }
+    ],
+    "notes": []
+   },
+   {
+    "id": "rennstreifen",
+    "catalog_id": "rennstreifen",
+    "name": "Rennstreifen",
+    "hero": false,
+    "blocks": [
+     "glyphen",
+     "streifen",
+     "material"
+    ],
+    "description_de": "zwei Rennstreifen in Akzentfarbe über die Oberseite, Seitenband mit weißer Zierlinie, große schräge Segmentnummer, Läufe poliertes Chrom, leichte Kantenabnutzung",
+    "description_en": "two accent racing stripes over the top, side band with white pinstripe, large slanted segment number, polished chrome barrels, light edge wear",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#C9D2DC",
+      "finish": "polished_chrome"
+     },
+     "SK_Accent2": {
+      "color": "#F2F4F6",
+      "finish": "paint"
+     }
+    },
+    "slots_used": [
+     "MT_Accent",
+     "SK_Accent1",
+     "SK_Accent2"
+    ],
+    "colors": {
+     "base": {
+      "MT_Accent": {
+       "color": "#FFB59A",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#F2F4F6",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Accent": {
+       "color": "#2B2E33",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#F2F4F6",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Accent": {
+       "color": "#3A4452",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#F2F4F6",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Accent": {
+       "color": "#141518",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#C9D2DC",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#F2F4F6",
+       "finish": "paint",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "finish",
+      "block": "material",
+      "parts": [
+       "p01",
+       "p08",
+       "p11"
+      ],
+      "slot": "SK_Accent1",
+      "target": "metal"
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "dir": [1.0, 0.0, 0.0],
+      "t0_m": -0.0114,
+      "width_m": 0.0067,
+      "period_m": 0.016,
+      "count": 2,
+      "slots": [
+       "MT_Accent"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "dir": [0.0, 0.0, -1.0],
+      "t0_m": -0.0754,
+      "width_m": 0.0165,
+      "period_m": 0.0165,
+      "count": 1,
+      "slots": [
+       "MT_Accent"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "dir": [0.0, 0.0, -1.0],
+      "t0_m": -0.0533,
+      "width_m": 0.0048,
+      "period_m": 0.0048,
+      "count": 1,
+      "slots": [
+       "SK_Accent2"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "glyphs",
+      "block": "glyphen",
+      "pattern": "glyph_decals",
+      "part": "p01",
+      "items": "num",
+      "content": "2 5",
+      "height_m": 0.0235,
+      "bounds_m": [
+       [-0.0163, -0.0351, 0.0422],
+       [0.0163, 0.0008, 0.0657]
+      ],
+      "decals": [
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.005, 0.0641], [0.0163, -0.0063, 0.0625], [0.0163, -0.0103, 0.0625], [0.0163, -0.0121, 0.0641], [0.0163, -0.0108, 0.0657], [0.0163, -0.0068, 0.0657]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0293, 0.0641], [-0.0163, -0.028, 0.0625], [-0.0163, -0.024, 0.0625], [-0.0163, -0.0221, 0.0641], [-0.0163, -0.0235, 0.0657], [-0.0163, -0.0275, 0.0657]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0127, 0.0634], [0.0163, -0.0109, 0.0618], [0.0163, -0.01, 0.0562], [0.0163, -0.0113, 0.0546], [0.0163, -0.0132, 0.0562], [0.0163, -0.0141, 0.0618]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0216, 0.0634], [-0.0163, -0.0234, 0.0618], [-0.0163, -0.0243, 0.0562], [-0.0163, -0.023, 0.0546], [-0.0163, -0.0211, 0.0562], [-0.0163, -0.0202, 0.0618]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0033, 0.0539], [0.0163, -0.0047, 0.0524], [0.0163, -0.0087, 0.0524], [0.0163, -0.0105, 0.0539], [0.0163, -0.0092, 0.0555], [0.0163, -0.0052, 0.0555]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0309, 0.0539], [-0.0163, -0.0296, 0.0524], [-0.0163, -0.0256, 0.0524], [-0.0163, -0.0238, 0.0539], [-0.0163, -0.0251, 0.0555], [-0.0163, -0.0291, 0.0555]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0025, 0.0532], [0.0163, -0.0007, 0.0517], [0.0163, 0.0002, 0.0461], [0.0163, -0.0011, 0.0445], [0.0163, -0.003, 0.0461], [0.0163, -0.0039, 0.0517]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0317, 0.0532], [-0.0163, -0.0336, 0.0517], [-0.0163, -0.0345, 0.0461], [-0.0163, -0.0331, 0.0445], [-0.0163, -0.0313, 0.0461], [-0.0163, -0.0304, 0.0517]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0017, 0.0438], [0.0163, -0.0031, 0.0422], [0.0163, -0.007, 0.0422], [0.0163, -0.0089, 0.0438], [0.0163, -0.0076, 0.0454], [0.0163, -0.0036, 0.0454]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0326, 0.0438], [-0.0163, -0.0312, 0.0422], [-0.0163, -0.0272, 0.0422], [-0.0163, -0.0254, 0.0438], [-0.0163, -0.0267, 0.0454], [-0.0163, -0.0307, 0.0454]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0254, 0.0641], [0.0163, -0.0267, 0.0625], [0.0163, -0.0307, 0.0625], [0.0163, -0.0326, 0.0641], [0.0163, -0.0312, 0.0657], [0.0163, -0.0272, 0.0657]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0089, 0.0641], [-0.0163, -0.0076, 0.0625], [-0.0163, -0.0036, 0.0625], [-0.0163, -0.0017, 0.0641], [-0.0163, -0.0031, 0.0657], [-0.0163, -0.007, 0.0657]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0246, 0.0634], [0.0163, -0.0227, 0.0618], [0.0163, -0.0218, 0.0562], [0.0163, -0.0232, 0.0546], [0.0163, -0.025, 0.0562], [0.0163, -0.0259, 0.0618]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0097, 0.0634], [-0.0163, -0.0115, 0.0618], [-0.0163, -0.0124, 0.0562], [-0.0163, -0.0111, 0.0546], [-0.0163, -0.0093, 0.0562], [-0.0163, -0.0084, 0.0618]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0238, 0.0539], [0.0163, -0.0251, 0.0524], [0.0163, -0.0291, 0.0524], [0.0163, -0.0309, 0.0539], [0.0163, -0.0296, 0.0555], [0.0163, -0.0256, 0.0555]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0105, 0.0539], [-0.0163, -0.0092, 0.0524], [-0.0163, -0.0052, 0.0524], [-0.0163, -0.0033, 0.0539], [-0.0163, -0.0047, 0.0555], [-0.0163, -0.0087, 0.0555]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0315, 0.0532], [0.0163, -0.0297, 0.0517], [0.0163, -0.0288, 0.0461], [0.0163, -0.0301, 0.0445], [0.0163, -0.032, 0.0461], [0.0163, -0.0329, 0.0517]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0028, 0.0532], [-0.0163, -0.0046, 0.0517], [-0.0163, -0.0055, 0.0461], [-0.0163, -0.0042, 0.0445], [-0.0163, -0.0023, 0.0461], [-0.0163, -0.0014, 0.0517]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0221, 0.0438], [0.0163, -0.0235, 0.0422], [0.0163, -0.0275, 0.0422], [0.0163, -0.0293, 0.0438], [0.0163, -0.028, 0.0454], [0.0163, -0.024, 0.0454]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0121, 0.0438], [-0.0163, -0.0108, 0.0422], [-0.0163, -0.0068, 0.0422], [-0.0163, -0.005, 0.0438], [-0.0163, -0.0063, 0.0454], [-0.0163, -0.0103, 0.0454]]
+       }
+      ],
+      "slots": [
+       "SK_Accent2"
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "width_mm": 1.0955,
+      "coverage": 0.17,
+      "color": "#9AA2AC"
+     }
+    ],
+    "notes": []
+   },
+   {
+    "id": "warnblock",
+    "catalog_id": "warnblock",
+    "name": "Warnblock",
+    "hero": false,
+    "blocks": [
+     "farbflaechen",
+     "glyphen",
+     "streifen",
+     "material"
+    ],
+    "description_de": "gelb-schwarze Warnstreifen vorn, Heckblock in Zweitfarbe, Winkel-Emblem mit Nummer, starke Kantenabnutzung",
+    "description_en": "yellow-black hazard stripes at the front, rear block in secondary color, chevron emblem with number, heavy edge wear",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#F2C230",
+      "finish": "paint"
+     },
+     "SK_Accent2": {
+      "color": "#15171A",
+      "finish": "paint"
+     }
+    },
+    "slots_used": [
+     "MT_Secondary",
+     "SK_Accent1",
+     "SK_Accent2"
+    ],
+    "colors": {
+     "base": {
+      "MT_Secondary": {
+       "color": "#B795CA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Secondary": {
+       "color": "#F3EFE7",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Secondary": {
+       "color": "#F7F9FB",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Secondary": {
+       "color": "#898C92",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#F2C230",
+       "finish": "paint",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#15171A",
+       "finish": "paint",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "dir": [0.0, -0.7071, 0.7071],
+      "t0_m": 0.0055,
+      "width_m": 0.0122,
+      "period_m": 0.0243,
+      "count": 40,
+      "slots": [
+       "SK_Accent1",
+       "SK_Accent2"
+      ],
+      "window_yz_m": [[-0.2016, 0.1388], [-0.2896, 0.1388], [-0.2896, -0.0266], [-0.2016, -0.0266]]
+     },
+     {
+      "type": "side_block",
+      "block": "farbflaechen",
+      "pattern": "side_block",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "slot": "MT_Secondary",
+      "poly_yz_m": [[0.0038, 0.1388], [-0.0745, 0.1388], [-0.0745, -0.0266], [0.0038, -0.0266]]
+     },
+     {
+      "type": "glyphs",
+      "block": "glyphen",
+      "pattern": "glyph_decals",
+      "part": "p01",
+      "items": "chevron+num",
+      "content": "chevron 2 5",
+      "height_m": 0.0146,
+      "bounds_m": [
+       [-0.0163, -0.04, 0.0616],
+       [0.0163, 0.0088, 0.0763]
+      ],
+      "decals": [
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, 0.0088, 0.0763], [0.0163, 0.0063, 0.0763], [0.0163, 0.0022, 0.069], [0.0163, 0.0063, 0.0616], [0.0163, 0.0088, 0.0616], [0.0163, 0.0047, 0.069]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.04, 0.0763], [-0.0163, -0.0375, 0.0763], [-0.0163, -0.0334, 0.069], [-0.0163, -0.0375, 0.0616], [-0.0163, -0.04, 0.0616], [-0.0163, -0.0359, 0.069]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, 0.0047, 0.0763], [0.0163, 0.0022, 0.0763], [0.0163, -0.0019, 0.069], [0.0163, 0.0022, 0.0616], [0.0163, 0.0047, 0.0616], [0.0163, 0.0006, 0.069]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.036, 0.0763], [-0.0163, -0.0335, 0.0763], [-0.0163, -0.0294, 0.069], [-0.0163, -0.0335, 0.0616], [-0.0163, -0.036, 0.0616], [-0.0163, -0.0319, 0.069]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, 0.0007, 0.0763], [0.0163, -0.0018, 0.0763], [0.0163, -0.0059, 0.069], [0.0163, -0.0018, 0.0616], [0.0163, 0.0007, 0.0616], [0.0163, -0.0034, 0.069]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.032, 0.0763], [-0.0163, -0.0295, 0.0763], [-0.0163, -0.0254, 0.069], [-0.0163, -0.0295, 0.0616], [-0.0163, -0.032, 0.0616], [-0.0163, -0.0279, 0.069]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0212, 0.0753], [0.0163, -0.022, 0.0743], [0.0163, -0.0245, 0.0743], [0.0163, -0.0257, 0.0753], [0.0163, -0.0249, 0.0763], [0.0163, -0.0224, 0.0763]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.01, 0.0753], [-0.0163, -0.0092, 0.0743], [-0.0163, -0.0067, 0.0743], [-0.0163, -0.0056, 0.0753], [-0.0163, -0.0064, 0.0763], [-0.0163, -0.0089, 0.0763]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0261, 0.0748], [0.0163, -0.0249, 0.0739], [0.0163, -0.0244, 0.0704], [0.0163, -0.0252, 0.0694], [0.0163, -0.0263, 0.0704], [0.0163, -0.0269, 0.0739]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0052, 0.0748], [-0.0163, -0.0063, 0.0739], [-0.0163, -0.0069, 0.0704], [-0.0163, -0.0061, 0.0694], [-0.0163, -0.0049, 0.0704], [-0.0163, -0.0044, 0.0739]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0202, 0.069], [0.0163, -0.021, 0.068], [0.0163, -0.0235, 0.068], [0.0163, -0.0247, 0.069], [0.0163, -0.0238, 0.0699], [0.0163, -0.0214, 0.0699]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.011, 0.069], [-0.0163, -0.0102, 0.068], [-0.0163, -0.0077, 0.068], [-0.0163, -0.0066, 0.069], [-0.0163, -0.0074, 0.0699], [-0.0163, -0.0099, 0.0699]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0197, 0.0685], [0.0163, -0.0185, 0.0675], [0.0163, -0.018, 0.064], [0.0163, -0.0188, 0.0631], [0.0163, -0.02, 0.064], [0.0163, -0.0205, 0.0675]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0116, 0.0685], [-0.0163, -0.0127, 0.0675], [-0.0163, -0.0133, 0.064], [-0.0163, -0.0124, 0.0631], [-0.0163, -0.0113, 0.064], [-0.0163, -0.0107, 0.0675]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0192, 0.0626], [0.0163, -0.02, 0.0616], [0.0163, -0.0225, 0.0616], [0.0163, -0.0237, 0.0626], [0.0163, -0.0228, 0.0636], [0.0163, -0.0203, 0.0636]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, -0.0121, 0.0626], [-0.0163, -0.0112, 0.0616], [-0.0163, -0.0087, 0.0616], [-0.0163, -0.0076, 0.0626], [-0.0163, -0.0084, 0.0636], [-0.0163, -0.0109, 0.0636]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.034, 0.0753], [0.0163, -0.0348, 0.0743], [0.0163, -0.0373, 0.0743], [0.0163, -0.0384, 0.0753], [0.0163, -0.0376, 0.0763], [0.0163, -0.0351, 0.0763]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, 0.0027, 0.0753], [-0.0163, 0.0035, 0.0743], [-0.0163, 0.006, 0.0743], [-0.0163, 0.0072, 0.0753], [-0.0163, 0.0063, 0.0763], [-0.0163, 0.0039, 0.0763]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0335, 0.0748], [0.0163, -0.0323, 0.0739], [0.0163, -0.0317, 0.0704], [0.0163, -0.0326, 0.0694], [0.0163, -0.0337, 0.0704], [0.0163, -0.0343, 0.0739]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, 0.0022, 0.0748], [-0.0163, 0.0011, 0.0739], [-0.0163, 0.0005, 0.0704], [-0.0163, 0.0013, 0.0694], [-0.0163, 0.0025, 0.0704], [-0.0163, 0.003, 0.0739]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0329, 0.069], [0.0163, -0.0338, 0.068], [0.0163, -0.0363, 0.068], [0.0163, -0.0374, 0.069], [0.0163, -0.0366, 0.0699], [0.0163, -0.0341, 0.0699]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, 0.0017, 0.069], [-0.0163, 0.0025, 0.068], [-0.0163, 0.005, 0.068], [-0.0163, 0.0062, 0.069], [-0.0163, 0.0053, 0.0699], [-0.0163, 0.0028, 0.0699]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0378, 0.0685], [0.0163, -0.0366, 0.0675], [0.0163, -0.0361, 0.064], [0.0163, -0.0369, 0.0631], [0.0163, -0.0381, 0.064], [0.0163, -0.0386, 0.0675]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, 0.0065, 0.0685], [-0.0163, 0.0054, 0.0675], [-0.0163, 0.0048, 0.064], [-0.0163, 0.0057, 0.0631], [-0.0163, 0.0068, 0.064], [-0.0163, 0.0074, 0.0675]]
+       },
+       {
+        "surface": "left",
+        "slot": "SK_Accent2",
+        "points_m": [[0.0163, -0.0319, 0.0626], [0.0163, -0.0328, 0.0616], [0.0163, -0.0353, 0.0616], [0.0163, -0.0364, 0.0626], [0.0163, -0.0356, 0.0636], [0.0163, -0.0331, 0.0636]]
+       },
+       {
+        "surface": "right",
+        "slot": "SK_Accent2",
+        "points_m": [[-0.0163, 0.0007, 0.0626], [-0.0163, 0.0015, 0.0616], [-0.0163, 0.004, 0.0616], [-0.0163, 0.0051, 0.0626], [-0.0163, 0.0043, 0.0636], [-0.0163, 0.0018, 0.0636]]
+       }
+      ],
+      "slots": [
+       "SK_Accent2"
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "width_mm": 1.4868,
+      "coverage": 0.42,
+      "color": "#9AA2AC"
+     }
+    ],
+    "notes": []
+   },
+   {
+    "id": "stufenblock",
+    "catalog_id": "stufenblock",
+    "name": "Stufenblock",
+    "hero": false,
+    "blocks": [
+     "farbflaechen",
+     "glyphen",
+     "material",
+     "schmuck"
+    ],
+    "description_de": "gestufte Farbblöcke dunkel unter hell, Gold an Metallteilen, goldene Rippen, Segmentnummer",
+    "description_en": "stepped color blocks dark below light, gold metal parts, gold ribs, segment number",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#E2B04A",
+      "finish": "polished_gold"
+     },
+     "SK_Accent2": {
+      "color": "#15171A",
+      "finish": "paint"
+     }
+    },
+    "slots_used": [
+     "MT_Secondary",
+     "MT_Detail",
+     "SK_Accent1"
+    ],
+    "colors": {
+     "base": {
+      "MT_Secondary": {
+       "color": "#B795CA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#1C2A29",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Secondary": {
+       "color": "#F3EFE7",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#A3A7AD",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Secondary": {
+       "color": "#F7F9FB",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#AEBBCA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Secondary": {
+       "color": "#898C92",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Detail": {
+       "color": "#2C2F35",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#E2B04A",
+       "finish": "polished_gold",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "side_block",
+      "block": "farbflaechen",
+      "pattern": "side_block",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "slot": "MT_Detail",
+      "poly_yz_m": [[0.0038, 0.0396], [-0.1038, 0.0396], [-0.1038, 0.0699], [-0.1869, 0.0699], [-0.1869, 0.1002], [-0.2896, 0.1002], [-0.2896, -0.0266], [0.0038, -0.0266]]
+     },
+     {
+      "type": "finish",
+      "block": "material",
+      "parts": [
+       "p01",
+       "p08",
+       "p11"
+      ],
+      "slot": "SK_Accent1",
+      "target": "metal"
+     },
+     {
+      "type": "glyphs",
+      "block": "glyphen",
+      "pattern": "glyph_decals",
+      "part": "p12",
+      "items": "num",
+      "content": "2 5",
+      "height_m": 0.006,
+      "bounds_m": [
+       [-0.0074, -0.2042, 0.0933],
+       [0.0074, -0.195, 0.0993]
+      ],
+      "decals": [
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.1965, 0.0989], [0.0074, -0.1968, 0.0985], [0.0074, -0.1979, 0.0985], [0.0074, -0.1983, 0.0989], [0.0074, -0.198, 0.0993], [0.0074, -0.197, 0.0993]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.2027, 0.0989], [-0.0074, -0.2024, 0.0985], [-0.0074, -0.2014, 0.0985], [-0.0074, -0.2009, 0.0989], [-0.0074, -0.2012, 0.0993], [-0.0074, -0.2023, 0.0993]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.1985, 0.0987], [0.0074, -0.198, 0.0983], [0.0074, -0.1978, 0.0969], [0.0074, -0.1981, 0.0965], [0.0074, -0.1986, 0.0969], [0.0074, -0.1988, 0.0983]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.2007, 0.0987], [-0.0074, -0.2012, 0.0983], [-0.0074, -0.2014, 0.0969], [-0.0074, -0.2011, 0.0965], [-0.0074, -0.2006, 0.0969], [-0.0074, -0.2004, 0.0983]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.1961, 0.0963], [0.0074, -0.1964, 0.0959], [0.0074, -0.1974, 0.0959], [0.0074, -0.1979, 0.0963], [0.0074, -0.1976, 0.0967], [0.0074, -0.1965, 0.0967]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.2031, 0.0963], [-0.0074, -0.2028, 0.0959], [-0.0074, -0.2018, 0.0959], [-0.0074, -0.2013, 0.0963], [-0.0074, -0.2017, 0.0967], [-0.0074, -0.2027, 0.0967]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.1959, 0.0961], [0.0074, -0.1954, 0.0957], [0.0074, -0.1952, 0.0943], [0.0074, -0.1955, 0.0939], [0.0074, -0.196, 0.0943], [0.0074, -0.1962, 0.0957]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.2034, 0.0961], [-0.0074, -0.2038, 0.0957], [-0.0074, -0.2041, 0.0943], [-0.0074, -0.2037, 0.0939], [-0.0074, -0.2032, 0.0943], [-0.0074, -0.203, 0.0957]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.1957, 0.0937], [0.0074, -0.196, 0.0933], [0.0074, -0.197, 0.0933], [0.0074, -0.1975, 0.0937], [0.0074, -0.1971, 0.0941], [0.0074, -0.1961, 0.0941]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.2036, 0.0937], [-0.0074, -0.2032, 0.0933], [-0.0074, -0.2022, 0.0933], [-0.0074, -0.2017, 0.0937], [-0.0074, -0.2021, 0.0941], [-0.0074, -0.2031, 0.0941]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.2017, 0.0989], [0.0074, -0.2021, 0.0985], [0.0074, -0.2031, 0.0985], [0.0074, -0.2036, 0.0989], [0.0074, -0.2032, 0.0993], [0.0074, -0.2022, 0.0993]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.1975, 0.0989], [-0.0074, -0.1971, 0.0985], [-0.0074, -0.1961, 0.0985], [-0.0074, -0.1957, 0.0989], [-0.0074, -0.196, 0.0993], [-0.0074, -0.197, 0.0993]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.2015, 0.0987], [0.0074, -0.201, 0.0983], [0.0074, -0.2008, 0.0969], [0.0074, -0.2012, 0.0965], [0.0074, -0.2016, 0.0969], [0.0074, -0.2019, 0.0983]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.1977, 0.0987], [-0.0074, -0.1982, 0.0983], [-0.0074, -0.1984, 0.0969], [-0.0074, -0.1981, 0.0965], [-0.0074, -0.1976, 0.0969], [-0.0074, -0.1974, 0.0983]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.2013, 0.0963], [0.0074, -0.2017, 0.0959], [0.0074, -0.2027, 0.0959], [0.0074, -0.2031, 0.0963], [0.0074, -0.2028, 0.0967], [0.0074, -0.2018, 0.0967]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.1979, 0.0963], [-0.0074, -0.1976, 0.0959], [-0.0074, -0.1965, 0.0959], [-0.0074, -0.1961, 0.0963], [-0.0074, -0.1964, 0.0967], [-0.0074, -0.1974, 0.0967]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.2033, 0.0961], [0.0074, -0.2028, 0.0957], [0.0074, -0.2026, 0.0943], [0.0074, -0.2029, 0.0939], [0.0074, -0.2034, 0.0943], [0.0074, -0.2036, 0.0957]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.1959, 0.0961], [-0.0074, -0.1964, 0.0957], [-0.0074, -0.1966, 0.0943], [-0.0074, -0.1963, 0.0939], [-0.0074, -0.1958, 0.0943], [-0.0074, -0.1956, 0.0957]]
+       },
+       {
+        "surface": "left",
+        "slot": "MT_Secondary",
+        "points_m": [[0.0074, -0.2009, 0.0937], [0.0074, -0.2012, 0.0933], [0.0074, -0.2023, 0.0933], [0.0074, -0.2027, 0.0937], [0.0074, -0.2024, 0.0941], [0.0074, -0.2014, 0.0941]]
+       },
+       {
+        "surface": "right",
+        "slot": "MT_Secondary",
+        "points_m": [[-0.0074, -0.1983, 0.0937], [-0.0074, -0.198, 0.0933], [-0.0074, -0.197, 0.0933], [-0.0074, -0.1965, 0.0937], [-0.0074, -0.1968, 0.0941], [-0.0074, -0.1979, 0.0941]]
+       }
+      ],
+      "requested": [
+       "MT_Primary"
+      ],
+      "requested_reason": "Kontrastregel: Abstand zur Körperfarbe #237965 unter 0.3 (RGB 0..1)",
+      "slots": [
+       "MT_Secondary"
+      ]
+     },
+     {
+      "type": "trim",
+      "block": "schmuck",
+      "pattern": "trim",
+      "kind": "ribs",
+      "slot": "SK_Accent1",
+      "attach": "p01",
+      "count": 4,
+      "toolgen_similar": "lamellae",
+      "parts": [
+       {
+        "profile_yz_m": [[0.0121, 0.084], [0.0067, 0.084], [0.0067, 0.0511], [0.0121, 0.0511]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, 0.0067, 0.0511],
+         [0.0181, 0.0121, 0.084]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.0121, 0.084], [0.0067, 0.084], [0.0067, 0.0511], [0.0121, 0.0511]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, 0.0067, 0.0511],
+         [-0.0158, 0.0121, 0.084]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0003, 0.084], [-0.0057, 0.084], [-0.0057, 0.0511], [-0.0003, 0.0511]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0057, 0.0511],
+         [0.0181, -0.0003, 0.084]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0003, 0.084], [-0.0057, 0.084], [-0.0057, 0.0511], [-0.0003, 0.0511]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0057, 0.0511],
+         [-0.0158, -0.0003, 0.084]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0127, 0.084], [-0.018, 0.084], [-0.018, 0.0511], [-0.0127, 0.0511]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.018, 0.0511],
+         [0.0181, -0.0127, 0.084]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0127, 0.084], [-0.018, 0.084], [-0.018, 0.0511], [-0.0127, 0.0511]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.018, 0.0511],
+         [-0.0158, -0.0127, 0.084]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.025, 0.084], [-0.0304, 0.084], [-0.0304, 0.0511], [-0.025, 0.0511]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0304, 0.0511],
+         [0.0181, -0.025, 0.084]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.025, 0.084], [-0.0304, 0.084], [-0.0304, 0.0511], [-0.025, 0.0511]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0304, 0.0511],
+         [-0.0158, -0.025, 0.084]
+        ]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "width_mm": 1.0173,
+      "coverage": 0.21,
+      "color": "#9AA2AC"
+     }
+    ],
+    "notes": [
+     "Kontrast: MT_Primary -> MT_Secondary"
+    ]
+   },
+   {
+    "id": "glutverlauf",
+    "catalog_id": "glutverlauf",
+    "name": "Glutverlauf",
+    "hero": false,
+    "blocks": [
+     "streifen",
+     "material",
+     "schmuck"
+    ],
+    "description_de": "gestufter Farbverlauf von der Grundfarbe zur Akzentfarbe nach vorn, zwei leuchtende Neonlinien, dunkle Chromrippen",
+    "description_en": "stepped color gradient from base to accent toward the muzzle, two glowing neon lines, dark chrome ribs",
+    "accents": {
+     "SK_Accent1": {
+      "color": "#3A3F47",
+      "finish": "polished_chrome"
+     },
+     "SK_Accent2": {
+      "color": "#6CF2FF",
+      "finish": "neon"
+     }
+    },
+    "slots_used": [
+     "MT_Primary",
+     "MT_Accent",
+     "SK_Accent1",
+     "SK_Accent2"
+    ],
+    "colors": {
+     "base": {
+      "MT_Primary": {
+       "color": "#237965",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#FFB59A",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "standard": {
+      "MT_Primary": {
+       "color": "#ECE6DA",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#2B2E33",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "arktis": {
+      "MT_Primary": {
+       "color": "#F3F6F9",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#3A4452",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     },
+     "nacht": {
+      "MT_Primary": {
+       "color": "#4A4E57",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "MT_Accent": {
+       "color": "#141518",
+       "finish": "paint",
+       "source": "channel"
+      },
+      "SK_Accent1": {
+       "color": "#3A3F47",
+       "finish": "polished_chrome",
+       "source": "accent"
+      },
+      "SK_Accent2": {
+       "color": "#6CF2FF",
+       "finish": "neon",
+       "source": "accent"
+      }
+     }
+    },
+    "layers": [
+     {
+      "type": "gradient",
+      "block": "streifen",
+      "pattern": "gradient",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "dir": [0.0, -1.0, 0.0],
+      "t0_m": 0.094,
+      "t1_m": 0.253,
+      "steps": 5,
+      "slots": [
+       "MT_Primary",
+       "MT_Accent"
+      ]
+     },
+     {
+      "type": "bands",
+      "block": "streifen",
+      "pattern": "bands",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "dir": [0.0, 0.0, -1.0],
+      "t0_m": -0.034,
+      "width_m": 0.0041,
+      "period_m": 0.0096,
+      "count": 2,
+      "slots": [
+       "SK_Accent2"
+      ],
+      "window_yz_m": null
+     },
+     {
+      "type": "trim",
+      "block": "schmuck",
+      "pattern": "trim",
+      "kind": "ribs",
+      "slot": "SK_Accent1",
+      "attach": "p01",
+      "count": 5,
+      "toolgen_similar": "lamellae",
+      "parts": [
+       {
+        "profile_yz_m": [[0.0136, 0.0771], [0.009, 0.0771], [0.009, 0.0492], [0.0136, 0.0492]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, 0.009, 0.0492],
+         [0.0181, 0.0136, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.0136, 0.0771], [0.009, 0.0771], [0.009, 0.0492], [0.0136, 0.0492]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, 0.009, 0.0492],
+         [-0.0158, 0.0136, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.003, 0.0771], [-0.0015, 0.0771], [-0.0015, 0.0492], [0.003, 0.0492]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0015, 0.0492],
+         [0.0181, 0.003, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[0.003, 0.0771], [-0.0015, 0.0771], [-0.0015, 0.0492], [0.003, 0.0492]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0015, 0.0492],
+         [-0.0158, 0.003, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0075, 0.0771], [-0.012, 0.0771], [-0.012, 0.0492], [-0.0075, 0.0492]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.012, 0.0492],
+         [0.0181, -0.0075, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0075, 0.0771], [-0.012, 0.0771], [-0.012, 0.0492], [-0.0075, 0.0492]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.012, 0.0492],
+         [-0.0158, -0.0075, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.018, 0.0771], [-0.0226, 0.0771], [-0.0226, 0.0492], [-0.018, 0.0492]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0226, 0.0492],
+         [0.0181, -0.018, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.018, 0.0771], [-0.0226, 0.0771], [-0.0226, 0.0492], [-0.018, 0.0492]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0226, 0.0492],
+         [-0.0158, -0.018, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0285, 0.0771], [-0.0331, 0.0771], [-0.0331, 0.0492], [-0.0285, 0.0492]],
+        "x_m": [0.0158, 0.0181],
+        "bounds_m": [
+         [0.0158, -0.0331, 0.0492],
+         [0.0181, -0.0285, 0.0771]
+        ]
+       },
+       {
+        "profile_yz_m": [[-0.0285, 0.0771], [-0.0331, 0.0771], [-0.0331, 0.0492], [-0.0285, 0.0492]],
+        "x_m": [-0.0181, -0.0158],
+        "bounds_m": [
+         [-0.0181, -0.0331, 0.0492],
+         [-0.0158, -0.0285, 0.0771]
+        ]
+       }
+      ]
+     },
+     {
+      "type": "edge_wear",
+      "block": "material",
+      "pattern": "edge_wear",
+      "parts": [
+       "p03",
+       "p04",
+       "p07",
+       "p09",
+       "p12",
+       "p13",
+       "p15",
+       "p16"
+      ],
+      "width_mm": 0.939,
+      "coverage": 0.17,
+      "color": "#9AA2AC"
+     }
+    ],
+    "notes": []
+   }
+  ]
+ },
+ "summary": {
+  "skins": 5,
+  "parts": 31,
+  "parts_explicit_channel": 14,
+  "decals": 37,
+  "channels_with_other_colors": {}
+ }
+}

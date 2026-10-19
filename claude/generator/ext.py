@@ -16,14 +16,24 @@ def mesh(m,faces,col,hard=True,emit=False,nohull=False,soft=None):
         h=hard if soft is None else (k not in soft)
         F.append(dict(v=f,n=_n(f,c),hard=h))
     m.parts.append(dict(F=F,col=col,emit=emit,dec=[],nohull=nohull));return m
-def prism_y(m,poly,col,y0,y1,r=0,emit=False,hardsides=False):
+def prism_y(m,poly,col,y0,y1,r=0,emit=False,hardsides=False,winding=False):
     """Polygon in (x,z) vertikal von y0 (oben) bis y1 extrudiert."""
     if r:poly=roundpoly(poly,r)
     top=[(x,y0,z) for x,z in poly];bot=[(x,y1,z) for x,z in poly]
     n=len(poly);faces=[top,bot[::-1]]
     for i in range(n):
         a,b=poly[i],poly[(i+1)%n];faces.append([(a[0],y0,a[1]),(b[0],y0,b[1]),(b[0],y1,b[1]),(a[0],y1,a[1])])
-    return mesh(m,faces,col,emit=emit,soft=None if (hardsides or not r) else set(range(2,2+n)))
+    mesh(m,faces,col,emit=emit,soft=None if (hardsides or not r) else set(range(2,2+n)))
+    if not winding:return m   # ältere Modelle (KC10 …) unverändert
+    # winding (claude-0.11, tlib.B.Y): Seitenflächen-Normale aus dem Umlaufsinn statt vom Schwerpunkt weg. Bei hohlen Grundrissen (C-Bögen: Parierstange,
+    # Schildflügel, gebogene Wurfarme) zeigte die Schwerpunkt-Regel an den Innenkanten nach innen, die Flächen fielen in den Orthos weg.
+    A=sum(poly[i][0]*poly[(i+1)%n][1]-poly[(i+1)%n][0]*poly[i][1] for i in range(n));sg=1 if A>0 else -1
+    for i in range(n):
+        a,b=poly[i],poly[(i+1)%n];dx,dz=b[0]-a[0],b[1]-a[1];L=math.hypot(dx,dz)
+        if L<=1e-9:continue
+        F=m.parts[-1]['F'][2+i];nx,nz=sg*dz/L,-sg*dx/L
+        if F['n'][0]*nx+F['n'][2]*nz<0:F['n']=(-F['n'][0],-F['n'][1],-F['n'][2])   # nur umdrehen: konvexe Grundrisse bleiben bitgleich
+    return m
 def decal_y(m,val,pts,col,emit=False):
     m.parts[-1]['dec'].append(('y-',val,pts,col,emit));return m
 def frustum(m,x0,x1,cy,cz,R0,R1,col,n=24,emit=False):
