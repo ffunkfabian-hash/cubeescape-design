@@ -28,6 +28,13 @@ vier Varianten, Fadenkreuz-Varianten (nur Bild), Bausteine (Glas-Tönungen, Rahm
 Seit claude-0.7 tragen die Waffenblätter 1–9 dieses Visier (dasselbe Modell über `claude/generator/vsmount.py`, Farben der Waffe);
 der Weapon-Spec verweist mit `sight.sight_spec` auf den Sight-Spec.
 
+## Geometrie-Spec für Toolgen (claude-0.13)
+
+Je Blatt ein `KXnn.geo.json` bzw. `VSnn.geo.json` (Format `cubeescape-design/geometry-spec` 1, [claude/docs/geometry-spec.md](claude/docs/geometry-spec.md)):
+das Netz jedes Teils in Metern im Toolgen-Rahmen, Primitiv-Hinweise, Aufkleber als Polygone, Griff, Stützhand, Visier (`Socket_Eye`, `Socket_Reticle`)
+und Anker – die Bauquelle, mit der Toolgen seine Waffen aus den Konzeptmodellen baut (Umsetzungsplan, Etappe DS-1). Erzeugen
+`python3 claude/generator/export_geo.py`, prüfen `test_geo_spec.py`; die Dateien sind Release-Asset (`geo/`), im Repo stehen nur ihre Hashes.
+
 ## Varianten
 
 | Variante | Name | Idee |
@@ -82,6 +89,7 @@ claude/                  nur Claude
     export_spec.py       Spec je Blatt (KXnn.spec.json); test_spec.py, spec_checks.py (Richtung, Visier gegen CE-Zielbild)
     vsmodels.py vsheet.py  Visier-Serie: Modelle VS01–VS09 und Blatt; build_vs.py, export_sight.py (VSnn.spec.json), test_sight_spec.py
     vsmount.py           setzt das VS-Visier auf die Waffenblätter 1–9 (Schiene, Erhöhung, Kanalfarben)
+    export_geo.py        Geo-Spec je Blatt (KXnn.geo.json, VSnn.geo.json, Bauquelle Toolgen); test_geo_spec.py, geo_blender.py (Sichtprüfung)
   output/
     sheets/              KXnn.spec.json und VSnn.spec.json (im Repo), fonts/ (Schriften, SIL OFL); Konzeptblätter KXnn.dc.html (KC01 … KJ10) nur lokal/Release
     previews/            WebP-Vorschauen (nur lokal/Release, werden auf dem Mac erzeugt)
