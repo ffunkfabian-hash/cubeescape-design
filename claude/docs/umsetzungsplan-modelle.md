@@ -135,7 +135,7 @@ keine Fläche unter 0,5 mm Abstand zu einer koplanaren Nachbarfläche (sonst Bef
 |---|---|---|---|
 | 1 | **Welche Variante** wird das Toolgen-Modell je Waffentyp? – **entschieden 19.10.2026: G** ([ENTSCHEIDUNGEN](ENTSCHEIDUNGEN.md)) | **G** (Cube-Escape-Farbwelt, Heimat der neuen Typen, zuerst abgenommen); je Waffe tauschbar über die Datentabelle `design_pick` in Toolgen (`pistol: KG01` …) | je Waffe im Viewer wählen (Tabelle sofort anders belegen); alle Varianten als Toolgen-Varianten (150 Modelle, sechsfache Bake-Zeit – später, nicht jetzt); Codex-Blätter A/K sind ebenso wählbar, sobald Codex einen Geo-Spec liefert |
 | 2 | **Bogen** tauschen? – **entschieden 19.10.2026: sofort in TG-A**, Toolgen-Sehne, Pfeil und Zugclip auf den Konzept-Wurfarmen; DS-1 liefert den `string`-Block ([ENTSCHEIDUNGEN](ENTSCHEIDUNGEN.md)) | ~~noch nicht:~~ Toolgens Bogen hat Sehne, Pfeil, Zugclip und eigene Anker (`Socket_Nock`, `Socket_ArrowTip`); die Blätter KX10 modellieren keine Sehne. Tausch in TG-C mit `string`-Block (DS-2) | sofort mit Toolgen-Sehne auf Konzept-Wurfarmen (Mischform, nicht deckungsgleich) |
-| 3 | **Kanten:** hart wie das Blatt oder Fasen wie heute? | **hart** (Low-Poly-Look des Konzepts, Budgets ohne Dezimierung, Normalkarte trägt das Relief); Fase nur als globaler Datenwert `bevel_mm` für eine Sichtprobe | Fasen 0,5–2 mm auf allen Teilen (Look der vier Werkzeuge, ~1,5–3× Dreiecke) |
+| 3 | **Kanten:** hart wie das Blatt oder Fasen wie heute? – **entschieden 19.10.2026: Fasen wie heute**, 0,5–2 mm auf allen Teilen als Bevel-Modifier in Toolgen (`bevel_mm` je Teil, Standard nach Teilgröße; Geo-Spec bleibt hartkantig; Dreiecke danach gegen das Budget prüfen, Dezimierung erwartet 1,5–3×) ([ENTSCHEIDUNGEN](ENTSCHEIDUNGEN.md)) | ~~hart~~ (Low-Poly-Look des Konzepts, Budgets ohne Dezimierung, Normalkarte trägt das Relief); Fase nur als globaler Datenwert `bevel_mm` für eine Sichtprobe | Fasen 0,5–2 mm auf allen Teilen (Look der vier Werkzeuge, ~1,5–3× Dreiecke) |
 | 4 | **Aufkleber des Blatts** (Glyphen, Streifen, Embleme) | **als Maskenregionen** über Toolgens Decal-System (W0/W1, `data/decals.json`), nicht als Geometrie (0,4 mm Abstand verletzt die Koplanar-Regel und flackert) – Umfang TG-A Stufe B | zuerst ohne Aufkleber (nur Texturprofil), Aufkleber später |
 | 5 | Roboter-Variante der neuen Typen: **Ziel-Längen** | CE legt sie nach der 0.82-Regel fest: pistolenartig ≥ 0,24 m, Gewehre 0,65–0,69 m, MG/lineare Fusion/Armbrust ≤ 0,75 m; Schwert und Glefe eigene Regel (Nahkampf) | – |
 | 6 | **Elemente** der neuen Typen (`element` ist im Spec `null`) | Vorschlag nach verwandtem Typ: Scout arc, Handfeuerwaffe solar, lineare Fusion void, Granatwerfer (beide) solar, MG arc, Schwert energy, Glefe void, Armbrust energy, Raketenpistole solar, Raketen-Impuls void, Slug solar, Hitze-Blaster solar, Mikroraketen solar, Streuschuss solar | – (Entscheidung des Nutzers wie am 17.10.2026 für 1–9) |
@@ -167,7 +167,7 @@ Versionsregister (cubeescape-rules); die Namen unten sind Vorschläge und im Reg
 
 - **Ziel (neun Waffen und der Bogen):** `scripts/tool_assets/concept_kit.py` lädt einen Geo-Spec, baut je Teil ein Mesh-Objekt (Name, `MT_`-Material über `game_palette`,
   Glas als Visierglas, leuchtende Teile mit dem Glühmaterial des Elements), hängt bewegliche Teile unter die `Anim_`-Knoten aus `moving_parts`,
-  setzt die Anker aus dem Spec und übergibt an den bestehenden Weg (`weapon_kit.world` → FPS-Kopie → Clips → Export). `weapon_designs.py`:
+  setzt je Teil einen Bevel-Modifier (0,5–2 mm nach Teilgröße, Entscheidung › 4 Nr. 3; harte Kanten des Spec als Fasenkanten), setzt die Anker aus dem Spec und übergibt an den bestehenden Weg (`weapon_kit.world` → FPS-Kopie → Clips → Export). `weapon_designs.py`:
   je Waffe `concept: 'KG02'` (Tabelle `design_pick`), Use-Clip-Wege aus den Teilmaßen neu, `grip_tilt_degrees` aus dem Spec, `sight` aus dem Spec
   (ersetzt `sight.py` für Konzeptwaffen), `hold.sight_kind` nach VS-`kind` (sechs Werte ändern sich). `data/viewmodels.json`: `support_radius`,
   `hand_rotation_degrees`, Kopfprüfungsgrenzen neu messen; `data/ego_clips.json`: AimIdle-Visierlinie je Waffe neu. `ROBOT` je Gewehr neu
@@ -279,14 +279,13 @@ DS-2 (optional) ───┘                 TG-B Longlist (nach TG-A) ───
 - **Visier als Röhre beim Impulsgewehr** (VS03, 128 mm): neue Linse in CE, `Socket_Eye` im Okular; Kopfprüfung (`head.limits`) bei schlanken Läufen.
 - **Glas:** Toolgens Visiere haben bisher keine durchsichtigen Scheiben (Linse als Glühmaterial/Detail); die VS-Fenster sind frei und getönt →
   Materialentscheidung in TG-A (Palette hat kein Glas; Vorschlag: Fenster offen lassen, Rahmen als Geometrie, Tönung über CE-Overlay).
-- **Dreiecke im Ego-Modell:** Hände und Unterarme kommen dazu; die Konzeptnetze sind klein, Budget kein Problem; harte Kanten erzeugen im
-  Normal-Bake keine Fasenkanten (Look wie Blatt).
+- **Dreiecke mit Fasen:** der Bevel-Modifier vervielfacht die Dreiecke (Schätzung 1,5–3×; KG05/KG13/KG19 mit 5 000–5 500 Quelldreiecken liegen dann über dem Welt-Budget 7 000–8 000) – Dezimierung wie heute, Budgets prüfen, Fasenbreite je Teil nach Teilgröße (Kleinteile 0,5 mm, Gehäuse 2 mm). Fasen auf Visierglas und Leuchtflächen aussetzen.
 - **Cache und Golden:** Version vor dem ersten großen Lauf heben; Golden-Hashes nicht raten (`stale`), Ausweichwerte nur belegt eintragen.
 - **Namen und Register:** „Armory“/„Arsenal“ vergeben; jede Sitzung prüft Register und Briefkasten vor Arbeitsbeginn.
 - **Codex-Blätter (A/K):** nicht Teil dieses Plans; wählbar über `design_pick`, sobald Codex einen Geo-Spec nach demselben Format liefert.
 
 ## 9 Offen
 
-- Entscheidungen › 4 Nr. 3–4 vor TG-A (Nr. 1 entschieden: G; Nr. 2: Bogen sofort), Nr. 5–7 vor TG-B/CE-B; Armbrust-Einordnung (› 1.4) vor TG-B.
+- Entscheidung › 4 Nr. 4 vor TG-A (Nr. 1 entschieden: G; Nr. 2: Bogen sofort; Nr. 3: Fasen wie heute), Nr. 5–7 vor TG-B/CE-B; Armbrust-Einordnung (› 1.4) vor TG-B.
 - Vier Fadenkreuz-Varianten je Visier (Sight-Spec) sind in CE nicht als Vorgabe verankert – gehört zu CE-A (Daten je `sight_kind`/Visier).
 - Dieses Blatt ändert keine Specs; der Verweis `geometry_spec` kommt mit DS-1.
