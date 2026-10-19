@@ -393,6 +393,22 @@ def _decal3(plane,val,pts):return ES._decal3(plane,val,pts)
 AXES=dict(model=dict(x='vorn (Mündung)',y='unten',z='links'),target=dict(system='Toolgen/Blender',forward='-Y',up='+Z',left='+X',unit='m'),
           matrix_model_to_target=M2B)
 
+# ---------------------------------------------------------------- Oberfläche je Waffe
+CATALOG_FN=os.path.join(os.path.dirname(os.path.dirname(E3D)),'docs','textures','catalog.json')
+def surface_block(spec):
+    """Texturprofil des Waffentyps (Weapon-Spec texture_profile, Textur-Blatt des Nutzers) und die Kantenabnutzung in Metern an dieser Waffe
+    (Katalog wear: width_rel × Körperhöhe ohne Visier, Zellen cell_widths × Breite). Bogen: kein Profil."""
+    tp=spec.get('texture_profile')
+    if not tp:return dict(texture_profile=None,wear=None,note='kein Texturprofil (Bogen: nicht im Textur-Blatt)')
+    with open(CATALOG_FN,encoding='utf-8') as f:cat=json.load(f)
+    W=cat['wear'];lv=tp['edge_wear']['level'];L=W['levels'][lv];h=spec['dimensions_m']['weapon']['height']
+    width=L['width_rel']*h
+    return dict(texture_profile=tp,
+                wear=dict(level=lv,toolgen=L['toolgen'],width_m=rd(width),coverage=L['coverage'],cell_m=rd(W['cell_widths']*width),
+                          width_variation=W['width_variation'],bare_metal=W['bare_metal'],
+                          rule='blankes Metall entlang harter Kanten (nicht an Aufklebern), fleckig über Zellen im Objektraum; Breite = width_rel × Körperhöhe (dimensions_m.weapon.height)'),
+                catalog=dict(file='docs/textures/catalog.json',format=cat['format'],format_version=cat['format_version'],claude_version=cat['claude_version']))
+
 # ---------------------------------------------------------------- Sehne (Bogen, Armbrust)
 STRING_TYPES=('Bogen','Schwere Armbrust')
 LIMB_LABELS=('Wurfarm','Wurfarmkappe');CAM_LABELS=('Umlenkrolle','Rollenachse');RISER_LABELS=('Mittelstück','Griff','Bogenblock')
@@ -537,6 +553,7 @@ def build_weapon(sheet):
         parts=parts,decals=decals,decal_note=f'Aufkleber des Blatts als Polygone auf ihrer Fläche (Blatt zeichnet sie {DECAL_OFFSET_UNITS:g} Modelleinheiten '
                                              f'= {rd(DECAL_OFFSET_UNITS*unit)*1000:g} mm darüber); für Toolgen Maskenregionen, keine Geometrie',
         grip=g,support=su,sight=sight,anchors=anchors,
+        surface=surface_block(spec),
         melee=None,string=string_block(parts,d['name']),
         blocks_pending=dict(melee='DS-2' if melee else None,string=None),
         checks=dict(coplanar=coplanar(meshes,{p['id']:(p['channel'],p['material'],p['emissive'],p['glass']) for p in parts}),
@@ -575,7 +592,7 @@ def build_sight(vid):
         units=dict(length='m',digits=DIGITS,model_unit_m=EX.UNIT),
         axes=AXES,origin='Socket_Mount',
         parts=parts,decals=[],decal_note='keine Aufkleber',
-        grip=None,support=None,sight=sight,anchors=anchors,melee=None,string=None,blocks_pending=dict(melee=None,string=None),
+        grip=None,support=None,sight=sight,anchors=anchors,surface=None,melee=None,string=None,blocks_pending=dict(melee=None,string=None),
         checks=dict(coplanar=coplanar(meshes,{p['id']:(p['channel'],p['material'],p['emissive'],p['glass']) for p in parts}),
                     decals_outside_part=[],coplanar_rule=f'gleichgerichtete Flächen verschiedener Teile unter {COPLANAR_M*1000:g} mm Abstand, '
                     f'Überdeckung ab {OVERLAP_MIN_M2*1e6:g} mm²'),

@@ -5,7 +5,7 @@ Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `cod
 ## claude-0.13
 - Geometrie-Spec `KXnn.geo.json`/`VSnn.geo.json` (neues Format `cubeescape-design/geometry-spec` 1, Etappe DS-1 des Umsetzungsplans Modelle): Netz je Teil in Metern
   im Toolgen-Rahmen, Primitiv-Hinweise, Aufkleber als Polygone, Griff (Achse, Neigung, Abzug), Stützhand-Querschnitt, Visier mit `Socket_Eye`/`Socket_Reticle`, Anker;
-  `string`-Block für Bogen und Armbrust (Sehnenspitzen, Nockpunkt, Pfeilachse, Auflage; Entscheidung 19.10.2026: Bogen sofort in TG-A).
+  `surface` mit dem eigenen Texturprofil je Waffentyp und der Kantenabnutzung in m; `string`-Block für Bogen und Armbrust (Sehnenspitzen, Nockpunkt, Pfeilachse, Auflage; Entscheidung 19.10.2026: Bogen sofort in TG-A).
 - 159 Dateien aus `export_geo.py`, Test `test_geo_spec.py`, Golden-Gruppe `geo`, Release-Asset `geo/`; Blätter, Weapon-Spec 2 und Sight-Spec 2 unverändert.
 - Befunde als Daten für Toolgen: 916 koplanare Teilpaare (Z-Fighting-Gefahr), 28 Aufkleber über ihr Teil hinaus, KC10-Wurfarme mit Innen-Normalen (im Export gerichtet).
   Bericht [claude/docs/versions/0.13.md](claude/docs/versions/0.13.md).

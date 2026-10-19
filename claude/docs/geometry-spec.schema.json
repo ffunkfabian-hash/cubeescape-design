@@ -104,6 +104,14 @@
                   "parts": {"type": "array", "items": {"$ref": "#/$defs/partId"}}}
   },
   "anchors": {"type": "object", "required": ["Socket_Reticle", "Socket_Eye"]},
+  "surface": {
+   "type": ["object", "null"], "required": ["texture_profile", "wear"],
+   "properties": {"texture_profile": {"type": ["object", "null"]},
+                  "wear": {"type": ["object", "null"], "required": ["level", "width_m", "coverage", "cell_m", "bare_metal"],
+                           "properties": {"level": {"enum": ["subtle", "medium", "strong"]}, "width_m": {"type": "number", "minimum": 0},
+                                          "coverage": {"type": "number", "minimum": 0}, "cell_m": {"type": "number", "minimum": 0},
+                                          "bare_metal": {"$ref": "#/$defs/hex"}}}}
+  },
   "melee": {"type": "null"},
   "string": {
    "type": ["object", "null"], "required": ["present"],

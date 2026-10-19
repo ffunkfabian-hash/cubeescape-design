@@ -152,6 +152,21 @@ class StringBlock(unittest.TestCase):
                 self.assertEqual(st['nock_behind_hand_m'],k[1])
         self.assertEqual(n,12)
 
+class Surface(unittest.TestCase):
+    def test_texture_profile_per_weapon(self):
+        """Texturprofil = Weapon-Spec (eigenes je Waffentyp), Abnutzung in m aus dem Katalog; Bogen und Visier-Serie ohne"""
+        n=0
+        for s in G.SHEETS:
+            g=load(s);su=g['surface']
+            with self.subTest(sheet=s):
+                if s[0]!='K':self.assertIsNone(su);continue
+                sp=spec(s);self.assertEqual(su['texture_profile'],sp.get('texture_profile'))
+                if su['texture_profile']:
+                    n+=1;w=su['wear'];self.assertEqual(w['level'],sp['texture_profile']['edge_wear']['level'])
+                    self.assertTrue(0<w['width_m']<0.01 and 0<w['coverage']<1 and w['cell_m']>w['width_m'])
+                else:self.assertIsNone(su['wear'])
+        self.assertEqual(n,144)
+
 class Decals(unittest.TestCase):
     def test_decals(self):
         for s in G.SHEETS:
