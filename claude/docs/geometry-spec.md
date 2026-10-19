@@ -38,7 +38,8 @@ Stand 19.10.2026 (claude-0.13 „Blueprint“, Etappe DS-1 aus [umsetzungsplan-m
 | `support` | `part` (= `Socket_SupportHand.part`), `radius_m` (`half_height_m` Z, `half_width_m` X: Querschnitt des Teils in der Ebene durch `Socket_SupportHand`), `section_center_m`, `anchor_m`; ohne Stützhand `part`/`radius_m` `null` mit `reason` (Pistolen, Handfeuerwaffen: Becher-Griff) |
 | `sight` | Visier-Serie: `id` (VSnn), `kind`, `type`, `frame`, `window_kind`, `sight_spec` (Datei, Format, sha256), `window` (`shape`, `width_m`, `height_m`, `corner_radius_m`, `view_axis_m`), `tube` (Röhre: Länge, Linsen-, Augen-, Bohrungsradius), `socket_mount_m`, `socket_sight_rear_m`, `socket_reticle_m`, `socket_eye_m`, `eye_radius_m`, `socket_eye_source`, `line` (`start_m`, `direction`, `height_above_mount_m`, `above_body_top_m`), `parts`, `glass_parts`, `riser_m`, `rail_part`. Bogen (Pin-Visier): Art und Teile, Anker `null`; Schwert/Glefe `present` false |
 | `anchors` | Weapon-Spec-Anker unverändert (`Socket_Hand`, `Socket_SupportHand`, `Socket_Muzzle`, `Socket_CenterOfMass`, `Socket_Sight`: `position_m`, `part`, `source`) plus `Socket_Reticle` und `Socket_Eye`; Visier-Serie: Sight-Spec-Anker (`Socket_Mount`, `Socket_Sight`, `Socket_Reticle`, `Socket_Eye`) |
-| `melee`, `string` | `null` in Version 1; `blocks_pending` nennt, wo sie mit DS-2 kommen (Schwert/Glefe, Bogen/Armbrust) |
+| `string` | Bogen (KX10) und Armbrust (KX19), sonst `null` (Entscheidung des Nutzers 19.10.2026: Bogen sofort in TG-A): `kind` (`bow`/`crossbow`), `span_axis` (Z bzw. X), `limb_tips_m` (Sehnenenden an Wurfarm bzw. Umlenkrolle), `limb_tip_parts`, `nock_m` (Ruhelage) und `nock_source`, `arrow_axis` (`part`, `rear_m`, `tip_m`, `direction`, `radius_m`; ohne Pfeil `through_m` über der Auflage), `arrow_rest_m` (Oberkante Mitte von Pfeilauflage/Führungsrinne, sonst Unterkante des Bolzens) mit Quelle, `nock_behind_hand_m` (+Y; Armbrust negativ), `string_parts`, `string_segments_m`, `string_length_m`, `limb_parts`, `cam_parts`, `riser_parts` |
+| `melee` | `null` in Version 1; `blocks_pending.melee` nennt DS-2 (Schwert, Glefe) |
 | `checks` | `coplanar[]` (Befunde, siehe unten), `decals_outside_part` (Indizes in `decals[]`, deren Polygon im Blatt mehr als 1 mm über den Hüllquader seines Teils ragt), `coplanar_rule` |
 | `counts` | `parts`, `vertices`, `faces`, `triangles` (n − 2 je Fläche), `decals`, `dropped_faces` (beim Runden entartet; immer 0), `normal_fixes` (Flächen, deren Normale im Modell nach innen zeigte und hier gedreht ist) |
 
@@ -64,6 +65,9 @@ Stand 19.10.2026 (claude-0.13 „Blueprint“, Etappe DS-1 aus [umsetzungsplan-m
   ragt irgendwo längs höher; ob es die Linie verdeckt, sagt der Weapon-Spec `sight.sight_spec.line_clear_of_weapon`).
 - **Stützhand.** Querschnitt des Stützhand-Teils in der Ebene quer zur Laufachse durch `Socket_SupportHand` (Schnittpunkte aller Flächenkanten); Toolgens
   `support_radius` wird in TG-A daraus abgeleitet (Reihenfolge dort beachten, hier benannte Felder).
+- **Sehne.** Jedes Teil „Sehne“ als Strecke (die zwei entferntesten Ecken, Enden = Mitte der Ecken bis 4 mm davor); Spitzen = äußerste Enden entlang
+  der Spannachse; Nockpunkt = Schnitt der Sehne mit der Ebene der Pfeilachse. Bei den Armbrüsten enden die Sehnenhälften 2 mm vor der Mitte: dort Mitte
+  der inneren Enden (`nock_source` sagt es). Toolgen setzt `Socket_Nock`, Pfeil und Zugclip darauf; Sehnenlänge und Zugweg misst TG-A neu.
 - **Budget.** Dreiecke je Waffe (Fächer, ohne Fasen) 352–6 956 (KJ17 … KH13), alle unter Toolgens Welt-Budget (`data/game_budget.json`; neue Typen ohne
   Werkzeug: größtes Waffen-Budget 8 000 als Annahme bis TG-B).
 

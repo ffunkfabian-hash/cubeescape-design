@@ -105,7 +105,17 @@
   },
   "anchors": {"type": "object", "required": ["Socket_Reticle", "Socket_Eye"]},
   "melee": {"type": "null"},
-  "string": {"type": "null"},
+  "string": {
+   "type": ["object", "null"], "required": ["present"],
+   "properties": {"present": {"type": "boolean"}, "kind": {"enum": ["bow", "crossbow"]}, "span_axis": {"$ref": "#/$defs/axis"},
+                  "limb_tips_m": {"type": "array", "items": {"$ref": "#/$defs/vec3"}, "minItems": 2, "maxItems": 2},
+                  "limb_tip_parts": {"type": "array", "items": {"$ref": "#/$defs/partIdOrNull"}, "minItems": 2, "maxItems": 2},
+                  "nock_m": {"$ref": "#/$defs/vec3"}, "nock_source": {"type": "string"},
+                  "arrow_axis": {"type": "object", "required": ["part", "direction", "source"], "properties": {"direction": {"$ref": "#/$defs/vec3"}}},
+                  "arrow_rest_m": {"$ref": "#/$defs/vec3"}, "nock_behind_hand_m": {"type": "number"}, "string_length_m": {"type": "number", "minimum": 0},
+                  "string_parts": {"type": "array", "items": {"$ref": "#/$defs/partId"}, "minItems": 1},
+                  "limb_parts": {"type": "array", "items": {"$ref": "#/$defs/partId"}}, "riser_parts": {"type": "array", "items": {"$ref": "#/$defs/partId"}}}
+  },
   "checks": {
    "type": "object", "required": ["coplanar", "coplanar_rule"],
    "properties": {"coplanar": {"type": "array", "items": {"type": "object", "required": ["parts", "distance_m", "overlap_m2", "normal", "faces", "same_look"],

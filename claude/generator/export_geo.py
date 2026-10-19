@@ -365,6 +365,68 @@ def _decal3(plane,val,pts):return ES._decal3(plane,val,pts)
 AXES=dict(model=dict(x='vorn (Mündung)',y='unten',z='links'),target=dict(system='Toolgen/Blender',forward='-Y',up='+Z',left='+X',unit='m'),
           matrix_model_to_target=M2B)
 
+# ---------------------------------------------------------------- Sehne (Bogen, Armbrust)
+STRING_TYPES=('Bogen','Schwere Armbrust')
+LIMB_LABELS=('Wurfarm','Wurfarmkappe');CAM_LABELS=('Umlenkrolle','Rollenachse');RISER_LABELS=('Mittelstück','Griff','Bogenblock')
+ARROW_LABELS=('Pfeil','Bolzen');REST_LABELS=('Pfeilauflage','Führungsrinne')
+def _segment(m):
+    """Sehnenteil als Strecke: die zwei am weitesten entfernten Ecken, Enden = Mitte der Ecken nahe diesen (Querschnitt der Sehne)"""
+    V=m['vertices'];a,b=max(((p,q) for i,p in enumerate(V) for q in V[i+1:]),key=lambda t:math.dist(*t))
+    d=[b[k]-a[k] for k in range(3)];L=math.sqrt(_dot(d,d));u=[c/L for c in d]
+    t=[_dot([v[k]-a[k] for k in range(3)],u) for v in V];w=min(L*0.25,0.004)   # Ecken bis 4 mm vom Ende = Endquerschnitt
+    end=lambda sel:[sum(v[k] for v in sel)/len(sel) for k in range(3)]
+    return end([v for v,x in zip(V,t) if x<=w]),end([v for v,x in zip(V,t) if x>=L-w])
+def string_block(parts,name):
+    """Sehne aus dem Modell (Teile „Sehne“) für Toolgens Sehne, Pfeil und Zugclip (Entscheidung des Nutzers 19.10.2026: Bogen sofort in TG-A):
+    Strecken der Sehnenteile, Spitzen = äußere Enden entlang der Spannachse, Nockpunkt = Schnitt der Sehne mit der Pfeilachse (Ruhe),
+    Pfeilachse aus Pfeil/Bolzen (sonst durch die Pfeilauflage), Pfeilauflage/Führungsrinne = Oberkante Mitte."""
+    if name not in STRING_TYPES:return None
+    by=lambda labs:[p for p in parts if p['label'] in labs and not p['sight']]
+    strings=by(('Sehne',))
+    if not strings:return dict(present=False,reason='keine Sehne im Modell')
+    segs=[_segment(p['mesh']) for p in strings];ends=[e for sg in segs for e in sg]
+    ext=[max(e[k] for e in ends)-min(e[k] for e in ends) for k in range(3)];ax=ext.index(max(ext))
+    tips=[min(ends,key=lambda e:e[ax]),max(ends,key=lambda e:e[ax])]
+    arrow=by(ARROW_LABELS);rest=by(REST_LABELS)
+    if arrow:
+        A=max(arrow,key=lambda p:p['bounds_m'][1][1]-p['bounds_m'][0][1]);b=A['bounds_m'];cx,cz=(b[0][0]+b[1][0])/2,(b[0][2]+b[1][2])/2
+        axis=dict(part=A['id'],label=A['label'],rear_m=[rd(cx),b[1][1],rd(cz)],tip_m=[rd(cx),b[0][1],rd(cz)],direction=[0.0,-1.0,0.0],
+                  radius_m=rd(min(b[1][0]-b[0][0],b[1][2]-b[0][2])/2),source=f'Mittellinie von {A["id"]} ({A["label"]}), Hüllquader')
+    elif rest:
+        b=rest[0]['bounds_m'];cx=(b[0][0]+b[1][0])/2
+        axis=dict(part=None,label=None,rear_m=None,tip_m=None,direction=[0.0,-1.0,0.0],radius_m=None,
+                  through_m=[rd(cx),rd((b[0][1]+b[1][1])/2),b[1][2]],source=f'kein Pfeil im Modell: Linie entlang −Y über der Oberkante von {rest[0]["id"]} ({rest[0]["label"]})')
+    else:return dict(present=False,reason='weder Pfeil/Bolzen noch Pfeilauflage im Modell')
+    ref=axis['rear_m'] or axis['through_m']
+    hits=[]
+    for a,b in segs:
+        lo,hi=min(a[ax],b[ax]),max(a[ax],b[ax])
+        if lo-1e-6<=ref[ax]<=hi+1e-6:
+            t=0.0 if abs(b[ax]-a[ax])<1e-12 else (ref[ax]-a[ax])/(b[ax]-a[ax]);hits.append([a[k]+t*(b[k]-a[k]) for k in range(3)])
+    nock=max(hits,key=lambda p:p[1]) if hits else None
+    nsrc='Schnitt der Sehne (Strecken der Sehnenteile) mit der Ebene der Pfeilachse quer zur Spannachse, Ruhelage'
+    if nock is None:   # Sehnenhälften enden kurz vor der Mitte (Armbrust): Mitte ihrer inneren Enden
+        inner=[min(sg,key=lambda e:abs(e[ax]-ref[ax])) for sg in segs];nock=[sum(e[k] for e in inner)/len(inner) for k in range(3)]
+        nsrc='Sehnenhälften treffen sich nicht in der Ebene der Pfeilachse: Mitte ihrer inneren Enden, Ruhelage'
+    if rest:
+        R=rest[0];b=R['bounds_m'];rp=[rd((b[0][0]+b[1][0])/2),rd((b[0][1]+b[1][1])/2),b[1][2]];rsrc=f'Oberkante Mitte von {R["id"]} ({R["label"]})'
+    else:
+        b=next(p for p in parts if p['id']==axis['part'])['bounds_m']
+        rp=[axis['rear_m'][0],rd((b[0][1]+b[1][1])/2),b[0][2]];rsrc=f'keine Auflage im Modell: Unterkante Mitte von {axis["part"]} ({axis["label"]})'
+    near=lambda tip:min(by(LIMB_LABELS+CAM_LABELS),key=lambda p:math.dist(tip,[(p['bounds_m'][0][k]+p['bounds_m'][1][k])/2 for k in range(3)]))['id'] if by(LIMB_LABELS+CAM_LABELS) else None
+    return dict(present=True,kind='crossbow' if TARGET_AXES[ax]=='X' else 'bow',span_axis=TARGET_AXES[ax],
+                limb_tips_m=[[rd(c) for c in t] for t in tips],limb_tip_parts=[near(t) for t in tips],
+                nock_m=[rd(c) for c in nock],
+                nock_source=nsrc,
+                arrow_axis=axis,arrow_rest_m=rp,arrow_rest_source=rsrc,
+                nock_behind_hand_m=rd(nock[1]),
+                string_parts=[p['id'] for p in strings],string_segments_m=[[[rd(c) for c in a],[rd(c) for c in b]] for a,b in segs],
+                string_length_m=rd(sum(math.dist(a,b) for a,b in segs)),
+                limb_parts=[p['id'] for p in by(LIMB_LABELS)],cam_parts=[p['id'] for p in by(CAM_LABELS)],
+                riser_parts=[p['id'] for p in by(RISER_LABELS)],
+                note='Bogen: Spannachse Z (Wurfarme oben/unten), Armbrust: X (Wurfarme links/rechts). nock_behind_hand_m = Nockpunkt hinter Socket_Hand entlang +Y (Bogen: Spannhöhe am Griff; Armbrust negativ, Schloss vor dem Griff). '
+                     'Toolgen setzt Socket_Nock auf nock_m, den Pfeil entlang arrow_axis und die Sehne zwischen limb_tips_m und nock_m (Zugclip zieht nock_m nach +Y)')
+
 # ---------------------------------------------------------------- Waffenblatt
 def build_weapon(sheet):
     d=sheetmodels.load(sheet);full=d['m'];spec_txt,spec=read_spec(sheet)
@@ -447,8 +509,8 @@ def build_weapon(sheet):
         parts=parts,decals=decals,decal_note=f'Aufkleber des Blatts als Polygone auf ihrer Fläche (Blatt zeichnet sie {DECAL_OFFSET_UNITS:g} Modelleinheiten '
                                              f'= {rd(DECAL_OFFSET_UNITS*unit)*1000:g} mm darüber); für Toolgen Maskenregionen, keine Geometrie',
         grip=g,support=su,sight=sight,anchors=anchors,
-        melee=None,string=None,
-        blocks_pending=dict(melee='DS-2' if melee else None,string='DS-2' if d['name'] in ('Bogen','Schwere Armbrust') else None),
+        melee=None,string=string_block(parts,d['name']),
+        blocks_pending=dict(melee='DS-2' if melee else None,string=None),
         checks=dict(coplanar=coplanar(meshes,{p['id']:(p['channel'],p['material'],p['emissive'],p['glass']) for p in parts}),
                     decals_outside_part=[k for k,dc in enumerate(decals) if not decal_on_part(dc,next(p['bounds_m'] for p in parts if p['id']==dc['part']))],coplanar_rule=f'gleichgerichtete Flächen verschiedener Teile unter {COPLANAR_M*1000:g} mm Abstand, '
                     f'Überdeckung ab {OVERLAP_MIN_M2*1e6:g} mm²'),

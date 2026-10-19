@@ -131,6 +131,27 @@ class AgainstSpecs(unittest.TestCase):
                 if su['part']:self.assertTrue(su['radius_m']['half_height_m']>0 and su['radius_m']['half_width_m']>0)
                 else:self.assertIsNone(su['radius_m']);self.assertTrue(su['reason'])
 
+class StringBlock(unittest.TestCase):
+    def test_bows_and_crossbows(self):
+        """Bogen (KX10) und Armbrust (KX19): Sehne vorhanden, Spitzen außen an Wurfarm/Rolle, Nockpunkt zwischen den Spitzen in der
+        Ebene der Pfeilachse und hinter der Pfeilspitze; andere Blätter ohne Block"""
+        n=0
+        for s in G.SHEETS:
+            g=load(s);st=g['string']
+            with self.subTest(sheet=s):
+                if g['sheet']['name_de'] not in G.STRING_TYPES:self.assertIsNone(st);continue
+                n+=1;self.assertTrue(st['present'],st);ax='XYZ'.index(st['span_axis']);a,b=st['limb_tips_m'];k=st['nock_m']
+                self.assertEqual(st['kind'],'crossbow' if st['span_axis']=='X' else 'bow')
+                self.assertTrue(min(a[ax],b[ax])<k[ax]<max(a[ax],b[ax]))
+                labels={p['id']:p['label'] for p in g['parts']}
+                self.assertTrue(all(labels[p] in G.LIMB_LABELS+G.CAM_LABELS for p in st['limb_tip_parts']))
+                self.assertTrue(st['string_parts'] and all(labels[p]=='Sehne' for p in st['string_parts']))
+                ar=st['arrow_axis'];ref=ar.get('rear_m') or ar['through_m']
+                self.assertAlmostEqual(k[ax],ref[ax],delta=0.003)            # Nock auf der Pfeilachse (quer zur Spannachse)
+                if ar.get('tip_m'):self.assertGreater(k[1],ar['tip_m'][1])  # Nock hinter der Spitze
+                self.assertEqual(st['nock_behind_hand_m'],k[1])
+        self.assertEqual(n,12)
+
 class Decals(unittest.TestCase):
     def test_decals(self):
         for s in G.SHEETS:
