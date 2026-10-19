@@ -7,6 +7,7 @@ dazu ein zip Vorschauen samt Viewer index.html (make_viewer.py), falls vorhanden
 import os,re,subprocess,sys,zipfile
 from cepaths import ROOT,OUT,PREV,CLAUDE
 from variants import LETTERS as VARIANTS
+from sheetmodels import SHEETS
 def version():
     with open(os.path.join(ROOT,'CHANGELOG.md'),encoding='utf-8') as f:return re.search(r'(?m)^## claude-(\d+\.\d+(?:\.\d+)?)',f.read()).group(1)
 def pack(zpath,files):
@@ -18,7 +19,8 @@ def main(argv):
     zips=[]
     for v in VARIANTS:
         sheets=sorted(f for f in os.listdir(OUT) if re.fullmatch(rf'K{v}\d\d\.(dc\.html|spec\.json)',f))
-        if sum(s.endswith('.dc.html') for s in sheets)!=10:sys.exit(f'Variante {v}: nicht 10 Blätter gebaut (build_all.py --nur-xl)')
+        want=sum(i.startswith(f'K{v}') for i in SHEETS)   # Blattzahl je Variante aus sheetmodels (G hat seit 0.10 KG01–KG25)
+        if sum(s.endswith('.dc.html') for s in sheets)!=want:sys.exit(f'Variante {v}: nicht {want} Blätter gebaut (build_all.py --nur-xl)')
         z=os.path.join(dist,f'claude-konzeptblaetter-{v}-{tag}.zip');pack(z,[(f'sheets/{s}',os.path.join(OUT,s)) for s in sheets]+fonts);zips.append(z)
     import vsmodels   # Visier-Serie (claude-0.6): ein zip mit VS01–VS09 und den Sight-Specs
     vsf=[f for v in vsmodels.IDS for f in (f'{v}.dc.html',f'{v}.spec.json')]
