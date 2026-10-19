@@ -33,7 +33,7 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 | `decals[]` | `part`, `channel`, `surface` (left/right/front/back/top), `emissive`, `color`, `area_m2`, `bounds_m` |
 | `textures` | Muster der Materialansicht des Blatts in mm, im Wortschatz von Toolgen `data/surface_recipes.json › patterns`; seit claude-0.8 aus dem Texturkatalog (`catalog`: Datei, Version, sha256 der gelesenen Teile, Katalog-IDs), für jede Waffe gleich |
 | `texture_profile` | (claude-0.8, optional, nicht beim Bogen) Texturprofil des Waffentyps aus dem Textur-Blatt des Nutzers – siehe [Texturprofil](#texturprofil) |
-| `operation` | (claude-0.10, optional, neue Typen) Bedienung: Nachladen, Spannen/Aufladen, Feuern (de/en), Munitionsklasse – siehe [Bedienung](#bedienung) |
+| `operation` | (claude-0.10 neue Typen, ab claude-0.11 in allen Waffen-Specs) Bedienung: Nachladen, Spannen/Aufladen, Feuern (de/en), Munitionsklasse – siehe [Bedienung](#bedienung) |
 | `skin` | (claude-0.3, optional) fünf Skins je Waffe aus einem Katalog von neun, der erste ist der Hauptskin des Blatts – siehe [Skins](#skins) |
 | `summary` | Anzahlen, Kanäle mit Nebenfarben je Variante |
 
@@ -57,8 +57,9 @@ deren Bauweise vom Typnamen abweicht (KF01 Revolver, KC10 Armbrust, KH08/KJ08 Sp
 
 ## Bedienung
 
-`operation` (claude-0.10, neue Typen) steht gleich im Blattfeld **BEDIENUNG** unter dem Texturprofil: `reload` (Nachladen), `action`
-(Spannen, Aufladen, Mechanik), `fire` (Feuern, Einsatz), je `de`/`en`, dazu `ammo_class`. Quelle: `META['op']` im Modell (`g11.py` …).
+`operation` (claude-0.10 neue Typen, seit claude-0.11 in allen Waffen-Specs) steht gleich im Blattfeld **BEDIENUNG** unter dem Texturprofil:
+`reload` (Nachladen), `action` (Spannen, Aufladen, Mechanik), `fire` (Feuern, Einsatz), je `de`/`en`, dazu `ammo_class`. Quelle: `META['op']`
+im Modell der neuen Typen (`c11.py` … `j25.py`), bei den Blättern KX01–KX10 `ops.OPS` (je Blatt nach Bauweise, claude-0.11); `source` nennt sie.
 Die beweglichen Teile stehen in `moving_parts`; neue Arten tragen `proposed: true` (Toolgen hat keinen Use-Clip dafür):
 
 | `kind` | Typ | Knoten (Vorschlag) | Bewegung | Bezeichnung |

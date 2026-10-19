@@ -358,6 +358,31 @@ class MovingParts(unittest.TestCase):
         self.assertIsNone(load('KC02')['moving_parts']['items'][0]['parts'])               # Verschluss nicht gezeichnet
         self.assertEqual(load('KC10')['moving_parts']['items'],[])                          # Bogen
 
+class Operation(unittest.TestCase):
+    """Feld BEDIENUNG (claude-0.10 neue Typen, ab 0.11 alle Waffenblätter): jedes Blatt hat operation; Texte kurz genug für die Kachel;
+    bestehende Blätter aus ops.OPS, neue aus META['op']; neue Typen in allen Varianten (claude-0.11) mit allen beweglichen Teilen im Modell."""
+    def test_all_sheets(self):
+        import ops,wtypes
+        self.assertEqual(set(ops.OPS),{f'K{v}{n}' for v in variants.LETTERS for n in sheetmodels.NUMS})
+        for s in sheetmodels.SHEETS:
+            sp=load(s);o=sp.get('operation')
+            with self.subTest(sheet=s):
+                self.assertIsNotNone(o)
+                for k in ('reload','action','fire'):
+                    for lang in ('de','en'):self.assertTrue(0<len(o[k][lang])<=ops.MAXLEN,(k,lang,len(o[k][lang])))
+                self.assertIn('ops.OPS' if s[2:] in sheetmodels.NUMS else "META['op']",o['source'])
+                if wtypes.is_new(sp['weapon']['name_de']):
+                    for e in sp['moving_parts']['items']:self.assertIsNotNone(e['parts'],e['kind'])
+    def test_moving_header(self):
+        import ops
+        for s,o in ops.OPS.items():
+            with self.subTest(sheet=s):self.assertIsInstance(o['moving'],list)
+    def test_new_sheet_nicks(self):
+        """Nick je Variante eindeutig; neue Blätter eines Typs in allen Varianten mit demselben Typnamen"""
+        for v in variants.LETTERS:
+            nicks=[load(s)['sheet']['nick'] for s in sheetmodels.SHEETS if s[1]==v]
+            with self.subTest(variant=v):self.assertEqual(len(nicks),len(set(nicks)) if v!='H' else len(set(nicks))+1)   # KH05/KH08 „Messlatte“ (Bestand)
+
 class SightVocabulary(unittest.TestCase):
     """sight.type/frame und parts[].toolgen_material (claude-0.5.2): kind folgt aus type, Zieltypen im Vokabular, Toolgen-Materialien."""
     def test_vocabulary(self):
