@@ -9,11 +9,11 @@ from build import geometry_hash
 HERE=Path(__file__).resolve().parent
 
 
-def main():
+def main(include_new=True):
     for family in ('parallax','fluxbloom'):
         output=HERE.parent/family/'output'
         records={}
-        for n,(meta,model) in enumerate(load_collection(family),1):
+        for n,(meta,model) in enumerate(load_collection(family, include_new=include_new),1):
             sid=f"K{meta['variant']}{n:02d}"
             data=(output/(sid+'.spec.json')).read_bytes()
             parsed=json.loads(data)

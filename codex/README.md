@@ -3,8 +3,8 @@
 [A „Parallax“ und K „Flux Bloom“ im eigenen Viewer](index.html). Beide Modellserien bleiben eigenständig;
 Raster, Materialien, Skins, Blattaufbau und Referenzdaten verwenden gemeinsame eigene Codex-Werkzeuge.
 
-- [Parallax · codex-0.1.5](parallax/README.md): zehn bestehende Entwürfe, Keramik/Titan/Signalorange.
-- [Flux Bloom · codex-0.2.5](fluxbloom/README.md): zehn experimentelle Entwürfe mit kräftigen Farbwelten.
+- [Parallax · codex-0.1.6](parallax/README.md): 25 eigenständige Entwürfe, Keramik/Titan/Signalorange.
+- [Flux Bloom · codex-0.2.6](fluxbloom/README.md): 25 experimentelle Entwürfe mit kräftigen Farbwelten.
 - Versionsberichte: [0.1 Parallax](docs/versions/0.1.md), [0.2 Flux Bloom](docs/versions/0.2.md).
 
 Nutzerauftrag vom 17.10.2026: Bestehende und zukünftige Entwürfe orientieren sich am aktuellen Claude-Stand,
@@ -42,5 +42,20 @@ KA01–KA09 und KK01–KK09 zeigen sechs Typvorgaben im Materialfeld und exporti
 `texture_profile`-Block im Weapon-Spec v1. Die beiden Bögen bleiben ohne Profil. Die Profilfarben
 stammen aus dem Textur-Blatt des Nutzers; Modelle, Variantenpaletten, Skins und Visiere bleiben erhalten.
 Prüfung ohne Bildstufe: `python -m unittest discover -s codex/fluxbloom/tests -q`.
-Mac-Bildlauf unter `heavy_lock`: `python codex/fluxbloom/texture_profile_build.py --full`.
+Historischer Abnahmeweg für 0.1.5/0.2.5: `texture_profile_build.py --full`; aktueller Bauweg siehe Switchcraft.
 `--capture-engine rsvg` ist ein ausdrücklich ausgewiesener Ersatz bei gesperrtem Chromium.
+
+
+## Switchcraft · 19.10.2026
+
+Format 2 und BEDIENUNG auf A/K; Typen 11–25 nach der gemeinsamen Typentabelle,
+mit eigenständiger Codex-Geometrie. 50 Konzepte insgesamt, 30 neue Entwürfe ohne
+Toolgen-/Spielanbindung. Texturprofile der neuen Typen sind abgeleitete Vorschläge.
+Mindestabnehmer für `trace_rifle`: Toolgen 0.17.0 / Cube Escape 0.98.
+Älterer Codex-Spec: `git show 5a5615d:codex/parallax/output/KA08.spec.json`
+(analog KK); gemeinsamer Altstand: `claude-v0.11`.
+
+Der Mac-Bau aktualisiert Blätter, WebP-Vorschauen (Q60), Galerie und Spec-Hashes.
+Aktuelle Gesamtprüfung unter `heavy_lock`: `python codex/fluxbloom/switchcraft_build.py`.
+Der zusätzliche Bedienbereich verlängert das Blatt unten auf 4800×4832; die früheren
+Bildfelder behalten Position, Maßstab, Konstruktion, Palette und Skin-Rezepte.

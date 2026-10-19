@@ -56,6 +56,37 @@ class GeometryTests(unittest.TestCase):
 
 
 class RasterTests(unittest.TestCase):
+    def test_outer_weight_can_change_without_changing_interior_lines(self):
+        from scipy.ndimage import binary_erosion
+        model = [prism([(-10,-10),(10,-10),(10,10),(-10,10)], '#c0c0c0', -5, 5)]
+        args = dict(size=(120,100), scale=3, glow=False, shadow=False)
+        normal = render(model, ow=4.6, **args)
+        thinner = render(model, ow=4.2, inner_width_scale=4.6/4.2, **args)
+        uncompensated = render(model, ow=4.2, **args)
+        a, b = np.asarray(normal.image), np.asarray(thinner.image)
+        # L-infinity inset: 3.375px silhouette + 3px separable LANCZOS
+        # support + 1px supersample phase reserve; round up to eight.
+        # Default 4-neighbour erosion measures L1 and is too shallow diagonally.
+        interior = binary_erosion(normal.part_ids>=0,structure=np.ones((3,3),bool),iterations=8)
+        self.assertTrue(interior.any())
+        np.testing.assert_array_equal(normal.part_ids, thinner.part_ids)
+        np.testing.assert_array_equal(a[interior], b[interior])
+        self.assertTrue(np.any(a[interior] != np.asarray(uncompensated.image)[interior]))
+        self.assertTrue(np.any(a[:,:,3] != b[:,:,3]))
+
+    def test_interior_weight_keeps_geometry_alpha_and_anchors(self):
+        model = [prism([(-10,-10),(10,-10),(10,10),(-10,10)], '#c0c0c0', -5, 5)]
+        model[0].label = 'Gehäuse'
+        args = dict(size=(120,100), scale=3, glow=False, shadow=False)
+        normal = render(model, **args)
+        stronger = render(model, inner_width_scale=1.25, **args)
+        a, b = np.asarray(normal.image), np.asarray(stronger.image)
+        np.testing.assert_array_equal(normal.part_ids, stronger.part_ids)
+        np.testing.assert_array_equal(a[:,:,3], b[:,:,3])
+        self.assertEqual(normal.anchors, stronger.anchors)
+        self.assertTrue(np.any(a[:,:,:3] != b[:,:,:3]))
+        self.assertLess(int(b[:,:,:3].sum()), int(a[:,:,:3].sum()))
+
     def box(self, z0, z1, color, name=""):
         part = prism([(-10, -10), (10, -10), (10, 10), (-10, 10)], color, z0, z1)
         part.label = name

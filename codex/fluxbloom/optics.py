@@ -38,6 +38,9 @@ def _bow_optics(meta,model):
 
 
 def replace_optics(meta,model):
+    if meta['slug'] in ('sword','glaive'):
+        meta.update(sight_type=None,sight_frame=None)
+        return
     if meta['slug']=='bow':return _bow_optics(meta,model)
     from vs_mount import mount_sight
     return mount_sight(meta,model)

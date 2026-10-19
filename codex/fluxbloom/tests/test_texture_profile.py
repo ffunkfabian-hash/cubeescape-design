@@ -72,7 +72,7 @@ class TextureProfileTests(unittest.TestCase):
             'sniper_rifle': ('painted', 'brushed', 'light_blue', 'subtle', ['serial_s07']),
             'smg': ('painted_matte', 'brushed', 'cyan', 'medium', ['arrows_chevron','arrow_triangle']),
             'fusion_rifle': ('painted', 'satin', 'violet', 'subtle', ['research']),
-            'scout_rifle': ('painted', 'polished', 'blue', 'subtle', ['tech_lines']),
+            'trace_rifle': ('painted', 'polished', 'blue', 'subtle', ['tech_lines']),
             'rocket_launcher': ('painted_matte', 'rough_cast', 'orange', 'strong', ['hazard_stripes','warning_triangle']),
         }
         interpreted = {'assault_rifle','pulse_rifle','smg','fusion_rifle','rocket_launcher'}
@@ -118,10 +118,22 @@ class TextureProfileTests(unittest.TestCase):
                 # The committed pre-task Spec is a contract/geometry countercheck.
                 import subprocess
                 path = f'codex/{family}/output/{sp["sheet"]["id"]}.spec.json'
-                previous = json.loads(subprocess.check_output(['git','show',f'25f108f:{path}']))
+                previous = json.loads(subprocess.check_output(['git','show',f'5a5615d:{path}']))
                 current = deepcopy(sp)
-                current.pop('texture_profile', None)
+                # Switchcraft deliberately adds identity and operation, and v2
+                # gives trace_rifle the former trace tool's unambiguous ID.
+                # Every other field, including the full texture profile, remains
+                # an exact comparison to the user's supplied pre-task main.
+                self.assertEqual(current['format_version'], 2)
+                current['format_version'] = previous['format_version']
                 current['generator'] = previous['generator']
+                from operations import operation
+                self.assertEqual(current.pop('operation'), operation(meta))
+                for key in set(current['weapon']) - set(previous['weapon']):
+                    current['weapon'].pop(key)
+                if meta['slug'] == 'trace':
+                    self.assertEqual(current['weapon']['toolgen_id'], 'trace_rifle')
+                    current['weapon']['toolgen_id'] = previous['weapon']['toolgen_id']
                 self.assertEqual(current, previous)
                 if number != 10:
                     invalid = deepcopy(sp)

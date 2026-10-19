@@ -33,7 +33,10 @@ def line_blockers(model,center,start):
 
 def mount_sight(meta,model):
     from spec import LENGTHS_M
-    number=SLUGS.index(meta['slug'])+1;d=DESIGNS[number]
+    from design_types import NEW
+    number=NEW[meta['slug']][6] if meta['slug'] in NEW else SLUGS.index(meta['slug'])+1
+    if number is None: return
+    d=DESIGNS[number]
     old=[p.label for p in model if p.sight];model[:]=[p for p in model if not p.sight]
     lo,hi=bounds(model);unit=LENGTHS_M[meta['slug']]/(hi[0]-lo[0]);mm=unit*1000
     channels=channel_palette(model);used={channel_for(p) for p in model}

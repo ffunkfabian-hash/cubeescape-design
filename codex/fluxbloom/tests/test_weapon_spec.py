@@ -1,4 +1,4 @@
-"""Canonical v1 contract and semantic checks against both schemas and source models."""
+"""Canonical v2 contract and semantic checks against both schemas and source models."""
 import json
 from pathlib import Path
 import sys
@@ -73,7 +73,7 @@ class CanonicalWeaponSpecTests(unittest.TestCase):
                 self.assertLessEqual(abs(spec['units']['model_unit_m']*spec['units']['model_length_units']-length),.0005)
                 self.assertEqual(spec['format'],'cubeescape-design/weapon-spec')
                 self.assertIsNone(spec['generator']['claude_version'])
-                expected_version = ('0.2.3' if meta['variant']=='K' else '0.1.3') if meta['slug']=='bow' else ('0.2.5' if meta['variant']=='K' else '0.1.5')
+                expected_version = '0.2.6' if meta['variant']=='K' else '0.1.6'
                 self.assertEqual(spec['generator']['codex_version'],expected_version)
                 self.assertEqual(spec['sheet']['file'],f"K{meta['variant']}{number:02d}.html")
                 self.assertEqual(spec['sheet']['id'],f"K{meta['variant']}{number:02d}")

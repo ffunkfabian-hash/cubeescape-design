@@ -1,4 +1,4 @@
-"""Canonical cubeescape-design/weapon-spec v1 exporter for Codex weapon models.
+"""Canonical cubeescape-design/weapon-spec v2 exporter for Codex weapon models.
 
 The existing CodexDesignReference remains a separate, optional record. This module
 serializes its independently authored model inputs into the shared consumer schema.
@@ -8,12 +8,12 @@ import json
 from pathlib import Path
 
 FORMAT = 'cubeescape-design/weapon-spec'
-VERSION = 1
+VERSION = 2
 TOOLGEN = {
     'pistol': ('pistol', .243, 'solar'), 'assault': ('assault_rifle', .934, 'arc'),
     'impulse': ('pulse_rifle', .862, 'void'), 'shotgun': ('shotgun', .904, 'solar'),
     'sniper': ('sniper_rifle', 1.134, 'energy'), 'smg': ('smg', .616, 'energy'),
-    'fusion': ('fusion_rifle', .960, 'void'), 'trace': ('scout_rifle', 1.044, 'arc'),
+    'fusion': ('fusion_rifle', .960, 'void'), 'trace': ('trace_rifle', 1.044, 'arc'),
     'rocket': ('rocket_launcher', .725, 'solar'), 'bow': ('bow', 1.018, None),
 }
 CHANNELS = ('MT_Primary','MT_Secondary','MT_Accent','MT_Metal','MT_Energy','MT_Emission','MT_Detail')
@@ -248,8 +248,10 @@ def make_spec(meta, model, number, record=None):
     # Reuse only the local geometry calculations; output is rebuilt field-by-field in
     # the canonical contract, never mislabeled as an importer-ready design reference.
     from spec import design_spec
+    from design_types import weapon_fields
     from texture_catalog import material as catalog_material
     from motion_spec import make_moving_parts
+    from operations import operation
     record = dict(record or {})
     record.setdefault('orthographic_views', [])
     record.setdefault('geometry_sha256', 'model-only')
@@ -259,7 +261,8 @@ def make_spec(meta, model, number, record=None):
         palette_rows.append({'name':name,'colors':actual})
     record['palette_variants']=palette_rows
     ref=design_spec(meta,model,number,record)
-    tid,reference_length,element=TOOLGEN[meta['slug']]
+    from design_types import NEW, type_key
+    tid,reference_length,element=(None,NEW[meta['slug']][5],None) if meta['slug'] in NEW else TOOLGEN[meta['slug']]
     legacy=ref['anchors']; anchors={}
     for key,a in legacy.items():
         anchors[key]={k:a.get(k) for k in ('position_m','model','source','part')}
@@ -349,13 +352,14 @@ def make_spec(meta, model, number, record=None):
         for part_id in item['parts'] or []:
             byid[part_id]['moving']=item['kind']
     from texture_profile import profile
-    texture_target = profile(tid)
+    texture_target = profile(type_key(meta['slug']))
     return {**({'texture_profile': texture_target} if texture_target else {}),
       'format':FORMAT,'format_version':VERSION,
-      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':('0.2.5' if meta['variant']=='K' else '0.1.5') if texture_target else ('0.2.3' if meta['variant']=='K' else '0.1.3')},
+      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':'0.2.6' if meta['variant']=='K' else '0.1.6'},
       'sheet':{'id':f"K{meta['variant']}{number:02d}",'file':f"K{meta['variant']}{number:02d}.html",'variant':meta['variant'],'variant_name':meta['variant_name'],'number':f'{number:02d}','nick':meta['name'],'fid':meta['slug']},
-      'weapon':{'name_de':meta['kind'],'toolgen_id':tid},'element':element,
-      'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Bogen: Element nicht festgelegt.',
+      'operation':operation(meta),
+      'weapon':{'name_de':meta['kind'],'toolgen_id':tid,**weapon_fields(meta)},'element':element,
+      'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Neue Konstruktion: Element nicht festgelegt, nicht in Toolgen/Spiel angebunden.' if meta['slug'] in NEW else 'Bogen: Element nicht festgelegt.',
       'units':{'model_unit_m':ref['units']['model_unit_m'],'model_length_units':reference_length/ref['units']['model_unit_m'],'reference_length_m':reference_length,
         'rule':ref['units']['rule'],'reference':ref['units']['source']},
       'axes':{'model':{'x':'vorn (Mündung)','y':'unten','z':'links'},'target':{'system':'Toolgen/Blender','forward':'-Y','up':'+Z','left':'+X','unit':'m'},'matrix_model_to_target':MATRIX,'origin':'Socket_Hand','formula':'p_m = model_unit_m · M · (p_model − Socket_Hand.model)'},
