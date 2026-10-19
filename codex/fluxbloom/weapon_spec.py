@@ -251,6 +251,7 @@ def make_spec(meta, model, number, record=None):
     from design_types import weapon_fields
     from texture_catalog import material as catalog_material
     from motion_spec import make_moving_parts
+    from operations import operation
     record = dict(record or {})
     record.setdefault('orthographic_views', [])
     record.setdefault('geometry_sha256', 'model-only')
@@ -355,6 +356,7 @@ def make_spec(meta, model, number, record=None):
       'format':FORMAT,'format_version':VERSION,
       'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':'0.2.6' if meta['variant']=='K' else '0.1.6'},
       'sheet':{'id':f"K{meta['variant']}{number:02d}",'file':f"K{meta['variant']}{number:02d}.html",'variant':meta['variant'],'variant_name':meta['variant_name'],'number':f'{number:02d}','nick':meta['name'],'fid':meta['slug']},
+      'operation':operation(meta),
       'weapon':{'name_de':meta['kind'],'toolgen_id':tid,**weapon_fields(meta)},'element':element,
       'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Bogen: Element nicht festgelegt.',
       'units':{'model_unit_m':ref['units']['model_unit_m'],'model_length_units':reference_length/ref['units']['model_unit_m'],'reference_length_m':reference_length,

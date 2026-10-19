@@ -158,7 +158,7 @@ class StyleContractTests(unittest.TestCase):
         for key,viewport in extended.items():
             x,y,w,h = viewport
             self.assertGreaterEqual(x,0); self.assertGreaterEqual(y,0)
-            self.assertLessEqual(x+w,4800); self.assertLessEqual(y+h,4432)
+            self.assertLessEqual(x+w,4800); self.assertLessEqual(y+h,4832)
             for other,second in extended.items():
                 if key>=other:continue
                 sx,sy,sw,sh = second

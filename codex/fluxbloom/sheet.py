@@ -1,4 +1,4 @@
-"""Portable 4800×4432 design plates built from one consistent weapon model.
+"""Portable 4800×4832 design plates built from one consistent weapon model.
 
 Only the six orthographic cells share a camera scale. Their center and scale
 are explicit in the returned record; close-ups intentionally crop the complete
@@ -21,7 +21,7 @@ import numpy as np
 from eng import bounds
 from raster import render as _raster_render, rotation_matrix
 
-WIDTH, HEIGHT = 4800, 4432
+WIDTH, HEIGHT = 4800, 4832
 # The existing Codex solids use roughly one quarter of the reference display
 # coordinates. This changes only pixel fitting, never model/world/spec units.
 DISPLAY_UNITS_PER_MODEL_UNIT = 4.0
@@ -511,6 +511,18 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
     parts.append('<path d="M140 4305H4660" stroke="#34475B" stroke-width="2"/>')
     parts.append(_text(140, 4355, "Alle sechs Orthos: ein Hauptskin, ein Modell, gleicher Maßstab und Bounding-Box-Bezug. Gestalterische Referenz, keine Fertigungszeichnung.", 26, MUTED))
     parts.append(_text(4660, 4400, f"K{meta['variant']}{number:02d} / {meta['variant_name'].upper()} / {slug.upper()} · WEBP Q60", 23, MUTED, "mono", anchor="end"))
+    # Append operation intent below the unchanged 4432px historical canvas.
+    # No existing image, view, callout or material viewport moves.
+    from operations import operation
+    op = operation(meta)
+    panels['operation'] = [140, 4460, 4520, 320]
+    parts.append('<g data-operation="true">')
+    parts.append(_panel(*panels['operation'], "09", "BEDIENUNG", "KONZEPT · " + op['ammo_class'].upper() + " · KEINE GEPRÜFTE SPIELFUNKTION"))
+    for i, (key, title) in enumerate((('reload', 'NACHLADEN'), ('action', 'SPANNEN / AUFLADEN'), ('fire', 'FEUERN'))):
+        x = 180 + i * 1500
+        parts.append(_text(x, 4610, title, 27, ACCENT, 'title'))
+        parts.append(_wrapped(x, 4650, op[key]['de'], width=88, size=27, leading=34, max_lines=3))
+    parts.append('</g>')
     parts.append("</svg>")
     digest = hashlib.sha256()
     for part in model:
@@ -542,6 +554,7 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
                        "full_weapon_rendered": True, "skin": None, "viewport": [dx+40,dy+150,*detail_size], "selected_labels": list(dict.fromkeys(getattr(p, "label", "") for p in selected))},
             **({"texture_profile": texture_target, "texture_profile_viewport": profile_viewport, "texture_profile_tiles": profile_records} if texture_target else {}),
             "material_samples": material_records, "palette_variants": palette_records,
+            "operation": op,
             "textures": {"catalog": "docs/textures/catalog.json", "format_version": 1,
                          "model_unit_m": physical_unit, "scale_source": "Weapon-Spec units.model_unit_m",
                          "catalog_scale_fallback": False}}
