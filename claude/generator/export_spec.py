@@ -16,7 +16,7 @@ from xlroles import MATERIAL_IDS,color_roles,material_of,assign_channels,channel
 import skins as SK,texcat,texprofile,wtypes
 
 FORMAT='cubeescape-design/weapon-spec'
-FORMAT_VERSION=1
+FORMAT_VERSION=2
 CLAUDE_VERSION='0.7'
 
 # Waffentyp -> Toolgen-Id, Bezugslänge (m), Element.
@@ -31,7 +31,7 @@ WEAPONS={
  'Scharfschützengewehr':('sniper_rifle',1.134,'energy'),
  'Maschinenpistole':('smg',0.616,'energy'),
  'Fusionsgewehr':('fusion_rifle',0.960,'void'),
- 'Spurgewehr':('scout_rifle',1.044,'arc'),
+ 'Spurgewehr':('trace_rifle',1.044,'arc'),
  'Raketenwerfer':('rocket_launcher',0.725,'solar'),
  'Bogen':('bow',1.018,None),
 }
@@ -193,7 +193,7 @@ MOTIONS={
                   motions=[('rotate',[1,0,0])],labels=('Kipprahmen','Trommel','Lauf','Streumündung'),similar=(),proposed=True),   # Baugruppe kippt gemeinsam
 }
 WEAPON_MOTIONS={'pistol':['slide'],'assault_rifle':['bolt'],'pulse_rifle':['cell'],'shotgun':['pump'],'sniper_rifle':['lever'],
- 'smg':['bolt'],'fusion_rifle':['fins','coil'],'scout_rifle':['bolt'],'rocket_launcher':['hatch'],'bow':[]}
+ 'smg':['bolt'],'fusion_rifle':['fins','coil'],'trace_rifle':['bolt'],'rocket_launcher':['hatch'],'bow':[]}
 WEAPON_MOTIONS.update({wtypes.key(n):t['motions'] for n,t in wtypes.NEW.items()})   # neue Typen (claude-0.10), Schlüssel wtypes.key
 PROPOSED_SOURCE='Vorschlag claude-0.10 für einen neuen Waffentyp (in Toolgen kein Use-Clip): Art und Achse aus der Bedienung des Blatts'
 
@@ -228,7 +228,7 @@ def moving_parts(tid,allparts,ids,name=None):
 # (Stand 677841ff, 17.10.2026); Längen = „Länge in der Hand“ der Tabelle, auf cm gerundet.
 CE_EQ='Cube Escape Docs/EQUIPMENT.md › Größe in der Roboterhand (0.82)'
 CE_S2='Cube Escape Docs/versions/0.82.md › Stufe 2 (Auftrag an Toolgen)'
-ROBOT_LENGTH={'smg':0.52,'assault_rifle':0.67,'pulse_rifle':0.66,'shotgun':0.67,'fusion_rifle':0.67,'scout_rifle':0.69,
+ROBOT_LENGTH={'smg':0.52,'assault_rifle':0.67,'pulse_rifle':0.66,'shotgun':0.67,'fusion_rifle':0.67,'trace_rifle':0.69,
  'sniper_rifle':0.73,'rocket_launcher':0.65}
 def _v(value,source):return dict(value=value,source=source)
 def robot_fit(tid,anchors,parts,dims,muzzle_part):
@@ -483,7 +483,7 @@ def build(sheet):
         weapon=dict(name_de=d['name'],toolgen_id=tid,**wtypes.spec(d['name'],sheet)),
         element=element,element_source=ELEMENT_SOURCE if element else ELEMENT_NEW if tid is None else 'nicht festgelegt (Toolgen-Bogen ohne Element)',
         units=dict(model_unit_m=round(unit,8),model_length_units=round(model_len,2),reference_length_m=ref_len,rule=rule,
-                   reference=('Toolgen 0.13 Weltmodell '+tid+', qa_game.json bounds_lod0.source_bounds_m (Messung 17.10.2026)') if tid else wtypes.REF_SOURCE),
+                   reference=('Toolgen 0.13 Weltmodell '+tid+(' (damals scout_rifle)' if tid=='trace_rifle' else '')+', qa_game.json bounds_lod0.source_bounds_m (Messung 17.10.2026)') if tid else wtypes.REF_SOURCE),
         axes=dict(model=dict(x='vorn (Mündung)',y='unten',z='links'),target=dict(system='Toolgen/Blender',forward='-Y',up='+Z',left='+X',unit='m'),
                   matrix_model_to_target=M2B,origin='Socket_Hand',
                   formula='p_m = model_unit_m * M · (p_model − Socket_Hand.model)'),

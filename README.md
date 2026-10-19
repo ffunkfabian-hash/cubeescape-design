@@ -52,7 +52,7 @@ KG23 Hitze-Blaster, KG24 Mikroraketen-Granatwerfer, KG25 Streuschuss-Handfeuerwa
 Bauhelfer `tlib.py`, Typenkatalog `wtypes.py`). Seit claude-0.11 gibt es die 15 neuen Typen in allen Claude-Varianten
 (KC11–KC25, KD11–KD25, KF11–KF25, KH11–KH25, KJ11–KJ25; Modelle `c11.py` … `j25.py`, gebaut von Codex als Unteragent), und alle 150 Waffenblätter
 haben das Feld **BEDIENUNG** (Bestandsblätter: `ops.py`). Die neuen Typen sind in Toolgen/Cube Escape noch nicht angebunden
-(`toolgen_id` null). Das Spurgewehr (KX08) heißt bei Toolgen `scout_rifle`; das echte Scout-Gewehr ist KG11.
+(`toolgen_id` null). Das Spurgewehr (KX08) heißt bei Toolgen seit 0.17 `trace_rifle` (bis claude-0.11 `scout_rifle`, Weapon-Spec seit claude-0.12 `format_version` 2; ältere Fassung = Release `claude-v0.11`); das echte Scout-Gewehr ist KG11 (`toolgen_id` null).
 
 ## Struktur
 

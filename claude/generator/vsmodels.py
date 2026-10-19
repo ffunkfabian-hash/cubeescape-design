@@ -339,7 +339,7 @@ SERIES=[
  dict(num='07',weapon='Fusionsgewehr',tid='fusion_rifle',type='energy',frame='closed',tint='purple',energy='#5CC8FF',hud='#5CC8FF',
       reticles=['digital','circle','energy','focus'],build=b_fusion,
       title='Energie-Visier mit Energierahmen',desc='Energie-Visier: breites Achteck-Fenster mit aktivem Leuchtrahmen, Energiezelle links.'),
- dict(num='08',weapon='Spurgewehr',tid='scout_rifle',type='trace',frame='lightweight',tint='blue',energy='#5CC8FF',hud='#7FD8FF',
+ dict(num='08',weapon='Spurgewehr',tid='trace_rifle',type='trace',frame='lightweight',tint='blue',energy='#5CC8FF',hud='#7FD8FF',
       reticles=['tracking','quad','circle','box'],build=b_trace,
       title='Fenster mit Markierungsrahmen',desc='Zielverfolgungs-Visier ohne Röhre (Entscheidung des Nutzers): Leichtbau-Rahmen, vier Markierungsecken, Zielmarkierung links.'),
  dict(num='09',weapon='Raketenwerfer',tid='rocket_launcher',type='rocket',frame='industrial',tint='blue',energy='#FF8A2A',hud='#FF8A2A',

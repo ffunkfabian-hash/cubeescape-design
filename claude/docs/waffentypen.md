@@ -36,7 +36,7 @@ zählen nicht als Waffenkonzept. Bewertet wurden Modell, Bauteile und Hauptansic
 |---|---|---|---|---|---|
 | 1 Automatikgewehr / Sturmgewehr | KC02 KD02 KF02 KG02 KH02 KJ02 · KA02 KK02 (`assault_rifle`) | 8 | Magazin, Schaft, Handschutz, Vollautomatik-Aufbau; klar | behalten | `design_type` auto_rifle im Spec |
 | 2 Impulsgewehr | KC03 … KJ03 · KA03 KK03 (`pulse_rifle`) | 8 | Energiezelle/Pulskern, Salvenaufbau | behalten | Untertyp Raketen-Impuls neu: KG21 |
-| 3 Scout-Gewehr | keiner (`scout_rifle` ist bei Toolgen das **Spurgewehr**) | 0 | fehlt; die KX08 sind Strahlwaffen | **neu erstellen** | **KG11 „Fernlicht“**: halbautomatisch, langer gezogener Lauf, Kastenmagazin, Lochschaft, Präzisionsvisier VS03 |
+| 3 Scout-Gewehr | keiner (`scout_rifle` hieß bei Toolgen bis 0.16 das Spurgewehr, seit Toolgen 0.17 `trace_rifle`; das Werkzeug `scout_rifle` fehlt weiter) | 0 | fehlt; die KX08 sind Strahlwaffen | **neu erstellen** | **KG11 „Fernlicht“**: halbautomatisch, langer gezogener Lauf, Kastenmagazin, Lochschaft, Präzisionsvisier VS03 |
 | 4 Handfeuerwaffe / Hand Cannon | keiner als Typ; KF01 hat eine Trommel | 0 (KF01 konstruktiv) | KF01 ist konstruktiv ein Revolver unter `pistol` | **neu erstellen**, KF01 behalten | **KG12 „Schwerlast“**: Revolver mit Trommel, Hahn, Oberbrücke, Laufmantel; KF01 bleibt Pistole (ID nicht umgedeutet), Hinweis im Spec (`weapon.note`) |
 | 5 Pistole / Sidearm | KC01 KD01 KF01 KG01 KH01 KJ01 · KA01 KK01 (`pistol`) | 8 | G/H/J Schlittenpistolen, C/D Energiepistolen – passen zum Sidearm | behalten | `design_type` sidearm; Untertyp Raketen-Sidearm neu: KG20 |
 | 6 Maschinenpistole | KC06 … KJ06 · KA06 KK06 (`smg`) | 8 | klar | behalten | – |
@@ -45,7 +45,7 @@ zählen nicht als Waffenkonzept. Bewertet wurden Modell, Bauteile und Hauptansic
 | 9 Scharfschützengewehr | KC05 … KJ05 · KA05 KK05 (`sniper_rifle`) | 8 | klar | behalten | schwerer Scharfschütze: gleiche Bauweise, kein eigenes Blatt |
 | 10 Fusionsgewehr | KC07 … KJ07 · KA07 KK07 (`fusion_rifle`) | 8 | Kondensatoren, Emitter, Kühlrippen | behalten | – |
 | 11 Lineares Fusionsgewehr | keiner | 0 | fehlt | **neu erstellen** | **KG13 „Lichtlinie“**: Kondensatorkammern, zwei Beschleunigerschienen mit Linearkern, Spulenringe, Zielfernrohr VS05 – Unterschied zu KX07: einzelner Linearstrahl über offene Schienen |
-| 12 Spurgewehr | KC08 KD08 KF08 KG08 · KH08 KJ08 · KA08 KK08 (`scout_rifle`) | 8 | C/D/F/G klare Strahlwaffen (Spule, Fokus, Fächer); H/J mit Magazin und Laufmantel lesen sich teils wie Scout-Gewehre, Strahl nur über Emitter | behalten, Hinweis | `design_type` trace_rifle für alle; KH08/KJ08 Hinweis im Spec; kein Neubau, weil abgenommen (18.10.2026) und Emitter vorhanden |
+| 12 Spurgewehr | KC08 KD08 KF08 KG08 · KH08 KJ08 · KA08 KK08 (`trace_rifle`; bis claude-0.11 `scout_rifle`) | 8 | C/D/F/G klare Strahlwaffen (Spule, Fokus, Fächer); H/J mit Magazin und Laufmantel lesen sich teils wie Scout-Gewehre, Strahl nur über Emitter | behalten, Hinweis | `design_type` trace_rifle für alle; KH08/KJ08 Hinweis im Spec; kein Neubau, weil abgenommen (18.10.2026) und Emitter vorhanden |
 | 13 Spezial-Granatwerfer | keiner | 0 | fehlt | **neu erstellen** | **KG14 „Kipper“**: einschüssig, Kipplauf am Scharnier, Verriegelungshebel, Ersatzgranate am Schaft |
 | 14 Schwerer Granatwerfer | keiner | 0 | fehlt | **neu erstellen** | **KG15 „Trommelfeuer“**: Drehtrommel mit sechs Kammern, Ladeklappe, Lauf auf Höhe der oberen Kammer |
 | 15 Raketenwerfer | KC09 … KJ09 · KA09 KK09 (`rocket_launcher`) | 8 | klar | behalten | – |
@@ -82,7 +82,11 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
   `grenade_launcher_heavy`, `machine_gun`, `sword`, `glaive`, `heavy_crossbow`; Untertypen als eigene Werkzeuge oder als Variante des Eltern-Werkzeugs.
   **Namenskonflikt – entschieden (Nutzer, 19.10.2026):** Toolgen benennt das Spurgewehr von `scout_rifle` in `trace_rifle` um; `scout_rifle` wird frei
   für das echte Scout-Gewehr KG11. Reihenfolge: Toolgen, dann Cube Escape, dann hier `export_spec.WEAPONS`/`wtypes` nachziehen; weil `toolgen_id`
-  `scout_rifle` dabei die Bedeutung wechselt, steigt der Weapon-Spec auf `format_version` 2 (ältere Fassung: Release vor dieser Umstellung).
+  `scout_rifle` dabei die Bedeutung wechselt, steigt der Weapon-Spec auf `format_version` 2 (ältere Fassung: Release `claude-v0.11`).
+  **Umgesetzt:** Toolgen 0.17.0 „Retrace“, Cube Escape 0.98 „Recast“ (19.10.2026), hier claude-0.12 „Namesake“: alle Claude-Specs mit Spurgewehr
+  tragen `toolgen_id` `trace_rifle`, Weapon-Spec und Sight-Spec `format_version` 2. KG11 behält `toolgen_id` `null` und `toolgen_status`
+  `not_connected`; `scout_rifle` ist für KG11 frei, wird aber erst angebunden, wenn Toolgen ein Werkzeug `scout_rifle` hat (dann entfällt dort
+  `renamed_from`).
 - **Use-Clips:** neue Bewegungsarten im Spec (`proposed: true`): Trommel, Hahn, Beschleunigerschienen, Kipplauf, Granattrommel, Zuführdeckel,
   Spannhebel, Sehne, Schildflügel, seit 0.10.1 Entlüftungsklappen (`vent`) und Kipprahmen (`top_break`); Knotennamen (`Anim_Cylinder` …) sind Vorschläge.
 - **Cube Escape:** Haltungen für Nahkampf (Schwert, Glefe: kein Visier, Griff ohne Abzug beim Schwert), Roboter-Maße (`robot_fit` fehlt, Zielmaße

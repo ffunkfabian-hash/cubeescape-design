@@ -5,7 +5,7 @@ Destiny 2 liefert Funktions- und Formenreferenzen (kein Nachbau). Stand des Abgl
 (15.07.2025, neuer Heavy-Typ mit wiederaufnehmbarem Bolzen). Quellen und Untertypen: claude/docs/waffentypen.md.
 
 Je Blattname (`weapon.name_de`):
-  id        Designtyp (Spec `weapon.design_type`), englisch, eindeutig; Spurgewehr = trace_rifle, Scout-Gewehr = scout_rifle
+  id        Designtyp (Spec `weapon.design_type`), englisch, eindeutig; Spurgewehr = trace_rifle (auch toolgen_id), Scout-Gewehr = scout_rifle
   en        Destiny-Bezeichnung (englisch), de Bezeichnung auf Deutsch
   subtype   konstruktiver Untertyp (rocket_assisted, slug, breech_loaded, drum_loaded; ab 0.10.1 dynamic_heat, micro_missile, spread_shot) oder None
   ammo      Munitionsklasse in Destiny (primary, special, heavy) – nur Einordnung, keine Spielregel
@@ -30,8 +30,8 @@ TYPES={
  'Scharfschützengewehr':dict(id='sniper_rifle',en='Sniper Rifle',de='Scharfschützengewehr',subtype=None,ammo='special',toolgen='sniper_rifle',num='05'),
  'Maschinenpistole':dict(id='submachine_gun',en='Submachine Gun',de='Maschinenpistole',subtype=None,ammo='primary',toolgen='smg',num='06'),
  'Fusionsgewehr':dict(id='fusion_rifle',en='Fusion Rifle',de='Fusionsgewehr',subtype=None,ammo='special',toolgen='fusion_rifle',num='07'),
- 'Spurgewehr':dict(id='trace_rifle',en='Trace Rifle',de='Spurgewehr',subtype=None,ammo='special',toolgen='scout_rifle',num='08',
-                   note='Toolgen-ID „scout_rifle“ bezeichnet hier das Spurgewehr (Toolgen data/tools.json: label „Spurgewehr“); das echte Scout-Gewehr ist KG11'),
+ 'Spurgewehr':dict(id='trace_rifle',en='Trace Rifle',de='Spurgewehr',subtype=None,ammo='special',toolgen='trace_rifle',num='08',
+                   note='Toolgen-ID trace_rifle (bis Toolgen 0.16 scout_rifle, Alias renamed_from); das echte Scout-Gewehr ist KG11 (toolgen_id null)'),
  'Raketenwerfer':dict(id='rocket_launcher',en='Rocket Launcher',de='Raketenwerfer',subtype=None,ammo='heavy',toolgen='rocket_launcher',num='09'),
  'Bogen':dict(id='combat_bow',en='Combat Bow',de='Bogen',subtype=None,ammo='primary',toolgen='bow',num='10'),
  # neue Typen (claude-0.10), Variante G; ohne Toolgen-Werkzeug
@@ -80,8 +80,8 @@ def of(name):return TYPES[name]
 def is_new(name):return TYPES[name]['toolgen'] is None
 def key(name):
     """Schlüssel für typabhängige Tabellen (Bewegung, Visier, Texturprofil, Roboter-Maße): Toolgen-ID bei bestehenden Typen,
-    sonst „+“ und Designtyp, bei Untertypen mit „:Untertyp“ (+scout_rifle, +sidearm:rocket_assisted). Das „+“ trennt das neue
-    Scout-Gewehr vom Toolgen-Schlüssel scout_rifle (= Spurgewehr)."""
+    sonst „+“ und Designtyp, bei Untertypen mit „:Untertyp“ (+scout_rifle, +sidearm:rocket_assisted). Das „+“ trennt das
+    (noch nicht angebundene) Scout-Gewehr von Toolgen-Schlüsseln; seit Toolgen 0.17 heißt das Spurgewehr dort trace_rifle."""
     t=TYPES[name]
     if t['toolgen']:return t['toolgen']
     return '+'+t['id']+(':'+t['subtype'] if t['subtype'] in KEY_SUBTYPES else '')

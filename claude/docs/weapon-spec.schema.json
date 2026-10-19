@@ -1,7 +1,7 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "cubeescape-design/weapon-spec/1",
- "title": "Weapon spec der Konzeptblätter (format_version 1)",
+ "title": "Weapon spec der Konzeptblätter (format_version 2)",
  "description": "Beschreibung: claude/docs/weapon-spec.md. Erzeugt von claude/generator/export_spec.py; geprüft von claude/generator/test_spec.py (eigene Teilmenge von JSON Schema: type, required, properties, items, enum, const, pattern, minimum, minItems, maxItems, additionalProperties nur, wenn gesetzt). Unbekannte Felder sind erlaubt (Erweiterung innerhalb format_version 1); die genauen Kanal- und Ankerlisten prüft test_spec.py.",
  "$defs": {
   "slot": {"enum": ["MT_Primary", "MT_Secondary", "MT_Accent", "MT_Metal", "MT_Energy", "MT_Emission", "MT_Detail", "SK_Accent1", "SK_Accent2"]},
@@ -90,7 +90,7 @@
               "dimensions_m", "anchors", "palette", "channels_used", "parts", "sight", "decals", "textures", "summary"],
  "properties": {
   "format": {"const": "cubeescape-design/weapon-spec"},
-  "format_version": {"const": 1},
+  "format_version": {"const": 2},
   "generator": {"type": "object", "required": ["repo", "tool", "claude_version"]},
   "sheet": {
    "type": "object", "required": ["id", "file", "variant", "number", "nick", "fid"],
@@ -101,7 +101,7 @@
   "weapon": {
    "type": "object", "required": ["name_de", "toolgen_id"],
    "properties": {"toolgen_id": {"description": "Toolgen-Werkzeug; null bei neuen Designtypen ohne Toolgen-Werkzeug (claude-0.10, KG11 … KG22; claude-0.10.1, KG23 … KG25; toolgen_status not_connected)",
-                                 "enum": ["pistol", "assault_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "smg", "fusion_rifle", "scout_rifle", "rocket_launcher", "bow", null]},
+                                 "enum": ["pistol", "assault_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "smg", "fusion_rifle", "trace_rifle", "rocket_launcher", "bow", null]},
                   "design_type": {"description": "claude-0.10, optional: Designtyp nach dem Destiny-2-Abgleich (claude/generator/wtypes.py); scout_rifle = Scout-Gewehr, trace_rifle = Spurgewehr",
                                   "enum": ["sidearm", "auto_rifle", "pulse_rifle", "shotgun", "sniper_rifle", "submachine_gun", "fusion_rifle", "trace_rifle", "rocket_launcher", "combat_bow",
                                            "scout_rifle", "hand_cannon", "linear_fusion_rifle", "grenade_launcher_special", "grenade_launcher_heavy", "machine_gun", "sword", "glaive", "heavy_crossbow"]},

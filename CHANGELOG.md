@@ -2,6 +2,11 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.12
+- Namenskonflikt `scout_rifle` gelöst (Toolgen 0.17.0 „Retrace“, Cube Escape 0.98 „Recast“): Spurgewehr KC/KD/KF/KG/KH/KJ08 und VS08 tragen `toolgen_id` `trace_rifle`;
+  KG11 bleibt `toolgen_id` null. Weapon-Spec und Sight-Spec `format_version` 2 (Bedeutungswechsel); ältere Fassung für Abnehmer mit Toolgen < 0.17: Release `claude-v0.11`.
+- Blätter und Bilder unverändert, nur Specs und `golden.json`. Bericht [claude/docs/versions/0.12.md](claude/docs/versions/0.12.md).
+
 ## claude-0.11
 - Die 15 neuen Typen Nr. 11–25 in allen Claude-Varianten: 75 neue Konzepte KC/KD/KF/KH/KJ11–25 im Stil der Variante, gleiche Mechanik wie G,
   eigene Silhouette; Modelle von Codex (`gpt-6.1-sol`) als Unteragent, Probeblatt je Variante vom Nutzer freigegeben, von Claude geprüft.

@@ -1,4 +1,4 @@
-# Sight-Spec der Visier-Serie (`cubeescape-design/sight-spec`, format_version 1)
+# Sight-Spec der Visier-Serie (`cubeescape-design/sight-spec`, format_version 2)
 
 Stand claude-0.6 (17.10.2026). Je Visier der Waffen 1–9 gibt es ein Blatt `VSnn.dc.html` und einen Steckbrief `VSnn.spec.json` in
 `claude/output/sheets/`. Beide entstehen aus **einem** Modell je Visier (`claude/generator/vsmodels.py`), Ansichten und Daten sind
