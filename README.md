@@ -49,7 +49,9 @@ Fusionsgewehr, Spurgewehr, Raketenwerfer, Bogen.
 KG11 Scout-Gewehr, KG12 Handfeuerwaffe, KG13 Lineares Fusionsgewehr, KG14 Spezial-Granatwerfer, KG15 Schwerer Granatwerfer, KG16 Maschinengewehr,
 KG17 Schwert, KG18 Glefe, KG19 Schwere Armbrust, KG20 Raketenpistole, KG21 Raketen-Impulsgewehr, KG22 Slug-Schrotflinte, dazu seit claude-0.10.1
 KG23 Hitze-Blaster, KG24 Mikroraketen-Granatwerfer, KG25 Streuschuss-Handfeuerwaffe (Modelle `g11.py`–`g25.py`,
-Bauhelfer `tlib.py`, Typenkatalog `wtypes.py`). Sie haben ein zusätzliches Feld **BEDIENUNG** und sind in Toolgen/Cube Escape noch nicht angebunden
+Bauhelfer `tlib.py`, Typenkatalog `wtypes.py`). Seit claude-0.11 gibt es die 15 neuen Typen in allen Claude-Varianten
+(KC11–KC25, KD11–KD25, KF11–KF25, KH11–KH25, KJ11–KJ25; Modelle `c11.py` … `j25.py`, gebaut von Codex als Unteragent), und alle 150 Waffenblätter
+haben das Feld **BEDIENUNG** (Bestandsblätter: `ops.py`). Die neuen Typen sind in Toolgen/Cube Escape noch nicht angebunden
 (`toolgen_id` null). Das Spurgewehr (KX08) heißt bei Toolgen `scout_rifle`; das echte Scout-Gewehr ist KG11.
 
 ## Struktur
@@ -72,7 +74,9 @@ claude/                  nur Claude
     dmods.py dmodels.py  Modelle Variante D
     f01–f10.py g01–g10.py h01–h10.py
     jlib.py j01–j10.py   Facetten-Bausteine und Modelle Variante J „Black Ice“
-    wtypes.py tlib.py    Typenkatalog (Destiny-Abgleich) und Bauhelfer der neuen Typen; g11–g25.py ihre Modelle (claude-0.10, 0.10.1)
+    wtypes.py tlib.py    Typenkatalog (Destiny-Abgleich) und Bauhelfer der neuen Typen; g11–g25.py ihre Modelle (claude-0.10, 0.10.1),
+                         c11–c25, d11–d25, f11–f25, h11–h25, j11–j25.py (claude-0.11)
+    ops.py sketch.py     Bedienung der Blätter KX01–KX10; Schnellskizze eines Modells ohne Blatt (claude-0.11)
     variants.py          Varianten-Register (Buchstabe, Name, Idee); new_variant.py legt neue Varianten an
     build_*.py           Bauskripte je Variante, build_all.py baut alles; preview.py nimmt die Vorschauen auf
     export_spec.py       Spec je Blatt (KXnn.spec.json); test_spec.py, spec_checks.py (Richtung, Visier gegen CE-Zielbild)

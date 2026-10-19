@@ -2,6 +2,13 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.11
+- Die 15 neuen Typen Nr. 11–25 in allen Claude-Varianten: 75 neue Konzepte KC/KD/KF/KH/KJ11–25 im Stil der Variante, gleiche Mechanik wie G,
+  eigene Silhouette; Modelle von Codex (`gpt-6.1-sol`) als Unteragent, Probeblatt je Variante vom Nutzer freigegeben, von Claude geprüft.
+- Feld BEDIENUNG und Spec `operation` auf allen 60 Bestandsblättern (`ops.py`, Texte je Blatt nach Bauweise); sonst bleiben die Blätter gleich.
+- Hohle Grundrisse quer zur Waffe (`tlib.B.Y`) richtig schattiert; Schnellskizze `sketch.py`. 150 Waffenblätter, 159 mit Visierserie.
+  Bericht [claude/docs/versions/0.11.md](claude/docs/versions/0.11.md).
+
 ## claude-0.10.1
 - Drei Lücken aus 0.10 als eigene Konzepte in Variante G: KG23 Hitze-Blaster (Impulsgewehr ohne Magazin, Hitzespeicher, Entlüftungsklappen),
   KG24 Mikroraketen-Granatwerfer (einschüssig, Abschussrohr, Raketenvorrat), KG25 Streuschuss-Handfeuerwaffe (Kipprahmen-Revolver, Streumündung).

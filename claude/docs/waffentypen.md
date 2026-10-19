@@ -3,7 +3,8 @@
 Stand 18.10.2026. Auftrag des Nutzers: das vollständige Destiny-2-Waffentypen-Sortiment für Cube Escape abgleichen und gestalterisch
 vervollständigen (Granatwerfer bewusst als zwei Designpositionen). Destiny liefert Funktions- und Formenreferenzen, kein Nachbau.
 Maschinenlesbar: `claude/generator/wtypes.py` (Designtyp je Blattname), im Spec `weapon.design_type` …
-Umsetzung und Prüfung: [versions/0.10.md](versions/0.10.md) (Lücken KG23–KG25: Patch 0.10.1 dort).
+Umsetzung und Prüfung: [versions/0.10.md](versions/0.10.md) (Lücken KG23–KG25: Patch 0.10.1 dort); neue Typen in C, D, F, H, J und BEDIENUNG auf
+allen Blättern: [versions/0.11.md](versions/0.11.md).
 
 ## Katalog (Quelle und Stand)
 
@@ -68,11 +69,12 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
 
 | Blätter | Design vorhanden | visuell geprüft | in Toolgen/Spiel angebunden |
 |---|---|---|---|
-| KX01–KX09 (Claude C–J) | ja | ja, vom Nutzer abgenommen (18.10.2026) | ja: Toolgen-Werkzeuge 1–9, Cube Escape Waffen 1–9 |
+| KX01–KX09 (Claude C–J) | ja | ja, vom Nutzer abgenommen (18.10.2026); Feld BEDIENUNG seit 0.11, erneute Abnahme offen | ja: Toolgen-Werkzeuge 1–9, Cube Escape Waffen 1–9 |
 | KX10 Bogen (Claude) | ja | ja, abgenommen | Toolgen-Werkzeug `bow` (Referenzmodell), nicht im Waffensatz von Cube Escape |
 | KA/KK (Codex) | ja | Codex-Pipeline (Prüfung dort) | wie oben je Typ |
 | KG11–KG22 (neu) | ja | vom Nutzer abgenommen (19.10.2026) | **nein** – `toolgen_id` null, `toolgen_status` not_connected |
 | KG23–KG25 (neu, 0.10.1) | ja | vom Nutzer abgenommen (19.10.2026) | **nein** – wie KG11–KG22 |
+| KC/KD/KF/KH/KJ11–25 (neu, 0.11) | ja | Probeblatt je Variante freigegeben (19.10.2026), Gesamtabnahme offen | **nein** – wie KG11–KG22 |
 
 ## Offene Anbindungen
 
@@ -92,5 +94,6 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
 
 - Hitzewaffe, Micro-Missile-Granatwerfer und Spread-Shot-Handfeuerwaffe: seit claude-0.10.1 gebaut (KG23–KG25). Der Hitze-Rahmen nur als
   Impulsgewehr; Hitze-Handfeuerwaffe, -Pistole und -Scharfschütze wären Varianten derselben Mechanik.
-- Neue Typen nur in Variante G; die übrigen Claude-Varianten und Codex haben sie nicht.
-- Das Blattfeld BEDIENUNG gibt es nur auf den neuen Blättern; die 60 bestehenden Blätter haben es nicht (eigener Schritt mit Neubau).
+- ~~Neue Typen nur in Variante G~~ – seit claude-0.11 in allen Claude-Varianten (C, D, F, G, H, J); Codex (A, K) baut sie nach
+  [auftrag-codex-waffentypen.md](auftrag-codex-waffentypen.md).
+- ~~BEDIENUNG nur auf den neuen Blättern~~ – seit claude-0.11 auf allen 150 Waffenblättern (`ops.py`).
