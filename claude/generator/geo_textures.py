@@ -93,10 +93,10 @@ def build(name,color_lin,material_id,long_axis=None,emissive=False,glass=False,w
     col=sc.outputs[0]
     if wear and material_id in ('painted','painted_matte'):
         # Kantenabnutzung (Katalog wear, Geo-Spec surface.wear): Bevel-Normale weicht an harten Kanten ab; Zellen mit Anteil coverage tragen sie
-        bv=t.node('ShaderNodeBevel');bv.inputs['Radius'].default_value=wear['width_m'];bv.samples=8
+        bv=t.node('ShaderNodeBevel');bv.inputs['Radius'].default_value=2.5*wear['width_m'];bv.samples=16   # Bevel-Normale weicht nur nahe der Kante merklich ab: 2,5 × Breite ≈ sichtbare Breite width_m
         gn=t.node('ShaderNodeNewGeometry');dt=t.node('ShaderNodeVectorMath',operation='DOT_PRODUCT')
         t.l.new(bv.outputs[0],dt.inputs[0]);t.l.new(gn.outputs['Normal'],dt.inputs[1])
-        edge=t.math('GREATER_THAN',t.math('SUBTRACT',1.0,dt.outputs['Value']),0.02)
+        edge=t.math('GREATER_THAN',t.math('SUBTRACT',1.0,dt.outputs['Value']),0.0005)   # schon kleine Abweichung = innerhalb width_m an der Kante
         cmb=t.node('ShaderNodeCombineXYZ')
         for i,v in enumerate((X,Y,Z)):t.l.new(t.math('FLOOR',t.math('DIVIDE',v,wear['cell_m']*1000)),cmb.inputs[i])
         wn=t.node('ShaderNodeTexWhiteNoise',noise_dimensions='3D');t.l.new(cmb.outputs[0],wn.inputs['Vector'])
