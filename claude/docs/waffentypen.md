@@ -69,12 +69,12 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
 
 | Blätter | Design vorhanden | visuell geprüft | in Toolgen/Spiel angebunden |
 |---|---|---|---|
-| KX01–KX09 (Claude C–J) | ja | ja, vom Nutzer abgenommen (18.10.2026); Feld BEDIENUNG seit 0.11, erneute Abnahme offen | ja: Toolgen-Werkzeuge 1–9, Cube Escape Waffen 1–9 |
+| KX01–KX09 (Claude C–J) | ja | ja, vom Nutzer abgenommen (18.10.2026); Feld BEDIENUNG seit 0.11, abgenommen (19.10.2026) | ja: Toolgen-Werkzeuge 1–9, Cube Escape Waffen 1–9 |
 | KX10 Bogen (Claude) | ja | ja, abgenommen | Toolgen-Werkzeug `bow` (Referenzmodell), nicht im Waffensatz von Cube Escape |
 | KA/KK (Codex) | ja | Codex-Pipeline (Prüfung dort) | wie oben je Typ |
 | KG11–KG22 (neu) | ja | vom Nutzer abgenommen (19.10.2026) | **nein** – `toolgen_id` null, `toolgen_status` not_connected |
 | KG23–KG25 (neu, 0.10.1) | ja | vom Nutzer abgenommen (19.10.2026) | **nein** – wie KG11–KG22 |
-| KC/KD/KF/KH/KJ11–25 (neu, 0.11) | ja | Probeblatt je Variante freigegeben (19.10.2026), Gesamtabnahme offen | **nein** – wie KG11–KG22 |
+| KC/KD/KF/KH/KJ11–25 (neu, 0.11) | ja | vom Nutzer abgenommen (19.10.2026) | **nein** – wie KG11–KG22 |
 
 ## Offene Anbindungen
 
