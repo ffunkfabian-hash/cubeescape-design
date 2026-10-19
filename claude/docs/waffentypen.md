@@ -71,15 +71,16 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
 | KX01–KX09 (Claude C–J) | ja | ja, vom Nutzer abgenommen (18.10.2026) | ja: Toolgen-Werkzeuge 1–9, Cube Escape Waffen 1–9 |
 | KX10 Bogen (Claude) | ja | ja, abgenommen | Toolgen-Werkzeug `bow` (Referenzmodell), nicht im Waffensatz von Cube Escape |
 | KA/KK (Codex) | ja | Codex-Pipeline (Prüfung dort) | wie oben je Typ |
-| KG11–KG22 (neu) | ja | von Claude geprüft (Skizze, Blatt, Kontaktbogen); Abnahme durch den Nutzer offen | **nein** – `toolgen_id` null, `toolgen_status` not_connected |
-| KG23–KG25 (neu, 0.10.1) | ja | von Claude geprüft (Skizze, Blatt, Kontaktbogen); Abnahme durch den Nutzer offen | **nein** – wie KG11–KG22 |
+| KG11–KG22 (neu) | ja | vom Nutzer abgenommen (19.10.2026) | **nein** – `toolgen_id` null, `toolgen_status` not_connected |
+| KG23–KG25 (neu, 0.10.1) | ja | vom Nutzer abgenommen (19.10.2026) | **nein** – wie KG11–KG22 |
 
 ## Offene Anbindungen
 
 - **Toolgen:** neue Werkzeug-IDs nötig (Vorschlag = `design_type`): `hand_cannon`, `linear_fusion_rifle`, `grenade_launcher_special`,
   `grenade_launcher_heavy`, `machine_gun`, `sword`, `glaive`, `heavy_crossbow`; Untertypen als eigene Werkzeuge oder als Variante des Eltern-Werkzeugs.
-  **Namenskonflikt:** Toolgens `scout_rifle` ist das Spurgewehr; ein echtes Scout-Gewehr braucht eine neue ID (Vorschlag `scout_rifle_semi`)
-  oder Toolgen benennt das Spurgewehr in `trace_rifle` um (Vertragsänderung in Toolgen/Cube Escape, Entscheidung des Nutzers).
+  **Namenskonflikt – entschieden (Nutzer, 19.10.2026):** Toolgen benennt das Spurgewehr von `scout_rifle` in `trace_rifle` um; `scout_rifle` wird frei
+  für das echte Scout-Gewehr KG11. Reihenfolge: Toolgen, dann Cube Escape, dann hier `export_spec.WEAPONS`/`wtypes` nachziehen; weil `toolgen_id`
+  `scout_rifle` dabei die Bedeutung wechselt, steigt der Weapon-Spec auf `format_version` 2 (ältere Fassung: Release vor dieser Umstellung).
 - **Use-Clips:** neue Bewegungsarten im Spec (`proposed: true`): Trommel, Hahn, Beschleunigerschienen, Kipplauf, Granattrommel, Zuführdeckel,
   Spannhebel, Sehne, Schildflügel, seit 0.10.1 Entlüftungsklappen (`vent`) und Kipprahmen (`top_break`); Knotennamen (`Anim_Cylinder` …) sind Vorschläge.
 - **Cube Escape:** Haltungen für Nahkampf (Schwert, Glefe: kein Visier, Griff ohne Abzug beim Schwert), Roboter-Maße (`robot_fit` fehlt, Zielmaße
