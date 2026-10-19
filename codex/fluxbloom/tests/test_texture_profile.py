@@ -72,7 +72,7 @@ class TextureProfileTests(unittest.TestCase):
             'sniper_rifle': ('painted', 'brushed', 'light_blue', 'subtle', ['serial_s07']),
             'smg': ('painted_matte', 'brushed', 'cyan', 'medium', ['arrows_chevron','arrow_triangle']),
             'fusion_rifle': ('painted', 'satin', 'violet', 'subtle', ['research']),
-            'scout_rifle': ('painted', 'polished', 'blue', 'subtle', ['tech_lines']),
+            'trace_rifle': ('painted', 'polished', 'blue', 'subtle', ['tech_lines']),
             'rocket_launcher': ('painted_matte', 'rough_cast', 'orange', 'strong', ['hazard_stripes','warning_triangle']),
         }
         interpreted = {'assault_rifle','pulse_rifle','smg','fusion_rifle','rocket_launcher'}

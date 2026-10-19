@@ -36,7 +36,7 @@ ROWS = {
     'fusion_rifle': ('painted', 'Hochtechnologie, glatt', 'satin', 'Präzise, clean', 'Technisch, lamellen',
                      'violet', 'Violett, intensiv', 'subtle', 'Gezielt, dezent', ['research'],
                      'Forschungs-Symbol', 'Metall „Präzise, clean“ als satiniert gedeutet'),
-    'scout_rifle': ('painted', 'Glatt, sauber', 'polished', 'Premium, poliert', 'Minimal', 'blue',
+    'trace_rifle': ('painted', 'Glatt, sauber', 'polished', 'Premium, poliert', 'Minimal', 'blue',
                     'Blau, kontinuierlich', 'subtle', 'Leicht, sauber', ['tech_lines'], 'Tech, Linien', None),
     'rocket_launcher': ('painted_matte', 'Schwer, robust', 'rough_cast', 'Massiv, angeraut', 'Stoßdämpfend',
                         'orange', 'Orange, Hitze', 'strong', 'Stark, realistisch', ['hazard_stripes', 'warning_triangle'],

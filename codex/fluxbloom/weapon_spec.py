@@ -1,4 +1,4 @@
-"""Canonical cubeescape-design/weapon-spec v1 exporter for Codex weapon models.
+"""Canonical cubeescape-design/weapon-spec v2 exporter for Codex weapon models.
 
 The existing CodexDesignReference remains a separate, optional record. This module
 serializes its independently authored model inputs into the shared consumer schema.
@@ -8,12 +8,12 @@ import json
 from pathlib import Path
 
 FORMAT = 'cubeescape-design/weapon-spec'
-VERSION = 1
+VERSION = 2
 TOOLGEN = {
     'pistol': ('pistol', .243, 'solar'), 'assault': ('assault_rifle', .934, 'arc'),
     'impulse': ('pulse_rifle', .862, 'void'), 'shotgun': ('shotgun', .904, 'solar'),
     'sniper': ('sniper_rifle', 1.134, 'energy'), 'smg': ('smg', .616, 'energy'),
-    'fusion': ('fusion_rifle', .960, 'void'), 'trace': ('scout_rifle', 1.044, 'arc'),
+    'fusion': ('fusion_rifle', .960, 'void'), 'trace': ('trace_rifle', 1.044, 'arc'),
     'rocket': ('rocket_launcher', .725, 'solar'), 'bow': ('bow', 1.018, None),
 }
 CHANNELS = ('MT_Primary','MT_Secondary','MT_Accent','MT_Metal','MT_Energy','MT_Emission','MT_Detail')
@@ -248,6 +248,7 @@ def make_spec(meta, model, number, record=None):
     # Reuse only the local geometry calculations; output is rebuilt field-by-field in
     # the canonical contract, never mislabeled as an importer-ready design reference.
     from spec import design_spec
+    from design_types import weapon_fields
     from texture_catalog import material as catalog_material
     from motion_spec import make_moving_parts
     record = dict(record or {})
@@ -352,9 +353,9 @@ def make_spec(meta, model, number, record=None):
     texture_target = profile(tid)
     return {**({'texture_profile': texture_target} if texture_target else {}),
       'format':FORMAT,'format_version':VERSION,
-      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':('0.2.5' if meta['variant']=='K' else '0.1.5') if texture_target else ('0.2.3' if meta['variant']=='K' else '0.1.3')},
+      'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':'0.2.6' if meta['variant']=='K' else '0.1.6'},
       'sheet':{'id':f"K{meta['variant']}{number:02d}",'file':f"K{meta['variant']}{number:02d}.html",'variant':meta['variant'],'variant_name':meta['variant_name'],'number':f'{number:02d}','nick':meta['name'],'fid':meta['slug']},
-      'weapon':{'name_de':meta['kind'],'toolgen_id':tid},'element':element,
+      'weapon':{'name_de':meta['kind'],'toolgen_id':tid,**weapon_fields(meta)},'element':element,
       'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Bogen: Element nicht festgelegt.',
       'units':{'model_unit_m':ref['units']['model_unit_m'],'model_length_units':reference_length/ref['units']['model_unit_m'],'reference_length_m':reference_length,
         'rule':ref['units']['rule'],'reference':ref['units']['source']},
