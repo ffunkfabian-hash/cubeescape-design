@@ -78,6 +78,7 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
 
 ## Offene Anbindungen
 
+- **Umsetzungsplan (19.10.2026):** alle Modelle (bestehende Waffen ersetzt, neue Typen dazu) kommen über einen Geometrie-Spec nach Toolgen und danach nach Cube Escape – Etappen, Entscheidungen und Prüfwege in [umsetzungsplan-modelle.md](umsetzungsplan-modelle.md).
 - **Toolgen:** neue Werkzeug-IDs nötig (Vorschlag = `design_type`): `hand_cannon`, `linear_fusion_rifle`, `grenade_launcher_special`,
   `grenade_launcher_heavy`, `machine_gun`, `sword`, `glaive`, `heavy_crossbow`; Untertypen als eigene Werkzeuge oder als Variante des Eltern-Werkzeugs.
   **Namenskonflikt – entschieden (Nutzer, 19.10.2026):** Toolgen benennt das Spurgewehr von `scout_rifle` in `trace_rifle` um; `scout_rifle` wird frei
