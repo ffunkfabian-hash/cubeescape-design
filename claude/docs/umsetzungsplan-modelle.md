@@ -122,7 +122,8 @@ Nicht committet (wie die Blätter), sondern Release-Asset `geo/` über `release_
 | `support` | `part`, `radius_m` (halbe Höhe/Breite des Querschnitts an `Socket_SupportHand`) oder `null` (Pistolen: Becher-Griff) |
 | `sight` | aus VSnn: `kind`, `type`, Fenster (Form, Maße), Glas, Röhre, `Socket_Mount`, `Socket_Sight` (hinterer Fensterrand), `Socket_Reticle` (Glasmitte), Vorschlag `Socket_Eye` (Röhre: Okularlinse, sonst = `Socket_Sight`), `eye_radius_m`, Visierlinie (`line_above_m` über der Gehäuseoberkante) |
 | `anchors` | Kopie der Weapon-Spec-Anker in m plus `Socket_Sight`, `Socket_Eye`, `Socket_Reticle` |
-| `melee`, `string` | nur Schwert/Glefe (Klingenachse, Griffzone) bzw. Bogen/Armbrust (Sehne, Nocke, Pfeil/Bolzen) – erst DS-2 |
+| `string` | Bogen/Armbrust (seit Entscheidung 19.10.2026 schon in DS-1): Sehnen-Ansatzpunkte an beiden Wurfarmspitzen, Nockpunkt auf der Sehnenlinie in Ruhe, Pfeilauflage/Bolzenrinne, Pfeilachse; Toolgen setzt seine Sehne, den Pfeil und den Zugclip darauf |
+| `melee` | nur Schwert/Glefe (Klingenachse, Griffzone) – erst DS-2 |
 | `counts` | Teile, Dreiecke, Aufkleber |
 
 Prüfung im Design-Repo: Schema, Teilezahl und Hüllquader je Teil gleich dem Weapon-Spec (±0,5 mm), Anker identisch, Normalen nach außen,
@@ -133,7 +134,7 @@ keine Fläche unter 0,5 mm Abstand zu einer koplanaren Nachbarfläche (sonst Bef
 | Nr. | Frage | Empfehlung | Alternativen |
 |---|---|---|---|
 | 1 | **Welche Variante** wird das Toolgen-Modell je Waffentyp? – **entschieden 19.10.2026: G** ([ENTSCHEIDUNGEN](ENTSCHEIDUNGEN.md)) | **G** (Cube-Escape-Farbwelt, Heimat der neuen Typen, zuerst abgenommen); je Waffe tauschbar über die Datentabelle `design_pick` in Toolgen (`pistol: KG01` …) | je Waffe im Viewer wählen (Tabelle sofort anders belegen); alle Varianten als Toolgen-Varianten (150 Modelle, sechsfache Bake-Zeit – später, nicht jetzt); Codex-Blätter A/K sind ebenso wählbar, sobald Codex einen Geo-Spec liefert |
-| 2 | **Bogen** tauschen? | **noch nicht:** Toolgens Bogen hat Sehne, Pfeil, Zugclip und eigene Anker (`Socket_Nock`, `Socket_ArrowTip`); die Blätter KX10 modellieren keine Sehne. Tausch in TG-C mit `string`-Block (DS-2) | sofort mit Toolgen-Sehne auf Konzept-Wurfarmen (Mischform, nicht deckungsgleich) |
+| 2 | **Bogen** tauschen? – **entschieden 19.10.2026: sofort in TG-A**, Toolgen-Sehne, Pfeil und Zugclip auf den Konzept-Wurfarmen; DS-1 liefert den `string`-Block ([ENTSCHEIDUNGEN](ENTSCHEIDUNGEN.md)) | ~~noch nicht:~~ Toolgens Bogen hat Sehne, Pfeil, Zugclip und eigene Anker (`Socket_Nock`, `Socket_ArrowTip`); die Blätter KX10 modellieren keine Sehne. Tausch in TG-C mit `string`-Block (DS-2) | sofort mit Toolgen-Sehne auf Konzept-Wurfarmen (Mischform, nicht deckungsgleich) |
 | 3 | **Kanten:** hart wie das Blatt oder Fasen wie heute? | **hart** (Low-Poly-Look des Konzepts, Budgets ohne Dezimierung, Normalkarte trägt das Relief); Fase nur als globaler Datenwert `bevel_mm` für eine Sichtprobe | Fasen 0,5–2 mm auf allen Teilen (Look der vier Werkzeuge, ~1,5–3× Dreiecke) |
 | 4 | **Aufkleber des Blatts** (Glyphen, Streifen, Embleme) | **als Maskenregionen** über Toolgens Decal-System (W0/W1, `data/decals.json`), nicht als Geometrie (0,4 mm Abstand verletzt die Koplanar-Regel und flackert) – Umfang TG-A Stufe B | zuerst ohne Aufkleber (nur Texturprofil), Aufkleber später |
 | 5 | Roboter-Variante der neuen Typen: **Ziel-Längen** | CE legt sie nach der 0.82-Regel fest: pistolenartig ≥ 0,24 m, Gewehre 0,65–0,69 m, MG/lineare Fusion/Armbrust ≤ 0,75 m; Schwert und Glefe eigene Regel (Nahkampf) | – |
@@ -150,7 +151,7 @@ Versionsregister (cubeescape-rules); die Namen unten sind Vorschläge und im Reg
 
 ### 5.1 DS-1 „Blueprint“ – Geometrie-Spec (cubeescape-design)
 
-- **Ziel:** `claude/generator/export_geo.py` schreibt `KXnn.geo.json` für alle 159 Blätter; Doku `claude/docs/geometry-spec.md` + Schema;
+- **Ziel:** `claude/generator/export_geo.py` schreibt `KXnn.geo.json` für alle 159 Blätter (Bögen mit `string`-Block); Doku `claude/docs/geometry-spec.md` + Schema;
   Test `claude/generator/test_geo_spec.py` (› 3 Prüfung); Golden-Gruppe `geo`; `release_assets.py` liefert `geo/` mit aus; `vsmount` liefert
   `Socket_Eye`/`Socket_Reticle` in Waffenlage; Messung von `grip`/`support`; Aufkleber-Export. Weapon-Spec unverändert (nur Verweis
   `geometry_spec` additiv).
@@ -164,14 +165,14 @@ Versionsregister (cubeescape-rules); die Namen unten sind Vorschläge und im Reg
 
 ### 5.2 TG-A „Reforge“ – Bauweg und neun Waffen ersetzt (Toolgen)
 
-- **Ziel:** `scripts/tool_assets/concept_kit.py` lädt einen Geo-Spec, baut je Teil ein Mesh-Objekt (Name, `MT_`-Material über `game_palette`,
+- **Ziel (neun Waffen und der Bogen):** `scripts/tool_assets/concept_kit.py` lädt einen Geo-Spec, baut je Teil ein Mesh-Objekt (Name, `MT_`-Material über `game_palette`,
   Glas als Visierglas, leuchtende Teile mit dem Glühmaterial des Elements), hängt bewegliche Teile unter die `Anim_`-Knoten aus `moving_parts`,
   setzt die Anker aus dem Spec und übergibt an den bestehenden Weg (`weapon_kit.world` → FPS-Kopie → Clips → Export). `weapon_designs.py`:
   je Waffe `concept: 'KG02'` (Tabelle `design_pick`), Use-Clip-Wege aus den Teilmaßen neu, `grip_tilt_degrees` aus dem Spec, `sight` aus dem Spec
   (ersetzt `sight.py` für Konzeptwaffen), `hold.sight_kind` nach VS-`kind` (sechs Werte ändern sich). `data/viewmodels.json`: `support_radius`,
   `hand_rotation_degrees`, Kopfprüfungsgrenzen neu messen; `data/ego_clips.json`: AimIdle-Visierlinie je Waffe neu. `ROBOT` je Gewehr neu
   (Stützpunkte, Querschnitt) auf der neuen Geometrie. Katalog-Textur-IDs → `surface_recipes.json`-Muster (Abbildungstabelle). Golden der
-  Oberflächenkarten als `stale` markieren, bis der Mac bakt; `version.py` vor dem ersten großen Lauf heben (Cache).
+  Oberflächenkarten als `stale` markieren, bis der Mac bakt; `version.py` vor dem ersten großen Lauf heben (Cache). **Bogen (KG10):** Wurfarme, Mittelstück und Pin-Visier aus dem Geo-Spec; Toolgens Sehne, Pfeil, Zugclip, `Socket_Nock`/`Socket_ArrowTip` und die Zughand-Pose (`bow_geometry.py`, `animate_standard_bow.py`) werden auf die `string`-Punkte des Spec gesetzt; Sehnenlänge und Zugweg neu gemessen.
 - **Stufe B (gleiche Version oder Patch):** Aufkleber als Decal-Regionen aus `decals[]`; Texturprofil-Abnutzung je Waffe aus `texture_profile`.
 - **Pilot:** Sturmgewehr (KG02) zuerst – Viewer-Bilder Welt/Ego/Roboter, `scripts/ego_video.py` (Use-Clip als MP4), `robot_preview.py`,
   `surface_preview.py` – Freigabe des Nutzers, dann die übrigen acht.
@@ -179,8 +180,8 @@ Versionsregister (cubeescape-rules); die Namen unten sind Vorschläge und im Reg
   **Codex:** nach dem Pilot portiert `gpt-6.1-sol` (`high`) die Beschlagdaten der übrigen acht Waffen (Clip-Schlüssel, `ROBOT`, `viewmodels`,
   `ego_clips`) in einem eigenen Worktree (Claude prüft Diff und Bild); Prüfung vor Merge `sol` (großer Diff, Vertragsänderung).
 - **Prüfweg:** `./check`, `--tier quick` (Cloud erlaubt), `--tier standard` auf dem Mac unter `heavy_lock` (Bake, Reimport, Bilder),
-  `verify_output.py`, `viewer/test_determinism.py --runs 16` je Modell, `scripts/compare_models.py` (erwartet: alle neun Waffen anders, die vier
-  Werkzeuge und der Bogen bytegleich), Viewer-Build und -Tests.
+  `verify_output.py`, `viewer/test_determinism.py --runs 16` je Modell, `scripts/compare_models.py` (erwartet: die neun Waffen und der Bogen anders, die drei
+  Werkzeuge bytegleich), Viewer-Build und -Tests.
 - **Vertrag:** 4 additiv (Namen, Anker, Knoten bleiben); `hold.sight_kind`, `grip_tilt_degrees`, Maße und Karten ändern ihre Werte →
   `minimum_consumer` = die CE-Version von CE-A; ältere Fassung `v0.17.1`.
 - **Zeit:** zwei bis drei Sitzungen (Pilot, acht Waffen, Stufe B), je Mac-`standard`-Lauf nach Zeitband; Wartezeit auf die Pilot-Freigabe.
@@ -231,13 +232,12 @@ Versionsregister (cubeescape-rules); die Namen unten sind Vorschläge und im Reg
   `melee` (Ego-Profil, Hände am Griff bzw. Schaft, Use-Clip = Hieb/Stoß) – Entwurf ohne Vorlage, Opus `high`. Cube Escape hat kein Nahkampfsystem;
   die Reference belegt: Schwert in Destiny in der Schulteransicht, Glefe im Ego. **Entscheidung des Nutzers nötig**, ob CE Nahkampf baut (Trefferlogik,
   Kamera) oder Schwert/Glefe zunächst nur als Modelle/Spender erscheinen.
-- **Armbrust (KX19), Bogen (KX10):** DS-2 liefert den `string`-Block (Sehne, Nocke, Pfeil/Bolzen) aus den Modellen; Toolgen überträgt Zugclip und
-  Anker des heutigen Bogens auf die Konzept-Geometrie (Mischform aus Toolgen-Sehne und Blatt). Erst nach Klärung › 1.4.
+- **Armbrust (KX19):** `string`-Block wie beim Bogen (DS-1); Toolgen überträgt Sehne, Bolzen, Spannhebel-Clip nach dem Bogen-Muster aus TG-A. Erst nach Klärung › 1.4. Der Bogen selbst ist seit der Entscheidung vom 19.10.2026 Teil von TG-A.
 - **Zeit:** je zwei bis drei Sitzungen; nach TG-B/CE-B.
 
 ### 5.7 DS-2 (parallel zu TG-A, optional)
 
-`string`- und `melee`-Blöcke im Geo-Spec; Geo-Spec der Codex-Blätter als Änderungswunsch an Codex (eigener Exporter unter `codex/`, keine Dateien aus
+`melee`-Block im Geo-Spec; Geo-Spec der Codex-Blätter als Änderungswunsch an Codex (eigener Exporter unter `codex/`, keine Dateien aus
 `claude/`); Verweis `geometry_spec` in den Weapon-Specs. Sonnet `medium` (Muster liegt nach DS-1 vor).
 
 ## 6 Reihenfolge, Parallelität, Zuständigkeit
@@ -262,7 +262,7 @@ DS-2 (optional) ───┘                 TG-B Longlist (nach TG-A) ───
 | Etappe | Beleg |
 |---|---|
 | DS-1 | Kontaktbogen: KG02 aus dem Geo-Spec in Blender (Seite, Iso) neben `claude/output/previews/KG02.webp`; Testprotokoll (159 Specs, 0 Befunde) |
-| TG-A | je Waffe: Viewer Welt/Ego/Roboter neben der Blattvorschau als Kontaktbogen (`magick montage`), Use-Clip-MP4 (`ego_video.py`), `robot_preview.png`, `surface_preview.png`; `verify_output` grün; Determinismus 16 Läufe; `compare_models`: Werkzeuge und Bogen bytegleich |
+| TG-A | je Waffe und Bogen: Viewer Welt/Ego/Roboter neben der Blattvorschau als Kontaktbogen (`magick montage`), Use-/Zugclip-MP4 (`ego_video.py`), `robot_preview.png`, `surface_preview.png`; `verify_output` grün; Determinismus 16 Läufe; `compare_models`: die drei Werkzeuge bytegleich |
 | CE-A | Iso- und Ego-Screenshots je Waffe, ADS je Waffe (Bildmitte frei, Linse beim Impulsgewehr), Roboterhand-Passung, Unity-Regression grün |
 | TG-B/CE-B | wie TG-A/CE-A je neues Werkzeug; Haltung gegen die Steckbriefe der Reference |
 
@@ -287,6 +287,6 @@ DS-2 (optional) ───┘                 TG-B Longlist (nach TG-A) ───
 
 ## 9 Offen
 
-- Entscheidungen › 4 Nr. 2–4 vor TG-A (Nr. 1 entschieden: G), Nr. 5–7 vor TG-B/CE-B; Armbrust-Einordnung (› 1.4) vor TG-B.
+- Entscheidungen › 4 Nr. 3–4 vor TG-A (Nr. 1 entschieden: G; Nr. 2: Bogen sofort), Nr. 5–7 vor TG-B/CE-B; Armbrust-Einordnung (› 1.4) vor TG-B.
 - Vier Fadenkreuz-Varianten je Visier (Sight-Spec) sind in CE nicht als Vorgabe verankert – gehört zu CE-A (Daten je `sight_kind`/Visier).
 - Dieses Blatt ändert keine Specs; der Verweis `geometry_spec` kommt mit DS-1.
