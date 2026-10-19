@@ -2,6 +2,13 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.13
+- Geometrie-Spec `KXnn.geo.json`/`VSnn.geo.json` (neues Format `cubeescape-design/geometry-spec` 1, Etappe DS-1 des Umsetzungsplans Modelle): Netz je Teil in Metern
+  im Toolgen-Rahmen, Primitiv-Hinweise, Aufkleber als Polygone, Griff (Achse, Neigung, Abzug), Stützhand-Querschnitt, Visier mit `Socket_Eye`/`Socket_Reticle`, Anker.
+- 159 Dateien aus `export_geo.py`, Test `test_geo_spec.py`, Golden-Gruppe `geo`, Release-Asset `geo/`; Blätter, Weapon-Spec 2 und Sight-Spec 2 unverändert.
+- Befunde als Daten für Toolgen: 915 koplanare Teilpaare (Z-Fighting-Gefahr), 28 Aufkleber über ihr Teil hinaus, KC10-Wurfarme mit Innen-Normalen (im Export gerichtet).
+  Bericht [claude/docs/versions/0.13.md](claude/docs/versions/0.13.md).
+
 ## claude-0.12
 - Namenskonflikt `scout_rifle` gelöst (Toolgen 0.17.0 „Retrace“, Cube Escape 0.98 „Recast“): Spurgewehr KC/KD/KF/KG/KH/KJ08 und VS08 tragen `toolgen_id` `trace_rifle`;
   KG11 bleibt `toolgen_id` null. Weapon-Spec und Sight-Spec `format_version` 2 (Bedeutungswechsel); ältere Fassung für Abnehmer mit Toolgen < 0.17: Release `claude-v0.11`.
