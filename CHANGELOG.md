@@ -2,6 +2,14 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## codex-0.1.6 / codex-0.2.6 „Switchcraft“ (PR #14, gemerged)
+- Parallax (0.1.6) und Flux Bloom (0.2.6): alle Specs auf Weapon-Spec `format_version` 2, Spurgewehr KA08/KK08 mit `toolgen_id` `trace_rifle`
+  (Mindestabnehmer Toolgen 0.17.0 / Cube Escape 0.98; ältere Fassung `git show 5a5615d:codex/parallax/output/KA08.spec.json`, analog KK08).
+- Feld BEDIENUNG und Spec `operation` auf den 20 Bestandsblättern (unten 400 px ergänzt, bisherige Bildflächen pixelgleich).
+- Je 15 neue Konzepte Nr. 11–25 in A und K (30 neue, 50 Blätter gesamt): `toolgen_id` null, Status `not_connected`, Bewegungen und Texturprofile als Vorschlag.
+- Mac-Abnahme unter `heavy_lock`: 105 Tests grün, 50 Specs gegen beide Format-2-Schemas ohne Befund, 50 Chromium-Blätter ohne Überlauf.
+  Berichte [Parallax 0.1.6](codex/docs/versions/0.1.md#patch-016-switchcraft-19102026), [Flux Bloom 0.2.6](codex/docs/versions/0.2.md#patch-026-switchcraft-19102026).
+
 ## claude-0.13
 - Geometrie-Spec `KXnn.geo.json`/`VSnn.geo.json` (neues Format `cubeescape-design/geometry-spec` 1, Etappe DS-1 des Umsetzungsplans Modelle): Netz je Teil in Metern
   im Toolgen-Rahmen, Primitiv-Hinweise, Aufkleber als Polygone, Griff (Achse, Neigung, Abzug), Stützhand-Querschnitt, Visier mit `Socket_Eye`/`Socket_Reticle`, Anker;
