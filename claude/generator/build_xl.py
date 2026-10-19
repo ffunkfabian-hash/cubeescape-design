@@ -11,7 +11,10 @@ for fid in FIDS:
     pk=f'{E3D}/reg/{fid}.pkl'
     if os.path.exists(pk):
         import vsmount
-        d=vsmount.apply(pickle.load(open(pk,'rb')))   # Kartenweg: Visier der Visier-Serie wie in sheetmodels.load (claude-0.7)
+        import ops
+        d=pickle.load(open(pk,'rb'))
+        ops.attach(d,'K'+('C' if fid[0]=='v' else fid[0].upper())+fid[1:])   # Bedienung (claude-0.11) wie in sheetmodels.load
+        d=vsmount.apply(d)   # Kartenweg: Visier der Visier-Serie wie in sheetmodels.load (claude-0.7)
     else:   # ohne Kartenlauf: Modell direkt aus dem Bauskript (sheetmodels, wie der Spec-Export)
         import sheetmodels
         d=sheetmodels.load('K'+('C' if fid[0]=='v' else fid[0].upper())+fid[1:])

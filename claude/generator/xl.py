@@ -200,7 +200,8 @@ def DEFS(fid):return f'<defs><filter id="gl{fid}" x="-50%" y="-50%" width="200%"
 
 OP_TILES=[('reload_de','NACHLADEN'),('action_de','SPANNEN · AUFLADEN · MECHANIK'),('fire_de','FEUERN · EINSATZ')]
 def op_strip(op,moving,w,h,col):
-    """Leiste BEDIENUNG (claude-0.10, neue Waffentypen): Nachladen, Mechanik, Feuern aus META['op'], dazu die beweglichen Teile"""
+    """Leiste BEDIENUNG (claude-0.10 neue Waffentypen, ab claude-0.11 alle Waffenblätter): Nachladen, Mechanik, Feuern aus META['op']
+    bzw. ops.OPS, dazu die beweglichen Teile"""
     G_=12;tw=(w-32-2*G_)//3
     tiles=''.join(f'<div style="display:flex;flex-direction:column;gap:5px;width:{tw}px;min-width:0">'
                   f'<span style="font-family:\'Chakra Petch\',sans-serif;font-size:13px;letter-spacing:1.4px;color:{col};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{cap}</span>'
@@ -464,7 +465,7 @@ def sheet(d,variant_letter):
     pkey=wtypes.key(d['name'])
     prof=texprofile.PROFILES.get(pkey)   # Bogen: kein Profil, Feld wie bis 0.8
     PH=176 if prof else 0
-    OH=150 if d.get('op') else 0          # Leiste BEDIENUNG (claude-0.10, neue Typen)
+    OH=150 if d.get('op') else 0          # Leiste BEDIENUNG (claude-0.10, neue Typen; ab 0.11 alle Waffenblätter)
     mh=BH-190-(PH+18 if prof else 0)-(OH+18 if OH else 0)
     me,mhh=extent(m,ISO[1],ISO[2],center)
     msc=min((MWd-90)/me,(mh-90)/mhh)
@@ -480,7 +481,7 @@ def sheet(d,variant_letter):
     if prof:   # Farben der Kacheln aus dem Blatt (Basis-Palette), Energie in der Farbe des Profils
         pcols=dict(housing=used.get('lack',d['palette'][0]),metal=used.get('brushed','#8C96A3'),rubber=used.get('rubber','#2A2F36'),accent=col)
         pstrip=profile_strip(prof,d['name'],MWd,PH,pcols,ptype=pkey)
-    if OH:pstrip+=op_strip(d['op'],[wtypes.MOTION_SHORT_DE[k] for k in wtypes.of(d['name'])['motions']],MWd,OH,col)
+    if OH:pstrip+=op_strip(d['op'],d['op'].get('moving') or [wtypes.MOTION_SHORT_DE[k] for k in wtypes.of(d['name']).get('motions',[])],MWd,OH,col)
     matp=f'<div style="display:flex;flex-direction:column;gap:18px;width:{MWd}px">{panel(mv,MWd,mh,"MATERIAL & TEXTUREN",fid,d["name"]+" Materialansicht mit Texturen")}<div style="display:flex;gap:18px">{sw}</div>{pstrip}</div>'
     # Farbvarianten
     VW=1380;vw=(VW-24)//2;vh=(BH-24)//2

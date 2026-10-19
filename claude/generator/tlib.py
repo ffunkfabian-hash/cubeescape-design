@@ -36,7 +36,7 @@ class B:
         return s._set(L,False,ch)
     def Y(s,poly,col,y0,y1,r=0,emit=False,L=None,dec=(),ch=None):
         """Grundriss (x, z) von y0 (oben) bis y1 extrudiert; dec: Aufkleber auf der Oberseite (Punkte x, z)"""
-        ext.prism_y(s.m,poly,col,y0,y1,r=r,emit=emit)
+        ext.prism_y(s.m,poly,col,y0,y1,r=r,emit=emit,winding=True)   # hohle Grundrisse richtig schattiert (claude-0.11)
         for pts,c,e in dec:s.m.parts[-1]['dec'].append(('y-',y0,pts,c,e))
         P=s.m.parts[-1];P.setdefault('hull',True)
         return s._set(L,False,ch)
