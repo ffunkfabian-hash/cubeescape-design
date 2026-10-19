@@ -505,12 +505,12 @@ def build(sheet):
     )
 
 def operation(d):
-    """Bedienung des Blatts (claude-0.10, neue Waffentypen): Nachladen, Spannen/Aufladen, Feuern auf Deutsch und Englisch, wie im Feld
+    """Bedienung des Blatts (claude-0.10 neue Waffentypen, ab 0.11 alle Waffenblätter): Nachladen, Spannen/Aufladen, Feuern auf Deutsch und Englisch, wie im Feld
     BEDIENUNG des Blatts; dazu die Munitionsklasse in Destiny (nur Einordnung)"""
     o=d['op']
     return dict(reload=dict(de=o['reload_de'],en=o['reload_en']),action=dict(de=o['action_de'],en=o['action_en']),
                 fire=dict(de=o['fire_de'],en=o['fire_en']),ammo_class=wtypes.of(d['name'])['ammo'],
-                source=f"META['op'] in {d['fid']}.py (Blattfeld BEDIENUNG); Bewegungen: moving_parts")
+                source=(f"ops.OPS['{d['sheet']}'] (claude-0.11)" if o.get('src')=='ops' else f"META['op'] in {d['fid']}.py")+' (Blattfeld BEDIENUNG); Bewegungen: moving_parts')
 
 def textures(unit):
     """Muster der Material-Ansicht des Blatts (xl.make_texture) als Zielbild für Toolgens Bake, im Wortschatz von

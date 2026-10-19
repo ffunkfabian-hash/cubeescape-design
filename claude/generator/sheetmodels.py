@@ -7,13 +7,14 @@ build_g15, build_g610, build_h15, build_h610); Varianten mit lib='jlib' (ab J) h
 damit die Skripte unverändert bleiben und beim Import nichts bauen.
 Ab claude-0.7 ersetzt vsmount.apply() das Visier der Waffen 1–9 durch das Standardvisier der Visier-Serie VS01–VS09.
 Ab claude-0.10 kommen die neuen Waffentypen dazu (wtypes.NEW_SHEETS, KG11 … KG22): Modell aus g11.py … mit model() und META (tlib),
-Bedienung META['op'] als d['op']; ihr Visier setzt vsmount nach wtypes (Nahkampf ohne Visier).
+Bedienung META['op'] als d['op']; ihr Visier setzt vsmount nach wtypes (Nahkampf ohne Visier). Ab claude-0.11 in allen Varianten C–J
+(wtypes.NEW_SHEETS); die bestehenden Blätter bekommen ihre Bedienung aus ops.OPS (ops.attach).
 """
 from cepaths import E3D
 import ast,importlib,os,re,sys
 sys.path.insert(0,E3D)
 from eng import copy_channels
-import variants,vsmount,wtypes
+import ops,variants,vsmount,wtypes
 
 VARS=variants.LETTERS
 NUMS=[f'{i:02d}' for i in range(1,11)]
@@ -113,4 +114,5 @@ def load(sheet):
     mm=re.search(r'VARIANTE\s+([A-Z])\s*·\s*„([^“]+)“',d['sub'])
     assert mm.group(1)==v,(sheet,d['sub'])
     d['V']=v;d['nick']=mm.group(2).title();d['sheet']=sheet
+    ops.attach(d,sheet)   # Bedienung der bestehenden Blätter KX01–KX10 (claude-0.11); neue Typen bringen META['op'] mit
     return vsmount.apply(d)   # Visier der Visier-Serie VS01–VS09 (claude-0.7), Bögen unverändert

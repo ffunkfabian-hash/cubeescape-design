@@ -68,8 +68,10 @@ TYPES={
                                    subtype='spread_shot',ammo='primary',toolgen=None,num='25',ref_len=0.30,vs='VS01',motions=['top_break']),
 }
 NEW={k:v for k,v in TYPES.items() if v['toolgen'] is None}
-# Blätter der neuen Typen: Variante G (Cube-Escape-Farbwelt), Modelle g11.py … g25.py
-NEW_SHEETS={'G':sorted(v['num'] for v in NEW.values())}
+# Blätter der neuen Typen je Variante: G seit claude-0.10 (Modelle g11.py … g25.py), C, D, F, H, J seit claude-0.11 (c11.py … j25.py,
+# Modelle gebaut von Codex als Unteragent, je Variante im eigenen Stil; gleiche Mechanik und Bauteile je Typ wie G, eigene Silhouette)
+NEW_NUMS=sorted(v['num'] for v in NEW.values())
+NEW_SHEETS={'G':NEW_NUMS,'C':['12'],'D':['13'],'F':['19'],'H':['16'],'J':['11']}
 REF_SOURCE='Schätzung claude-0.10: Proportion zu den Toolgen-0.13-Längen verwandter Typen (Bericht claude/docs/versions/0.10.md › Maße), kein Toolgen-Modell'
 # Sätze für Abnehmer, die toolgen_id als Pflichtwert lesen
 TOOLGEN_NONE='nicht in Toolgen/Cube Escape angebunden (neuer Designtyp claude-0.10); toolgen_id null, Anbindung siehe claude/docs/waffentypen.md › Offene Anbindungen'
