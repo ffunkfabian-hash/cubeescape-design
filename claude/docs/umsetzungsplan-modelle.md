@@ -132,7 +132,7 @@ keine Fläche unter 0,5 mm Abstand zu einer koplanaren Nachbarfläche (sonst Bef
 
 | Nr. | Frage | Empfehlung | Alternativen |
 |---|---|---|---|
-| 1 | **Welche Variante** wird das Toolgen-Modell je Waffentyp? | **G** (Cube-Escape-Farbwelt, Heimat der neuen Typen, zuerst abgenommen); je Waffe tauschbar über die Datentabelle `design_pick` in Toolgen (`pistol: KG01` …) | je Waffe im Viewer wählen (Tabelle sofort anders belegen); alle Varianten als Toolgen-Varianten (150 Modelle, sechsfache Bake-Zeit – später, nicht jetzt); Codex-Blätter A/K sind ebenso wählbar, sobald Codex einen Geo-Spec liefert |
+| 1 | **Welche Variante** wird das Toolgen-Modell je Waffentyp? – **entschieden 19.10.2026: G** ([ENTSCHEIDUNGEN](ENTSCHEIDUNGEN.md)) | **G** (Cube-Escape-Farbwelt, Heimat der neuen Typen, zuerst abgenommen); je Waffe tauschbar über die Datentabelle `design_pick` in Toolgen (`pistol: KG01` …) | je Waffe im Viewer wählen (Tabelle sofort anders belegen); alle Varianten als Toolgen-Varianten (150 Modelle, sechsfache Bake-Zeit – später, nicht jetzt); Codex-Blätter A/K sind ebenso wählbar, sobald Codex einen Geo-Spec liefert |
 | 2 | **Bogen** tauschen? | **noch nicht:** Toolgens Bogen hat Sehne, Pfeil, Zugclip und eigene Anker (`Socket_Nock`, `Socket_ArrowTip`); die Blätter KX10 modellieren keine Sehne. Tausch in TG-C mit `string`-Block (DS-2) | sofort mit Toolgen-Sehne auf Konzept-Wurfarmen (Mischform, nicht deckungsgleich) |
 | 3 | **Kanten:** hart wie das Blatt oder Fasen wie heute? | **hart** (Low-Poly-Look des Konzepts, Budgets ohne Dezimierung, Normalkarte trägt das Relief); Fase nur als globaler Datenwert `bevel_mm` für eine Sichtprobe | Fasen 0,5–2 mm auf allen Teilen (Look der vier Werkzeuge, ~1,5–3× Dreiecke) |
 | 4 | **Aufkleber des Blatts** (Glyphen, Streifen, Embleme) | **als Maskenregionen** über Toolgens Decal-System (W0/W1, `data/decals.json`), nicht als Geometrie (0,4 mm Abstand verletzt die Koplanar-Regel und flackert) – Umfang TG-A Stufe B | zuerst ohne Aufkleber (nur Texturprofil), Aufkleber später |
@@ -287,6 +287,6 @@ DS-2 (optional) ───┘                 TG-B Longlist (nach TG-A) ───
 
 ## 9 Offen
 
-- Entscheidungen › 4 Nr. 1–4 vor TG-A, Nr. 5–7 vor TG-B/CE-B; Armbrust-Einordnung (› 1.4) vor TG-B.
+- Entscheidungen › 4 Nr. 2–4 vor TG-A (Nr. 1 entschieden: G), Nr. 5–7 vor TG-B/CE-B; Armbrust-Einordnung (› 1.4) vor TG-B.
 - Vier Fadenkreuz-Varianten je Visier (Sight-Spec) sind in CE nicht als Vorgabe verankert – gehört zu CE-A (Daten je `sight_kind`/Visier).
 - Dieses Blatt ändert keine Specs; der Verweis `geometry_spec` kommt mit DS-1.
