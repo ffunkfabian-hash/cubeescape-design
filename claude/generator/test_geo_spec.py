@@ -171,26 +171,54 @@ class Decals(unittest.TestCase):
         n=sum(len(load(s)['checks']['decals_outside_part']) for s in G.SHEETS if s[0]=='K')
         print(f'\n  Aufkleber über ihr Teil hinaus (Blatt, > 1 mm): {n}',file=sys.stderr)
 
+def _rot(v,u,a):
+    """v um die Einheitsachse u um a drehen (Rodrigues)"""
+    c,s_=math.cos(a),math.sin(a);d=G._dot(u,v);x=G._cross(u,v)
+    return [v[i]*c+x[i]*s_+u[i]*d*(1-c) for i in range(3)]
 class Primitives(unittest.TestCase):
-    def test_primitive_matches_mesh(self):
+    """Primitive aus ihren Parametern nachbauen: jede erzeugte Ecke muss eine Ecke des Netzes sein (0,02 mm), und das Netz hat keine weiteren"""
+    def _rebuild(self,pr):
+        if pr['type']=='prism':
+            ax='XYZ'.index(pr['axis']);o=[i for i in range(3) if i!=ax];out=[]
+            for t in pr['range_m']:
+                for q in pr['profile_m']:
+                    v=[0.0,0.0,0.0];v[ax]=t;v[o[0]],v[o[1]]=q;out.append(v)
+            return [out],2e-5
+        u=G._norm([pr['end_m'][k]-pr['start_m'][k] for k in range(3)]);r_end=pr.get('radius_m') or pr['radius_end_m'];r_st=pr.get('radius_m') or pr['radius_start_m']
+        r0=[pr['first_vertex_m'][k]-pr['end_m'][k] for k in range(3)];n=pr['segments']
+        self.assertAlmostEqual(math.sqrt(G._dot(r0,r0)),r_end,delta=2e-5)
+        sols=[]
+        for sg in (1,-1):   # Drehsinn offen
+            ring=[_rot(r0,u,sg*2*math.pi*k/n) for k in range(n)]
+            sols.append([[pr['end_m'][i]+q[i] for i in range(3)] for q in ring]+[[pr['start_m'][i]+q[i]*r_st/r_end for i in range(3)] for q in ring])
+        return sols,2e-5*max(1.0,r_st/r_end)   # Rundung der ersten Ecke (0,01 mm) wächst mit dem Radienquotienten
+    def test_primitive_rebuilds_mesh(self):
         n=0
         for s in G.SHEETS:
             for p in load(s)['parts']:
                 pr=p['primitive']
                 if not pr:continue
-                n+=1;b=p['bounds_m'];ax='XYZ'.index(pr['axis'])
+                n+=1;V=p['mesh']['vertices']
                 with self.subTest(sheet=s,part=p['id']):
-                    if pr['type']=='prism':
-                        o=[i for i in range(3) if i!=ax]
-                        lo=[0,0,0];hi=[0,0,0];lo[ax],hi[ax]=pr['range_m']
-                        for j,i in enumerate(o):lo[i]=min(q[j] for q in pr['profile_m']);hi[i]=max(q[j] for q in pr['profile_m'])
-                        self.assertTrue(close(lo,b[0],1e-4) and close(hi,b[1],1e-4),(lo,hi,b))
-                    else:
-                        L=math.dist(pr['start_m'],pr['end_m']);self.assertAlmostEqual(L,b[1][ax]-b[0][ax],delta=1e-4)
-                        R=pr.get('radius_m') or max(pr['radius_start_m'],pr['radius_end_m'])
-                        for i in range(3):
-                            if i!=ax:self.assertLessEqual(b[1][i]-b[0][i],2*R+1e-4)
+                    ok=False;sols,tol=self._rebuild(pr)
+                    for pts in sols:
+                        hit=all(any(max(abs(q[k]-v[k]) for k in range(3))<=tol for v in V) for q in pts)
+                        cover=all(any(max(abs(q[k]-v[k]) for k in range(3))<=tol for q in pts) for v in V)
+                        ok=ok or (hit and cover)
+                    self.assertTrue(ok,pr['type'])
         self.assertGreater(n,1000)
+    def test_counterproof(self):
+        """Gegenprobe: verschobener Zylinder, vertauschte Kegelradien, falsche Segmentzahl fallen auf"""
+        g=load('KG02');p=next(p for p in g['parts'] if p['primitive'] and p['primitive']['type']=='cylinder');V=p['mesh']['vertices']
+        def fits(pr):
+            try:pts,_=self._rebuild(pr)
+            except AssertionError:return False
+            return any(all(any(max(abs(q[k]-v[k]) for k in range(3))<=2e-5 for v in V) for q in s_) and
+                       all(any(max(abs(q[k]-v[k]) for k in range(3))<=2e-5 for q in s_) for v in V) for s_ in pts)
+        pr=p['primitive'];self.assertTrue(fits(pr))
+        self.assertFalse(fits(dict(pr,start_m=[c+0.01 for c in pr['start_m']])))
+        self.assertFalse(fits(dict(pr,segments=pr['segments']+2)))
+        self.assertFalse(fits(dict(pr,first_vertex_m=[c+0.003 for c in pr['first_vertex_m']])))
 
 class Coplanar(unittest.TestCase):
     def _box(self,x0,x1,y0,y1,z0,z1):
@@ -206,6 +234,11 @@ class Coplanar(unittest.TestCase):
         self.assertEqual([f['distance_m'] for f in G.coplanar([('p00',a),('p01',near)])],[0.0003])
         self.assertEqual(G.coplanar([('p00',a),('p01',far)]),[])
         self.assertEqual(G.coplanar([('p00',a),('p01',sit)]),[])
+        # Befund unabhängig von der Lage (0,3 m verschoben) und an Rundungsgrenzen der Normale (leicht gekippt)
+        sh=lambda m,d:dict(m,vertices=[[v[0]+d,v[1]+d,v[2]+d] for v in m['vertices']])
+        self.assertEqual([f['distance_m'] for f in G.coplanar([('p00',sh(a,0.3)),('p01',sh(near,0.3))])],[0.0003])
+        t=math.radians(0.29);tilt=lambda m:dict(m,vertices=[[v[0],v[1]*math.cos(t)-v[2]*math.sin(t),v[1]*math.sin(t)+v[2]*math.cos(t)] for v in m['vertices']])
+        self.assertTrue(G.coplanar([('p00',tilt(a)),('p01',tilt(near))]))
     def test_findings_reported(self):
         """Befunde stehen in checks.coplanar (Daten für Toolgen, kein Fehler); Zahl ins Protokoll"""
         tot=vis=sheets=0

@@ -143,7 +143,12 @@ def _regular(pp):
     """Mitte und Radius, wenn die Punkte (2D) auf einem Kreis liegen (gleiche Abstände)"""
     c=(sum(p[0] for p in pp)/len(pp),sum(p[1] for p in pp)/len(pp));r=[math.hypot(p[0]-c[0],p[1]-c[1]) for p in pp]
     R=sum(r)/len(r)
-    return (c,R) if R>1e-9 and max(abs(x-R) for x in r)<=1e-6*max(1.0,R) else (None,None)
+    if R<=1e-9 or max(abs(x-R) for x in r)>1e-6*max(1.0,R):return None,None
+    n=len(pp);step=2*math.pi/n   # gleichmäßige Winkel (regelmäßiges Vieleck), sonst kein Zylinder
+    for i in range(n):
+        a0=math.atan2(pp[i][1]-c[1],pp[i][0]-c[0]);a1=math.atan2(pp[(i+1)%n][1]-c[1],pp[(i+1)%n][0]-c[0])
+        if abs(abs(math.remainder(a1-a0,2*math.pi))-step)>1e-6:return None,None
+    return c,R
 def primitive(P,F):
     """Bauweg eines eng-Teils, wo er sich aus der Flächenfolge ergibt: Prisma (eng.prism, ext.prism_y, Kästen der Visier-Serie),
     Zylinder (eng.cyl, tlib C, gerade Vieleck-Läufe), Kegelstumpf (ext.frustum). Sonst None (Netz allein maßgeblich)."""
@@ -218,6 +223,9 @@ def overlap(A,B):
             c=_clip(_ccw(ta),_ccw(tb))
             if len(c)>=3:s+=abs(_area2(c))
     return s
+NORMAL_CELLS=100                      # Zellen der Normalen-Rundung (0,01); Nachbarzellen werden mitgeprüft
+PARALLEL_COS=math.cos(math.radians(1.0))   # gleichgerichtet = Normalen höchstens 1° auseinander
+_NEIGH=[(a,b,c) for a in (-1,0,1) for b in (-1,0,1) for c in (-1,0,1)]
 def coplanar(parts_mesh,look=None,limit=COPLANAR_M):
     """Gleichgerichtete Flächen verschiedener Teile mit Abstand unter limit, die sich (projiziert) um mindestens 1 mm² überdecken:
     Z-Fighting-Gefahr nach Toolgens Koplanar-Regel. Entgegengesetzte Flächen (Teil sitzt auf Teil) zählen nicht.
@@ -229,28 +237,39 @@ def coplanar(parts_mesh,look=None,limit=COPLANAR_M):
         for fi,f in enumerate(m['faces']):
             pts=[V_[i] for i in f];n=_norm(newell(pts))
             if n==[0.0,0.0,0.0]:continue
-            key=tuple(round(c,3) for c in n)
-            groups.setdefault(key,[]).append((_dot(n,pts[0]),pid,fi,pts,n))
-    found={}
-    for key,L in groups.items():
-        L.sort(key=lambda t:t[0])
+            groups.setdefault(tuple(round(c*NORMAL_CELLS) for c in n),[]).append((pid,fi,pts,n))
+    found={};seen=set()
+    Rmax=max((math.sqrt(_dot(v,v)) for _,m in parts_mesh for v in m['vertices']),default=0.0)
+    window=limit+2*math.sin(math.radians(2.0))*Rmax   # Zellnormale gegen Flächennormale: bis ~2° Neigung über die Modellgröße
+    for key in sorted(groups):
+        # Flächen dieser Zelle und der Nachbarzellen (Rundungsgrenzen); Abstand entlang der gemeinsamen Normale der Zelle
+        L=[t for dk in _NEIGH for t in groups.get(tuple(key[i]+dk[i] for i in range(3)),())]
+        nk=_norm([sum(t[3][i] for t in groups[key]) for i in range(3)])
+        L=sorted(((_dot(nk,t[2][0]),)+t for t in L),key=lambda t:t[0])
+        own={(t[0],t[1]) for t in groups[key]}
         for i in range(len(L)):
-            di,pa,fa,A,n=L[i]
+            di,pa,fa,A,na=L[i]
             for j in range(i+1,len(L)):
-                dj,pb,fb,B,_=L[j]
-                if dj-di>=limit:break
-                if pa==pb:continue
-                u,v=_basis(n);a2=[(_dot(p,u),_dot(p,v)) for p in A];b2=[(_dot(p,u),_dot(p,v)) for p in B]
+                dj,pb,fb,B,nb=L[j]
+                if dj-di>=window:break          # grobes Fenster; exakter Abstand unten
+                if pa==pb or ((pa,fa) not in own and (pb,fb) not in own):continue
+                pair=tuple(sorted(((pa,fa),(pb,fb))))
+                if pair in seen or _dot(na,nb)<PARALLEL_COS:continue
+                dist=max(abs(_dot(na,[B[0][k]-A[0][k] for k in range(3)])),abs(_dot(nb,[B[0][k]-A[0][k] for k in range(3)])))
+                if dist>=limit:continue
+                u,v=_basis(na);a2=[(_dot(p,u),_dot(p,v)) for p in A];b2=[(_dot(p,u),_dot(p,v)) for p in B]
                 if (max(p[0] for p in a2)<=min(p[0] for p in b2) or max(p[0] for p in b2)<=min(p[0] for p in a2) or
                     max(p[1] for p in a2)<=min(p[1] for p in b2) or max(p[1] for p in b2)<=min(p[1] for p in a2)):continue
                 ov=overlap(a2,b2)
                 if ov<OVERLAP_MIN_M2:continue
-                k=tuple(sorted((pa,pb)));dist=abs(dj-di)
+                seen.add(pair)
+                k=tuple(sorted((pa,pb)))
                 e=found.get(k)
-                if e is None:found[k]=e=dict(parts=list(k),distance_m=dist,overlap_m2=ov,normal=[r4(c) for c in n],faces=0,
+                if e is None:found[k]=e=dict(parts=list(k),distance_m=dist,overlap_m2=ov,normal=[r4(c) for c in na],faces=0,
                                              same_look=bool(look) and look[k[0]]==look[k[1]])
                 e['faces']+=1
-                if dist<e['distance_m'] or (dist==e['distance_m'] and ov>e['overlap_m2']):e.update(distance_m=dist,overlap_m2=ov,normal=[r4(c) for c in n])
+                if dist<e['distance_m']:e.update(distance_m=dist,normal=[r4(c) for c in na])   # kleinster Abstand und
+                e['overlap_m2']=max(e['overlap_m2'],ov)                                       # größte Überdeckung, unabhängig
     out=[dict(e,distance_m=rd(e['distance_m']),overlap_m2=round(e['overlap_m2'],8)) for _,e in sorted(found.items())]
     return out
 
@@ -275,6 +294,15 @@ def _chord_x(poly,y):
         if (y0-y)*(y1-y)<=0 and y0!=y1:xs.append(x0+(y-y0)*(x1-x0)/(y1-y0))
     return (min(xs),max(xs)) if xs else None
 
+def _chord_dir(poly,p,d):
+    """Länge der Sehne eines konvexen Polygons auf der Geraden durch p in Richtung d (Einheitsvektor)"""
+    ts=[]
+    for i in range(len(poly)):
+        a,b=poly[i],poly[(i+1)%len(poly)];e=(b[0]-a[0],b[1]-a[1]);den=d[0]*e[1]-d[1]*e[0]
+        if abs(den)<1e-15:continue
+        w=(a[0]-p[0],a[1]-p[1]);t=(w[0]*e[1]-w[1]*e[0])/den;u=(w[0]*d[1]-w[1]*d[0])/den
+        if -1e-9<=u<=1+1e-9:ts.append(t)
+    return max(ts)-min(ts) if ts else 0.0
 GRIP_SLICES=(0.25,0.85)   # Schnitte ab Oberkante (Anteil der Höhe): oben unter dem Gehäuseansatz, unten über der Griffkappe
 def grip(P,pid,F,trigger):
     """Griffachse aus dem Seitenumriss des Griffteils (konvexe Hülle in Modell x/y): Mitte zweier waagrechter Schnitte,
@@ -288,7 +316,7 @@ def grip(P,pid,F,trigger):
         (xt,yt),(xb,yb)=mids;dx,dy=xt-xb,yt-yb
         at=lambda y:(xb+(y-yb)*dx/dy,y,zc)
         bottom,top=at(ybot),at(ytop);tilt=math.degrees(math.atan2(dx,-dy))
-        cm=_chord_x(H,ytop+0.5*h);depth=(cm[1]-cm[0])*abs(math.cos(math.radians(tilt)))
+        L_=math.hypot(dx,dy);m0=at(ytop+0.5*h);depth=_chord_dir(H,(m0[0],m0[1]),(-dy/L_,dx/L_))   # quer zur Griffachse
         method='Seitenumriss (konvexe Hülle in Modell x/y): Mitte der Schnitte bei %d %% und %d %% der Höhe ab Oberkante, bis Unter-/Oberkante verlängert'%tuple(round(100*t) for t in GRIP_SLICES)
     else:   # liegender Griff (Schwert, Glefe, Stangen): Achse längs, Neigung 90°
         bottom,top=(b[0][0],(ytop+ybot)/2,zc),(b[1][0],(ytop+ybot)/2,zc);tilt=90.0;depth=h

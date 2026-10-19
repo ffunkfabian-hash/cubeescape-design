@@ -63,9 +63,15 @@ sh.show_xray=False
 for m in mats.values():m.blend_method='BLEND' if m.diffuse_color[3]<1 else 'OPAQUE'
 cam_data=bpy.data.cameras.new('cam');cam_data.type='ORTHO';cam_data.ortho_scale=size*1.05
 cam=bpy.data.objects.new('cam',cam_data);sc.collection.objects.link(cam);sc.camera=cam
+ASPECT=sc.render.resolution_x/sc.render.resolution_y
 def shoot(name,direction):
-    d=Vector(direction).normalized();cam.location=c+d*size*3
-    cam.rotation_euler=(c-cam.location).to_track_quat('-Z','Y').to_euler()
+    """Kamera aus Richtung direction auf die Mitte; Ausschnitt aus der Projektion aller Ecken auf die Bildachsen, Seitenverhältnis beachtet"""
+    d=Vector(direction).normalized();rot=(-d).to_track_quat('-Z','Y');R=rot.to_matrix()
+    right,up=R.col[0],R.col[1]
+    xs=[p.dot(right) for p in pts];ys=[p.dot(up) for p in pts]
+    cx,cy=(min(xs)+max(xs))/2,(min(ys)+max(ys))/2;w,h=max(xs)-min(xs),max(ys)-min(ys)
+    cam_data.ortho_scale=max(w,h*ASPECT)*1.08
+    cam.rotation_euler=rot.to_euler();cam.location=right*cx+up*cy+d*(d.dot(c)+size*3)
     sc.render.filepath=os.path.join(OUTDIR,f"{g['sheet']['id']}_{name}.png");bpy.ops.render.render(write_still=True)
 shoot('side_left',(1,0,0));shoot('side_right',(-1,0,0))
 shoot('iso_left',(1,0.9,0.75));shoot('iso_right',(-1,0.9,0.75))

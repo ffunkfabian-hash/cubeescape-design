@@ -34,7 +34,7 @@ Stand 19.10.2026 (claude-0.13 „Blueprint“, Etappe DS-1 aus [umsetzungsplan-m
 | `parts[].mesh` | `vertices` (m), `faces` (Indexlisten, ebene n-Ecke, auch konkav – mit Blender/bmesh triangulieren), `hard` (je Fläche 1 = harte Kante/flach schattiert, 0 = weich) |
 | `parts[].primitive` | Hinweis auf den Bauweg, nur wo er sich aus der Flächenfolge ergibt, sonst `null` (Netz allein maßgeblich): `prism` (`axis`, `profile_axes`, `profile_m`, `range_m`, `smooth_sides`), `cylinder` (`axis`, `start_m`, `end_m`, `radius_m`, `segments`, `first_vertex_m`), `cone` (wie Zylinder mit `radius_start_m`/`radius_end_m`) |
 | `decals[]` | Reihenfolge = Weapon-Spec `decals[]`: `part`, `surface`, `normal`, `channel`, `color`, `emissive`, `polygon_m` (auf der Fläche, Umlauf zur Normale). Für Toolgen **Maskenregionen**, keine Geometrie (das Blatt zeichnet sie 0,4 Modelleinheiten ≈ 0,4–0,6 mm darüber, unter der 0,5-mm-Regel; Entscheidung 4 im Plan) |
-| `grip` | `part` (= `Socket_Hand.part`), `grip_axis_m` (Unterkante → Oberkante), `grip_tilt_degrees`, `trigger_m`/`trigger_part` (Mitte des Abzugs, sonst `null`), `cross_section_m` (`depth_m` quer zur Achse in halber Höhe, `width_m` = X), `method` |
+| `grip` | `part` (= `Socket_Hand.part`), `grip_axis_m` (Unterkante → Oberkante), `grip_tilt_degrees`, `trigger_m`/`trigger_part` (Mitte des Abzugs, sonst `null`), `cross_section_m` (`depth_m` = Sehne senkrecht zur Griffachse durch ihre Mitte, `width_m` = X), `method` |
 | `support` | `part` (= `Socket_SupportHand.part`), `radius_m` (`half_height_m` Z, `half_width_m` X: Querschnitt des Teils in der Ebene durch `Socket_SupportHand`), `section_center_m`, `anchor_m`; ohne Stützhand `part`/`radius_m` `null` mit `reason` (Pistolen, Handfeuerwaffen: Becher-Griff) |
 | `sight` | Visier-Serie: `id` (VSnn), `kind`, `type`, `frame`, `window_kind`, `sight_spec` (Datei, Format, sha256), `window` (`shape`, `width_m`, `height_m`, `corner_radius_m`, `view_axis_m`), `tube` (Röhre: Länge, Linsen-, Augen-, Bohrungsradius), `socket_mount_m`, `socket_sight_rear_m`, `socket_reticle_m`, `socket_eye_m`, `eye_radius_m`, `socket_eye_source`, `line` (`start_m`, `direction`, `height_above_mount_m`, `above_body_top_m`), `parts`, `glass_parts`, `riser_m`, `rail_part`. Bogen (Pin-Visier): Art und Teile, Anker `null`; Schwert/Glefe `present` false |
 | `anchors` | Weapon-Spec-Anker unverändert (`Socket_Hand`, `Socket_SupportHand`, `Socket_Muzzle`, `Socket_CenterOfMass`, `Socket_Sight`: `position_m`, `part`, `source`) plus `Socket_Reticle` und `Socket_Eye`; Visier-Serie: Sight-Spec-Anker (`Socket_Mount`, `Socket_Sight`, `Socket_Reticle`, `Socket_Eye`) |
@@ -50,9 +50,9 @@ Stand 19.10.2026 (claude-0.13 „Blueprint“, Etappe DS-1 aus [umsetzungsplan-m
   Seitennormalen (claude-0.13: KC10 Wurfarme, 8 Flächen, alter `prism_y`-Weg vor der Umlaufregel aus claude-0.11). Offene Teile (Ringhälften, Mäntel, Linsen-
   scheiben) behalten die gespeicherte Normale. Glas der Visiere sind zwei Flächen am selben Ort (beidseitig).
 - **Koplanar (Toolgen-Regel ≥ 0,5 mm).** `checks.coplanar[]` nennt Teilpaare mit gleichgerichteten Flächen unter 0,5 mm Abstand, die sich um mindestens
-  1 mm² überdecken (Z-Fighting im Tiefenpuffer; das Blatt zeichnet Teil für Teil und kennt das Problem nicht): `parts`, kleinster `distance_m`, größte
-  `overlap_m2`, `normal`, `faces` (Zahl der Flächenpaare), `same_look` (gleicher Kanal, Material, Leuchten, Glas – Flackern kaum sichtbar). Entgegengesetzte
-  Flächen (ein Teil sitzt auf dem anderen) zählen nicht. Stand claude-0.13: 915 Paare auf 153 Blättern, 883 davon mit Abstand 0, 338 mit unterschiedlichem
+  1 mm² überdecken (Normalen höchstens 1° auseinander, Abstand entlang der Flächennormale; Z-Fighting im Tiefenpuffer; das Blatt zeichnet Teil für Teil und kennt das Problem nicht): `parts`, kleinster `distance_m`, größte
+  `overlap_m2` (unabhängig vom Abstand), `normal`, `faces` (Zahl der Flächenpaare), `same_look` (gleicher Kanal, Material, Leuchten, Glas – Flackern kaum sichtbar). Entgegengesetzte
+  Flächen (ein Teil sitzt auf dem anderen) zählen nicht. Stand claude-0.13: 916 Paare auf 153 Blättern, 886 davon mit Abstand 0, 341 mit unterschiedlichem
   Aussehen. Befund, kein Fehler: die Modelle bleiben die abgenommenen; TG-A entscheidet (z. B. gleiche Teile verschmelzen, Deckflächen 0,5 mm absetzen,
   Viewer-Determinismus 16 Läufe).
 - **Griffachse.** Konvexe Hülle des Griffteils in der Seitenansicht; Mitte der waagrechten Schnitte bei 25 % und 85 % der Höhe ab Oberkante, bis Unter- und
@@ -75,7 +75,7 @@ Stand 19.10.2026 (claude-0.13 „Blueprint“, Etappe DS-1 aus [umsetzungsplan-m
 
 | | Wert |
 |---|---|
-| Dateien | 159 (150 Waffen, 9 Visiere), 23–325 KB, zusammen 23 MB; zip (deflate) 3,1 MB |
+| Dateien | 159 (150 Waffen, 9 Visiere), 23–326 KB, zusammen 23 MB; zip (deflate) 3,1 MB |
 | Teile | 7 423, davon 4 450 mit Primitiv-Hinweis |
 | Hüllen | 5 139 geschlossen (Volumen > 0), 2 334 offen |
 | Aufkleber | 6 880 (Weapon-Spec), 28 ragen im Blatt über ihr Teil |
