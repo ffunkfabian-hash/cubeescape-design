@@ -52,7 +52,8 @@ def panel(prof, viewport, compact, colors):
     rows = 6 // cols
     tw, th = (w-(cols-1)*gap)/cols, (h-35-(rows-1)*gap)/rows
     result = '<g id="texture-profile">'
-    result += _text(x, y+19, 'TEXTURPROFIL · TYPVORGABE · WAFFEN 1–9', 17 if compact else 20, '#91A3B7', 'title')
+    heading = 'TEXTURPROFIL · VORSCHLAG, ABGELEITET' if prof.get('derived_from') else 'TEXTURPROFIL · TYPVORGABE · WAFFEN 1–9'
+    result += _text(x, y+19, heading, 17 if compact else 20, '#91A3B7', 'title')
     records = []
     for i, (key, label) in enumerate(TILES):
         tx, ty = x+(i%cols)*(tw+gap), y+35+(i//cols)*(th+gap)

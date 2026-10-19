@@ -220,13 +220,15 @@ def _glass_pass(image, flattened, rotation, center, factor, depth):
 
 def render(model, yaw=-45, pitch=35.264, size=(1000, 600), scale=None,
            center=None, textured=False, palette=None, skin=None, ow=3.0,
-           shadow=False, glow=True, display_units=1.0, *, model_unit_m=None):
+           shadow=False, glow=True, display_units=1.0, *, model_unit_m=None,
+           inner_width_scale=1.0):
     """Render a model without modifying it. Scale is in final pixels/world unit.
 
     Explicit center and scale are honored, allowing aligned orthographic panels
     and intentionally cropped details. ow is in final sheet pixels; shadow and
     glow affect only composition, never depth IDs or anchors. Transparent pixels
     outside the geometry carry part ID -1, including glow and shadow pixels.
+    inner_width_scale adjusts face seams independently of the silhouette.
     """
     if skin is not None and skin not in {item["id"] for item in CATALOG}:
         raise ValueError(f"Unknown skin: {skin}")
@@ -235,6 +237,8 @@ def render(model, yaw=-45, pitch=35.264, size=(1000, 600), scale=None,
     width, height = map(int, size)
     if min(width, height) < 1:
         raise ValueError("Render size must be positive")
+    if not np.isfinite(inner_width_scale) or inner_width_scale <= 0:
+        raise ValueError("Interior line scale must be positive and finite")
     lo, hi = bounds(model)
     center = (lo + hi) / 2 if center is None else np.asarray(center, dtype=float).copy()
     rotation = rotation_matrix(yaw, pitch)
@@ -354,7 +358,9 @@ def render(model, yaw=-45, pitch=35.264, size=(1000, 600), scale=None,
     stroke = np.zeros((h, w), dtype=np.float32)
     if ow > 0 and occupied.any():
         if inner.any():
-            stroke = np.clip(ow*.4*ss-distance_transform_edt(~inner), 0, 1)*occupied
+            # Resolve the intended width first: an inverse compensation such as
+            # 4.2*(4.6/4.2) must retain the exact same 4.6px seam, including bytes.
+            stroke = np.clip((ow*inner_width_scale)*.4*ss-distance_transform_edt(~inner), 0, 1)*occupied
         # A pixel centre directly beside the boundary has distance 0.5.
         boundary_distance = np.where(occupied, distance_transform_edt(occupied),
                                      distance_transform_edt(~occupied))-.5

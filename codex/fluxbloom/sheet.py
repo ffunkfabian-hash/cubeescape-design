@@ -157,6 +157,20 @@ def _prompts(meta, model, main_skin):
           "brushed metal, rubber contact surfaces, matte polymer and restrained functional light. Five designed "
           "skins with color blocking, glyphs, bands, metallic finishes and structural ribs. Clear connections. "
           "No floating parts, unintended intersections, excessive bloom, blur or perspective distortion.")
+    from design_types import NEW
+    if meta['slug'] in NEW:
+        from operations import operation
+        from texture_catalog import skin as catalog_skin
+        op = operation(meta)
+        de = meta['kind'] + '. ' + de
+        en = NEW[meta['slug']][2] + '. ' + en.replace(main_skin['description'], catalog_skin(main_skin['id'])['description']['en'])
+        if meta['slug'] in ('sword', 'glaive'):
+            de = de.replace('Optik mit Befestigung separat; Detail von Griff, Abzug/Bügel beziehungsweise Pfeilauflage und Riser in der Basisfassung.',
+                            'Ohne Visier und Visierschiene; Detail des Griff-/Bedienbereichs und der Klingenaufnahme in der Basisfassung.')
+            en = en.replace('Detached class-specific optic with mounts. Base-model grip and trigger guard close-up, or arrow rest and riser for a bow;',
+                            'No sight or sight rail. Base-model grip/control and blade-socket detail;')
+        de += ' Bedienentwurf: ' + ' '.join(op[key]['de'] for key in ('reload','action','fire'))
+        en += ' Operation concept: ' + ' '.join(op[key]['en'] for key in ('reload','action','fire'))
     return {"de": de, "en": en}
 
 
@@ -327,11 +341,36 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
     parts.append(_panel(140, 430, 2780, 1770, "01", "HAUPTANSICHT · ISOMETRIE", f"{main_skin['name'].upper()} · −45° / +35.264° · OHNE OPTIK"))
     hero_x, hero_y, hero_w, hero_h = HERO_VIEWPORT
     hero_center, hero_scale = _hero_frame(dressed)
+    # Calibrate only new hero strokes to the approved collection medians.
+    # K's thinner outer contour compensates for more exposed coloured edges;
+    # face seams are calibrated separately. Old sheets retain their original values.
+    hero_outline = 3 if number > 10 and meta['variant'] == 'K' else OUTLINE_WIDTHS['hero']
+    hero_inner_scale = 1.10 if number > 10 and meta['variant'] == 'A' else 1.0
+    if number > 10 and meta['variant'] == 'K':
+        hero_inner_scale = 5.06/hero_outline
     hero = render(dressed, yaw=-45, pitch=35.264, size=(hero_w, hero_h), scale=hero_scale, center=hero_center,
-                  textured=True, skin=main_skin["id"], ow=OUTLINE_WIDTHS["hero"], shadow=True)
+                  textured=True, skin=main_skin["id"], ow=hero_outline, shadow=True,
+                  inner_width_scale=hero_inner_scale)
     parts.append(_image(hero.image, hero_x, hero_y))
     anchors = getattr(hero, "anchors", {})
     priorities = (("Oberer Wurfarm", "Unterer Wurfarm", "Sehne", "Pfeilauflage", "Gehäuse", "Griff", "Abzug", "Magazin") if tall else PRIORITY)
+    new_priorities = {
+        'sword': ('Klinge','Griff','Parierstange','Energiezelle','Gehäuse'),
+        'glaive': ('Klinge','Emitter','Schildflügel','Griff','Abzug','Gehäuse','Stange'),
+        'crossbow': ('Wurfarm','Sehne','Bolzenauflage','Spannhebel','Gehäuse','Griff','Abzug','Mündung'),
+        'handcannon': ('Trommel','Hahn','Gehäuse','Griff','Abzug','Mündung','Visierschiene'),
+        'spread': ('Trommel','Hahn','Kipprahmen','Griff','Abzug','Mündung','Gehäuse'),
+        'linear': ('Ladekammer','Beschleunigerschiene','Beschleunigerring','Feldring','Griff','Abzug','Mündung','Schaft'),
+        'breech': ('Kipplauf','Laufscharnier','Scharnier','Verriegelung','Griff','Abzug','Mündung','Schaft'),
+        'drum': ('Granattrommel','Ladeklappe','Gehäuse','Griff','Abzug','Lauf','Mündung','Schaft'),
+        'machine': ('Munitionskasten','Patronengurt','Zuführdeckel','Gehäuse','Griff','Abzug','Mündung','Schaft'),
+        'rocketside': ('Raketenmagazin','Schlitten','Abgasöffnung','Gehäuse','Griff','Abzug','Mündung'),
+        'rocketpulse': ('Raketenmagazin','Verschluss','Gehäuse','Griff','Abzug','Lauf','Mündung','Schaft'),
+        'slug': ('Slug-Magazin','Verschluss','Gehäuse','Griff','Abzug','Lauf','Mündung','Schaft'),
+        'heat': ('Hitzespeicher','Entlüftungsklappe','Hitzeanzeige','Gehäuse','Griff','Abzug','Lauf','Mündung'),
+        'micro': ('Ladeklappe','Raketenvorrat','Gehäuse','Griff','Abzug','Lauf','Mündung','Schaft'),
+    }
+    priorities = new_priorities.get(slug, priorities)
     chosen = [(key, anchors[key]) for key in priorities if key in anchors][:8]
     by_height = sorted(chosen, key=lambda item: item[1][1])
     split = (len(by_height) + 1) // 2
@@ -365,16 +404,17 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
 
     # Construction details deliberately show the original, undecorated weapon.
     is_bow = tall or "bogen" in str(meta.get("kind", "")).lower() or slug == "bow"
-    detail_title = "GRIFF & PFEILAUFLAGE" if is_bow else "GRIFF & ABZUGSBEREICH"
+    detail_title = "GRIFF & PARIERSTANGE" if slug == "sword" else "GRIFF & PFEILAUFLAGE" if is_bow else "GRIFF & ABZUGSBEREICH"
     detail_yaw=152 if is_bow else -28
     detail_pitch=-22
     detail_subtitle="BASIS · GEGENÜBERLIEGENDE SEITE · OHNE SKIN" if is_bow else "BASIS · −28° / −22° · OHNE SKIN"
     dx,dy,dw,dh = panels["detail"]
     if extended:
-        detail_title = "GRIFF & PFEILAUFLAGE" if is_bow else "GRIFF & ABZUG"
+        detail_title = "GRIFF & PARIERBLOCK" if slug == "sword" else "GRIFF & PFEILAUFLAGE" if is_bow else "GRIFF & ABZUG"
         detail_subtitle = "BASIS · OHNE SKIN"
     parts.append(_panel(dx,dy,dw,dh, "03", detail_title, detail_subtitle))
     detail_names = ("Abzug", "Griff", "Magazin", "Bügel", "Abzugsbügel", "Pfeilauflage", "Riser", "Riserbrücke", "Führungssockel") if is_bow else ("Abzug", "Griff", "Magazin", "Bügel", "Abzugsbügel")
+    if slug == "sword": detail_names = ("Griff", "Parierstange", "Gehäuse", "Energiezelle")
     selected = [p for p in weapon if getattr(p, "label", "") in detail_names] or weapon
     detail_lo, detail_hi = bounds(selected)
     detail_center = (np.asarray(detail_lo) + np.asarray(detail_hi)) / 2
@@ -384,12 +424,12 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
     detail_scale = float(min((detail_size[0]-110) / detail_extent[0], 550 / detail_extent[1]))
     detail = render(weapon, yaw=detail_yaw, pitch=detail_pitch, size=detail_size, scale=detail_scale, center=detail_center, textured=True, ow=OUTLINE_WIDTHS["detail"], shadow=False)
     parts.append(_image(detail.image, dx+40, dy+150))
-    parts.append(_wrapped(dx+40, dy+830, "Pfeilauflage · Riser · Kontaktgriff · Auslösung" if is_bow else "Kontaktgriff · freier Abzug · Bügel · eingesetzte Zelle", width=36 if extended else 57, size=22 if extended else 27, leading=30 if extended else 34, max_lines=2))
+    parts.append(_wrapped(dx+40, dy+830, "Kontaktgriff · Parierstange · Energiezelle" if slug == "sword" else "Pfeilauflage · Riser · Kontaktgriff · Auslösung" if is_bow else "Kontaktgriff · freier Abzug · Bügel · eingesetzte Zelle", width=36 if extended else 57, size=22 if extended else 27, leading=30 if extended else 34, max_lines=2))
     parts.append(_text(dx+40, dy+922, "Komplettes Modell im Tiefentest", 23, MUTED, "mono"))
 
     ox,oy,ow,oh = panels["optic"]
     parts.append(_panel(ox,oy,ow,oh, "04", "VISIER · SEPARAT", "BASIS · HALTER / KLEMME" if extended else "BASIS · INKLUSIVE HALTER / KLEMME"))
-    sight_type = str(meta.get("sight_type", "Klassenbezogene Moduloptik"))
+    sight_type = str(meta.get("sight_type") or "Ohne Visier")
     if optics:
         cell=(int((ow-100)/2),650)
         for i,(yaw,pitch,label) in enumerate(((-45,35.264,"ISOMETRIE"),
@@ -406,13 +446,13 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
             parts.append(_image(view.image,x,oy+180))
             parts.append(_text(x,oy+876,label,22,MUTED,"mono"))
     else:
-        parts.append(_wrapped(ox+60, oy+310, "Keine separate Optik im Modell. Aufnahme und Ausrichtung an der Waffe bleiben sichtbar.", width=32 if extended else 45, size=25 if extended else 31, leading=35 if extended else 41))
+        parts.append(_wrapped(ox+60, oy+310, "Nahkampfkonzept ohne Visier und Visierschiene." if slug in ("sword", "glaive") else "Keine separate Optik im Modell. Aufnahme und Ausrichtung an der Waffe bleiben sichtbar.", width=32 if extended else 45, size=25 if extended else 31, leading=35 if extended else 41))
     parts.append(_wrapped(ox+40, oy+922, sight_type, width=35 if extended else 57, size=24, leading=29, max_lines=1))
 
     from texture_profile import profile
-    from weapon_spec import TOOLGEN
+    from design_types import type_key
     from profile_panel import panel as profile_panel
-    texture_target = profile(TOOLGEN[slug][0])
+    texture_target = profile(type_key(slug))
     profile_records = []
     profile_viewport = None
     mx,my,mw,mh = panels["material"]
@@ -506,6 +546,9 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
                   "Industrial low-poly hard-surface model with connected modules. Large isometric without optic; six orthographic "
                   "views at one scale; detached class-specific optic with mounts. Base grip/trigger or arrow-rest detail. "
                   "Painted / brushed metal, rubber, matte polymer, functional light. Four palettes and five skins; no floating parts or excessive bloom.")
+    if slug in ('sword', 'glaive'):
+        preview_de = preview_de.replace('Optik separat, Griff-/Abzugsdetail bzw. Pfeilauflage in Basisfassung.', 'Ohne Visier und Visierschiene; Griff-/Bedien- und Klingendetail in Basisfassung.')
+        preview_en = preview_en.replace('detached class-specific optic with mounts. Base grip/trigger or arrow-rest detail.', 'no sight or sight rail. Base grip/control and blade-socket detail.')
     parts.append(_wrapped(180, 4150, "DE / " + preview_de, width=147, size=23, leading=26, max_lines=3))
     parts.append(_wrapped(2440, 4150, "EN / " + preview_en, width=143, size=23, leading=26, max_lines=3))
     parts.append('<path d="M140 4305H4660" stroke="#34475B" stroke-width="2"/>')
@@ -547,7 +590,9 @@ def build_sheet(meta, model, output: Path, number: int) -> dict:
                      "display_scale": hero_scale/DISPLAY_UNITS_PER_MODEL_UNIT, "center": hero_center.tolist(),
                      "model_bbox": hero.model_bbox},
             "style_contract": {"display_units_per_model_unit": DISPLAY_UNITS_PER_MODEL_UNIT,
-                               "outline_widths": OUTLINE_WIDTHS, "light_space": "camera", "supersampling": 2},
+                               "outline_widths": {**OUTLINE_WIDTHS, 'hero':hero_outline},
+                               "hero_inner_width_scale": hero_inner_scale,
+                               "light_space": "camera", "supersampling": 2},
             "model_bounds": {"min": lo.tolist(), "max": hi.tolist(), "center": center.tolist()},
             "hero_labels": label_records, "other_components": others, "prompts": prompts,
             "detail": {"yaw": detail_yaw, "pitch": detail_pitch, "scale": detail_scale, "center": detail_center.tolist(),

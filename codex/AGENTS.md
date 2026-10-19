@@ -4,10 +4,12 @@ Globale Regeln und die AGENTS.md im Repository-Wurzelordner gelten. Nur unter `c
 Keine Dateien aus `claude/` übernehmen, verändern oder per Symlink einbinden. Gemeinsame Vorgaben in `docs/` nur lesen.
 Bildläufe auf dem Mac mit heavy_lock; Tests und Syntax sind die schnellen Prüfungen.
 
-Aktuell codex-0.2, Variante K „Flux Bloom“, und codex-0.1, Variante A „Parallax“, Branch `codex/style-spec`.
+Aktuell codex-0.2.6, Variante K „Flux Bloom“, und codex-0.1.6, Variante A „Parallax“ (je 25 Konzepte).
+Sitzung DS codex-0.1.6/0.2.6 „Switchcraft“ · Codex-Mac, Branch `codex/0.1.6-0.2.6-switchcraft`.
 Nutzerauftrag vom 17.10.2026: Auch Parallax nach dem aktuellen Claude-Maßstab überarbeiten.
 Beide Modellserien bleiben getrennt, die eigenen Codex-Werkzeuge für Raster, Skins, Layout und Spec werden gemeinsam genutzt.
-Der Renderer und allgemeine Bausteine stammen aus dem früheren eigenen Codex-Werkzeug; die zehn Konzepte sind neu.
+Der Renderer und allgemeine Bausteine stammen aus dem früheren eigenen Codex-Werkzeug;
+jede Serie enthält zehn Bestandskonzepte und 15 neue Typen.
 
 
 ## Verbindlicher Maßstab: aktueller Claude-Stand
@@ -63,3 +65,16 @@ Erzeugte Galerien bleiben lokal; `output/*.spec.json`, `output/golden.json` und 
 Nutzerfreigabe am 18.10.2026: Die vier Stilproben sind akzeptiert, alle 20 dürfen umgestellt werden.
 Teil C ist seit main `0e62096` ebenfalls freigegeben: Katalogparameter zur Bauzeit lesen, physische mm mit dem
 Spec-Maßstab umrechnen und Material-/Skin-IDs im Spec referenzieren; `docs/textures/` bleibt nur lesbar.
+
+## Typen und Bedienung (19.10.2026)
+
+Weapon-Spec und referenzierte Sight-Specs sind Format 2. `trace_rifle` bedeutet
+Spurgewehr (08); Scout-Gewehr (11) bleibt ein neuer Designtyp ohne Toolgen-ID.
+Typen 11–25 entstehen eigenständig in A und K, mit identischer Nummerierung und
+Pflichtmechanik nach `claude/docs/auftrag-codex-waffentypen.md`. Neue Bewegungen
+bleiben `proposed: true`, `toolgen_id`/`element` null; Texturprofile „Vorschlag, abgeleitet“.
+BEDIENUNG und Spec `operation` stammen aus denselben eigenen DE-/EN-Texten.
+Alle bisherigen Bildfelder bleiben stehen; das neue Bedienfeld verlängert das
+Blatt auf 4800×4832. Animationen sind nicht Bestandteil dieser Sitzung.
+Die Produktions-Bauwege laden `load_collection(..., include_new=True)` (25),
+die historische Zehner-Regression bleibt separat und wird um 30 neue Modelle geprüft.

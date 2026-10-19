@@ -19,11 +19,18 @@ CACHE = Path.home() / 'Library/Caches/CubeEscapeDesign/concept-sheets/fluxbloom-
 
 def validate_model(meta, model):
     required = {'Gehäuse', 'Griff', 'Abzug', 'Bügel', 'Magazin', 'Lauf', 'Mündung', 'Schaft', 'Visierschiene'}
+    from design_types import NEW
+    if meta['slug'] in NEW:
+        required = {'Gehäuse', 'Griff'}
+        if meta['slug'] != 'sword':
+            required |= {'Abzug', 'Bügel'}
+        if meta['slug'] not in ('sword', 'glaive'):
+            required |= {'Lauf', 'Mündung', 'Visierschiene'}
     present = {p.label for p in model if not p.sight}
     missing = required - present
     if missing:
         raise ValueError(f"{meta['slug']}: missing labels {sorted(missing)}")
-    if not any(p.sight for p in model):
+    if meta['slug'] not in ('sword','glaive') and not any(p.sight for p in model):
         raise ValueError(f"{meta['slug']}: missing separate optic")
     for part in model:
         if not part.faces:
@@ -133,7 +140,7 @@ def svg_captures(paths,target):
 
 
 def contact_sheet(paths, target):
-    canvas = Image.new('RGB', (1600, 5 * 790), '#0e1622')
+    canvas = Image.new('RGB', (1600, max(1, (len(paths)+1)//2) * 790), '#0e1622')
     draw = ImageDraw.Draw(canvas)
     for i, path in enumerate(paths):
         with Image.open(target / f'{path.stem}.png') as image:
@@ -153,12 +160,13 @@ def main(argv=None):
     parser.add_argument('--weapon', action='append', help='Slug; repeat to select multiple weapons')
     parser.add_argument('--capture-only', action='store_true', help='Inspect existing HTML without rerendering geometry')
     parser.add_argument('--capture-engine',choices=('playwright','rsvg'),default='playwright')
+    parser.add_argument('--existing-only', action='store_true', help='Original 01–10 only')
     parser.add_argument('--spec-only', action='store_true', help='Export canonical weapon specs without rendering sheets')
     args = parser.parse_args(argv)
     from collections_codex import load_collection, PROBE_SLUGS
     from sheet import build_sheet
     started = time.monotonic()
-    models = load_collection(args.collection)
+    models = load_collection(args.collection, include_new=not args.existing_only)
     collection_root=HERE if args.collection=='fluxbloom' else HERE.parent/'parallax'
     args.output=args.output or (collection_root/'output' if args.spec_only else collection_root/('probe' if args.probe else 'output'))
     args.screenshots=args.screenshots or Path.home()/f'Library/Caches/CubeEscapeDesign/concept-sheets/{args.collection}-upgrade-{"probe" if args.probe else "full"}'
@@ -211,8 +219,8 @@ def main(argv=None):
     cards = []
     for (_, meta, _), path in zip(selected, paths):
         with Image.open(args.screenshots / (path.stem + '-preview.jpg')) as preview:
-            preview.save(previews / (path.stem + '.jpg'), quality=88)
-        cards.append(f'<a href="{html.escape(path.name)}"><img src="previews/{path.stem}.jpg" alt="{html.escape(meta["kind"])}"><span>{path.stem} · {html.escape(meta["name"])} / {html.escape(meta["kind"])}</span></a>')
+            preview.save(previews / (path.stem + '.webp'), quality=60)
+        cards.append(f'<a href="{html.escape(path.name)}"><img src="previews/{path.stem}.webp" alt="{html.escape(meta["kind"])}"><span>{path.stem} · {html.escape(meta["name"])} / {html.escape(meta["kind"])}</span></a>')
     gallery_title=f"Codex · {models[0][0]['variant_name']} · {'Probeblätter' if args.probe else 'Konzeptblätter'}"
     (args.output / 'index.html').write_text('<!doctype html><html lang="de"><meta charset="utf-8"><title>'+html.escape(gallery_title)+'</title><style>body{background:#0e1622;color:#ece6da;font:20px sans-serif;padding:40px}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}a{color:#e1d2ff;text-decoration:none}img{width:100%;display:block;border-radius:8px}span{display:block;padding:16px}p{max-width:900px;line-height:1.5}</style><h1>'+html.escape(gallery_title)+'</h1><p>Überarbeitete Waffenformen · kräftige Farbwelten · ein 3D-Modell je Blatt · sechs orthografische Ansichten im selben Maßstab. Gestalterische Referenzen.</p><main>'+''.join(cards)+'</main></html>', encoding='utf-8')
     manifest = {'version': '0.2.6' if args.collection=='fluxbloom' else '0.1.6', 'name': models[0][0]['variant_name'], 'stage': 'probe' if args.probe else 'full', 'canvas': [4800, 4832],

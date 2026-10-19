@@ -261,7 +261,8 @@ def make_spec(meta, model, number, record=None):
         palette_rows.append({'name':name,'colors':actual})
     record['palette_variants']=palette_rows
     ref=design_spec(meta,model,number,record)
-    tid,reference_length,element=TOOLGEN[meta['slug']]
+    from design_types import NEW, type_key
+    tid,reference_length,element=(None,NEW[meta['slug']][5],None) if meta['slug'] in NEW else TOOLGEN[meta['slug']]
     legacy=ref['anchors']; anchors={}
     for key,a in legacy.items():
         anchors[key]={k:a.get(k) for k in ('position_m','model','source','part')}
@@ -351,14 +352,14 @@ def make_spec(meta, model, number, record=None):
         for part_id in item['parts'] or []:
             byid[part_id]['moving']=item['kind']
     from texture_profile import profile
-    texture_target = profile(tid)
+    texture_target = profile(type_key(meta['slug']))
     return {**({'texture_profile': texture_target} if texture_target else {}),
       'format':FORMAT,'format_version':VERSION,
       'generator':{'repo':'cubeescape-design','tool':'codex/fluxbloom/weapon_spec.py','claude_version':None,'codex_version':'0.2.6' if meta['variant']=='K' else '0.1.6'},
       'sheet':{'id':f"K{meta['variant']}{number:02d}",'file':f"K{meta['variant']}{number:02d}.html",'variant':meta['variant'],'variant_name':meta['variant_name'],'number':f'{number:02d}','nick':meta['name'],'fid':meta['slug']},
       'operation':operation(meta),
       'weapon':{'name_de':meta['kind'],'toolgen_id':tid,**weapon_fields(meta)},'element':element,
-      'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Bogen: Element nicht festgelegt.',
+      'element_source':'Nutzerentscheidung 17.10.2026; Elementzuordnung aus cubeescape-design/weapon-spec.md' if element else 'Neue Konstruktion: Element nicht festgelegt, nicht in Toolgen/Spiel angebunden.' if meta['slug'] in NEW else 'Bogen: Element nicht festgelegt.',
       'units':{'model_unit_m':ref['units']['model_unit_m'],'model_length_units':reference_length/ref['units']['model_unit_m'],'reference_length_m':reference_length,
         'rule':ref['units']['rule'],'reference':ref['units']['source']},
       'axes':{'model':{'x':'vorn (Mündung)','y':'unten','z':'links'},'target':{'system':'Toolgen/Blender','forward':'-Y','up':'+Z','left':'+X','unit':'m'},'matrix_model_to_target':MATRIX,'origin':'Socket_Hand','formula':'p_m = model_unit_m · M · (p_model − Socket_Hand.model)'},

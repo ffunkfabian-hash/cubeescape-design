@@ -17,6 +17,8 @@ FIT_SOURCE = ('claude/docs/weapon-spec.md, Größe in der Roboterhand; '
               'Cube Escape 0.82, Docs/EQUIPMENT.md, Stand 17.10.2026')
 LENGTHS_M = dict(pistol=.243, assault=.934, impulse=.862, shotgun=.904,
                  sniper=1.134, smg=.616, fusion=.960, trace=1.044, rocket=.725, bow=1.018)
+from design_types import NEW
+LENGTHS_M.update({slug:row[5] for slug,row in NEW.items()})
 FIT_LENGTHS_M = dict(assault=.67, impulse=.66, shotgun=.67, sniper=.73,
                     smg=.52, fusion=.67, trace=.69, rocket=.65)
 SIGHT_TYPES = {
@@ -101,12 +103,15 @@ def _anchors(meta, model):
         set_anchor('Socket_SupportHand', i, _center(model[i]), 'inferred: named forward grip/handguard bounding-box centre')
     else:
         set_anchor('Socket_SupportHand', source='unavailable', reason='No named forward grip/handguard; no cup grip guessed.')
-    muzzle = _anchor_candidates(model, {'pfeilspitze'}) if meta['slug'] == 'bow' else []
+    muzzle = _anchor_candidates(model, {'pfeilspitze'}) if meta['slug'] == 'bow' else _anchor_candidates(model, {'klinge'}) if meta['slug'] == 'sword' else []
     if not muzzle:
         muzzle = _anchor_candidates(model, {'mündung', 'zweite mündung', 'lauf', 'emitter', 'strahlemitter', 'pfeilführung'})
     if muzzle:
         i = max(muzzle, key=lambda j: _box(model[j])[1][0])
         lo, hi = _box(model[i]); point = (lo + hi) / 2; point[0] = hi[0]
+        if meta['slug'] == 'sword':
+            verts=model[i].vertices
+            point=np.mean(verts[np.abs(verts[:,0]-hi[0])<1e-7],axis=0)
         set_anchor('Socket_Muzzle', i, point, 'inferred: named forward functional part front plane and cross-section centre')
     else:
         set_anchor('Socket_Muzzle', source='unavailable', reason='No named muzzle, emitter, barrel or arrow tip.')
@@ -306,7 +311,7 @@ def _robot_fit(meta, model, anchors, scale, dimensions):
             limit, minimum = limits.get(key, (None, False))
             at_target['measurements'][key] = measured(value, item['source'] + '; uniformly rescaled', limit, minimum)
     return dict(source=FIT_SOURCE, concept_sheets=False, applies=target_length is not None,
-                reason=None if target_length else 'Pistol uses cup grip; no long-gun fit target.' if slug == 'pistol' else 'No robot bow-fit target defined.',
+                reason='Neue Konstruktion: keine validierten Roboter-Zielmaße vorhanden.' if slug in NEW else None if target_length else 'Pistol uses cup grip; no long-gun fit target.' if slug == 'pistol' else 'No robot bow-fit target defined.',
                 robot={key: sourced(value) for key, value in dict(height_m=1.50, hand_m=.09, arm_m=.42).items()},
                 targets=targets, actual=measurements, sheet_at_target=at_target,
                 validated=False, fits_robot=None,
@@ -377,7 +382,7 @@ def design_spec(meta, model, number, record):
                   matrix_model_to_m=M.tolist(), formula='p_m = model_unit_m * M @ (p_model - Socket_Hand.model)',
                   handedness='right', origin_model=_vec(origin)),
         units=dict(model_unit_m=scale, model_length_units=length_units, reference_length_m=LENGTHS_M[slug],
-                   rule='Largest mounted extent for bow; mounted longitudinal X extent for other classes.', source=REFERENCE_SOURCE),
+                   rule='Largest mounted extent for bow; mounted longitudinal X extent for other classes.', source=('Schätzung aus claude/generator/wtypes.py ref_len; Proportion verwandter Toolgen-Typen, kein Toolgen-Modell' if slug in NEW else REFERENCE_SOURCE)),
         bounding_box=[lo.tolist(), hi.tolist()], dimensions_m=dimensions, anchors=anchors,
         construction_notes=meta['notes'], form=meta['form'], palette=meta['palette'],
         palette_variants=_palettes(meta, model, exported, record),

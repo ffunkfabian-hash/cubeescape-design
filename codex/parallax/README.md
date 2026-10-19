@@ -1,8 +1,8 @@
 # A · Parallax
 
-Zehn eigenständige Codex-Entwürfe aus dem früheren Parallax-Stand, nun auf Wunsch des Nutzers mit dem aktuellen
-Blatt-, Material-, Skin- und Referenzdatenumfang überarbeitet. Die Formen stammen ausschließlich aus der eigenen
-Codex-Historie (`f5a7fde`); keine Übernahme aus Claudes Generator.
+25 eigenständige Codex-Entwürfe mit aktuellem Blatt-, Material-, Skin- und Referenzdatenumfang.
+Die zehn Bestandsformen stammen aus der eigenen Codex-Historie (`f5a7fde`),
+Typen 11–25 wurden neu konstruiert; keine Übernahme aus Claudes Generator.
 
 [Galerie](output/index.html) · [Probeblätter](probe/index.html) · [Versionsbericht](../docs/versions/0.1.md)
 
@@ -32,5 +32,22 @@ Die Waffen 1–9 tragen sechs Profilkacheln unter der Materialansicht: Gehäuse,
 Energie, Kantenabnutzung und Toolgen-Decals. Der Spec enthält dieselben Typvorgaben als
 `texture_profile`; der Bogen bleibt unverändert ohne Profil. Die Kacheln sind eine schematische
 Materiallegende für den Abnehmer, die Muster darüber zeigen weiterhin echte Modellteile.
-Bildbau und Prüfwerte: `python codex/fluxbloom/texture_profile_build.py --full` unter `heavy_lock`.
+Historischer Abnahmeweg für 0.1.5: `texture_profile_build.py --full`; aktuelle Gesamtprüfung siehe 0.1.6 unten.
 Siehe [Versionsbericht](../docs/versions/0.1.md).
+
+
+## 0.1.6 „Switchcraft“ · 19.10.2026
+
+25 Konzepte je Variante: der bisherige Bestand 01–10 und 15 neue Typen 11–25.
+Alle Blätter tragen BEDIENUNG; Weapon-Spec ist Format 2. Das Spurgewehr 08 verwendet
+`trace_rifle`; Scout-Gewehr 11 bleibt ohne Toolgen-Anbindung. Die neuen Typen haben
+`toolgen_id: null`, `toolgen_status: not_connected`, `element: null` und vorgeschlagene
+Bewegungen; ihre Texturprofile sind ausdrücklich „Vorschlag, abgeleitet“.
+
+Reproduzieren (Mac, unter `heavy_lock`):
+`python codex/fluxbloom/switchcraft_build.py --family parallax`.
+Nur Specs: `python codex/fluxbloom/build.py --collection parallax --spec-only`.
+Gemeinsame Schema-/Richtungsprüfung: `python codex/fluxbloom/validate_specs.py`.
+Historische Zehner-Regression: `load_collection(..., include_new=False)`; Bildbau und
+Spec-Export verwenden ausdrücklich `include_new=True`.
+Belege, Abnahmestand und Grenzen stehen im [Versionsbericht](../docs/versions/0.1.md).

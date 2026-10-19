@@ -1,6 +1,6 @@
 # K · Flux Bloom
 
-Zehn neue experimentelle Low-Poly-Waffenkonzepte. Variante K trägt in Kopf, Prompts und Spec den Namen „Flux Bloom“.
+25 experimentelle Low-Poly-Waffenkonzepte. Variante K trägt in Kopf, Prompts und Spec den Namen „Flux Bloom“.
 Die IDs KK01–KK10 bezeichnen Pistole, Sturmgewehr, Impulsgewehr, Schrotflinte, Scharfschützengewehr,
 Maschinenpistole, Fusionsgewehr, Spurgewehr, Raketenwerfer und Bogen.
 
@@ -25,7 +25,7 @@ python3 -m venv .venv
 ```
 
 Bildläufe ausschließlich auf einem Mac mit der vorhandenen rechnerweiten `heavy_lock` ausführen.
-Der Build öffnet Chromium und nimmt jedes 4800 × 4432-Blatt auf; Vorschauen und Kontaktbogen folgen aus denselben PNGs.
+Der Build öffnet Chromium und nimmt jedes 4800 × 4832-Blatt auf; Vorschauen und Kontaktbogen folgen aus denselben PNGs.
 HTML-Galerie: `output/index.html`. PNGs liegen unter `~/Library/Caches/CubeEscapeDesign/concept-sheets/fluxbloom-upgrade-full/`.
 `--weapon sniper` wählt ein Modell; `--output` und `--screenshots` ändern die Ausgabeorte.
 
@@ -105,5 +105,22 @@ Die Waffen 1–9 tragen sechs Profilkacheln unter der Materialansicht: Gehäuse,
 Energie, Kantenabnutzung und Toolgen-Decals. Der Spec enthält dieselben Typvorgaben als
 `texture_profile`; der Bogen bleibt unverändert ohne Profil. Die Kacheln sind eine schematische
 Materiallegende für den Abnehmer, die Muster darüber zeigen weiterhin echte Modellteile.
-Bildbau und Prüfwerte: `python codex/fluxbloom/texture_profile_build.py --full` unter `heavy_lock`.
+Historischer Abnahmeweg für 0.2.5: `texture_profile_build.py --full`; aktuelle Gesamtprüfung siehe 0.2.6 unten.
 Siehe [Versionsbericht](../docs/versions/0.2.md).
+
+
+## 0.2.6 „Switchcraft“ · 19.10.2026
+
+25 Konzepte je Variante: der bisherige Bestand 01–10 und 15 neue Typen 11–25.
+Alle Blätter tragen BEDIENUNG; Weapon-Spec ist Format 2. Das Spurgewehr 08 verwendet
+`trace_rifle`; Scout-Gewehr 11 bleibt ohne Toolgen-Anbindung. Die neuen Typen haben
+`toolgen_id: null`, `toolgen_status: not_connected`, `element: null` und vorgeschlagene
+Bewegungen; ihre Texturprofile sind ausdrücklich „Vorschlag, abgeleitet“.
+
+Reproduzieren (Mac, unter `heavy_lock`):
+`python codex/fluxbloom/switchcraft_build.py --family fluxbloom`.
+Nur Specs: `python codex/fluxbloom/build.py --collection fluxbloom --spec-only`.
+Gemeinsame Schema-/Richtungsprüfung: `python codex/fluxbloom/validate_specs.py`.
+Historische Zehner-Regression: `load_collection(..., include_new=False)`; Bildbau und
+Spec-Export verwenden ausdrücklich `include_new=True`.
+Belege, Abnahmestand und Grenzen stehen im [Versionsbericht](../docs/versions/0.2.md).

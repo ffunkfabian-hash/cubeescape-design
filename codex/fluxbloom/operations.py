@@ -155,6 +155,9 @@ OPS = {
 
 
 def operation(meta):
+    if 'operation_intent' in meta:
+        return {**meta['operation_intent'], 'ammo_class':weapon_fields(meta)['ammo_class'],
+                'source':'Eigenständiger Codex-Bedienvorschlag für neue Konstruktion; keine geprüfte Animation oder Spielfunktion.'}
     values = OPS[meta['series']][meta['slug']]
     return {**{key:dict(de=values[i], en=values[i+3]) for i,key in enumerate(('reload','action','fire'))},
             'ammo_class':weapon_fields(meta)['ammo_class'],
