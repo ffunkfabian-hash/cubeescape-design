@@ -25,7 +25,7 @@ def model():
     b.P([(334,248),(502,248),(536,264),(536,306),(334,306)],PG,-25,25,r=3,L='Düsengehäuse',
         dec=[D([(388+22*i,265),(401+22*i,265),(394+22*i,287),(382+22*i,287)],DK) for i in range(5)])
     # Auch der Schlitten selbst hat echte, ablesbare Abgasschlitze als Flächendekor.
-    b.P(rect(278,286,42,8),DK,-23.1,23.1,L='Abgasschlitze',
+    b.P(rect(278,286,42,8),DK,-23.1,23.1,L='Schlitten',   # Schlitzplatte fährt mit dem Schlitten
         dec=[D(rect(284+12*i,287,4,6),MS) for i in range(3)])
     for x in (346,500):
         for z0,z1 in ((25,30),(-30,-25)):

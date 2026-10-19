@@ -41,7 +41,7 @@ def model():
     b.C(414,700,BY,3.5,RO,n=10,L='Bolzen')
     b.F(697,731,BY,8,1,RO,n=10)
     b.P([(416,BY),(438,BY-12),(450,BY),(435,BY+2)],PI,-1,1,r=6,L='Bolzenfedern')
-    b.P([(601,262),(621,251),(648,259),(659,280),(649,308),
+    b.P([(601,264),(621,258),(648,260),(659,280),(649,308),
          (622,320),(600,306)],RO,-31,31,r=9,L='Bogenblock')
     # Je ein zusammenhängender Recurve-Flügel links und rechts: breite Wurzeln, stark zurücklaufende Spitzen.
     for s in (-1,1):

@@ -28,7 +28,7 @@ def model():
         cap=[(280+18*math.sin(k*math.pi/3-math.pi/2),
               18*math.cos(k*math.pi/3-math.pi/2), 6, DK, False) for k in range(6)])
     for z0, z1 in ((29.5,31),(-31,-29.5)):
-        b.P([(318,273),(374,273),(374,286),(318,286)], SA, z0, z1, r=3, L='Trommelfläche')
+        b.P([(318,273),(374,273),(374,286),(318,286)], SA, z0, z1, r=3, L='Trommel')   # Seitenflächen drehen mit der Trommel
     b.P([(257,293),(277,289),(282,296),(276,305),(258,306)],
         VI, 20, 28, r=3, L='Trommelriegel')
     b.P([(234,239),(245,218),(257,214),(270,236),(263,247)],

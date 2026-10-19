@@ -59,7 +59,7 @@ def model():
     b.P(rect(416,310,184,16),A,29,45,r=7,L='Spannhebel')
     b.P(circ(594,318,17,16),K,28,49,L='Hebeldrehpunkt',
         dec=[D(circ(594,318,8,12),P)])
-    b.P(rect(414,306,30,26),K,43,54,r=8,L='Hebelgriff')
+    b.P(rect(414,306,30,26),K,43,54,r=8,L='Spannhebel')   # Griff schwenkt mit dem Spannhebel (Bewegungsart cocking)
     b.P([(280,328),(336,328),(350,422),(292,428)],K,-24,24,r=12,L='Griff')
     for z0,z1 in ((23,29),(-29,-23)):
         b.P([(294,348),(320,348),(334,402),(309,408)],DK,z0,z1,r=8,L='Griffschale')

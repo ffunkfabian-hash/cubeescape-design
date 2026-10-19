@@ -22,8 +22,8 @@ def model():
     b.P(rect(248,278,34,31),DK,26,33,r=10,L='Schlossdeckel',
         dec=[D(roundpoly(rect(257,289,16,8),4),A,True)])
     # Getrennte Brücken umfassen die unveränderte Trommel, kein massiver Block im Fenster.
-    b.P([(274,240),(388,238),(405,250),(402,262),(280,262)],P,-24,24,r=10,L='Oberbrücke')
-    b.P([(288,320),(390,320),(400,332),(385,346),(300,342)],P,-23,23,r=9,L='Unterbrücke')
+    b.P([(274,238),(388,236),(405,246),(402,256),(280,256)],P,-24,24,r=8,L='Oberbrücke')   # über der Trommel (Oberkante y 257)
+    b.P([(288,324),(390,324),(400,334),(385,346),(300,342)],P,-23,23,r=8,L='Unterbrücke')   # unter der Trommel (Unterkante y 323)
     b.P([(374,252),(401,248),(411,272),(405,320),(390,336),(374,324)],P,-27,27,r=12,L='Rahmen')
     # k=0 bleibt exakt (y=270,z=0). Zylinderachse, Kammerkreis und Lauf ändern sich nicht.
     b.C(300,374,AX,32,DK,n=16,L='Trommel',

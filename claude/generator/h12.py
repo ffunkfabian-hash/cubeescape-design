@@ -31,8 +31,8 @@ def model():
     # Sechs echte Stirnkammern; die obere Kammer (280, 0) fluchtet mit dem Lauf.
     b.C(336,426,AX,32,HL,n=12,L='Trommel',
         cap=[(AX-ORBIT*math.cos(k*math.pi/3),ORBIT*math.sin(k*math.pi/3),7,DK,False) for k in range(6)])
-    b.P(rect(345,291,70,8),TC,31,34,r=2,L='Trommelrippe links')
-    b.P(rect(345,291,70,8),TC,-34,-31,r=2,L='Trommelrippe rechts')
+    b.P(rect(345,291,70,8),TC,31,34,r=2,L='Trommel')
+    b.P(rect(345,291,70,8),TC,-34,-31,r=2,L='Trommel')   # Rippen drehen mit der Trommel
     b.C(326,436,AX,5,DK,n=10,L='Trommelachse')
     b.P(rect(312,292,15,12),YE,23,31,r=2,L='Trommelriegel',
         dec=[D(circ(319,298,3,10),DK)])

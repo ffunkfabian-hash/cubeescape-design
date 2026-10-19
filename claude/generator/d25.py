@@ -24,13 +24,13 @@ def model():
     b.P(rect(218,280,36,22),P,24,32,r=8,L='Schlossplatte')
     b.P(circ(382,338,15,18),K,-34,34,L='Scharnier',dec=[D(circ(382,338,7,12),P)])
     # Die Oberbrücke hält nur die Trommeloberkante; seitliche Joche führen zum Scharnier.
-    b.P([(270,232),(380,232),(398,248),(398,266),(278,266)],M,-24,24,r=12,L='Kipprahmen')
+    b.P([(270,226),(380,226),(398,238),(398,249),(278,249)],M,-24,24,r=8,L='Kipprahmen')   # endet über der Trommel (Oberkante y 250)
     for z0,z1 in ((30,40),(-40,-30)):
         marks=[D(roundpoly(rect(373,274,12,44),5),P)]
         b.P([(366,252),(396,252),(396,338),(370,346)],M,z0,z1,r=10,L='Kipprahmen',
             dec=marks if z0>0 else (),xdec=[('z-',z0,*d) for d in marks] if z0<0 else ())
     b.P([(258,244),(274,230),(292,240),(286,260),(266,266)],K,-17,17,r=8,L='Kippriegel',dec=[D(rect(270,241,12,6),A)])
-    rail(b,290,364,238,K,DK,w=13)
+    rail(b,290,364,226,K,DK,w=13)   # reicht 6 in den Kipprahmen (Oberkante y 226)
     b.C(294,362,AXC,44,M,n=16,L='Trommel',cap=[
         (AXC-30*math.cos(2*k*math.pi/5),30*math.sin(2*k*math.pi/5),10,A,False) for k in range(5)]+
         [(AXC-30*math.cos(2*k*math.pi/5),30*math.sin(2*k*math.pi/5),5.5,K,False) for k in range(5)])

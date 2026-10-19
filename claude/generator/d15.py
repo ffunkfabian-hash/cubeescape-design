@@ -27,7 +27,8 @@ def model():
         dec=[D(roundpoly(rect(252,322,40,19),8),P)])
     b.P(rect(275,326,23,10),A,43,51,r=4,L='Klappenriegel')
     # Ein hoher gerundeter Rücken macht die Trommelmasse auch von der Seite lesbar.
-    b.P([(282,238),(308,216),(354,206),(404,214),(438,234),(444,254),(290,254)],
+    b.P([(282,231),(308,214),(354,204),(404,212),(438,224),(444,231)],   # endet über der Granattrommel (Oberkante y 232)
+     
         MC,-25,25,r=12,L='Oberbrücke')
     b.P([(311,215),(350,207),(372,210),(374,224),(320,232)],P,-26,26,r=9,L='Rückenplatte')
     rail(b,326,390,210,K,DK,w=14)

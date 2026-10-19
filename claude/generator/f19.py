@@ -84,7 +84,7 @@ def model():
     b.P([(388,284),(616,279),(624,285),(616,292),(388,300)],
         KV, 28, 35, r=3, L='Spannhebel')
     b.P([(378,282),(405,282),(405,302),(378,304)],
-        DK, 28, 39, r=4, L='Spannhebelgriff')
+        DK, 28, 39, r=4, L='Spannhebel')   # Griff schwenkt mit dem Spannhebel
     return b.m
 
 
