@@ -7,10 +7,10 @@ Destiny 2 liefert Funktions- und Formenreferenzen (kein Nachbau). Stand des Abgl
 Je Blattname (`weapon.name_de`):
   id        Designtyp (Spec `weapon.design_type`), englisch, eindeutig; Spurgewehr = trace_rifle, Scout-Gewehr = scout_rifle
   en        Destiny-Bezeichnung (englisch), de Bezeichnung auf Deutsch
-  subtype   konstruktiver Untertyp (rocket_assisted, slug) oder None
+  subtype   konstruktiver Untertyp (rocket_assisted, slug, breech_loaded, drum_loaded; ab 0.10.1 dynamic_heat, micro_missile, spread_shot) oder None
   ammo      Munitionsklasse in Destiny (primary, special, heavy) – nur Einordnung, keine Spielregel
   toolgen   Toolgen-Werkzeug (data/tools.json › id) oder None: neue Typen sind in Toolgen/Cube Escape nicht angebunden
-  num       Typnummer = Blattnummer (KX01 … KX10 bestehend, KG11 … KG22 neu in claude-0.10)
+  num       Typnummer = Blattnummer (KX01 … KX10 bestehend, KG11 … KG22 neu in claude-0.10, KG23 … KG25 in claude-0.10.1)
 Nur für neue Typen (toolgen None):
   ref_len   Bezugslänge in m (Spec-Maßstab; Schätzung claude-0.10 aus den Toolgen-Längen verwandter Typen, siehe Bericht 0.10)
   vs        Standardvisier der Visier-Serie (VS01–VS09) oder None (Nahkampf ohne Visier)
@@ -57,9 +57,18 @@ TYPES={
                              toolgen=None,num='21',ref_len=0.88,vs='VS03',motions=['bolt']),
  'Slug-Schrotflinte':dict(id='shotgun',en='Slug Shotgun',de='Slug-Schrotflinte (Einzelgeschoss)',subtype='slug',ammo='special',toolgen=None,num='22',
                           ref_len=0.94,vs='VS04',motions=['bolt']),
+ # Lücken aus 0.10, gebaut in claude-0.10.1 (Variante G). Munitionsklasse nach Destiny-Quellen (Bericht 0.10.1 › Quellen): Dynamic-Heat-
+ # Waffen gibt es als Handfeuerwaffe, Impulsgewehr, Pistole und Scharfschütze (kein MG) – hier als Impulsgewehr; der Micro-Missile-Rahmen ist ein
+ # einschüssiger Spezial-Granatwerfer (Theodolite, Mountaintop); Spread Shot ist ein Handfeuerwaffen-Rahmen mit Primärmunition (Phoneutria Fera)
+ 'Hitze-Blaster':dict(id='pulse_rifle',en='Pulse Rifle (Dynamic Heat Frame, blaster)',de='Hitze-Blaster (Impulsgewehr, Rahmen Dynamic Heat)',subtype='dynamic_heat',
+                      ammo='primary',toolgen=None,num='23',ref_len=0.86,vs='VS03',motions=['vent']),
+ 'Mikroraketen-Granatwerfer':dict(id='grenade_launcher_special',en='Grenade Launcher (Micro-Missile Frame)',de='Mikroraketen-Granatwerfer (Micro-Missile-Rahmen)',
+                                  subtype='micro_missile',ammo='special',toolgen=None,num='24',ref_len=0.84,vs='VS04',motions=['hatch']),
+ 'Streuschuss-Handfeuerwaffe':dict(id='hand_cannon',en='Hand Cannon (Spread Shot Frame)',de='Streuschuss-Handfeuerwaffe (Spread-Shot-Rahmen, Schrotladung)',
+                                   subtype='spread_shot',ammo='primary',toolgen=None,num='25',ref_len=0.30,vs='VS01',motions=['top_break']),
 }
 NEW={k:v for k,v in TYPES.items() if v['toolgen'] is None}
-# Blätter der neuen Typen: Variante G (Cube-Escape-Farbwelt), Modelle g11.py … g22.py
+# Blätter der neuen Typen: Variante G (Cube-Escape-Farbwelt), Modelle g11.py … g25.py
 NEW_SHEETS={'G':sorted(v['num'] for v in NEW.values())}
 REF_SOURCE='Schätzung claude-0.10: Proportion zu den Toolgen-0.13-Längen verwandter Typen (Bericht claude/docs/versions/0.10.md › Maße), kein Toolgen-Modell'
 # Sätze für Abnehmer, die toolgen_id als Pflichtwert lesen
@@ -73,11 +82,14 @@ def key(name):
     Scout-Gewehr vom Toolgen-Schlüssel scout_rifle (= Spurgewehr)."""
     t=TYPES[name]
     if t['toolgen']:return t['toolgen']
-    return '+'+t['id']+(':'+t['subtype'] if t['subtype'] in ('rocket_assisted','slug') else '')
+    return '+'+t['id']+(':'+t['subtype'] if t['subtype'] in KEY_SUBTYPES else '')
+# Untertypen mit eigenem Schlüssel (eigene Bewegung, eigenes Texturprofil); Kipplauf/Trommel des Granatwerfers sind eigene Designtypen
+KEY_SUBTYPES=('rocket_assisted','slug','dynamic_heat','micro_missile','spread_shot')
 # Kurzname der beweglichen Teile für das Blattfeld BEDIENUNG (Arten wie export_spec.MOTIONS)
 MOTION_SHORT_DE={'slide':'Schlitten','bolt':'Verschluss/Ladehebel','cell':'Zelle','fins':'Flossen','coil':'Spulenring','pump':'Pumpgriff',
  'lever':'Kammerstängel','hatch':'Ladeklappe','cylinder':'Trommel','hammer':'Hahn','rails':'Beschleunigerschienen','breech':'Kipplauf',
- 'drum':'Granattrommel','feed_cover':'Zuführdeckel','cocking':'Spannhebel','string':'Sehne','shield':'Schildflügel'}
+ 'drum':'Granattrommel','feed_cover':'Zuführdeckel','cocking':'Spannhebel','string':'Sehne','shield':'Schildflügel',
+ 'vent':'Entlüftungsklappen','top_break':'Kipprahmen'}
 MELEE=('Schwert','Glefe')   # ohne Visier und Visierschiene; Detailfeld zeigt den Griffbereich
 def spec(name,sheet=None):
     """Spec-Block weapon (ohne name_de/toolgen_id): Designtyp, Destiny-Bezeichnung, Untertyp, Munitionsklasse, Anbindung"""

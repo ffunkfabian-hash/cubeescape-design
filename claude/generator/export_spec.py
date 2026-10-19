@@ -81,7 +81,7 @@ GUARD_LABELS=('Handschutz','Laufverkleidung','Laufmantel','Laufhülle')
 MUZZLE_LABELS={'Mündung','Mündungsbremse','Kompensator','Schalldämpfer','Feuerdämpfer','Emitter','Fächeremitter','Mündungsring',
  'Lauf','Doppellauf','Oberlauf','Unterlauf','Rohr','Abschussrohr','Abschussrohre','Raketenrohre','Laufmantel','Laufkasten',
  'Zinken','Pfeil','Bolzen','Fokusring','Fokusringe','Bündelring','Raketenkasten','Oberkiefer','Unterkiefer','Feuerkern',
- 'Kipplauf','Linearkern'}   # Kipplauf, Linearkern: neue Typen claude-0.10; Schwert ohne Lauf: vorderstes Teil (Klingenspitze), Glefe: Emitter
+ 'Kipplauf','Linearkern','Streumündung'}   # Kipplauf, Linearkern: neue Typen claude-0.10 (Streumündung 0.10.1); Schwert ohne Lauf: vorderstes Teil (Klingenspitze), Glefe: Emitter
 SURFACES={'z+':'left','z-':'right','x+':'front','x-':'back','y-':'top','y+':'bottom'}
 VARIANT_IDS=['base','standard','arktis','nacht']
 # Achsen: Modell x = Mündung (vorn), y = unten, z = links  ->  Toolgen/Blender vorn −Y, oben +Z, links +X
@@ -186,6 +186,11 @@ MOTIONS={
  'string':dict(node='Anim_String',de='Sehne (wird ins Schloss gezogen, schnellt beim Schuss vor)',motions=[('translate',[0,1,0])],labels=('Sehne',),
                similar=(),proposed=True),
  'shield':dict(node='Anim_Shield',de='Schildflügel (klappen beim Blocken aus)',motions=[('rotate',[0,1,0])],labels=('Schildflügel',),similar=(),proposed=True),
+ # claude-0.10.1: Hitze-Blaster (Entlüften statt Nachladen), Streuschuss-Handfeuerwaffe (Kipprahmen)
+ 'vent':dict(node='Anim_Vent',de='Entlüftungsklappen (klappen zum Entlüften seitlich auf, schließen nach dem Abkühlen)',motions=[('rotate',[0,1,0])],
+             labels=('Entlüftungsklappe',),similar=(),proposed=True),
+ 'top_break':dict(node='Anim_TopBreak',de='Kipprahmen (Lauf und Trommel kippen am vorderen Scharnier nach unten, Sternauswerfer hebt die Hülsen)',
+                  motions=[('rotate',[1,0,0])],labels=('Kipprahmen','Trommel','Lauf','Streumündung'),similar=(),proposed=True),   # Baugruppe kippt gemeinsam
 }
 WEAPON_MOTIONS={'pistol':['slide'],'assault_rifle':['bolt'],'pulse_rifle':['cell'],'shotgun':['pump'],'sniper_rifle':['lever'],
  'smg':['bolt'],'fusion_rifle':['fins','coil'],'scout_rifle':['bolt'],'rocket_launcher':['hatch'],'bow':[]}

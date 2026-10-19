@@ -43,10 +43,11 @@ Farben sind sRGB-Hex `#RRGGBB` wie im Cube-Escape-Design (`Docs/EQUIPMENT.md` �
 
 claude-0.10 ([waffentypen.md](waffentypen.md), Quelle der Werte `claude/generator/wtypes.py`): Abgleich mit dem Destiny-2-Katalog. `design_type`
 macht die Bedeutung ausdrücklich, ohne `toolgen_id` zu ändern: Pistole = `sidearm`, Sturmgewehr = `auto_rifle`, Spurgewehr = `trace_rifle`
-(Toolgen-ID bleibt `scout_rifle`), Bogen = `combat_bow`. Neue Typen (Blätter KG11 … KG22, Variante G): `scout_rifle` (echtes Scout-Gewehr),
+(Toolgen-ID bleibt `scout_rifle`), Bogen = `combat_bow`. Neue Typen (Blätter KG11 … KG25, Variante G): `scout_rifle` (echtes Scout-Gewehr),
 `hand_cannon`, `linear_fusion_rifle`, `grenade_launcher_special` (Kipplauf), `grenade_launcher_heavy` (Trommel), `machine_gun`, `sword`,
 `glaive`, `heavy_crossbow`; Untertypen mit `subtype`: Raketenpistole (`sidearm`, `rocket_assisted`), Raketen-Impulsgewehr (`pulse_rifle`,
-`rocket_assisted`), Slug-Schrotflinte (`shotgun`, `slug`). Bei neuen Typen sind `toolgen_id` und `element` `null`, `toolgen_status` ist
+`rocket_assisted`), Slug-Schrotflinte (`shotgun`, `slug`); seit claude-0.10.1 (KG23 … KG25) Hitze-Blaster (`pulse_rifle`, `dynamic_heat`),
+Mikroraketen-Granatwerfer (`grenade_launcher_special`, `micro_missile`), Streuschuss-Handfeuerwaffe (`hand_cannon`, `spread_shot`). Bei neuen Typen sind `toolgen_id` und `element` `null`, `toolgen_status` ist
 `not_connected`, `robot_fit.applies` false; die Bezugslänge ist eine Schätzung (`units.reference`). `note` steht bei bestehenden Blättern,
 deren Bauweise vom Typnamen abweicht (KF01 Revolver, KC10 Armbrust, KH08/KJ08 Spurgewehre mit Magazin); ID und Typ bleiben.
 `ammo_class` ist die Munitionsklasse in Destiny (primary/special/heavy), nur Einordnung.
@@ -70,8 +71,10 @@ Die beweglichen Teile stehen in `moving_parts`; neue Arten tragen `proposed: tru
 | `feed_cover` | Maschinengewehr | `Anim_FeedCover` | rotate um X | Zuführdeckel |
 | `cocking`, `string` | Schwere Armbrust | `Anim_Cocking`, `Anim_String` | rotate um X; translate +Y | Spannhebel; Sehne |
 | `shield` | Glefe | `Anim_Shield` | rotate um Y | Schildflügel |
+| `vent` | Hitze-Blaster (0.10.1) | `Anim_Vent` | rotate um Y (beide Klappen seitlich auf) | Entlüftungsklappe |
+| `top_break` | Streuschuss-Handfeuerwaffe (0.10.1) | `Anim_TopBreak` | rotate um X (am vorderen Scharnier nach unten) | Kipprahmen |
 
-Bestehende Arten (`bolt`, `slide`) bei neuen Typen tragen ebenfalls `proposed: true`. Das Schwert hat keine beweglichen Teile (`note`).
+Bestehende Arten (`bolt`, `slide`, `hatch` beim Mikroraketen-Granatwerfer) bei neuen Typen tragen ebenfalls `proposed: true`. Das Schwert hat keine beweglichen Teile (`note`).
 
 ## Achsen und Maßstab
 

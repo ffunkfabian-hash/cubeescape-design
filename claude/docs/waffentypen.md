@@ -3,7 +3,7 @@
 Stand 18.10.2026. Auftrag des Nutzers: das vollständige Destiny-2-Waffentypen-Sortiment für Cube Escape abgleichen und gestalterisch
 vervollständigen (Granatwerfer bewusst als zwei Designpositionen). Destiny liefert Funktions- und Formenreferenzen, kein Nachbau.
 Maschinenlesbar: `claude/generator/wtypes.py` (Designtyp je Blattname), im Spec `weapon.design_type` …
-Umsetzung und Prüfung: [versions/0.10.md](versions/0.10.md).
+Umsetzung und Prüfung: [versions/0.10.md](versions/0.10.md) (Lücken KG23–KG25: Patch 0.10.1 dort).
 
 ## Katalog (Quelle und Stand)
 
@@ -19,6 +19,12 @@ Umsetzung und Prüfung: [versions/0.10.md](versions/0.10.md).
   z. B. „Mint Retrograde“); Slug-Schrotflinte (Einzelgeschoss) gegenüber Streuschrot; Granatwerfer mit Kipplauf, Trommel, „Wave Frame“
   (Bodenwelle), „Double Fire“ und „Micro-Missile Frame“ (Mini-Raketen, Edge of Fate); Handfeuerwaffe „Spread Shot“ (Schrotladung, Edge of Fate);
   Bogen „High-Impact Longbow“; Schwerer Scharfschütze („Refurbished A499“, Renegades); schwere Schrotflinte „Tractor Cannon“; Schwert „Caster Frame“.
+- **Nachtrag 19.10.2026 (claude-0.10.1):** Der Hitze-Rahmen ist kein eigener Typ, sondern ein Rahmen bestehender Typen: „Dynamic Heat“ gibt es als
+  Handfeuerwaffe, Impulsgewehr, Pistole und Scharfschützengewehr (light.gg „Dynamic Heat Weapon“, Sportskeeda und Boosting-Ground zu den
+  Renegades-Heat-Waffen) – kein Maschinengewehr; Munition kommt direkt aus der Reserve, Nachladen = Entlüften. Der Micro-Missile-Rahmen ist ein
+  **einschüssiger Spezial-Granatwerfer** mit gerade fliegender Mikrorakete (Destinypedia „Theodolite“: Spezialmunition, Magazin 1; light.gg
+  „Micro-Missile Frame“). „Spread Shot“ ist ein Handfeuerwaffen-Rahmen mit kurzem Schrotkegel (light.gg „Spread Shot“), Primärmunition
+  (WowVendor zu „Phoneutria Fera“).
 
 ## Bestand und Maßnahmen
 
@@ -49,9 +55,11 @@ zählen nicht als Waffenkonzept. Bewertet wurden Modell, Bauteile und Hauptansic
 | Raketen-Sidearm | keiner | 0 | Mechanik anders (Raketenmunition) | **neu erstellen** | **KG20 „Funkenflug“**: weite Rohrbohrung mit Rakete, Raketenmagazin mit Fenster, Abgasschlitze |
 | Raketen-Impulsgewehr | keiner | 0 | Mechanik anders (Raketensalven) | **neu erstellen** | **KG21 „Salvenwerk“**: querliegendes Raketenmagazin (5), Rohrlauf mit Abgasring |
 | Slug-Schrotflinte | keiner | 0 | alle Flinten Streuschrot | **neu erstellen** | **KG22 „Treffpunkt“**: ein gezogener Lauf, Mündungsbremse mit Zügen, Kastenmagazin mit Slugs, Ladehebel |
-| Granatwerfer Wave/Double Fire/Micro-Missile | – | – | Wave/Double Fire: Bauweise wie KG14 (Kipplauf); Micro-Missile: Raketenkasten ähnlich KF09 | offen | nicht gebaut; siehe Lücken |
-| Hitzewaffen/Blaster (Renegades) | – | – | Rahmen über mehrere Typen, ohne Magazin, Entlüftung | offen | nicht gebaut; siehe Lücken |
-| Spread-Shot-Handfeuerwaffe, Tractor Cannon, Caster-Schwert, Longbow | – | – | Sonderformen bestehender Typen | offen | als Varianten von KG12/KX04/KG17/KX10 denkbar |
+| Granatwerfer Micro-Missile | keiner | 0 | einschüssig, Spezialmunition, Rakete fliegt gerade | **neu erstellt** (0.10.1) | **KG24 „Zielstrich“**: schlankes Abschussrohr mit Leitringen, Ladeklappe oben, Raketenvorrat mit vier Mikroraketen links; `grenade_launcher_special`, `micro_missile` |
+| Granatwerfer Wave/Double Fire | – | – | Bauweise wie KG14 (Kipplauf) | offen | kein eigenes Blatt nötig (Mechanik wie KG14) |
+| Hitzewaffen/Blaster (Renegades) | keiner | 0 | Rahmen über mehrere Typen (kein MG), ohne Magazin, Entlüftung | **neu erstellt** (0.10.1) | **KG23 „Hitzestau“**: Impulsgewehr ohne Magazin, Hitzespeicher mit Rippenpaket, zwei Entlüftungsklappen, Hitzeanzeige; `pulse_rifle`, `dynamic_heat` |
+| Spread-Shot-Handfeuerwaffe | keiner (KG12 Patronen-Revolver) | 0 | Schrotladung, kurzer Streukegel | **neu erstellt** (0.10.1) | **KG25 „Breitseite“**: Kipprahmen-Revolver, Trommel mit fünf Schrotkammern, gefächerte Streumündung; `hand_cannon`, `spread_shot` |
+| Tractor Cannon, Caster-Schwert, Longbow | – | – | Sonderformen bestehender Typen | offen | als Varianten von KX04/KG17/KX10 denkbar |
 
 Keine Ersetzung (KH03: nur der englische Prompt übersetzt jetzt „Spulenringe“): Alle 60 Claude-Blätter sind am 18.10.2026 abgenommen; Typzuordnung und Konstruktion tragen. Grenzfälle (KF01, KC10, KH08, KJ08)
 bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
@@ -64,6 +72,7 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
 | KX10 Bogen (Claude) | ja | ja, abgenommen | Toolgen-Werkzeug `bow` (Referenzmodell), nicht im Waffensatz von Cube Escape |
 | KA/KK (Codex) | ja | Codex-Pipeline (Prüfung dort) | wie oben je Typ |
 | KG11–KG22 (neu) | ja | von Claude geprüft (Skizze, Blatt, Kontaktbogen); Abnahme durch den Nutzer offen | **nein** – `toolgen_id` null, `toolgen_status` not_connected |
+| KG23–KG25 (neu, 0.10.1) | ja | von Claude geprüft (Skizze, Blatt, Kontaktbogen); Abnahme durch den Nutzer offen | **nein** – wie KG11–KG22 |
 
 ## Offene Anbindungen
 
@@ -72,7 +81,7 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
   **Namenskonflikt:** Toolgens `scout_rifle` ist das Spurgewehr; ein echtes Scout-Gewehr braucht eine neue ID (Vorschlag `scout_rifle_semi`)
   oder Toolgen benennt das Spurgewehr in `trace_rifle` um (Vertragsänderung in Toolgen/Cube Escape, Entscheidung des Nutzers).
 - **Use-Clips:** neue Bewegungsarten im Spec (`proposed: true`): Trommel, Hahn, Beschleunigerschienen, Kipplauf, Granattrommel, Zuführdeckel,
-  Spannhebel, Sehne, Schildflügel; Knotennamen (`Anim_Cylinder` …) sind Vorschläge.
+  Spannhebel, Sehne, Schildflügel, seit 0.10.1 Entlüftungsklappen (`vent`) und Kipprahmen (`top_break`); Knotennamen (`Anim_Cylinder` …) sind Vorschläge.
 - **Cube Escape:** Haltungen für Nahkampf (Schwert, Glefe: kein Visier, Griff ohne Abzug beim Schwert), Roboter-Maße (`robot_fit` fehlt, Zielmaße
   legt Cube Escape fest), Elemente (`element` null), Visier-Ziele (Tabelle „Visiere je Waffe“ kennt nur 1–9).
 - **Texturprofile** der neuen Typen sind Vorschläge (`derived_from`), nicht im Textur-Blatt des Nutzers.
@@ -80,7 +89,7 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
 
 ## Verbleibende Lücken
 
-- Hitzewaffe/Blaster (Renegades): eigener Mechanik-Rahmen ohne Magazin – ein Konzept (z. B. Blaster-Maschinengewehr) fehlt.
-- Micro-Missile-Granatwerfer und Spread-Shot-Handfeuerwaffe als eigene Silhouetten nicht gebaut.
+- Hitzewaffe, Micro-Missile-Granatwerfer und Spread-Shot-Handfeuerwaffe: seit claude-0.10.1 gebaut (KG23–KG25). Der Hitze-Rahmen nur als
+  Impulsgewehr; Hitze-Handfeuerwaffe, -Pistole und -Scharfschütze wären Varianten derselben Mechanik.
 - Neue Typen nur in Variante G; die übrigen Claude-Varianten und Codex haben sie nicht.
 - Das Blattfeld BEDIENUNG gibt es nur auf den neuen Blättern; die 60 bestehenden Blätter haben es nicht (eigener Schritt mit Neubau).

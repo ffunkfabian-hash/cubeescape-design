@@ -223,7 +223,10 @@ EN={'Gehäuse':'receiver','Griff':'pistol grip','Abzug':'trigger with guard','Ma
  'Trommelachse':'drum axle','Laufträger':'barrel carrier','Zuführdeckel':'feed cover','Munitionskasten':'ammo box','Patronengurt':'ammo belt',
  'Knauf':'pommel','Parierblock':'guard block','Parierstange':'cross guard','Klinge':'blade','Mittelrippe':'central ridge','Stange':'shaft',
  'Klingenfassung':'blade mount','Schildflügel':'shield wings','Schloss':'string latch','Bogenblock':'prod block','Spannhebel':'cocking lever',
- 'Raketenmagazin':'rocket magazine','Abgasring':'exhaust ring'}
+ 'Raketenmagazin':'rocket magazine','Abgasring':'exhaust ring',
+ # neue Typen claude-0.10.1
+ 'Plasmakammer':'plasma chamber','Hitzeanzeige':'heat gauge','Entlüftungsklappe':'vent flap','Hitzespeicher':'heat sink','Raketenvorrat':'micro-missile reserve box',
+ 'Mikrorakete':'micro-missile','Kipprahmen':'top-break frame','Kippriegel':'top-break latch','Streumündung':'flared spread muzzle','Hahnschutz':'hammer shroud'}
 
 def prompt_font(texts,width,height,sizes=(18,17,16,15,14)):
     """Schriftgröße des Prompt-Felds (claude-0.9): größte aus sizes, bei der die Absätze (JetBrains Mono, Zeichenbreite 0,6 em,
@@ -266,6 +269,7 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         "Vermeiden: schwebende Teile, unbeabsichtigte Überschneidungen, zufällige Leuchtstreifen, Bloom, Unschärfe, Nebel, realistische Militärwaffen-Kopien.")
     if d['name']=='Raketenwerfer':
         de=de.replace('auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.','auf der Waffe bleibt nur die freie Visierschiene als Aufnahme – seitlich links am Rohr montiert, damit das Rohr die Sichtlinie nicht verdeckt.')
+    if d['name'] in CONSTRUCT_DE:de=de.replace('Magazin im Schacht',CONSTRUCT_DE[d['name']])   # Bauweise ohne Kastenmagazin (claude-0.10.1)
     en_parts=', '.join(EN.get(l,l) for l in labels)
     en=(f"Low-poly sci-fi weapon concept sheet for the game Cube Escape: futuristic {d.get('en_type','weapon')}, variant {variant_letter}{f' ({vn})' if vn else ''} \"{d['nick']}\". "
         f"Visible, logically connected parts: {en_parts}. Color palette {pal}. "
@@ -283,6 +287,12 @@ TYPE_EN.update({'Scout-Gewehr':'semi-automatic scout rifle','Handfeuerwaffe':'he
  'Spezial-Granatwerfer':'single-shot break-action grenade launcher','Schwerer Granatwerfer':'drum-fed heavy grenade launcher','Maschinengewehr':'belt-fed machine gun',
  'Schwert':'energy sword','Glefe':'glaive polearm with energy emitter','Schwere Armbrust':'heavy crossbow','Raketenpistole':'rocket-assisted sidearm',
  'Raketen-Impulsgewehr':'rocket-assisted pulse rifle','Slug-Schrotflinte':'semi-automatic slug shotgun'})   # neue Typen claude-0.10
+TYPE_EN.update({'Hitze-Blaster':'magazine-less heat blaster pulse rifle with heat sink and vent flaps','Mikroraketen-Granatwerfer':'single-shot micro-missile grenade launcher',
+ 'Streuschuss-Handfeuerwaffe':'top-break spread-shot revolver hand cannon'})   # neue Typen claude-0.10.1
+# Konstruktionssatz im Prompt: „Magazin im Schacht“ ersetzt, wo die Waffe kein Kastenmagazin hat (nur Typen ab claude-0.10.1; ältere Blätter bleiben bytegleich)
+CONSTRUCT_DE={'Hitze-Blaster':'kein Magazin, stattdessen Hitzespeicher mit Kühlrippen und zwei seitliche Entlüftungsklappen',
+ 'Mikroraketen-Granatwerfer':'eine Mikrorakete im Abschussrohr, Vorrat im Raketenvorrat links',
+ 'Streuschuss-Handfeuerwaffe':'Trommel mit fünf Schrotkammern im Kipprahmen'}
 TYPE_DE_OF={'pistol':'Pistole','assault_rifle':'Sturmgewehr','pulse_rifle':'Impulsgewehr','shotgun':'Schrotflinte','sniper_rifle':'Scharfschützengewehr',
  'smg':'Maschinenpistole','fusion_rifle':'Fusionsgewehr','scout_rifle':'Spurgewehr','rocket_launcher':'Raketenwerfer'}   # Toolgen-ID -> Blattname (Profilherkunft)
 # Nahkampfwaffen (claude-0.10): eigener Konstruktionssatz im Prompt, kein Visier und keine Visierschiene

@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.10.1
+- Drei Lücken aus 0.10 als eigene Konzepte in Variante G: KG23 Hitze-Blaster (Impulsgewehr ohne Magazin, Hitzespeicher, Entlüftungsklappen),
+  KG24 Mikroraketen-Granatwerfer (einschüssig, Abschussrohr, Raketenvorrat), KG25 Streuschuss-Handfeuerwaffe (Kipprahmen-Revolver, Streumündung).
+- Spec additiv: Untertypen `dynamic_heat`, `micro_missile`, `spread_shot`; Bewegungsarten `vent`, `top_break` (Vorschlag); bestehende 72 Blätter bytegleich.
+  Bericht [claude/docs/versions/0.10.md › 0.10.1](claude/docs/versions/0.10.md#patch-0101--lücken-kg23kg25).
+
 ## claude-0.10
 - Abgleich mit dem Destiny-2-Katalog (17 Typen, schwere Armbrust seit 2025, Untertypen): Bestands- und Maßnahmenübersicht
   [claude/docs/waffentypen.md](claude/docs/waffentypen.md); `weapon.design_type` u. a. in allen Specs (additiv), Spurgewehr = `trace_rifle`.
