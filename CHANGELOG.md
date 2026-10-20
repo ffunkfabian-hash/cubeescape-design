@@ -2,6 +2,11 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.14 „Livery“
+- Alle 150 Waffenblätter als Blender-Szenen wie auf dem Blatt: vier Farbvarianten mit Hauptskin, dazu die übrigen vier Skins; Skin-Lagen des Weapon-Specs
+  (Flächen, Streifen, Verläufe, Ringe, Glyphen, Schmuckteile, Kantenabnutzung) im Shader, Katalog-Texturen, Chrom/Gold/Neon (`geo_blender_skins.py`).
+- `geo_textures.build` mit optionalem Skin-Haken; Specs, Blätter und Golden unverändert. Bericht [claude/docs/versions/0.14.md](claude/docs/versions/0.14.md).
+
 ## codex-0.1.6 / codex-0.2.6 „Switchcraft“ (PR #14, gemerged)
 - Parallax (0.1.6) und Flux Bloom (0.2.6): alle Specs auf Weapon-Spec `format_version` 2, Spurgewehr KA08/KK08 mit `toolgen_id` `trace_rifle`
   (Mindestabnehmer Toolgen 0.17.0 / Cube Escape 0.98; ältere Fassung `git show 5a5615d:codex/parallax/output/KA08.spec.json`, analog KK08).

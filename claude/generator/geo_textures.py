@@ -35,7 +35,14 @@ class T:
         for x in xs[1:]:out=s.math('ADD',out,x)
         return out
 
-def build(name,color_lin,material_id,long_axis=None,emissive=False,glass=False,wear=None,bare_lin=None):
+def put(t,v,sock):
+    """Wert oder Ausgang an einen Eingang: Ausgänge verbinden, Zahlen als Vorgabe"""
+    if hasattr(v,'is_output'):t.l.new(v,sock)
+    else:sock.default_value=v
+
+def build(name,color_lin,material_id,long_axis=None,emissive=False,glass=False,wear=None,bare_lin=None,skin=None):
+    """skin: optional f(t, X, Y, Z, color_lin, rough, metal) -> dict(color, metallic, roughness, emission) oder None
+    (Skin-Lagen je Bildpunkt, geo_blender_skins.py); X, Y, Z in mm"""
     m=bpy.data.materials.new(name);m.use_nodes=True;t=T(m)
     for nd in list(t.n):
         if nd.bl_idname!='ShaderNodeOutputMaterial':t.n.remove(nd)
@@ -91,6 +98,11 @@ def build(name,color_lin,material_id,long_axis=None,emissive=False,glass=False,w
     if isinstance(b,float):sc.inputs['Scale'].default_value=b
     else:t.l.new(b,sc.inputs['Scale'])
     col=sc.outputs[0]
+    sk=skin(t,X,Y,Z,color_lin,rough,metal) if skin else None
+    if sk:
+        t.l.new(sk['color'],sc.inputs[0]);put(t,sk['roughness'],bsdf.inputs['Roughness']);put(t,sk['metallic'],bsdf.inputs['Metallic'])
+        if sk['emission']!=0.0:t.l.new(col,bsdf.inputs['Emission Color']);put(t,sk['emission'],bsdf.inputs['Emission Strength'])
+        metal=sk['metallic']
     if wear and material_id in ('painted','painted_matte'):
         # Kantenabnutzung (Katalog wear, Geo-Spec surface.wear): Bevel-Normale weicht an harten Kanten ab; Zellen mit Anteil coverage tragen sie
         bv=t.node('ShaderNodeBevel');bv.inputs['Radius'].default_value=2.5*wear['width_m'];bv.samples=16   # Bevel-Normale weicht nur nahe der Kante merklich ab: 2,5 × Breite ≈ sichtbare Breite width_m
@@ -103,7 +115,7 @@ def build(name,color_lin,material_id,long_axis=None,emissive=False,glass=False,w
         w=t.math('MULTIPLY',edge,t.math('LESS_THAN',wn.outputs['Value'],wear['coverage']))
         mx=t.node('ShaderNodeMix',data_type='RGBA');t.l.new(w,mx.inputs['Factor']);t.l.new(col,mx.inputs[6]);mx.inputs[7].default_value=(*bare_lin,1.0)
         t.l.new(mx.outputs[2],bsdf.inputs['Base Color'])
-        mm=t.node('ShaderNodeMapRange');t.l.new(w,mm.inputs['Value']);mm.inputs['To Min'].default_value=metal;mm.inputs['To Max'].default_value=0.9
+        mm=t.node('ShaderNodeMapRange');t.l.new(w,mm.inputs['Value']);put(t,metal,mm.inputs['To Min']);mm.inputs['To Max'].default_value=0.9
         t.l.new(mm.outputs[0],bsdf.inputs['Metallic'])
         return m
     t.l.new(col,bsdf.inputs['Base Color'])
