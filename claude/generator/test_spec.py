@@ -355,6 +355,8 @@ class MovingParts(unittest.TestCase):
     def test_known_labels(self):
         self.assertEqual(load('KG01')['moving_parts']['items'][0]['parts'],['p06'])        # Schlitten
         self.assertEqual(load('KF04')['moving_parts']['items'][0]['match'],'label')         # Pumpgriff
+        mv=load('KG02')['moving_parts']['items'][0]                                         # Ladehebel (claude-0.15)
+        self.assertEqual((mv['parts'],mv['match'],mv['labels']),(['p32'],'label',['Ladehebel']))
         self.assertIsNone(load('KC02')['moving_parts']['items'][0]['parts'])               # Verschluss nicht gezeichnet
         self.assertEqual(load('KC10')['moving_parts']['items'],[])                          # Bogen
 

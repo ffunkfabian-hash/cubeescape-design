@@ -56,19 +56,19 @@
   "weapon": {
    "length": 0.934,
    "height": 0.2647,
-   "width": 0.0616,
+   "width": 0.0699,
    "bounds_m": [
     [-0.0308, -0.6208, -0.0741],
-    [0.0308, 0.3132, 0.1906]
+    [0.0391, 0.3132, 0.1906]
    ]
   },
   "with_sight": {
    "length": 0.934,
    "height": 0.3127,
-   "width": 0.0616,
+   "width": 0.0699,
    "bounds_m": [
     [-0.0308, -0.6208, -0.0741],
-    [0.0308, 0.3132, 0.2386]
+    [0.0391, 0.3132, 0.2386]
    ]
   }
  },
@@ -92,8 +92,8 @@
    "part": "p14"
   },
   "Socket_CenterOfMass": {
-   "position_m": [0.0, -0.0813, 0.0962],
-   "model": [362.15, 282.23, 0.0],
+   "position_m": [0.0001, -0.0814, 0.0962],
+   "model": [362.22, 282.19, 0.04],
    "source": "Näherung: Hüllquader-Volumen je Teil gewichtet, Visier montiert",
    "part": null
   },
@@ -127,7 +127,7 @@
     "MT_Primary": [
      {
       "color": "#2A2B30",
-      "share": 0.046
+      "share": 0.045
      },
      {
       "color": "#0A0A0D",
@@ -848,6 +848,25 @@
     [-0.003, -0.0343, 0.2069]
    ],
    "moving": null
+  },
+  {
+   "id": "p32",
+   "label": "Ladehebel",
+   "channel": "MT_Primary",
+   "channel_source": "role",
+   "material": "painted",
+   "toolgen_material": "painted",
+   "texture": "painted",
+   "emissive": false,
+   "sight": false,
+   "color": "#1B1C1F",
+   "area_m2": 0.002836,
+   "long_axis": "Y",
+   "bounds_m": [
+    [0.0294, -0.1691, 0.1188],
+    [0.0391, -0.1286, 0.1412]
+   ],
+   "moving": "bolt"
   }
  ],
  "moving_parts": {
@@ -865,10 +884,14 @@
       "axis": [0, 1, 0]
      }
     ],
-    "parts": null,
-    "labels": [],
-    "match": null,
-    "source": "nicht ableitbar: kein Teil mit Bezeichnung Verschluss/Ladehebel/Spannhebel im Modell (Mechanik im Gehäuse nicht gezeichnet)"
+    "parts": [
+     "p32"
+    ],
+    "labels": [
+     "Ladehebel"
+    ],
+    "match": "label",
+    "source": "Bezeichnung „Ladehebel“ (p32)"
    }
   ],
   "note": null
@@ -3612,7 +3635,7 @@
  },
  "summary": {
   "skins": 5,
-  "parts": 32,
+  "parts": 33,
   "parts_explicit_channel": 17,
   "decals": 63,
   "channels_with_other_colors": {

@@ -83,7 +83,7 @@ def apply(d):
     vid=VS_OF.get(d['name'])
     if vid is None:d['vs']=None;return d
     import export_spec                                # Bezugslängen der Waffentypen (Spec-Maßstab); spät, export_spec lädt sheetmodels
-    full=d['m'];gun=[P for P in full.parts if not P.get('sight')];old=[P for P in full.parts if P.get('sight')]
+    full=d['m'];gun=[P for P in full.parts if not P.get('sight') and not P.get('late')];old=[P for P in full.parts if P.get('sight')]
     gb=_bb(gun);unit=export_spec.WEAPONS[d['name']][1]/(gb[1][0]-gb[0][0])   # m je Modelleinheit (Länge ohne Visier, wie export_spec)
     k=0.001/unit                                      # Modelleinheiten je mm
     L=V.load(vid);S=L['S'];geo=L['geo']
@@ -175,7 +175,7 @@ def apply(d):
         else:
             ch,col=pick(G['channel']);Q.update(col=col or P['col'],channel=ch if col else G['channel'])
         new.append(Q)
-    m=Model();m.parts=gun2+new
+    m=Model();m.parts=gun2+new+[P for P in full.parts if P.get('late')]   # späte Teile (claude-0.15) ans Ende
     d['m']=m
     line=ym+geo['line_y']*k
     blocked=sorted({P.get('label') or 'ohne Bezeichnung' for P in gun if _blocks(P,xs+sb[1][0]*k,gb[1][0],line,zs)})

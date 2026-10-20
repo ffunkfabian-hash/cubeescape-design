@@ -45,6 +45,8 @@ def _items(mod):
         if it.get('L'):Pt['label']=it['L']
         if it.get('bias'):Pt['bias']=it['bias']
         if it.get('S'):Pt['sight']=True
+        if it.get('mat'):Pt['material']=it['mat']   # explizites Material (claude-0.15: Ladehebel lackiert)
+        if it.get('late'):Pt['late']=True   # Teil steht hinter dem Visier in der Teileliste (claude-0.15: IDs der Bestandsteile bleiben)
     return copy_channels(m,mod.ITEMS)
 
 def _c(n):
