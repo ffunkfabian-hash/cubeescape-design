@@ -31,6 +31,9 @@ ITEMS=[
  dict(t='poly',p=[(338,176),(384,176),(392,186),(392,207.5),(338,207.5)],c=SW,z=(-11,11),r=3,L='Reflexvisier',S=True,
       d=[([(346,184),(380,184),(384,190),(384,200),(346,200)],'#3B4A52',False,2)],
       xd=[(392.4,[(190,-7),(203,-7),(203,7),(190,7)],'#3B4A52',False),(392.8,[(195,-1.6),(198,-1.6),(198,1.6),(195,1.6)],OR,True)]),
+ # Ladehebel (claude-0.15): beweglicher Verschlussgriff an der linken Gehaeuseseite (+z = Toolgen +X), faehrt 50 mm (36 Einheiten) nach hinten
+ # (-x); z ab 21 ragt in das Gehaeuse, damit keine Flaeche mit der Seitenwand (z=22) koplanar ist
+ dict(t='poly',p=[(396,250),(420,250),(425,255),(425,261),(420,266),(396,266)],c=SW,z=(21,28),r=1.5,L='Ladehebel',late=True,mat='painted'),
  # Handschutz mit Wuerfel-Lueftung
  dict(t='poly',p=[(470,236),(628,236),(640,248),(640,292),(628,300),(470,300)],c=SW,z=(-18,18),r=6,L='Handschutz',
       d=[([(x,y),(x+16,y),(x+16,y+16),(x,y+16)],BG,False,2) for x in range(492,620,30) for y in (250,272)]),

@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.15 „Rackshot“
+- KG02 (Sturmgewehr, Variante G) bekommt den Ladehebel `p32` (Bezeichnung „Ladehebel“, Material `painted`, Schwarz) an der linken Gehäuseseite (Toolgen +X):
+  `moving_parts.items[0]` = `bolt`/`Anim_Bolt`, `parts` `["p32"]`, `match` `label` (vorher `null`); Verfahrweg 50 mm nach hinten (+Y) frei. Anlass: Rückfrage Toolgen 0.18 „Bedrock“.
+- Neu: Anbauteile mit `late=True` stehen hinter dem Visier in der Teileliste, so bleiben p00–p31 unverändert (`vsmount`, `skins.Frame` ohne diese Teile). Format, Schema, Skins
+  und alle anderen Blätter unverändert; Weapon-Spec 2 und Geo-Spec 1 nur für KG02 neu, Golden nur die drei KG02-Zeilen. Bericht [claude/docs/versions/0.15.md](claude/docs/versions/0.15.md).
+
 ## claude-0.14 „Livery“
 - Alle 150 Waffenblätter als Blender-Szenen wie auf dem Blatt: vier Farbvarianten mit Hauptskin, dazu die übrigen vier Skins; Skin-Lagen des Weapon-Specs
   (Flächen, Streifen, Verläufe, Ringe, Glyphen, Schmuckteile, Kantenabnutzung) im Shader, Katalog-Texturen, Chrom/Gold/Neon (`geo_blender_skins.py`).

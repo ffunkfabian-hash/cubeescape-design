@@ -149,7 +149,7 @@ class Frame:
     """Körperrahmen einer Waffe: Ziele body/metal, normierte Koordinaten u/v"""
     def __init__(s,full):
         s.full=full
-        gun=[(i,P) for i,P in enumerate(full.parts) if not P.get('sight')]
+        gun=[(i,P) for i,P in enumerate(full.parts) if not P.get('sight') and not P.get('late')]   # späte Anbauteile (claude-0.15) liegen außerhalb des Körperrahmens
         from eng import Model as _M
         gm=_M();gm.parts=[P for _,P in gun]
         role=color_roles(gm)
