@@ -1,5 +1,9 @@
 # Regeln für Codex in diesem Repository
 
+Zentraler Repo-Einstieg: [Nexogen](https://github.com/ffunkfabian-hash/cubeescape-nexogen) – Repo-Links, Zuständigkeiten, Abhängigkeiten und Live-Status über die Status-CLI im Nexogen-Repo. Globale Regeln dort, Fachwissen und Prüfbelege hier.
+
+**Werkzeuge:** `./ce check` · `./ce search query "Begriff"` · `./ce session topics` · `./ce codex quota|judge` · `./ce evidence clip|sheet|still|diff` · `./ce lock unity|blender|gpu -- <Befehl>` · `./ce report --since 7d`.
+
 Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal `~/.claude/CLAUDE.md` bzw.
 `~/.codex/AGENTS.md`). Ergänzend für dieses Repo:
 
@@ -41,3 +45,5 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
   liegen, die Claude und Codex gleich nutzen: Katalog `docs/textures/` (Parameter und Musterbilder; Entscheidung 18.10.2026, angelegt mit
   claude-0.6.1, Beschreibung in `docs/textures/README.md`). Bis er auf `main` liegt, keine neuen Textur- oder Skin-Arten ohne Eintrag im Versionsbericht; vorhandene Definitionen
   nicht umbauen. Danach lesen beide Pipelines Materialien, Oberflächen und Skins aus dem Katalog.
+
+Werkzeug-Erfahrungen: [docs/LESSONS.md](docs/LESSONS.md); die verlinkte Systemdokumentation bleibt die Langform.

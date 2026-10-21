@@ -39,3 +39,5 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
 - **Texturen gemeinsam hinterlegen** (Wunsch des Nutzers, 17.10.2026): Materialmuster und Skins sollen an einer gemeinsamen Stelle
   liegen, die Claude und Codex gleich nutzen: Katalog `docs/textures/` (Parameter und Musterbilder; Entscheidung 18.10.2026, angelegt mit
   claude-0.6.1, Beschreibung in `docs/textures/README.md`). Bis er auf `main` liegt, keine neuen Textur- oder Skin-Arten ohne Eintrag im Versionsbericht.
+
+@docs/LESSONS.md
