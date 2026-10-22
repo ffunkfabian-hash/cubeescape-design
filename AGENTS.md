@@ -4,6 +4,11 @@ Zentraler Repo-Einstieg: [Nexogen](https://github.com/ffunkfabian-hash/cubeescap
 
 **Werkzeuge:** `./ce check` · `./ce search query "Begriff"` · `./ce session topics` · `./ce codex quota|judge` · `./ce evidence clip|sheet|still|diff` · `./ce lock unity|blender|gpu -- <Befehl>` · `./ce report --since 7d`.
 
+**Hooks (seit Agent Tools 0.12):** Der gemeinsame Wächter wird über Nexogen installiert – für Codex erst nach Vertrauen unter `/hooks`,
+für Antigravity nur auf den gemessenen Oberflächen CLI `agy` 1.4.5 und IDE 2.5.5. Das reversible Git-Netz wirkt unabhängig davon für
+alle Clients. Die Commit-Vorabprüfung ist begrenzt (nur einzelne, statisch eindeutige Aufrufe); Einbau und Grenzen stehen zentral in
+[Werkzeuge und Durchsetzung](https://github.com/ffunkfabian-hash/cubeescape-nexogen/blob/main/templates/regeln-details.md#werkzeuge-und-durchsetzung).
+
 Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal `~/.claude/CLAUDE.md` bzw.
 `~/.codex/AGENTS.md`). Ergänzend für dieses Repo:
 

@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## tools-0.12.0 „Gatehouse“ – 2026-10-22
+
+- Gemeinsame Werkzeuge über `ce_sync.py` aus der freigegebenen Quelle Agent Tools 0.12 synchronisiert, einschließlich der Korrektur für ältere Toolgen-Prüfschnittstellen aus 0.11.1.
+- Hook-Beschreibung in `AGENTS.md` ergänzt: gemeinsame Client-Vorabprüfung und unabhängiges Git-Netz werden separat über Nexogen installiert; Einbau und Grenzen bleiben zentral dokumentiert. Modellstand claude-0.15 und Codex-Varianten unverändert.
+- Eigenständiger Werkzeugpaket-Stand; Abnahme durch Quellfreigabe [Tools #10](https://github.com/ffunkfabian-hash/ce-agent-tools/pull/10), Hash-Abgleich, Repo-Quick und Doku-Prüfung.
+
 ## tools-0.11.0 „Wayfinder“ – 2026-10-22
 
 - Gemeinsame Werkzeuge über `ce_sync.py` auf die geprüfte Agent-Tools-Quelle 0.11.0 aktualisiert: korrigierte inkrementelle FTS-Schreibzugriffe, öffentliche Such-Aliase und gemeinsame Prüf-/API-Werkzeuge.
