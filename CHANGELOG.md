@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## tools-0.11.0 „Wayfinder“ – 2026-10-22
+
+- Gemeinsame Werkzeuge über `ce_sync.py` auf die geprüfte Agent-Tools-Quelle 0.11.0 aktualisiert: korrigierte inkrementelle FTS-Schreibzugriffe, öffentliche Such-Aliase und gemeinsame Prüf-/API-Werkzeuge.
+- Reiner Werkzeug-Rollout; Modellstand claude-0.15 und Codex-Varianten unverändert. Die offene Ladehebel-Ergänzung in `claude/prompts/Waffen-Prompts.md` bleibt separat im Haupt-Checkout erhalten.
+- [Werkzeug-Abnahme](docs/versions/tools-0.11.md).
+
 ## claude-0.15 „Rackshot“
 - KG02 (Sturmgewehr, Variante G) bekommt den Ladehebel `p32` (Bezeichnung „Ladehebel“, Material `painted`, Schwarz) an der linken Gehäuseseite (Toolgen +X):
   `moving_parts.items[0]` = `bolt`/`Anim_Bolt`, `parts` `["p32"]`, `match` `label` (vorher `null`); Verfahrweg 50 mm nach hinten (+Y) frei. Anlass: Rückfrage Toolgen 0.18 „Bedrock“.
