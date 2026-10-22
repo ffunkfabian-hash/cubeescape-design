@@ -2,6 +2,8 @@
 
 Zentraler Repo-Einstieg: [Nexogen](https://github.com/ffunkfabian-hash/cubeescape-nexogen) – Repo-Links, Zuständigkeiten, Abhängigkeiten und Live-Status über die Status-CLI im Nexogen-Repo. Globale Regeln dort, Fachwissen und Prüfbelege hier.
 
+Gemeinsame Werkzeuge: Agent Tools **0.11.0 „Wayfinder“**, eingebettet unter `tools/ce_tools/`; `./ce sync --check` prüft sie gegen die Quelle. Das ist eine eigene Werkzeugversion, der Modellstand bleibt claude-0.15. [Rollout und Abnahme](docs/versions/tools-0.11.md).
+
 Waffen-Konzeptblätter für **Cube Escape**: Low-Poly-Sci-Fi, technisch konsistent, als Vorlage für 3D-Modellierung
 (Mensch oder KI-Agent). Jede Waffe ist als kleines 3D-Modell in Python beschrieben. Alle Ansichten werden aus genau
 diesem Modell gerendert und sind damit garantiert deckungsgleich.
