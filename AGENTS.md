@@ -7,7 +7,7 @@ Zentraler Repo-Einstieg: [Nexogen](https://github.com/ffunkfabian-hash/cubeescap
 **Hooks (seit Agent Tools 0.12):** Der gemeinsame Wächter wird über Nexogen installiert – für Codex erst nach Vertrauen unter `/hooks`,
 für Antigravity nur auf den gemessenen Oberflächen CLI `agy` 1.4.5 und IDE 2.5.5. Das reversible Git-Netz wirkt unabhängig davon für
 alle Clients. Die Commit-Vorabprüfung ist begrenzt (nur einzelne, statisch eindeutige Aufrufe); Einbau und Grenzen stehen zentral in
-[Werkzeuge und Durchsetzung](https://github.com/ffunkfabian-hash/cubeescape-nexogen/blob/main/templates/regeln-details.md#werkzeuge-und-durchsetzung).
+[Werkzeuge und Durchsetzung](https://github.com/ffunkfabian-hash/cubeescape-nexogen/blob/main/templates/regeln-details.md#werkzeuge-und-durchsetzung). Postfach (ce-shared 0.15.1, nur Claude Code mit installiertem Plugin): Für eine reservierte Sitzung (`./ce session reserve|patch`) startet ein Stop-Hook den Wächter selbst und weckt sie bei Nachrichten; läuft keiner, hält ein zweiter Stop-Hook das Ende einmal an (höchstens alle 2 h).
 
 Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal `~/.claude/CLAUDE.md` bzw.
 `~/.codex/AGENTS.md`). Ergänzend für dieses Repo:
