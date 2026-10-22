@@ -25,7 +25,8 @@ ITEMS=[
  dict(t='poly',p=[(228,228),(452,228),(472,246),(472,300),(256,300),(228,280)],c=BG,z=(-22,22),r=6,L='Gehäuse',
       d=[([(330,242),(392,242),(392,258),(330,258)],SW,False,2),([(250,262),(262,262),(262,272),(250,272)],OR,False,2)]),
  # Schiene und Reflexvisier
- dict(t='poly',p=[(240,219),(462,219),(462,228.5),(240,228.5)],c=SW,z=(-9,9),r=1,
+ # Schienenquadrate dunkelgrau: Kanal MT_Metal statt der Helligkeitsrolle MT_Secondary (unter base beige; claude-0.15.2, Befund Toolgen 0.23)
+ dict(t='poly',p=[(240,219),(462,219),(462,228.5),(240,228.5)],c=SW,z=(-9,9),r=1,dch='MT_Metal',
       d=[([(x,221),(x+6,221),(x+6,225),(x,225)],'#33343A',False,0) for x in range(248,456,14)]),
  dict(t='poly',p=[(330,207),(392,207),(392,219.5),(330,219.5)],c=SW,z=(-10,10),r=2,S=True),
  dict(t='poly',p=[(338,176),(384,176),(392,186),(392,207.5),(338,207.5)],c=SW,z=(-11,11),r=3,L='Reflexvisier',S=True,

@@ -140,10 +140,12 @@ def channel(m,ch):
     assert ch in CHANNELS,ch
     m.parts[-1]['channel']=ch;return m
 def copy_channels(m,entries):
-    """übernimmt 'ch' aus Bau-Einträgen (fgen-ITEMS, flib-Spec; gleiche Reihenfolge wie m.parts)"""
+    """übernimmt 'ch' (Teil) und 'dch' (alle Aufkleber des Teils, claude-0.15.2) aus Bau-Einträgen (fgen-ITEMS, flib-Spec; gleiche
+    Reihenfolge wie m.parts)"""
     assert len(m.parts)==len(entries),(len(m.parts),len(entries))
     for P,e in zip(m.parts,entries):
         if e.get('ch'):assert e['ch'] in CHANNELS,e['ch'];P['channel']=e['ch']
+        if e.get('dch'):assert e['dch'] in CHANNELS,e['dch'];P['dec_channel']=e['dch']
     return m
 def model_origin(m,yaw,pitch,center):
     """Projektion des Bounding-Box-Mittelpunkts aller Teile (gemeinsamer Bezugspunkt)."""

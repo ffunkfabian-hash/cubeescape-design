@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.15.2 – 2026-10-22
+
+- Holo-Familie: Typregel `vsmount.VS_TYPE` – alle Impulsgewehr-Blätter tragen das Holo-Visier VS02 (KC03, KD03, KF03, KH03, KJ03 neu, KG03 schon seit 0.15.1); `spec_checks.CE_SIGHTS` Zeile 3 folgt CE 0.111.1 (Holo, offenes Fenster).
+- KG02-Schiene p10: 30 Quadrate `#33343A` auf `MT_Metal` statt `MT_Secondary` (unter `base` beige, Befund Toolgen 0.23); ausdrücklicher Aufkleber-Kanal `dch` je Bau-Eintrag.
+- Altfehler: `fgen.board` übergibt `FONT_CSS` (2D-Karten F/G/H 01–05 bauen wieder), KG08-Text nennt das Zielverfolgungs-Visier VS08 statt „Zielfernrohr auf zwei Ringen“. Bericht [claude/docs/versions/0.15.md](claude/docs/versions/0.15.md#patch-0152--holo-familie).
+
 ## claude-0.15.1 – 2026-10-22
 
 - Stützgriff: KG03 und KG08 bekommen einen „Vordergriff“ (`late=True`, KG03 `p40` vor der Energiezelle, KG08 `p43`); `Socket_SupportHand` jetzt ableitbar: KG03 y −0,272 / z 0,024 m, KG08 y −0,250 / z 0,057 m (vorher „nicht ableitbar“).

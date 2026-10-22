@@ -120,6 +120,11 @@ class Channels(unittest.TestCase):
     def test_copy_channels(self):
         m=self._model();copy_channels(m,[{},{'ch':'MT_Secondary'},{},{}])
         self.assertEqual(m.parts[1]['channel'],'MT_Secondary');self.assertNotIn('channel',m.parts[0])
+    def test_decal_channel(self):
+        """'dch' setzt den Kanal aller Aufkleber eines Teils (claude-0.15.2): KG02-Schienenquadrate MT_Metal statt Helligkeitsrolle."""
+        dec={d['channel'] for d in load('KG02')['decals'] if d['part']=='p10'}
+        self.assertEqual(dec,{'MT_Metal'})
+        with self.assertRaises(AssertionError):copy_channels(self._model(),[{},{'dch':'MT_Glow'},{},{}])
     def test_channel_does_not_change_sheet_colors(self):
         """Ein gesetzter Kanal ändert die Farbvarianten des Blatts nicht (recolor liest ihn nicht)."""
         for s in sheetmodels.SHEETS:
@@ -401,7 +406,7 @@ class SightVocabulary(unittest.TestCase):
                 if si['frame']:self.assertIn(si['frame'],export_spec.SIGHT_FRAMES)
                 for p in sp['parts']:self.assertEqual(p['toolgen_material'],export_spec.TOOLGEN_MATERIAL[p['material']])
         self.assertTrue({t[5] for t in spec_checks.CE_SIGHTS.values()}<=set(export_spec.SIGHT_TYPES))
-        self.assertEqual(len({t[5] for t in spec_checks.CE_SIGHTS.values()}),8)   # Pistole und Schrotflinte beide reflex
+        self.assertEqual(len({t[5] for t in spec_checks.CE_SIGHTS.values()}),7)   # Pistole/Schrotflinte reflex, Sturm-/Impulsgewehr holo (CE 0.111.1)
     def test_toolgen_materials(self):
         fn=os.path.expanduser('~/Claude/cubeescape-toolgen/data/surface_recipes.json')
         if not os.path.exists(fn):self.skipTest('Toolgen-Repo nicht vorhanden')
@@ -495,10 +500,10 @@ class VisierSerie(unittest.TestCase):
         import spec_checks
         sp=load('KF03');self.assertEqual(spec_checks.vs_problems(sp),[])
         b=copy.deepcopy(sp);b['sight']['sight_spec']['socket_mount_m'][2]+=0.01;self.assertTrue(spec_checks.vs_problems(b))
-        b=copy.deepcopy(sp);b['sight']['sight_spec']['id']='VS02';self.assertTrue(spec_checks.vs_problems(b))
+        b=copy.deepcopy(sp);b['sight']['sight_spec']['id']='VS03';self.assertTrue(spec_checks.vs_problems(b))   # Röhre statt Holo (Typregel 0.15.2)
         b=copy.deepcopy(sp);b['sight']['sight_spec']['socket_reticle_m'][1]+=0.01;self.assertTrue(spec_checks.vs_problems(b))
         b=copy.deepcopy(sp);b['sight']['sight_spec']['line_clear_of_weapon']=False;self.assertTrue(spec_checks.vs_problems(b))
         b=copy.deepcopy(sp);b['sight']['sight_spec']['file']='VS04.spec.json';self.assertTrue(spec_checks.vs_problems(b))
-        b=copy.deepcopy(sp);del b['sight']['sight_spec'];self.assertEqual(spec_checks.vs_problems(b),['kein Visier der Visier-Serie (VS03)'])
+        b=copy.deepcopy(sp);del b['sight']['sight_spec'];self.assertEqual(spec_checks.vs_problems(b),['kein Visier der Visier-Serie (VS02)'])
 
 if __name__=='__main__':unittest.main()

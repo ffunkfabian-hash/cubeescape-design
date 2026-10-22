@@ -169,4 +169,4 @@ def board(info,items):
     vb=f'{cx-W/2:.0f} {cy-H/2-15:.0f} {W:.0f} {H:.0f}'
     pal=''.join(f'<div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 6px; background: {c}"></div><span style="font-size: 12px; color: #8FA0B3">{c}</span></div>\n' for c in info['pal']).rstrip('\n')
     return TPL_HEAD.format(num=info['num'],name=info['name'],NAME=info['name'].upper(),nick=info['nick'],col=info['col'],pill=info['pill'],vb=vb,alt=info['alt'],fid=fid,
-        shx=f'{cx:.0f}',shy=f'{y1+30:.0f}',shrx=f'{(x1-x0)*0.45:.0f}',body=svg_side(items,fid),desc=info['desc'],pal=pal,form=info['form'])
+        shx=f'{cx:.0f}',shy=f'{y1+30:.0f}',shrx=f'{(x1-x0)*0.45:.0f}',body=svg_side(items,fid),desc=info['desc'],pal=pal,form=info['form'],FONT_CSS=FONT_CSS)
