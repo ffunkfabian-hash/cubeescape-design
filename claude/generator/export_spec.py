@@ -387,7 +387,7 @@ def vs_sight(v,sight_parts,gun,ids,F,unit,new=False):
     src=f'Visier-Serie {v["id"]} ({info["title"]})'
     tube=geo.get('tube')
     return dict(present=True,kind=kind,window=window,source=src+', Modell claude/generator/vsmodels.py',modular=True,mount_side=_side(sb,gun,new),
-                type=st,type_source=f'{src}: Standardvisier des Waffentyps (Entscheidung des Nutzers 17.10.2026 „Danach Waffenblätter umstellen“)',
+                type=st,type_source=f'{src}: '+(v.get('choice') or 'Standardvisier des Waffentyps (Entscheidung des Nutzers 17.10.2026 „Danach Waffenblätter umstellen“)'),
                 frame=info['frame'],frame_source=src,
                 labels=sorted({P.get('label') for _,P in sight_parts if P.get('label')}),parts=[ids[i] for i,_ in sight_parts],
                 bounds_m=F.bb(sb),anchor='Socket_Sight',

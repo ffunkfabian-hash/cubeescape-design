@@ -1,6 +1,6 @@
 from flib import *
 from flabel import Lb
-from gsight import S
+from gsight import S,late
 from eng import rect,circ,roundpoly
 BE,AN,OR,CY,DK='#D9C7A3','#33363D','#F26A1B','#6FD8E0','#1E2025'
 def spec():
@@ -36,6 +36,9 @@ def spec():
     Lb(P([(380,343),(392,343),(404,384),(392,388)],OR,-6,6,r=2),'Abzug'),
     P(rect(366,404,72,9),AN,-7,7,r=3),
     P(rect(430,342,9,71),AN,-7,7,r=3),
+    # Vordergriff (claude-0.15.1): unter Gehäusefront und Handschutz, Mitte x 472 = 0,25 m vor dem Griff (wie Toolgen-Korrektur KG02)
+    late(Lb(P([(458,322),(486,322),(486,392),(480,400),(464,400),(458,392)],AN,-14,14,r=4,
+      dec=[D(roundpoly(rect(463,340+12*i,18,5),2),DK) for i in range(4)]),'Vordergriff')),
     ]
 META=dict(num='08',name='Spurgewehr',vname='Fächer',col='#F26A1B',pill='BEIGE · ANTHRAZIT · ORANGE',
  palette=[BE,AN,OR,CY],center=(370,300,0),

@@ -108,6 +108,10 @@ def direction_problems(sp):
     pr+=window_problems((s.get('window_geometry') or {}).get('elements',[]),parts,sp['decals'],hand_z=h[2])
     return pr
 
+def _sheet_vs(sp):
+    """Visier-Ausnahme des Blatts (vsmount.VS_SHEET, claude-0.15.1) oder None"""
+    import vsmount
+    o=vsmount.VS_SHEET.get((sp.get('sheet') or {}).get('id'));return o[0] if o else None
 def vs_problems(sp,vs_spec=None):
     """Visier der Visier-Serie auf dem Blatt (claude-0.7): Waffen 1–9 tragen das Standardvisier ihres Typs, Socket_Mount liegt über
     Socket_Sight (nur angehoben um riser_m), Fadenkreuz und Okular in derselben Lage wie im Sight-Spec, das Fenster ist Glas, die
@@ -118,6 +122,8 @@ def vs_problems(sp,vs_spec=None):
         import wtypes
         t=wtypes.TYPES.get(sp['weapon']['name_de']) or {}
         nr=int(t['vs'][2:]) if t.get('vs') else None
+    ov=_sheet_vs(sp)
+    if ov:nr=int(ov[2:])   # Ausnahme je Blatt (claude-0.15.1, vsmount.VS_SHEET)
     if nr is None:return [] if v is None else ['Bogen mit Sight-Spec' if tid=='bow' else 'Sight-Spec ohne Visier-Ziel']
     pr=[]
     if v is None:return [f'kein Visier der Visier-Serie (VS{nr:02d})']
@@ -162,7 +168,8 @@ def sight_target_hints(sp):
     """Abweichungen vom CE-Zielbild als Hinweise (Liste von Texten; leer = passt oder kein Zielbild)."""
     tid=sp['weapon']['toolgen_id'];s=sp['sight']
     if tid not in CE_SIGHTS:return []
-    nr,vis,durch,kinds,wins,typ=CE_SIGHTS[tid];out=[]
+    ov=_sheet_vs(sp)   # Ausnahme je Blatt (claude-0.15.1): Zielbild ist die Zeile des getauschten Visiers
+    nr,vis,durch,kinds,wins,typ=next(r for r in CE_SIGHTS.values() if r[0]==int(ov[2:])) if ov else CE_SIGHTS[tid];out=[]
     if s.get('type') not in (None,typ):out.append(f'Typ {s["type"]} statt {typ}')
     if s['kind'] not in kinds:out.append(f'Art {s["kind"]} statt {"/".join(sorted(kinds))}')
     if s['window'] not in wins:out.append(f'Fenster {s["window"]} statt {"/".join(sorted(wins))}')
