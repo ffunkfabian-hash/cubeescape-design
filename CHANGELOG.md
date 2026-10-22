@@ -2,6 +2,12 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.15.1 – 2026-10-22
+
+- Stützgriff: KG03 und KG08 bekommen einen „Vordergriff“ (`late=True`, KG03 `p40` vor der Energiezelle, KG08 `p43`); `Socket_SupportHand` jetzt ableitbar: KG03 y −0,272 / z 0,024 m, KG08 y −0,250 / z 0,057 m (vorher „nicht ableitbar“).
+- KG03: Holo-Visier VS02 statt Präzisions-Röhre VS03 (Ausnahme je Blatt `vsmount.VS_SHEET`, Entscheidung des Nutzers 22.10.2026) und Salve aus drei statt vier Impulsen.
+- Golden nur KG03/KG08 (Spec, Blatt, Geo); alle übrigen 148 Waffen- und 9 Visier-Blätter bytegleich. Bericht [claude/docs/versions/0.15.md](claude/docs/versions/0.15.md#patch-0151--stützgriff).
+
 ## tools-0.14.0 „Crosstalk“ – 2026-10-22
 
 - Gemeinsame Werkzeuge über `ce_sync.py` aus Agent Tools 0.14 synchronisiert: `--reserve`/`./ce session patch` melden die Sitzung im Postfach (cubeescape-nexogen#16) an, `./ce session say|who` schreiben Sitzungen einander bzw. listen die angemeldeten.

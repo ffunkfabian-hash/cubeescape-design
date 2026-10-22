@@ -7,10 +7,14 @@ NOTE='VISIER · SEPARAT'
 def S(s):
     """flib-Spec-Eintrag als Visierteil markieren"""
     s['sight']=True;return s
+def late(s):
+    """flib-Spec-Eintrag als spätes Teil markieren: steht hinter dem Visier in der Teileliste (claude-0.15.1, wie fgen late=True)"""
+    s['late']=True;return s
 def mark(m,entries,key):
     assert len(m.parts)==len(entries),(len(m.parts),len(entries))
     for P,e in zip(m.parts,entries):
         if e.get(key):P['sight']=True
+        if e.get('late'):P['late']=True
     return m
 def _P(pts):return ' '.join('%.1f,%.1f'%p for p in pts)
 # ---------- Geister-Umriss (Position des Visiers auf der Waffe)

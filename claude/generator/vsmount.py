@@ -18,6 +18,10 @@ from xlroles import FALLBACK,channel_palettes
 VS_OF={s['weapon']:f'VS{s["num"]}' for s in V.SERIES}   # Waffe (Blattname) -> Standardvisier
 import wtypes
 VS_OF.update({n:t['vs'] for n,t in wtypes.NEW.items() if t['vs']})   # neue Waffentypen (claude-0.10): Visier des verwandten Typs
+# Ausnahmen je Blatt (claude-0.15.1): Blatt -> (Visier, Begründung); die übrigen Blätter des Waffentyps behalten ihr Standardvisier
+VS_SHEET={'KG03':('VS02','Entscheidung des Nutzers 22.10.2026: Zielfernrohre nur an Präzisionswaffen (Scout, Scharfschütze, lineare Fusion, '
+                         'Armbrust); KG03 trägt das Holo-Visier VS02 wie KG02 statt der Präzisions-Röhre VS03')}
+def sheet_of(fid):return 'K'+('C' if fid[0]=='v' else fid[0].upper())+fid[1:]
 RAIL_H_MM=6.0        # neue Visierschiene (Blätter ohne Schiene): Höhe über der höchsten Stelle der Waffe unter der Halterung
 RAIL_W_MM=14.0       # Breite (zwischen den Klemmbacken der Halterung, vsmodels.mount: Backen 3 mm innen)
 JAW_MM=3.0           # Klemmbacken reichen so weit unter Socket_Mount (vsmodels.mount)
@@ -80,7 +84,8 @@ def _seat_x(gun,old,half):
 def apply(d):
     """ersetzt die Visierteile von d['m'] durch das VS-Standardvisier des Waffentyps; d['vs'] = Lagedaten (None beim Bogen)"""
     if 'vs' in d:return d
-    vid=VS_OF.get(d['name'])
+    vid=VS_OF.get(d['name']);ov=VS_SHEET.get(sheet_of(d['fid']))
+    if ov:vid=ov[0]
     if vid is None:d['vs']=None;return d
     import export_spec                                # Bezugslängen der Waffentypen (Spec-Maßstab); spät, export_spec lädt sheetmodels
     full=d['m'];gun=[P for P in full.parts if not P.get('sight') and not P.get('late')];old=[P for P in full.parts if P.get('sight')]
@@ -183,6 +188,7 @@ def apply(d):
                  info=L['info'],geo=geo,unit=unit,k=k,seat=(xs,ys,zs),mount=(xs,ym,zs),seat_source=src,rail_added=added is not None,
                  rail_part=len(gun) if added is not None else gun.index(rail[0]),riser_mm=lift,line_y=line,blocked_by=blocked,
                  old_labels=sorted({P.get('label') for P in old if P.get('label')}),channels=chans)
+    if ov:d['vs']['choice']=ov[1]   # nur bei Ausnahmen, Lagedaten der übrigen Blätter unverändert
     return d
 
 def _blocks(P,x0,x1,line,zs):

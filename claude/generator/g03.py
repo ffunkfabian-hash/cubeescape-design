@@ -36,6 +36,9 @@ ITEMS=[
  # Energiezelle unter dem Kaefig
  dict(t='poly',p=[(392,303),(452,303),(448,348),(396,348)],c=BE,z=(-14,14),r=4,L='Energiezelle',
       d=[([(404,318),(440,318),(438,326),(406,326)],CY,True,2)]),
+ # Vordergriff (claude-0.15.1): direkt vor der Energiezelle an den unteren Kaefigstreben (z +-16 greift in die Streben bei |z| 13,5-22,5),
+ # Zelle bleibt nach unten frei; Mitte x 468 = 0,27 m vor dem Griff (Ziel Toolgen-Korrektur KG02: 0,25 m)
+ dict(t='poly',p=[(456,298),(480,298),(480,366),(474,376),(462,376),(456,366)],c=AN,z=(-16,16),r=4,L='Vordergriff',late=True),
  # Gestufter Emitter
  dict(t='poly',p=[(498,236),(560,236),(560,296),(498,296)],c=WH,z=(-20,20),r=4,
       d=[([(508,262),(550,262),(550,270),(508,270)],AN,False,2)]),
