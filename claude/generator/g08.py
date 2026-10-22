@@ -17,7 +17,7 @@ def spec():
     # Energiezelle oben eingesetzt
     Lb(P(rect(230,228,142,18),AN,-18,18,r=4,dec=[D(roundpoly(rect(240+22*i,233,14,8),2),DK) for i in range(5)]),'Energiezelle'),
     P(rect(352,231,16,10),OR,-18.8,18.8,r=2,emit=True),
-    # Zielfernrohr auf zwei Ringen mit Füßen
+    # Zielfernrohr auf zwei Ringen mit Füßen (Erstentwurf; das XL-Blatt ersetzt die Visierteile durch VS08, vsmount.apply)
     P(rect(382,240,62,6),DK,-9,9,r=2),  # Visierbasis (bleibt)
     S(P(rect(388,228,14,13),AN,-7,7,r=2)),
     S(P(rect(424,228,14,13),AN,-7,7,r=2)),
@@ -42,7 +42,7 @@ def spec():
     ]
 META=dict(num='08',name='Spurgewehr',vname='Fächer',col='#F26A1B',pill='BEIGE · ANTHRAZIT · ORANGE',
  palette=[BE,AN,OR,CY],center=(370,300,0),
- aria='Spurgewehr Variante G: beigefarbenes Gehäuse mit oben eingesetzter Energiezelle, Zielfernrohr auf zwei Ringen, kurzem Lauf und breitem flachem Fächeremitter mit orangem Strahlschlitz, Skelettschaft',
- desc='Das Spurgewehr spannt seinen Strahl wie einen Fächer auf: Vorne sitzt ein breiter, flacher Emitter mit orangem Schlitz. Die Energiezelle steckt oben im beigen Gehäuse, das Zielfernrohr steht auf zwei Ringen.',
- form='Skelettschaft · Energiezelle oben im Gehäuse · Zielfernrohr auf zwei Ringen · belüfteter Handschutz · sichtbarer Lauf · breiter Fächeremitter',
- desc3='Der Fächer als Konzeptblatt: Die Energiezelle liegt oben eingesetzt im Gehäuse, ihre orange Ladeanzeige zeigt nach vorne. Das Zielfernrohr steht auf zwei Ringen mit Füßen auf dem Gehäuse. Vorne tritt der kurze Lauf aus dem Handschutz in den breiten Fächeremitter, dessen orangener Schlitz den flachen Strahl formt. Unten liegt der Abzug im Bügel vor dem Griff.')
+ aria='Spurgewehr Variante G: beigefarbenes Gehäuse mit oben eingesetzter Energiezelle, Zielverfolgungs-Visier mit Markierungsrahmen, kurzem Lauf und breitem flachem Fächeremitter mit orangem Strahlschlitz, Skelettschaft',
+ desc='Das Spurgewehr spannt seinen Strahl wie einen Fächer auf: Vorne sitzt ein breiter, flacher Emitter mit orangem Schlitz. Die Energiezelle steckt oben im beigen Gehäuse, darüber sitzt das Zielverfolgungs-Visier mit offenem Markierungsrahmen.',
+ form='Skelettschaft · Energiezelle oben im Gehäuse · Zielverfolgungs-Visier auf der Visierbasis · belüfteter Handschutz · sichtbarer Lauf · breiter Fächeremitter',
+ desc3='Der Fächer als Konzeptblatt: Die Energiezelle liegt oben eingesetzt im Gehäuse, ihre orange Ladeanzeige zeigt nach vorne. Das Zielverfolgungs-Visier sitzt ohne Röhre auf der Visierbasis: ein Leichtbau-Rahmen mit vier Markierungsecken. Vorne tritt der kurze Lauf aus dem Handschutz in den breiten Fächeremitter, dessen orangener Schlitz den flachen Strahl formt. Unten liegt der Abzug im Bügel vor dem Griff.')

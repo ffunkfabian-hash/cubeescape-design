@@ -4,7 +4,7 @@
 from cepaths import E3D,CLAUDE,OUT
 import copy,json,os,re,sys,unittest
 sys.path.insert(0,E3D)
-import export_sight as ES,vsmodels as V,spec_checks as SC
+import export_sight as ES,vsmodels as V,spec_checks as SC,vsmount
 import test_spec as TS                      # nur validate(); als Modul, damit dessen Tests hier nicht mitlaufen
 from export_spec import SIGHT_TYPES
 
@@ -36,7 +36,11 @@ class Content(unittest.TestCase):
             sp=load(v);tid=sp['weapon']['toolgen_id'];s=sp['sight']
             with self.subTest(sight=v):
                 nr,_,_,kinds,wins,typ=SC.CE_SIGHTS[tid]
-                self.assertEqual(sp['weapon']['number'],nr);self.assertEqual(s['type'],typ)
+                self.assertEqual(sp['weapon']['number'],nr)
+                ov=vsmount.VS_TYPE.get(sp['weapon']['name_de'])
+                if ov and ov[0]!=v:   # Typregel (claude-0.15.2): die Waffe trägt ein anderes Serienvisier, dieses bleibt für verwandte Typen
+                    self.assertEqual(sp['tube'] is not None,s['type'] in ('precision','sniper'));continue
+                self.assertEqual(s['type'],typ)
                 self.assertEqual((s['kind'],s['window_kind']),SIGHT_TYPES[typ]);self.assertIn(s['kind'],kinds);self.assertIn(s['window_kind'],wins)
                 self.assertEqual(sp['tube'] is not None,typ in ('precision','sniper'))
                 self.assertEqual(sp['anchors']['Socket_Eye'] is not None,sp['tube'] is not None)

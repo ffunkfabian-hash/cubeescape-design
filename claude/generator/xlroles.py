@@ -138,6 +138,7 @@ def assign_channels(m,role,area,decal_area,swatches=()):
         host=pch[i][0] if pch[i] else preferred_channel(P,role)
         for k,d in enumerate(P['dec']):
             col,emit=d[3],d[4]
+            if P.get('dec_channel'):dch[i][k]=(P['dec_channel'],'explicit');continue   # eng.copy_channels 'dch' (claude-0.15.2)
             if emit:pc='MT_Energy' if host=='MT_Energy' else 'MT_Emission'
             else:pc=max(by_color[col],key=by_color[col].get) if col in by_color else ROLE_CHANNEL[role(col,False)]
             add((col,pc,bool(emit)),decal_area(d),('d',i,k))

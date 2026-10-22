@@ -112,6 +112,10 @@ def _sheet_vs(sp):
     """Visier-Ausnahme des Blatts (vsmount.VS_SHEET, claude-0.15.1) oder None"""
     import vsmount
     o=vsmount.VS_SHEET.get((sp.get('sheet') or {}).get('id'));return o[0] if o else None
+def _vs_choice(sp):
+    """Visier nach Ausnahme je Blatt oder Typregel (vsmount.choice_of, claude-0.15.2) oder None"""
+    import vsmount
+    o=vsmount.choice_of((sp.get('sheet') or {}).get('id'),sp['weapon']['name_de']);return o[0] if o else None
 def vs_problems(sp,vs_spec=None):
     """Visier der Visier-Serie auf dem Blatt (claude-0.7): Waffen 1–9 tragen das Standardvisier ihres Typs, Socket_Mount liegt über
     Socket_Sight (nur angehoben um riser_m), Fadenkreuz und Okular in derselben Lage wie im Sight-Spec, das Fenster ist Glas, die
@@ -122,8 +126,8 @@ def vs_problems(sp,vs_spec=None):
         import wtypes
         t=wtypes.TYPES.get(sp['weapon']['name_de']) or {}
         nr=int(t['vs'][2:]) if t.get('vs') else None
-    ov=_sheet_vs(sp)
-    if ov:nr=int(ov[2:])   # Ausnahme je Blatt (claude-0.15.1, vsmount.VS_SHEET)
+    ov=_vs_choice(sp)
+    if ov:nr=int(ov[2:])   # Ausnahme je Blatt (claude-0.15.1) oder Typregel (claude-0.15.2), vsmount.choice_of
     if nr is None:return [] if v is None else ['Bogen mit Sight-Spec' if tid=='bow' else 'Sight-Spec ohne Visier-Ziel']
     pr=[]
     if v is None:return [f'kein Visier der Visier-Serie (VS{nr:02d})']
@@ -151,10 +155,12 @@ def vs_problems(sp,vs_spec=None):
 # Zielbild Cube Escape, Docs/EQUIPMENT.md › „Visiere je Waffe“ (Stand CE 8ae12b15, 17.10.2026): Nr., Visier, Durchsicht.
 # Erlaubt: Visierarten (Toolgen hold.sight_kind) und Fenster (Spec-Wortschatz), die zur Zeile passen. Offenes Fenster =
 # Rahmen mit Scheibe oder offener Ring (glass/open), runde Röhre = lens. Zieltyp (claude-0.5.2): Typ des Visiertypen-Blatts je Waffe. CE 0.72/0.74: offene Fenster statt geschlossener Gehäuse.
+# CE 0.111.1 (22.10.2026): Zeile 3 Impulsgewehr Holo statt Präzisions-Röhre (Typregel vsmount.VS_TYPE, Visier VS02).
 CE_SIGHTS={
  'pistol':(1,'kompaktes Reflex-Visier','offenes Fenster',{'reflex'},{'glass','open'},'reflex'),
  'assault_rifle':(2,'offenes Holo-Visier','offenes Fenster',{'holo'},{'glass','open'},'holo'),
- 'pulse_rifle':(3,'Präzisions-Visier (mittlere Distanz)','runde Röhre',{'scope'},{'lens'},'precision'),
+ 'pulse_rifle':(3,'offenes Holo-Visier (seit 22.10.2026, vorher Präzisions-Visier; Zielfernrohre nur an Präzisionswaffen)','offenes Fenster',
+                {'holo'},{'glass','open'},'holo'),
  'shotgun':(4,'Weitwinkel-Reflex-Visier','großes rundes Fenster',{'reflex'},{'glass','open'},'reflex'),
  'sniper_rifle':(5,'Hochpräzisions-Visier','runde Röhre, Zoom',{'scope'},{'lens'},'sniper'),
  'smg':(6,'kompakt und schnell','offenes Fenster',{'reflex','holo'},{'glass','open'},'machine'),
@@ -162,7 +168,7 @@ CE_SIGHTS={
  'trace_rifle':(8,'Zielverfolgungs-Visier','Fenster mit Markierung',{'holo','reflex'},{'glass','open'},'trace'),
  'rocket_launcher':(9,'Weitbereichs-Visier','breites Fenster',{'holo','reflex','energy'},{'glass','open'},'rocket'),
 }
-CE_SOURCE='Cube Escape Docs/EQUIPMENT.md › Visiere je Waffe (CE 8ae12b15, 17.10.2026)'
+CE_SOURCE='Cube Escape Docs/EQUIPMENT.md › Visiere je Waffe (CE 0.111.1 5b97f16f, 22.10.2026)'
 
 def sight_target_hints(sp):
     """Abweichungen vom CE-Zielbild als Hinweise (Liste von Texten; leer = passt oder kein Zielbild)."""
