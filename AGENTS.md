@@ -15,7 +15,10 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
 - **Gleiche Regeln wie Claude** (Entscheidung des Nutzers, 17.10.2026): Jede Regel in `CLAUDE.md` gilt für Codex genauso, mit
   `codex/` statt `claude/`. Unterschiede gibt es nur bei der Zuständigkeit (unten). Kommt in `CLAUDE.md` eine Regel dazu, gilt sie
   ab dann auch hier; Claude zieht diese Datei im selben Zug nach.
-- Codex schreibt ausschließlich unter `codex/` (eigene Pipeline, Modelle, Konzeptblätter, Prompts).
+- **`codex/` ist eingefroren** (Entscheidung des Nutzers, 23.10.2026): keine neue Arbeit in der Codex-Pipeline, keine neuen
+  Codex-Varianten, nichts löschen. Codex arbeitet hier nur noch als Unteragent einer Claude-Sitzung unter `claude/` nach deren Auftrag
+  (wie bei KC11–KJ25). Die folgenden Regeln zu `codex/` gelten für den Bestand.
+- Codex schreibt ausschließlich unter `codex/` (eigene Pipeline, Modelle, Konzeptblätter, Prompts) – außer als Unteragent von Claude (oben).
 - `claude/` gehört Claude: nicht ändern, nicht verschieben, keine Dateien daraus übernehmen oder per Symlink koppeln. Lesen ist
   erlaubt und für den gemeinsamen Maßstab nötig (`claude/docs/`).
 - `docs/` ist gemeinsam (Masterprompt `docs/masterprompt.md`, Auftrag `docs/AUFTRAG.md`): nur nach ausdrücklichem Wunsch des Nutzers ändern.

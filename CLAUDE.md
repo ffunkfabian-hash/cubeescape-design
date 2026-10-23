@@ -4,6 +4,9 @@ Zuerst gelten die globalen Regeln aus `ffunkfabian-hash/cubeescape-rules` (lokal
 `~/.codex/AGENTS.md`). Ergänzend für dieses Repo:
 
 - Claude schreibt ausschließlich unter `claude/` (Pipeline, Modelle, Konzeptblätter, Prompts).
+- **Eine Pipeline** (Nutzer, 23.10.2026): Neue Konzeptarbeit nur noch unter `claude/`. `codex/` (A „Parallax“, K „Flux Bloom“) ist
+  eingefroren – lesbarer Bestand, nicht ändern, nicht löschen, keine neuen Codex-Varianten. Codex hilft nur noch als Unteragent einer
+  Claude-Sitzung unter `claude/` (wie bei KC11–KJ25). Die Regeln unten zu `codex/` gelten für diesen Bestand.
 - `codex/` gehört Codex: nicht ändern, nicht verschieben, keine Dateien daraus übernehmen oder per Symlink koppeln.
 - **Gleiche Regeln für Codex** (Nutzer, 17.10.2026): Alles hier gilt für Codex sinngemäß mit `codex/`. Wer hier eine Regel
   ändert, zieht `AGENTS.md` im selben Zug nach. Codex-Varianten (A „Parallax“, K „Flux Bloom“) stehen in `variants.CODEX`.
