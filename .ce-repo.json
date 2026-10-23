@@ -98,10 +98,8 @@
     ],
     "nightly": [
       [
-        "python3",
-        "tools/ce_tools/heavy_lock.py",
-        "run",
-        "--resource",
+        "./ce",
+        "lock",
         "gpu",
         "--",
         "python3",
@@ -110,10 +108,8 @@
         "--force"
       ],
       [
-        "python3",
-        "tools/ce_tools/heavy_lock.py",
-        "run",
-        "--resource",
+        "./ce",
+        "lock",
         "gpu",
         "--",
         "python3",
@@ -140,9 +136,30 @@
     "note": "Release per Branch release/claude-<version>"
   },
   "heavy_lock": true,
-  "tools_dir": "tools/ce_tools",
   "coordination": {
     "repo": "ffunkfabian-hash/cubeescape-nexogen",
     "registry": "https://github.com/ffunkfabian-hash/cubeescape-nexogen/blob/main/repos.json"
+  },
+  "tools_version": {
+    "version": "0.20.0",
+    "commit": "6e9e8235dd046d45f4691905b65e1c2094c3a73d"
+  },
+  "tidy": {
+    "paths": [
+      {
+        "name": "Generator-Zwischenstände claude/generator/reg",
+        "root": "claude/generator/reg",
+        "glob": "*",
+        "keep": 50,
+        "older_than_days": 30
+      },
+      {
+        "name": "Generator-Blätter claude/generator/final",
+        "root": "claude/generator/final",
+        "glob": "*",
+        "keep": 50,
+        "older_than_days": 30
+      }
+    ]
   }
 }

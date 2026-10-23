@@ -2,6 +2,14 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.16.0 „Ungrafted“ – unveröffentlicht
+
+Nur Werkzeuge; Blätter, Specs und Golden unverändert.
+
+- Keine eingebettete Werkzeugkopie mehr: `tools/ce_tools/` entfällt, `./ce` ist der Lader aus Agent Tools 0.20 „Lodestar“, `.ce-repo.json` › `tools_version` pinnt Commit `6e9e8235dd04` (statt `tools_dir`). Wie Motiongen 0.13, Robogen 1.23 und Cubegen 0.33.
+- `.mcp.json` (`ce-search` über `./ce search serve`), `check.nightly` (`./ce lock gpu`) und `check.yml` (Aktion `ce-tools@6e9e823`) nutzen den Lader; die Links `.claude/agents/ce-*.md` entfallen (Profile kommen mit dem Plugin).
+- Neu `.ce-repo.json` › `tidy` für die Generator-Zwischenstände `claude/generator/reg` und `final`. [Versionsbericht](claude/docs/versions/0.16.md).
+
 ## claude-0.15.3 – 2026-10-23
 
 - Eine Pipeline (Entscheidung des Nutzers): neue Konzeptarbeit nur noch unter `claude/`, `codex/` (Parallax, Flux Bloom) eingefroren als lesbarer Bestand; Codex nur noch als Unteragent einer Claude-Sitzung. Regeln in `CLAUDE.md`, `AGENTS.md`, README und `claude/docs/ENTSCHEIDUNGEN.md`; keine Änderung an Blättern, Specs oder Golden.
