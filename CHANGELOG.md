@@ -2,6 +2,10 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.15.3 – 2026-10-23
+
+- Eine Pipeline (Entscheidung des Nutzers): neue Konzeptarbeit nur noch unter `claude/`, `codex/` (Parallax, Flux Bloom) eingefroren als lesbarer Bestand; Codex nur noch als Unteragent einer Claude-Sitzung. Regeln in `CLAUDE.md`, `AGENTS.md`, README und `claude/docs/ENTSCHEIDUNGEN.md`; keine Änderung an Blättern, Specs oder Golden.
+
 ## claude-0.15.2 – 2026-10-22
 
 - Holo-Familie: Typregel `vsmount.VS_TYPE` – alle Impulsgewehr-Blätter tragen das Holo-Visier VS02 (KC03, KD03, KF03, KH03, KJ03 neu, KG03 schon seit 0.15.1); `spec_checks.CE_SIGHTS` Zeile 3 folgt CE 0.111.1 (Holo, offenes Fenster).

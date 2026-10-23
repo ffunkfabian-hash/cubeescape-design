@@ -102,7 +102,7 @@ claude/                  nur Claude
     previews/            WebP-Vorschauen (nur lokal/Release, werden auf dem Mac erzeugt)
   tests/                 golden.json (sha256 je Blatt und Spec), test_golden.py
   reference/crops/       Original-Seitenansichten (Referenz für Variante D)
-codex/                   nur Codex (eigene Pipeline, eigene Konzepte)
+codex/                   nur Codex (eigene Pipeline, eigene Konzepte; eingefroren seit 23.10.2026)
 ```
 
 ## Einrichten und bauen
@@ -146,8 +146,9 @@ keine schwebenden Teile, keine ungewollten Durchdringungen (koplanare Teile ≥ 
 
 ## Mit Codex weiterarbeiten
 
-`docs/AUFTRAG.md` enthält den kompletten Auftrag inklusive Masterprompt. In Codex: „Lies docs/AUFTRAG.md vollständig“
-– für neue Varianten eine eigene Pipeline unter `codex/` anlegen (Claudes Dateien unter `claude/` nicht verändern).
+Seit 23.10.2026 gibt es nur noch die Claude-Pipeline (Entscheidung des Nutzers): `codex/` ist eingefroren und bleibt als
+Bestand lesbar; Codex hilft nur noch als Unteragent einer Claude-Sitzung unter `claude/`. `docs/AUFTRAG.md` (kompletter Auftrag
+inklusive Masterprompt) bleibt die Grundlage dafür.
 
 ## Bekannte Grenzen
 
