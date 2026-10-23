@@ -4,6 +4,8 @@ Zentraler Repo-Einstieg: [Nexogen](https://github.com/ffunkfabian-hash/cubeescap
 
 **Werkzeuge:** `./ce check` · `./ce search query "Begriff"` · `./ce session topics` · `./ce codex quota|judge` · `./ce evidence clip|sheet|still|diff` · `./ce lock unity|blender|gpu -- <Befehl>` · `./ce report --since 7d`.
 
+**Keine Werkzeugkopie (seit claude-0.16.0):** `./ce` ist der Lader der gemeinsamen Werkzeuge (Plugin `ce-shared`, Repo ffunkfabian-hash/ce-agent-tools) und führt den Stand aus `.ce-repo.json` › `tools_version` aus (`./ce tools where|fetch`); neuer Stand nur per `./ce tools pin <Commit>`, nie von Hand. `./ce docs` prüft Längen/Gliederung, `./ce tidy` zeigt Reste (Probelauf), `.mcp.json` startet `ce_search` über `./ce search serve`; die `ce-*`-Profile unter `.claude/agents/` liefert das Plugin.
+
 **Hooks (seit Agent Tools 0.12):** Der gemeinsame Wächter wird über Nexogen installiert – für Codex erst nach Vertrauen unter `/hooks`,
 für Antigravity nur auf den gemessenen Oberflächen CLI `agy` 1.4.5 und IDE 2.5.5. Das reversible Git-Netz wirkt unabhängig davon für
 alle Clients. Die Commit-Vorabprüfung ist begrenzt (nur einzelne, statisch eindeutige Aufrufe); Einbau und Grenzen stehen zentral in
