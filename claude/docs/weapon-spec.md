@@ -18,7 +18,7 @@ Zielbild (Entscheidung des Nutzers, 16.10.2026); der Spec ist ihre maschinenlesb
 |---|---|
 | `format`, `format_version` | `cubeescape-design/weapon-spec`, `2` (seit claude-0.12; Fassung 1 = Release `claude-v0.11` und älter, dort heißt das Spurgewehr `toolgen_id` `scout_rifle`) |
 | `sheet` | `id` (KC01 …), `file`, `variant` (Kennbuchstabe C/D/F/G/H/J …), `variant_name` (englischer Name der Variante, z. B. „Black Ice“; `null` bei C–H; ab claude-0.4, additiv), `number`, `nick`, `fid` |
-| `weapon` | `name_de`, `toolgen_id` (pistol, assault_rifle, pulse_rifle, shotgun, sniper_rifle, smg, fusion_rifle, trace_rifle, rocket_launcher, bow; `null` bei neuen Typen ohne Toolgen-Werkzeug, claude-0.10); seit claude-0.10 additiv: `design_type`, `design_type_de`, `destiny_type`, `subtype`, `ammo_class`, `toolgen_status`, `type_source`, `note` – siehe [Designtyp](#designtyp) |
+| `weapon` | `name_de`, `toolgen_id` (pistol, assault_rifle, pulse_rifle, shotgun, sniper_rifle, smg, fusion_rifle, trace_rifle, rocket_launcher, bow, scout_rifle seit claude-0.17; `null` bei neuen Typen ohne Toolgen-Werkzeug, claude-0.10); seit claude-0.10 additiv: `design_type`, `design_type_de`, `destiny_type`, `subtype`, `ammo_class`, `toolgen_status`, `type_source`, `note` – siehe [Designtyp](#designtyp) |
 | `element` | `solar`/`arc`/`void`/`energy` je Waffentyp nach Entscheidung des Nutzers (17.10.2026, Toolgen `docs/ENTSCHEIDUNGEN.md`); Bogen `null` (nicht festgelegt) |
 | `units` | `model_unit_m` (Faktor Modelleinheit → m), `model_length_units`, `reference_length_m`, `rule`, `reference` |
 | `axes` | Modellachsen, Ziel Toolgen/Blender, Matrix, Ursprung `Socket_Hand` |
@@ -43,11 +43,11 @@ Farben sind sRGB-Hex `#RRGGBB` wie im Cube-Escape-Design (`Docs/EQUIPMENT.md` �
 
 claude-0.10 ([waffentypen.md](waffentypen.md), Quelle der Werte `claude/generator/wtypes.py`): Abgleich mit dem Destiny-2-Katalog. `design_type`
 macht die Bedeutung ausdrücklich und deckt sich seit Toolgen 0.17 mit `toolgen_id`, außer bei Pistole, Sturmgewehr und Bogen: Pistole = `sidearm`, Sturmgewehr = `auto_rifle`, Spurgewehr = `trace_rifle`
-(`toolgen_id` `trace_rifle`; bis Toolgen 0.16 und Weapon-Spec 1 `scout_rifle`), Bogen = `combat_bow`. Neue Typen (Blätter KG11 … KG25, Variante G): `scout_rifle` (echtes Scout-Gewehr),
+(`toolgen_id` `trace_rifle`; bis Toolgen 0.16 und Weapon-Spec 1 `scout_rifle`), Bogen = `combat_bow`. Neue Typen (Blätter KG11 … KG25, Variante G): `scout_rifle` (echtes Scout-Gewehr; seit claude-0.17 an Toolgens Werkzeug `scout_rifle` angebunden: `toolgen_id` `scout_rifle`, `element` `energy`, `toolgen_status` `tool`, Use-Clip `Scout_Use` nicht mehr `proposed`, `robot_fit.applies` false bis Cube Escape Zielmaße führt),
 `hand_cannon`, `linear_fusion_rifle`, `grenade_launcher_special` (Kipplauf), `grenade_launcher_heavy` (Trommel), `machine_gun`, `sword`,
 `glaive`, `heavy_crossbow`; Untertypen mit `subtype`: Raketenpistole (`sidearm`, `rocket_assisted`), Raketen-Impulsgewehr (`pulse_rifle`,
 `rocket_assisted`), Slug-Schrotflinte (`shotgun`, `slug`); seit claude-0.10.1 (KG23 … KG25) Hitze-Blaster (`pulse_rifle`, `dynamic_heat`),
-Mikroraketen-Granatwerfer (`grenade_launcher_special`, `micro_missile`), Streuschuss-Handfeuerwaffe (`hand_cannon`, `spread_shot`). Bei neuen Typen sind `toolgen_id` und `element` `null`, `toolgen_status` ist
+Mikroraketen-Granatwerfer (`grenade_launcher_special`, `micro_missile`), Streuschuss-Handfeuerwaffe (`hand_cannon`, `spread_shot`). Bei neuen Typen ohne Werkzeug sind `toolgen_id` und `element` `null`, `toolgen_status` ist
 `not_connected`, `robot_fit.applies` false; die Bezugslänge ist eine Schätzung (`units.reference`). `note` steht bei bestehenden Blättern,
 deren Bauweise vom Typnamen abweicht (KF01 Revolver, KC10 Armbrust, KH08/KJ08 Spurgewehre mit Magazin); ID und Typ bleiben.
 `ammo_class` ist die Munitionsklasse in Destiny (primary/special/heavy), nur Einordnung.

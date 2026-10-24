@@ -116,7 +116,7 @@ class Profile(unittest.TestCase):
     def test_profiles_use_catalog_ids(self):
         mats={m['id'] for m in texcat.load()['materials']};lv=set(texcat.wear_levels())
         import wtypes   # bestehende Typen nach Toolgen-ID, neue Typen (claude-0.10) nach wtypes.key, alle mit derived_from
-        tids={v[0] for k,v in export_spec.WEAPONS.items() if v[0] not in ('bow',None)}|{wtypes.key(n) for n in wtypes.NEW}
+        tids={wtypes.key(n) for n in wtypes.TYPES}-{'bow'}
         self.assertEqual(set(texprofile.PROFILES),tids)
         self.assertEqual(set(texprofile.DERIVED_FROM),{wtypes.key(n) for n in wtypes.NEW})
         self.assertTrue(set(texprofile.DERIVED_FROM.values())<=tids)

@@ -85,9 +85,9 @@ bekommen einen Hinweis im Spec, die fehlenden Typen ein eigenes Blatt.
   für das echte Scout-Gewehr KG11. Reihenfolge: Toolgen, dann Cube Escape, dann hier `export_spec.WEAPONS`/`wtypes` nachziehen; weil `toolgen_id`
   `scout_rifle` dabei die Bedeutung wechselt, steigt der Weapon-Spec auf `format_version` 2 (ältere Fassung: Release `claude-v0.11`).
   **Umgesetzt:** Toolgen 0.17.0 „Retrace“, Cube Escape 0.98 „Recast“ (19.10.2026), hier claude-0.12 „Namesake“: alle Claude-Specs mit Spurgewehr
-  tragen `toolgen_id` `trace_rifle`, Weapon-Spec und Sight-Spec `format_version` 2. KG11 behält `toolgen_id` `null` und `toolgen_status`
-  `not_connected`; `scout_rifle` ist für KG11 frei, wird aber erst angebunden, wenn Toolgen ein Werkzeug `scout_rifle` hat (dann entfällt dort
-  `renamed_from`).
+  tragen `toolgen_id` `trace_rifle`, Weapon-Spec und Sight-Spec `format_version` 2. KG11 behielt `toolgen_id` `null` und `toolgen_status`
+  `not_connected`, bis Toolgen ein Werkzeug `scout_rifle` führte.
+  **Angebunden (claude-0.17 „Tethered“, 24.10.2026):** Toolgen 0.24 „Salvo“ führt `scout_rifle` (Konzept KG11, `element` `energy`); alle sechs KX11-Spezifikationen tragen jetzt `toolgen_id` `scout_rifle`, `element` `energy`, `toolgen_status` `tool`. Das Blatt bleibt Nachrüst-Typ (`wtypes.retro`), Tabellenschlüssel `+scout_rifle`.
 - **Use-Clips:** neue Bewegungsarten im Spec (`proposed: true`): Trommel, Hahn, Beschleunigerschienen, Kipplauf, Granattrommel, Zuführdeckel,
   Spannhebel, Sehne, Schildflügel, seit 0.10.1 Entlüftungsklappen (`vent`) und Kipprahmen (`top_break`); Knotennamen (`Anim_Cylinder` …) sind Vorschläge.
 - **Cube Escape:** Haltungen für Nahkampf (Schwert, Glefe: kein Visier, Griff ohne Abzug beim Schwert), Roboter-Maße (`robot_fit` fehlt, Zielmaße

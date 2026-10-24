@@ -37,7 +37,11 @@ WEAPONS={
 }
 # Neue Waffentypen (claude-0.10, wtypes.NEW): kein Toolgen-Werkzeug, toolgen_id null; Bezugslänge = Schätzung (wtypes.REF_SOURCE)
 WEAPONS.update({n:(None,t['ref_len'],None) for n,t in wtypes.NEW.items()})
+# Scout-Gewehr: Toolgen 0.24 führt scout_rifle (data/tools.json, concept KG11, element energy); Länge = qa_game.json checks.bounds_lod0.source_bounds_m (1,000 m, gleich der Schätzung 1.00)
+WEAPONS['Scout-Gewehr']=('scout_rifle',wtypes.TYPES['Scout-Gewehr']['ref_len'],'energy')
 ELEMENT_SOURCE='Nutzer 17.10.2026 (Toolgen docs/ENTSCHEIDUNGEN.md, data/tools.json)'
+ELEMENT_SOURCE_BY={'scout_rifle':'Toolgen 0.24 data/tools.json › scout_rifle (element energy, Entscheidung 22.10.2026)'}
+WEAPON_REF={'scout_rifle':'Toolgen 0.24 Weltmodell scout_rifle (aus KG11 gebaut, daher gleich der Schätzung), qa_game.json checks.bounds_lod0.source_bounds_m = 1,000 m (22.10.2026)'}
 ELEMENT_NEW='nicht festgelegt (neuer Designtyp ohne Toolgen-Werkzeug, claude-0.10)'
 
 # Visier je Blatt ohne Visier-Serie (Bögen): (Art, Fenster, Quelle). Art im Toolgen-Wortschatz hold.sight_kind plus pin (Bogen-Pinvisier);
@@ -195,6 +199,7 @@ MOTIONS={
 WEAPON_MOTIONS={'pistol':['slide'],'assault_rifle':['bolt'],'pulse_rifle':['cell'],'shotgun':['pump'],'sniper_rifle':['lever'],
  'smg':['bolt'],'fusion_rifle':['fins','coil'],'trace_rifle':['bolt'],'rocket_launcher':['hatch'],'bow':[]}
 WEAPON_MOTIONS.update({wtypes.key(n):t['motions'] for n,t in wtypes.NEW.items()})   # neue Typen (claude-0.10), Schlüssel wtypes.key
+MOTION_SOURCE_BY={'Scout-Gewehr':"Toolgen 0.24 scripts/tool_assets/weapon_designs.py DESIGNS['scout_rifle']['use_clip'] (Anim_Bolt, location Y, Clip Scout_Use; Ladehebel links)"}
 PROPOSED_SOURCE='Vorschlag claude-0.10 für einen neuen Waffentyp (in Toolgen kein Use-Clip): Art und Achse aus der Bedienung des Blatts'
 
 def moving_parts(tid,allparts,ids,name=None):
@@ -203,7 +208,7 @@ def moving_parts(tid,allparts,ids,name=None):
     items=[];per={}
     for kind in WEAPON_MOTIONS[tid]:
         M=MOTIONS[kind];e=dict(kind=kind,name_de=M['de'],toolgen_node=M['node'],motions=[dict(type=t,axis=a) for t,a in M['motions']])
-        if M.get('proposed') or (name and wtypes.is_new(name)):e['proposed']=True   # neuer Typ: Use-Clip in Toolgen gibt es noch nicht
+        if M.get('proposed') or (name and not wtypes.has_tool(name)):e['proposed']=True   # neuer Typ ohne Werkzeug: Use-Clip in Toolgen gibt es noch nicht
         for match,labs in (('label',M['labels']),('similar',M['similar'])):
             hit=[(i,P) for i,P in allparts if not P.get('sight') and P.get('label') in labs]
             if hit:
@@ -217,11 +222,11 @@ def moving_parts(tid,allparts,ids,name=None):
                      source=f'nicht ableitbar: kein Teil mit Bezeichnung {"/".join(M["labels"]+M["similar"])} im Modell (Mechanik im Gehäuse nicht gezeichnet)')
         items.append(e)
     note=None if items else 'keine Use-Clip-Mechanik: der Bogen gehört nicht zu Toolgens Waffen 1–9'
-    if name and wtypes.is_new(name):
+    if name and wtypes.is_new(name) and not wtypes.has_tool(name):
         note=None if items else 'keine beweglichen Teile: Klinge, Griff und Parierstange sind fest verbunden (Nahkampfwaffe)'
         return dict(source=PROPOSED_SOURCE,root_moves=False,frame='Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse',
                     items=items,note=note),per
-    return dict(source=MOTION_SOURCE,root_moves=False,frame='Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse',
+    return dict(source=MOTION_SOURCE_BY.get(name,MOTION_SOURCE),root_moves=False,frame='Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse',
                 items=items,note=note),per
 
 # Größe in der Roboterhand (claude-0.5.1, Entscheidung des Nutzers 17.10.2026: „in Spec 1.x mit aufnehmen“). Zahlen aus Cube Escape
@@ -239,6 +244,9 @@ def robot_fit(tid,anchors,parts,dims,muzzle_part):
     if tid=='pistol':
         return dict(base,applies=False,reason='Pistole von der Roboter-Variante ausgenommen: Maßstab genügt, Becher-Griff sitzt ('+CE_S2+')',
                     targets=dict(length_min_m=_v(0.24,CE_EQ+' › Begründung (1): knapp drei Handlängen')),sheet_at_target=None)
+    if tid=='scout_rifle':
+        return dict(base,applies=False,reason='Toolgen führt scout_rifle seit 0.24 mit Roboter-Variante (Länge 0,70 m, Toolgen weapon_designs.py); die Zielmaße stehen noch nicht in der Cube-Escape-Tabelle (EQUIPMENT.md), daher keine Prüfung hier',
+                    targets=None,sheet_at_target=None)
     if tid is None:
         return dict(base,applies=False,reason='neuer Designtyp (claude-0.10), nicht im Waffensatz von Cube Escape; Zielmaße legt Cube Escape bei einer Anbindung fest',
                     targets=None,sheet_at_target=None)
@@ -481,9 +489,9 @@ def build(sheet):
         generator=dict(repo='cubeescape-design',tool='claude/generator/export_spec.py',claude_version=CLAUDE_VERSION),
         sheet=dict(id=sheet,file=f'{sheet}.dc.html',variant=d['V'],variant_name=variants.name(d['V']),number=d['num'],nick=d['nick'],fid=d['fid']),
         weapon=dict(name_de=d['name'],toolgen_id=tid,**wtypes.spec(d['name'],sheet)),
-        element=element,element_source=ELEMENT_SOURCE if element else ELEMENT_NEW if tid is None else 'nicht festgelegt (Toolgen-Bogen ohne Element)',
+        element=element,element_source=ELEMENT_SOURCE_BY.get(tid,ELEMENT_SOURCE) if element else ELEMENT_NEW if tid is None else 'nicht festgelegt (Toolgen-Bogen ohne Element)',
         units=dict(model_unit_m=round(unit,8),model_length_units=round(model_len,2),reference_length_m=ref_len,rule=rule,
-                   reference=('Toolgen 0.13 Weltmodell '+tid+(' (damals scout_rifle)' if tid=='trace_rifle' else '')+', qa_game.json bounds_lod0.source_bounds_m (Messung 17.10.2026)') if tid else wtypes.REF_SOURCE),
+                   reference=(WEAPON_REF.get(tid) or 'Toolgen 0.13 Weltmodell '+tid+(' (damals scout_rifle)' if tid=='trace_rifle' else '')+', qa_game.json bounds_lod0.source_bounds_m (Messung 17.10.2026)') if tid else wtypes.REF_SOURCE),
         axes=dict(model=dict(x='vorn (Mündung)',y='unten',z='links'),target=dict(system='Toolgen/Blender',forward='-Y',up='+Z',left='+X',unit='m'),
                   matrix_model_to_target=M2B,origin='Socket_Hand',
                   formula='p_m = model_unit_m * M · (p_model − Socket_Hand.model)'),

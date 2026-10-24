@@ -122,7 +122,7 @@ def vs_problems(sp,vs_spec=None):
     Visierlinie frei von der Waffe. vs_spec: VSnn.spec.json (sonst aus OUT gelesen)."""
     tid=sp['weapon']['toolgen_id'];s=sp['sight'];v=s.get('sight_spec')
     nr=CE_SIGHTS[tid][0] if tid in CE_SIGHTS else None
-    if tid is None:   # neue Waffentypen (claude-0.10): Visier des verwandten Typs aus wtypes, Nahkampf ohne
+    if tid not in CE_SIGHTS:   # Typen außerhalb des CE-Waffensatzes (neue Typen claude-0.10, Scout-Gewehr): Visier des verwandten Typs aus wtypes, Nahkampf ohne
         import wtypes
         t=wtypes.TYPES.get(sp['weapon']['name_de']) or {}
         nr=int(t['vs'][2:]) if t.get('vs') else None
