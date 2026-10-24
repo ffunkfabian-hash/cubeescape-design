@@ -2,6 +2,10 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.17.0 „Tethered“ – unveröffentlicht
+
+- Scout-Gewehr (KC11, KD11, KF11, KG11, KH11, KJ11) an Toolgens Werkzeug `scout_rifle` (Toolgen 0.24) angebunden: Spec `toolgen_id` `scout_rifle`, `element` `energy`, `toolgen_status` `tool`, Use-Clip nicht mehr `proposed`; `wtypes` mit `retro`/`has_tool` (Blatt bleibt Nachrüst-Typ). Weapon-Spec `format_version` bleibt 2. [Versionsbericht](claude/docs/versions/0.17.md).
+
 ## claude-0.16.2 – 2026-10-24
 
 - Patch KG06: Vordergriff (p09) trug keine Bezeichnung; `Socket_SupportHand` fiel auf den Laufmantel zurück. `g06.py` beschriftet ihn „Vordergriff“ (Spec: Anker p09, Material `rubber`, `support_forward_m` 0.1996); Tests `test_support_hand_is_foregrip`, `test_kg06_foregrip_labelled`; Golden Spec/Geo neu. Blatt-Hash KG06 ändert sich (Beschriftung), neu beim nächsten `--full`-Lauf auf dem Mac.

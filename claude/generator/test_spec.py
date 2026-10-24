@@ -4,7 +4,7 @@
 from cepaths import E3D,CLAUDE,OUT
 import copy,json,math,os,re,sys,unittest
 sys.path.insert(0,E3D)
-import export_spec,sheetmodels,variants
+import export_spec,sheetmodels,variants,wtypes
 from eng import CHANNELS,Model,rect,channel,copy_channels,split_sight
 from xlroles import recolor,VARIANTS,color_roles,assign_channels
 
@@ -389,6 +389,19 @@ class Operation(unittest.TestCase):
                 self.assertIn('ops.OPS' if s[2:] in sheetmodels.NUMS else "META['op']",o['source'])
                 if wtypes.is_new(sp['weapon']['name_de']):
                     for e in sp['moving_parts']['items']:self.assertIsNotNone(e['parts'],e['kind'])
+    def test_toolgen_connected(self):
+        """Typen, die Toolgen als Werkzeug führt (data/tools.json, concept KGxx), tragen toolgen_id, Element und toolgen_status tool;
+        Scout-Gewehr seit Toolgen 0.24 (scout_rifle, energy). Die Liste hier erweitern, sobald Toolgen weitere Typen anbindet."""
+        connected={'Scout-Gewehr':('scout_rifle','energy')}
+        for s in sheetmodels.SHEETS:
+            sp=load(s);n=sp['weapon']['name_de']
+            if n in connected:
+                with self.subTest(sheet=s):
+                    self.assertEqual((sp['weapon']['toolgen_id'],sp['element']),connected[n])
+                    self.assertEqual(sp['weapon']['toolgen_status'],'tool')
+                    self.assertFalse(any(e.get('proposed') for e in sp['moving_parts']['items']))
+                    self.assertTrue(wtypes.is_new(n) and wtypes.has_tool(n))   # Blatt bleibt Nachrüst-Typ, Tabellenschlüssel +scout_rifle
+                    self.assertEqual(wtypes.key(n),'+scout_rifle')
     def test_moving_header(self):
         import ops
         for s,o in ops.OPS.items():
@@ -430,6 +443,8 @@ class RobotFit(unittest.TestCase):
             with self.subTest(sheet=s):
                 self.assertIs(r['concept_sheets'],False)
                 self.assertEqual([r['robot'][k]['value'] for k in ('height_m','hand_m','arm_m')],[1.5,0.09,0.42])
+                if tid=='scout_rifle':   # Toolgen-Werkzeug seit 0.24, Zielmaße fehlen in der CE-Tabelle
+                    self.assertFalse(r['applies']);self.assertIn('Toolgen führt scout_rifle',r['reason']);self.assertIsNone(r['targets']);continue
                 if tid is None:   # neue Typen (claude-0.10): nicht im Waffensatz von Cube Escape
                     self.assertFalse(r['applies']);self.assertIn('neuer Designtyp',r['reason']);self.assertIsNone(r['targets']);continue
                 if tid in ('pistol','bow'):
@@ -452,7 +467,7 @@ class SightTargets(unittest.TestCase):
     """Visier gegen das CE-Zielbild: nur Hinweise (kein Fehler); die Tabelle hier muss zu Cube Escape passen."""
     def test_hints_are_hints(self):
         import spec_checks
-        self.assertEqual(set(spec_checks.CE_SIGHTS),{t for t,_,_ in export_spec.WEAPONS.values()}-{'bow',None})
+        self.assertEqual(set(spec_checks.CE_SIGHTS),{t for t,_,_ in export_spec.WEAPONS.values()}-{'bow','scout_rifle',None})   # Scout-Gewehr: Toolgen-Werkzeug, aber nicht im CE-Waffensatz
         for s in sheetmodels.SHEETS:
             h=spec_checks.sight_target_hints(load(s))
             self.assertIsInstance(h,list);self.assertLessEqual(len(h),1)

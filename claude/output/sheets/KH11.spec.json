@@ -17,23 +17,23 @@
  },
  "weapon": {
   "name_de": "Scout-Gewehr",
-  "toolgen_id": null,
+  "toolgen_id": "scout_rifle",
   "design_type": "scout_rifle",
   "design_type_de": "Scout-Gewehr",
   "destiny_type": "Scout Rifle",
   "subtype": null,
   "ammo_class": "primary",
-  "toolgen_status": "not_connected",
+  "toolgen_status": "tool",
   "type_source": "Destiny-2-Katalog, Stand 18.10.2026: destinytracker.com/destiny-2/db/items/weapon (17 Typen), Wikipedia „Destiny 2: The Edge of Fate“ (schwere Armbrust), Untertypen siehe claude/docs/waffentypen.md"
  },
- "element": null,
- "element_source": "nicht festgelegt (neuer Designtyp ohne Toolgen-Werkzeug, claude-0.10)",
+ "element": "energy",
+ "element_source": "Toolgen 0.24 data/tools.json › scout_rifle (element energy, Entscheidung 22.10.2026)",
  "units": {
   "model_unit_m": 0.00132275,
   "model_length_units": 756.0,
   "reference_length_m": 1.0,
-  "rule": "Länge entlang der Mündungsachse (Modell x, Visier montiert) = Bezugslänge des Designtyps (Schätzung claude-0.10)",
-  "reference": "Schätzung claude-0.10: Proportion zu den Toolgen-0.13-Längen verwandter Typen (Bericht claude/docs/versions/0.10.md › Maße), kein Toolgen-Modell"
+  "rule": "Länge entlang der Mündungsachse (Modell x, Visier montiert) = Toolgen-Länge des Waffentyps",
+  "reference": "Toolgen 0.24 Weltmodell scout_rifle (aus KG11 gebaut, daher gleich der Schätzung), qa_game.json checks.bounds_lod0.source_bounds_m = 1,000 m (22.10.2026)"
  },
  "axes": {
   "model": {
@@ -1801,7 +1801,7 @@
   }
  ],
  "moving_parts": {
-  "source": "Vorschlag claude-0.10 für einen neuen Waffentyp (in Toolgen kein Use-Clip): Art und Achse aus der Bedienung des Blatts",
+  "source": "Toolgen 0.24 scripts/tool_assets/weapon_designs.py DESIGNS['scout_rifle']['use_clip'] (Anim_Bolt, location Y, Clip Scout_Use; Ladehebel links)",
   "root_moves": false,
   "frame": "Toolgen-Rahmen (vorn −Y, oben +Z, links +X); translate: Richtung aus der Ruhe, rotate: Drehachse",
   "items": [
@@ -1815,7 +1815,6 @@
       "axis": [0, 1, 0]
      }
     ],
-    "proposed": true,
     "parts": [
      "p13",
      "p14"
@@ -1849,7 +1848,7 @@
   "concept_sheets": false,
   "concept_sheets_reason": "keine Roboter-Konzeptblätter (Entscheidung des Nutzers 17.10.2026)",
   "applies": false,
-  "reason": "neuer Designtyp (claude-0.10), nicht im Waffensatz von Cube Escape; Zielmaße legt Cube Escape bei einer Anbindung fest",
+  "reason": "Toolgen führt scout_rifle seit 0.24 mit Roboter-Variante (Länge 0,70 m, Toolgen weapon_designs.py); die Zielmaße stehen noch nicht in der Cube-Escape-Tabelle (EQUIPMENT.md), daher keine Prüfung hier",
   "targets": null,
   "sheet_at_target": null
  },

@@ -11,7 +11,8 @@ Je Blattname (`weapon.name_de`):
   ammo      Munitionsklasse in Destiny (primary, special, heavy) – nur Einordnung, keine Spielregel
   toolgen   Toolgen-Werkzeug (data/tools.json › id) oder None: neue Typen sind in Toolgen/Cube Escape nicht angebunden
   num       Typnummer = Blattnummer (KX01 … KX10 bestehend, KG11 … KG22 neu in claude-0.10, KG23 … KG25 in claude-0.10.1)
-Nur für neue Typen (toolgen None):
+Nur für Nachrüst-Typen (NEW: toolgen None oder retro):
+  retro     True: Werkzeug erst nach dem Bau des Blatts (Scout-Gewehr, Toolgen 0.24); Blatt bleibt Nachrüst-Typ, Tabellenschlüssel „+“
   ref_len   Bezugslänge in m (Spec-Maßstab; Schätzung claude-0.10 aus den Toolgen-Längen verwandter Typen, siehe Bericht 0.10)
   vs        Standardvisier der Visier-Serie (VS01–VS09) oder None (Nahkampf ohne Visier)
   motions   bewegliche Teile (export_spec.MOTIONS)
@@ -31,11 +32,11 @@ TYPES={
  'Maschinenpistole':dict(id='submachine_gun',en='Submachine Gun',de='Maschinenpistole',subtype=None,ammo='primary',toolgen='smg',num='06'),
  'Fusionsgewehr':dict(id='fusion_rifle',en='Fusion Rifle',de='Fusionsgewehr',subtype=None,ammo='special',toolgen='fusion_rifle',num='07'),
  'Spurgewehr':dict(id='trace_rifle',en='Trace Rifle',de='Spurgewehr',subtype=None,ammo='special',toolgen='trace_rifle',num='08',
-                   note='Toolgen-ID trace_rifle (bis Toolgen 0.16 scout_rifle, Alias renamed_from); das echte Scout-Gewehr ist KG11 (toolgen_id null)'),
+                   note='Toolgen-ID trace_rifle (bis Toolgen 0.16 scout_rifle, Alias renamed_from); das Scout-Gewehr ist KG11 (toolgen_id scout_rifle seit Toolgen 0.24)'),
  'Raketenwerfer':dict(id='rocket_launcher',en='Rocket Launcher',de='Raketenwerfer',subtype=None,ammo='heavy',toolgen='rocket_launcher',num='09'),
  'Bogen':dict(id='combat_bow',en='Combat Bow',de='Bogen',subtype=None,ammo='primary',toolgen='bow',num='10'),
- # neue Typen (claude-0.10), Variante G; ohne Toolgen-Werkzeug
- 'Scout-Gewehr':dict(id='scout_rifle',en='Scout Rifle',de='Scout-Gewehr',subtype=None,ammo='primary',toolgen=None,num='11',
+ # neue Typen (claude-0.10), Variante G; ohne Toolgen-Werkzeug (Ausnahme Scout-Gewehr: seit Toolgen 0.24 angebunden, retro=True)
+ 'Scout-Gewehr':dict(id='scout_rifle',en='Scout Rifle',de='Scout-Gewehr',subtype=None,ammo='primary',toolgen='scout_rifle',num='11',retro=True,
                      ref_len=1.00,vs='VS03',motions=['bolt']),
  'Handfeuerwaffe':dict(id='hand_cannon',en='Hand Cannon',de='Handfeuerwaffe (Hand Cannon)',subtype=None,ammo='primary',toolgen=None,num='12',
                        ref_len=0.32,vs='VS01',motions=['cylinder','hammer']),
@@ -67,7 +68,9 @@ TYPES={
  'Streuschuss-Handfeuerwaffe':dict(id='hand_cannon',en='Hand Cannon (Spread Shot Frame)',de='Streuschuss-Handfeuerwaffe (Spread-Shot-Rahmen, Schrotladung)',
                                    subtype='spread_shot',ammo='primary',toolgen=None,num='25',ref_len=0.30,vs='VS01',motions=['top_break']),
 }
-NEW={k:v for k,v in TYPES.items() if v['toolgen'] is None}
+# NEW = Blätter der Nachrüst-Typen (KX11 …): ohne Toolgen-Werkzeug oder retro=True (Werkzeug erst nachträglich, Scout-Gewehr seit Toolgen 0.24).
+# retro hält Tabellen (key, WEAPON_MOTIONS, Texturprofil, Visier) auf dem „+“-Schlüssel; has_tool() sagt, ob Toolgen den Typ führt.
+NEW={k:v for k,v in TYPES.items() if v['toolgen'] is None or v.get('retro')}
 # Blätter der neuen Typen je Variante: G seit claude-0.10 (Modelle g11.py … g25.py), C, D, F, H, J seit claude-0.11 (c11.py … j25.py,
 # Modelle gebaut von Codex als Unteragent, je Variante im eigenen Stil; gleiche Mechanik und Bauteile je Typ wie G, eigene Silhouette)
 NEW_NUMS=sorted(v['num'] for v in NEW.values())
@@ -77,13 +80,14 @@ REF_SOURCE='Schätzung claude-0.10: Proportion zu den Toolgen-0.13-Längen verwa
 TOOLGEN_NONE='nicht in Toolgen/Cube Escape angebunden (neuer Designtyp claude-0.10); toolgen_id null, Anbindung siehe claude/docs/waffentypen.md › Offene Anbindungen'
 
 def of(name):return TYPES[name]
-def is_new(name):return TYPES[name]['toolgen'] is None
+def is_new(name):return name in NEW
+def has_tool(name):return bool(TYPES[name]['toolgen'])
 def key(name):
     """Schlüssel für typabhängige Tabellen (Bewegung, Visier, Texturprofil, Roboter-Maße): Toolgen-ID bei bestehenden Typen,
-    sonst „+“ und Designtyp, bei Untertypen mit „:Untertyp“ (+scout_rifle, +sidearm:rocket_assisted). Das „+“ trennt das
-    (noch nicht angebundene) Scout-Gewehr von Toolgen-Schlüsseln; seit Toolgen 0.17 heißt das Spurgewehr dort trace_rifle."""
+    sonst „+“ und Designtyp, bei Untertypen mit „:Untertyp“ (+scout_rifle, +sidearm:rocket_assisted). Das „+“ trennt Nachrüst-Typen von Toolgen-Schlüsseln (auch das
+    inzwischen angebundene Scout-Gewehr, retro, damit die Tabellen stabil bleiben); seit Toolgen 0.17 heißt das Spurgewehr dort trace_rifle."""
     t=TYPES[name]
-    if t['toolgen']:return t['toolgen']
+    if t['toolgen'] and not t.get('retro'):return t['toolgen']
     return '+'+t['id']+(':'+t['subtype'] if t['subtype'] in KEY_SUBTYPES else '')
 # Untertypen mit eigenem Schlüssel (eigene Bewegung, eigenes Texturprofil); Kipplauf/Trommel des Granatwerfers sind eigene Designtypen
 KEY_SUBTYPES=('rocket_assisted','slug','dynamic_heat','micro_missile','spread_shot')
