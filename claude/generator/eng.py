@@ -162,5 +162,5 @@ def sight(m):
     m.parts[-1]['sight']=True;return m
 def split_sight(m):
     g=Model();s=Model()
-    for P in m.parts:(s if P.get('sight') else g).parts.append(P)
+    for P in m.parts:(s if P.get('sight') and not P.get('iron') else g).parts.append(P)   # feste Kimme/Korn (iron) bleiben auf der Waffe gezeichnet
     return g,s

@@ -2,6 +2,11 @@
 
 Einträge je Erzeuger: `claude-…` (Ordner `claude/`), `codex-…` (Ordner `codex/`).
 
+## claude-0.17.1 – 2026-10-24
+
+- Patch KG01 (Pistole): Reflexvisier VS01 (p13–p26) und die angefügte Visierschiene (p12) entfallen; Kimme (Sockel, Kerbe zwischen zwei Pfosten) und Korn (Keil) sitzen fest auf dem Schlitten p06 und laufen im Bewegungsteil `slide` mit (Entscheidung des Nutzers 24.10.2026, Toolgen Sidearm 0.27). p00–p11 bleiben, p12–p15 sind Kimme/Korn.
+- Spec additiv (`format_version` 2): Anker `Socket_Sight` = Oberkante der Kimmenkerbe, neu `Socket_FrontSight` = Kornspitze (gleiche Höhe, Visierlinie parallel zur Mündungsachse), `sight.iron` (Kimmenbreite 0,0133 m, Kerbe 0,0039 m, Korn 0,0028 m), `moving_parts.items[].riding_parts`; Schema und `weapon-spec.md` › Kimme und Korn. Nur KG01-Spec, -Geo und -Blatt ändern sich; `golden.json` nur KG01. Bericht [claude/docs/versions/0.17.md](claude/docs/versions/0.17.md#patch-0171--kg01-kimme-und-korn).
+
 ## claude-0.17.0 „Tethered“ – unveröffentlicht
 
 - Scout-Gewehr (KC11, KD11, KF11, KG11, KH11, KJ11) an Toolgens Werkzeug `scout_rifle` (Toolgen 0.24) angebunden: Spec `toolgen_id` `scout_rifle`, `element` `energy`, `toolgen_status` `tool`, Use-Clip nicht mehr `proposed`; `wtypes` mit `retro`/`has_tool` (Blatt bleibt Nachrüst-Typ). Weapon-Spec `format_version` bleibt 2. [Versionsbericht](claude/docs/versions/0.17.md).
