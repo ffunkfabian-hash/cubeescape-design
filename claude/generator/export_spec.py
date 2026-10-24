@@ -50,6 +50,7 @@ ELEMENT_NEW='nicht festgelegt (neuer Designtyp ohne Toolgen-Werkzeug, claude-0.1
 # entfallen. Ab J (jlib) steht die Art im Modell (META['sight'] in <v>NN.py).
 SIGHTS={
  'KC10':('iron','none','Bezeichnung Kimme/Korn'),
+ 'KG01':('iron','none','Geometrie g01.py: Kimme (Sockel, Kerbe, zwei Pfosten) und Korn (Keil) fest auf dem Schlitten, Entscheidung des Nutzers 24.10.2026 (claude-0.17.1)'),
  'KD10':('pin','open','Geometrie dmodels.d10: Pin-Visier am Mittelstück, Leuchtpunkt hinten zum Schützen (claude-0.7)'),
  'KF10':('pin','open','Geometrie f10.py: leuchtender Pin-Ring am Bogen, quer zur Laufachse (claude-0.7)'),
  'KG10':('pin','glass','Geometrie g10.py: Visier auf Arm mit Leuchtfenster hinten zum Schützen (claude-0.7)'),
@@ -212,9 +213,12 @@ def moving_parts(tid,allparts,ids,name=None):
         for match,labs in (('label',M['labels']),('similar',M['similar'])):
             hit=[(i,P) for i,P in allparts if not P.get('sight') and P.get('label') in labs]
             if hit:
-                e.update(parts=[ids[i] for i,_ in hit],labels=sorted({P['label'] for _,P in hit}),match=match,
+                ride=[(i,P) for i,P in allparts if P.get('rides')==kind and (i,P) not in hit]   # Teile, die mit dem Bewegungsteil laufen (claude-0.17.1: Kimme/Korn auf dem Schlitten)
+                hit+=ride
+                if ride:e['riding_parts']=[ids[i] for i,_ in ride]
+                e.update(parts=[ids[i] for i,_ in hit],labels=sorted({P['label'] for _,P in hit if P.get('label')}),match=match,
                          source=('Bezeichnung ' if match=='label' else f'ähnliches Teil zu „{M["de"]}“ (Toolgen entscheidet): ')
-                                +', '.join(f'„{P["label"]}“ ({ids[i]})' for i,P in hit))
+                                +', '.join(f'„{P.get("label") or "ohne Bezeichnung, läuft mit"}“ ({ids[i]})' for i,P in hit))
                 for i,_ in hit:per[i]=kind
                 break
         else:
@@ -320,6 +324,41 @@ def window_geometry(window,sight_parts,ids,F,decal_index):
     return dict(elements=el,source='Aufkleber vorn/hinten, Seitenaufkleber als Scheibe/Öffnung, leuchtende Visierteile, Scheiben/Ringe; '
                 'Achse aus der Geometrie'),None
 
+def iron_sight(sight_parts,ids):
+    """feste Kimme und Korn (Teile mit iron, Bezeichnung Kimme/Korn; claude-0.17.1, KG01): Lage in Modellkoordinaten (x vorn, y unten, z links).
+    Kimme: Sockel mit Kerbe zwischen zwei Pfosten gleicher Oberkante; Korn: Keil, Spitze = Mittel der obersten Ecken."""
+    ip=[(i,P) for i,P in sight_parts if P.get('iron')]
+    rear=[(i,P) for i,P in ip if P.get('label')=='Kimme'];front=[(i,P) for i,P in ip if P.get('label')=='Korn']
+    assert rear and len(front)==1,('Kimme/Korn',len(rear),len(front))
+    rb=_bb(_verts([P for _,P in rear]));top=rb[0][1]
+    posts=sorted([(i,_bb(_verts([P]))) for i,P in rear if abs(_bb(_verts([P]))[0][1]-top)<1e-6],key=lambda t:t[1][0][2])
+    assert len(posts)==2,('Kimme braucht zwei Pfosten gleicher Oberkante',len(posts))
+    lo,hi=posts[0][1][1][2],posts[1][1][0][2]   # Kerbe: zwischen den Innenkanten der Pfosten
+    assert hi>lo
+    base=[(i,P) for i,P in rear if i not in [p[0] for p in posts]]
+    nb=_bb(_verts([P for _,P in base])) if base else rb
+    fv=[q for q in _verts([P for _,P in front])];ft=min(q[1] for q in fv);tip=[q for q in fv if abs(q[1]-ft)<1e-6]
+    fb=_bb(_verts([P for _,P in front]))
+    seat=[(rb[0][0]+rb[1][0])/2,top,(lo+hi)/2]
+    return dict(rear=[i for i,_ in rear],front=[i for i,_ in front],posts=[p[0] for p in posts],rear_seat=seat,
+                front_tip=[sum(q[0] for q in tip)/len(tip),ft,sum(q[2] for q in tip)/len(tip)],
+                rear_bb=rb,notch=(lo,hi),notch_bottom=nb[0][1],front_bb=fb)
+
+IRON_ADS_TARGET='Kimme ≈ 18 % der Bildhöhe in der ADS-Endpose (Visierstandard des Nutzers 23.10.2026); Maß hier nur abgeleitet, gemessen wird im Spiel (Toolgen)'
+def iron_block(iron,an,ids,F,unit):
+    """sight.iron (claude-0.17.1, additiv): Maße von Kimme und Korn in m und die Visierlinie (Socket_Sight → Socket_FrontSight, parallel zur Mündungsachse)"""
+    rb=iron['rear_bb'];fb=iron['front_bb'];lo,hi=iron['notch']
+    mz=an['Socket_Muzzle'][0];s=an['Socket_Sight'][0];f=an['Socket_FrontSight'][0]
+    assert abs(s[1]-f[1])<1e-6 and abs(s[2]-f[2])<1e-6,'Visierlinie nicht parallel zur Mündungsachse'
+    return dict(rear_parts=[ids[i] for i in iron['rear']],front_parts=[ids[i] for i in iron['front']],notch_posts=[ids[i] for i in iron['posts']],
+                rear_width_m=r4((rb[1][2]-rb[0][2])*unit),notch_width_m=r4((hi-lo)*unit),notch_depth_m=r4((iron['notch_bottom']-rb[0][1])*unit),
+                rear_height_m=r4((rb[1][1]-rb[0][1])*unit),front_width_m=r4((fb[1][2]-fb[0][2])*unit),front_height_m=r4((fb[1][1]-fb[0][1])*unit),
+                sight_line=dict(rear_anchor='Socket_Sight',front_anchor='Socket_FrontSight',parallel_to_muzzle_axis=True,
+                                height_above_muzzle_axis_m=r4((mz[1]-s[1])*unit),length_m=r4((f[0]-s[0])*unit),
+                                rule='Socket_Sight (Mitte der Kimmenkerbe, Oberkante) und Socket_FrontSight (Kornspitze) haben gleiche Höhe und Seite; die Linie läuft entlang −Y wie die Mündungsachse'),
+                ads_target=IRON_ADS_TARGET,
+                rides='slide',rides_note='Kimme und Korn laufen mit dem Schlitten (moving_parts, Art slide)')
+
 def _anchors(d,gun,sight_parts,allparts,ids):
     hand=_pick_hand(gun)
     an={};notes={}
@@ -361,6 +400,10 @@ def _anchors(d,gun,sight_parts,allparts,ids):
         v=d['vs'];rp=v['rail_part']
         an['Socket_Sight']=(list(v['seat']),f'Oberkante der Visierschiene {ids[rp]} unter der Mitte der Halterung (Socket_Mount von {v["id"]}'
                             +(f' über {v["riser_mm"]:g} mm Erhöhung' if v['riser_mm'] else '')+')',rp)
+    elif sight_parts and any(P.get('iron') for _,P in sight_parts):
+        iron=iron_sight(sight_parts,ids)
+        an['Socket_Sight']=(iron['rear_seat'],f'Oberkante der Kimmenkerbe, Mitte zwischen den Pfosten ({", ".join(ids[i] for i in iron["posts"])}); Visierlinie parallel zur Mündungsachse',iron['rear'][0])
+        an['Socket_FrontSight']=(iron['front_tip'],f'Spitze des Korns {ids[iron["front"][0]]}; auf Höhe und Seite von Socket_Sight',iron['front'][0])
     elif sight_parts:
         bb=_bb(_verts([P for _,P in sight_parts]));cc=_center(bb)
         an['Socket_Sight']=([cc[0],bb[1][1],cc[2]],'Unterkante Mitte der Visierbaugruppe (montierte Lage)')
@@ -469,6 +512,7 @@ def build(sheet):
                    labels=sorted({P.get('label') for _,P in sight_parts if P.get('label')}),parts=[ids[i] for i,_ in sight_parts],
                    bounds_m=F.bb(sb),anchor='Socket_Sight')
         sight['window_geometry'],sight['window_geometry_note']=window_geometry(window,sight_parts,ids,F,decal_index)
+        if 'Socket_FrontSight' in an:sight['iron']=iron_block(iron_sight(sight_parts,ids),an,ids,F,unit)
     else:
         ssrc=('kein Visier: Nahkampfwaffe, Schuss aus der Hüfte (claude-0.10)' if d['name'] in wtypes.MELEE else 'kein Visier im Modell')
         sight=dict(present=False,kind=None,window=None,source=ssrc,modular=True,mount_side=None,labels=[],parts=[],bounds_m=None,
@@ -481,7 +525,7 @@ def build(sheet):
              for k,v in an.items()}
     for k in ('Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight'):
         if k not in anchors:anchors[k]=dict(position_m=None,model=None,source=notes.get(k,'nicht ableitbar'),part=None)
-    anchors={k:anchors[k] for k in ('Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight')}
+    anchors={k:anchors[k] for k in ('Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight')+(('Socket_FrontSight',) if 'Socket_FrontSight' in anchors else ())}
     used=[ch for ch in CHANNELS if palette[0]['channels'][ch]]
     dims_=dict(weapon=dims([P for _,P in gun]),with_sight=dims(full.parts))
     return dict(

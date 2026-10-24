@@ -103,7 +103,7 @@ class SpecFiles(unittest.TestCase):
                 for v in sp['palette']:
                     self.assertEqual(list(v['channels']),list(CHANNELS),v['id'])
                     self.assertEqual({c for c,h in v['channels'].items() if h},used,v['id'])
-                    self.assertEqual(list(a),['Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight'])
+                    self.assertEqual(list(a),['Socket_Hand','Socket_SupportHand','Socket_Muzzle','Socket_CenterOfMass','Socket_Sight']+(['Socket_FrontSight'] if 'iron' in sp['sight'] else []))
                 self.assertEqual([v['id'] for v in sp['palette']],export_spec.VARIANT_IDS)
                 self.assertEqual([v['swatches'] for v in sp['palette'][1:]],[[c.upper() for c in p] for _,p in VARIANTS[:3]])
                 # leuchtende Teile liegen auf Energie-/Leuchtkanälen, wenn nicht ausdrücklich anders gesetzt
@@ -364,10 +364,11 @@ class MovingParts(unittest.TestCase):
                         labs=M['labels'] if e['match']=='label' else M['similar']
                         for q in e['parts']:
                             p=[p for p in sp['parts'] if p['id']==q][0]
+                            if q in e.get('riding_parts',[]):self.assertEqual(per[q],e['kind']);continue   # läuft mit (claude-0.17.1: Kimme/Korn, Zierleiste am Schlitten)
                             self.assertIn(p['label'],labs);self.assertFalse(p['sight']);self.assertEqual(per[q],e['kind'])
                 self.assertEqual({q for q,k in per.items() if k},{q for e in mv['items'] for q in (e['parts'] or [])})
     def test_known_labels(self):
-        self.assertEqual(load('KG01')['moving_parts']['items'][0]['parts'],['p06'])        # Schlitten
+        self.assertEqual(load('KG01')['moving_parts']['items'][0]['parts'][0],'p06')        # Schlitten (dazu mitlaufend Zierleiste p09 und Kimme/Korn, 0.17.1)
         self.assertEqual(load('KF04')['moving_parts']['items'][0]['match'],'label')         # Pumpgriff
         mv=load('KG02')['moving_parts']['items'][0]                                         # Ladehebel (claude-0.15)
         self.assertEqual((mv['parts'],mv['match'],mv['labels']),(['p32'],'label',['Ladehebel']))
@@ -491,7 +492,7 @@ class VisierSerie(unittest.TestCase):
             sp=load(s)
             with self.subTest(sheet=s):
                 self.assertEqual(spec_checks.vs_problems(sp),[])
-                if sp['weapon']['toolgen_id']=='bow' or not sp['sight']['present']:self.assertNotIn('sight_spec',sp['sight']);continue   # Bogen, Nahkampf (0.10)
+                if sp['weapon']['toolgen_id']=='bow' or not sp['sight']['present'] or 'iron' in sp['sight']:self.assertNotIn('sight_spec',sp['sight']);continue   # Bogen, Nahkampf (0.10), feste Kimme/Korn (0.17.1, KG01)
                 d=sp['dimensions_m'];self.assertEqual(d['with_sight']['length'],d['weapon']['length'])   # Maßstab bleibt der Waffe
                 self.assertNotIn('Kimme',sp['sight']['labels']);self.assertNotIn('Korn',sp['sight']['labels'])
     def test_models(self):
@@ -499,7 +500,7 @@ class VisierSerie(unittest.TestCase):
         for s in sheetmodels.SHEETS:
             d=sheetmodels.load(s);v=d['vs']
             with self.subTest(sheet=s):
-                if d['name']=='Bogen' or d['name'] in wtypes.MELEE:self.assertIsNone(v);continue   # Schwert/Glefe (claude-0.10): kein Visier
+                if d['name']=='Bogen' or d['name'] in wtypes.MELEE or s=='KG01':self.assertIsNone(v);continue   # Schwert/Glefe (claude-0.10): kein Visier; KG01 (0.17.1): Kimme/Korn statt VS01
                 gun=[P for P in d['m'].parts if not P.get('sight')];sight=[P for P in d['m'].parts if P.get('sight')]
                 self.assertEqual(sum(1 for P in gun if P.get('label')=='Visierschiene'),1)
                 rail=d['m'].parts[v['rail_part']];self.assertEqual(rail.get('label'),'Visierschiene')
@@ -529,5 +530,51 @@ class VisierSerie(unittest.TestCase):
         b=copy.deepcopy(sp);b['sight']['sight_spec']['line_clear_of_weapon']=False;self.assertTrue(spec_checks.vs_problems(b))
         b=copy.deepcopy(sp);b['sight']['sight_spec']['file']='VS04.spec.json';self.assertTrue(spec_checks.vs_problems(b))
         b=copy.deepcopy(sp);del b['sight']['sight_spec'];self.assertEqual(spec_checks.vs_problems(b),['kein Visier der Visier-Serie (VS02)'])
+
+class KimmeKorn(unittest.TestCase):
+    """KG01 (claude-0.17.1): Kimme und Korn fest auf dem Schlitten statt Reflexvisier VS01. Schlägt fehl, wenn VS01 (p13–p26) zurückkommt oder
+    Kimme/Korn fehlen, nicht auf dem Schlitten laufen oder die Visierlinie nicht parallel zur Mündungsachse liegt."""
+    def setUp(self):self.sp=load('KG01')
+    def test_no_vs01(self):
+        s=self.sp['sight'];self.assertNotIn('sight_spec',s);self.assertEqual((s['kind'],s['type'],s['window']),('iron','iron','none'))
+        self.assertEqual(sorted(s['labels']),['Kimme','Korn']);self.assertNotIn('Visierschiene',{p['label'] for p in self.sp['parts']})
+        self.assertNotIn('Halterung',{p['label'] for p in self.sp['parts']});self.assertEqual(len(self.sp['parts']),16)   # p00–p15, VS01 hatte p00–p26
+        self.assertNotIn('VS01',json.dumps(self.sp))
+    def test_parts_and_widths(self):
+        s=self.sp['sight'];i=s['iron'];parts={p['id']:p for p in self.sp['parts']}
+        self.assertEqual(s['parts'],i['rear_parts']+i['front_parts']);self.assertTrue(all(parts[p]['sight'] for p in s['parts']))
+        self.assertEqual({parts[p]['label'] for p in i['rear_parts']},{'Kimme'});self.assertEqual({parts[p]['label'] for p in i['front_parts']},{'Korn'})
+        self.assertEqual(len(i['notch_posts']),2)
+        self.assertGreater(i['rear_width_m'],i['notch_width_m']);self.assertGreater(i['notch_width_m'],i['front_width_m']);self.assertGreater(i['front_width_m'],0)   # Korn passt in die Kerbe
+        self.assertAlmostEqual(i['rear_width_m'],0.0133,delta=5e-4);self.assertAlmostEqual(i['notch_width_m'],0.0039,delta=5e-4)
+    def test_anchors_and_line(self):
+        a=self.sp['anchors'];s=a['Socket_Sight']['position_m'];f=a['Socket_FrontSight']['position_m'];m=a['Socket_Muzzle']['position_m'];i=self.sp['sight']['iron']
+        self.assertEqual(s[0],f[0]);self.assertEqual(s[2],f[2])             # gleiche Seite, gleiche Höhe: Visierlinie parallel zur Mündungsachse (−Y)
+        self.assertLess(f[1],s[1]);self.assertLess(f[1],0);self.assertAlmostEqual(s[0],m[0])
+        self.assertGreater(s[2],m[2]);self.assertAlmostEqual(i['sight_line']['height_above_muzzle_axis_m'],s[2]-m[2],delta=2e-4)
+        self.assertTrue(i['sight_line']['parallel_to_muzzle_axis'])
+        parts={p['id']:p for p in self.sp['parts']}
+        self.assertEqual(a['Socket_Sight']['part'],i['rear_parts'][0]);self.assertEqual(a['Socket_FrontSight']['part'],i['front_parts'][0])
+        for p in i['notch_posts']:self.assertAlmostEqual(parts[p]['bounds_m'][1][2],s[2],delta=2e-4)    # Oberkante der Pfosten = Socket_Sight
+        self.assertAlmostEqual(parts[i['front_parts'][0]]['bounds_m'][1][2],f[2],delta=2e-4)             # Kornspitze
+        self.assertGreater(s[1],f[1]+0.05)                                                                 # Kimme hinten, Korn vorn
+    def test_ride_slide(self):
+        mv=next(x for x in self.sp['moving_parts']['items'] if x['kind']=='slide');i=self.sp['sight']['iron']
+        self.assertTrue(set(i['rear_parts']+i['front_parts']+['p06'])<=set(mv['parts']))
+        for p in self.sp['parts']:
+            if p['id'] in i['rear_parts']+i['front_parts']:self.assertEqual(p['moving'],'slide')
+    def test_counterproof(self):
+        """ohne Kimme/Korn bzw. mit VS01 schlägt die Prüfung an"""
+        import spec_checks
+        self.assertEqual(spec_checks.vs_problems(self.sp),[])
+        b=copy.deepcopy(self.sp);b['sight']['sight_spec']=dict(id='VS01',file='VS01.spec.json',format='cubeescape-design/sight-spec')
+        self.assertTrue(spec_checks.vs_problems(b))                                                        # VS01 am Blatt: Sight-Spec ohne Visier-Ziel
+        for drop in ('Kimme','Korn'):
+            b=copy.deepcopy(self.sp);keep=[p for p in b['sight']['parts'] if next(q['label'] for q in b['parts'] if q['id']==p)!=drop]
+            self.assertNotEqual(keep,b['sight']['parts'])
+            with self.assertRaises(AssertionError):                                                      # Modell ohne Kimme oder Korn: Anker nicht ableitbar
+                import export_spec as ES
+                d=sheetmodels.load('KG01');sp_=[(i,P) for i,P in enumerate(d['m'].parts) if P.get('sight') and P.get('label')!=drop]
+                ES.iron_sight(sp_,['p%02d'%i for i in range(len(d['m'].parts))])
 
 if __name__=='__main__':unittest.main()

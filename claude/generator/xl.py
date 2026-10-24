@@ -270,11 +270,15 @@ def prompts(d,labels,mats,variant_letter,skin=None):
         "Vermeiden: schwebende Teile, unbeabsichtigte Überschneidungen, zufällige Leuchtstreifen, Bloom, Unschärfe, Nebel, realistische Militärwaffen-Kopien.")
     if d['name']=='Raketenwerfer':
         de=de.replace('auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.','auf der Waffe bleibt nur die freie Visierschiene als Aufnahme – seitlich links am Rohr montiert, damit das Rohr die Sichtlinie nicht verdeckt.')
+    if d.get('iron'):   # feste Kimme/Korn (claude-0.17.1, KG01)
+        de=de.replace('Visier bzw. Zielfernrohr NICHT montiert zeichnen, sondern separat als modulares Anbauteil daneben; auf der Waffe bleibt nur die freie Visierschiene als Aufnahme.',
+                      'Kein Wechselvisier: Kimme mit Kerbe zwischen zwei Pfosten (hinten) und Korn (vorn) fest auf dem Schlitten, beschriftet, Kerbe und Kornspitze auf einer Linie parallel zum Lauf.')
     if d['name'] in CONSTRUCT_DE:de=de.replace('Magazin im Schacht',CONSTRUCT_DE[d['name']])   # Bauweise ohne Kastenmagazin (claude-0.10.1)
     en_parts=', '.join(EN.get(l,l) for l in labels)
     en=(f"Low-poly sci-fi weapon concept sheet for the game Cube Escape: futuristic {d.get('en_type','weapon')}, variant {variant_letter}{f' ({vn})' if vn else ''} \"{d['nick']}\". "
         f"Visible, logically connected parts: {en_parts}. Color palette {pal}. "
-        +(MELEE_EN.get(d['name'],'') if melee else "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. Draw the sight/scope detached as a separate modular attachment next to the weapon; the weapon shows only the empty sight rail. ")
+        +(MELEE_EN.get(d['name'],'') if melee else "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. Draw the sight/scope detached as a separate modular attachment next to the weapon; the weapon shows only the empty sight rail. "
+          if not d.get('iron') else "Large isometric hero view with labeled callouts plus orthographic left, right, front, back, top and bottom views at identical scale, trigger-area detail. No detachable sight: a rear sight with a notch between two posts and a front sight blade are fixed on the slide, labeled, notch and blade tip aligned parallel to the barrel. ")
         +("Sight rail mounted on the left side of the tube, offset from the bore axis. " if d['name']=='Raketenwerfer' else "")+
         (f"Sight: {VS_EN[vs['id']]} ({vs['id']}, sight series), drawn separately. " if vs else "")+
         (f"Skin \"{skin[0]}\": {skin[2]}. " if skin else "")+
@@ -402,6 +406,7 @@ def skin_row(rsl,skinned,full,center,cw,ch,fid,name):
 def sheet(d,variant_letter):
     full=d['m'];center=d['center'];fid='x'+d['fid'];col=d['col']
     m,ms=split_sight(full)
+    iron=any(P.get('iron') for P in full.parts)   # feste Kimme/Korn auf dem Schlitten (claude-0.17.1, KG01): auf der Waffe gezeichnet, kein Wechselvisier
     import export_spec   # Modelleinheit des Blatts (Meter je Einheit) für die Katalog-Muster in mm
     unit_m=export_spec.model_unit(d['name'],full)
     # ---------- Skins (claude-0.3): fünf je Blatt, der erste ist der Hauptskin (Isometrie, Orthos, Farbvarianten)
@@ -423,7 +428,7 @@ def sheet(d,variant_letter):
     anchors,rest=pick_labels(dict(raster.LAST.get('anchors',{})))
     call=_callouts(anchors,MW,MH,col,MH/2,k=1.35)
     if rest:call+=f'<text x="28" y="{MH-24}" font-family="Barlow, sans-serif" font-size="20" fill="#8FA0B3">Weitere Bauteile: {_h.escape(", ".join(sorted(rest)))}</text>'
-    iso=panel(v+call,MW,MH,ISO[0]+' · OHNE VISIER · HAUPTSKIN '+hero['name'].upper(),fid,f"{d['name']} isometrische Ansicht mit Bauteilbeschriftungen, Visier separat")
+    iso=panel(v+call,MW,MH,ISO[0]+(' · KIMME/KORN AM SCHLITTEN · HAUPTSKIN ' if iron else ' · OHNE VISIER · HAUPTSKIN ')+hero['name'].upper(),fid,f"{d['name']} isometrische Ansicht mit Bauteilbeschriftungen, Visier separat")
     # ---------- Ortho
     RW=W-2*PAD-MW-G
     geo={lb:model_origin(mh,y,p,center) for lb,y,p in ORTHO}
@@ -458,7 +463,7 @@ def sheet(d,variant_letter):
     if dv is None:dv,dnames='',[]
     melee=d['name'] in wtypes.MELEE   # Schwert/Glefe (claude-0.10): Griffbereich, kein Visier
     det=panel(dv,DW,ph,('DETAIL · GRIFFBEREICH (' if melee and 'Abzug' not in dnames else 'DETAIL · ABZUGSBEREICH (')+(", ".join(dnames) if dnames else "Griff")+')',fid,f"{d['name']} Detailansicht Abzugsbereich von schräg unten")
-    sp=sight_panel(ms,center,DW,ph,fid,d['name'],col,vs=d.get('vs'),none_text='Kein Visier – Nahkampfwaffe, keine Visierschiene' if melee else None)
+    sp=sight_panel(ms,center,DW,ph,fid,d['name'],col,vs=d.get('vs'),none_text='Kein Visier – Nahkampfwaffe, keine Visierschiene' if melee else 'Kimme und Korn fest auf dem Schlitten – kein Wechselvisier' if iron else None)
     det=f'<div style="display:flex;flex-direction:column;gap:20px;width:{DW}px">{det}{sp}</div>'
     # Material
     MWd=1180
@@ -499,6 +504,7 @@ def sheet(d,variant_letter):
     labels=sorted({P['label'] for P in m.parts if P.get('label') and not (d.get('vs') and P.get('sight'))})   # Visier-Serie: Teile nicht einzeln
     mats=[nm.title() for nm,k in MATS if k in used]
     d2=dict(d);d2['en_type']=TYPE_EN.get(d['name'],'weapon')
+    d2['iron']=iron
     de,en=prompts(d2,labels,mats,variant_letter,skin=(hero['name'],)+skins.DESC[hero['id']])
     PW=W-2*PAD-DW-MWd-VW-3*G
     pfs=prompt_font((de,en),PW-56,BH-150)   # Texturprofil verlängert die Prompts: Schrift nur bei Bedarf kleiner (Feld bleibt gleich groß)
@@ -507,7 +513,7 @@ def sheet(d,variant_letter):
 <p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#E6ECF2;user-select:all">{_h.escape(de)}</p>
 <span style="font-family:'Chakra Petch',sans-serif;font-size:19px;letter-spacing:3px;color:#8FA0B3;margin-top:8px">PROMPT · ENGLISCH (BILDGENERATOR)</span>
 <p style="margin:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:{pfs}px;line-height:1.5;color:#C7D1DC;user-select:all">{_h.escape(en)}</p></div>'''
-    hdr_sight='OHNE VISIER' if melee else 'VISIER SEPARAT'
+    hdr_sight='OHNE VISIER' if melee else 'KIMME/KORN AM SCHLITTEN' if iron else 'VISIER SEPARAT'
     pal=''.join(f'<div style="display:flex;align-items:center;gap:10px"><div style="width:50px;height:50px;border-radius:12px;background:{c}"></div><span style="font-size:19px;color:#8FA0B3">{c}</span></div>' for c in d['palette'])
     page=f'''<!doctype html>
 <html lang="de">

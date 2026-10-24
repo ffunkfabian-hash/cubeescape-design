@@ -100,7 +100,7 @@ def direction_problems(sp):
         if sa is None:pr.append('Socket_Sight fehlt')
         else:
             if not sa[2]>h[2]:pr.append(f'Socket_Sight nicht über dem Griff (z={sa[2]})')
-            if sb[0][2]<sa[2]-TOL-(JAW_M if s.get('sight_spec') else 0):pr.append('Visierbaugruppe reicht unter Socket_Sight')
+            if sb[0][2]<sa[2]-TOL-(JAW_M if s.get('sight_spec') else 0) and 'iron' not in s:pr.append('Visierbaugruppe reicht unter Socket_Sight')   # feste Kimme/Korn (0.17.1): Socket_Sight = Oberkante der Kerbe
         if not c[2]>m[2]:pr.append(f'Visier nicht über der Mündungsachse (Mitte z={round(c[2],4)}, Mündung z={m[2]})')
         if s['mount_side']=='left' and not c[0]>m[0]+TOL:pr.append('Visier mount_side left, liegt aber nicht links (+X)')
         if s['mount_side']=='right' and not c[0]<m[0]-TOL:pr.append('Visier mount_side right, liegt aber nicht rechts (−X)')
@@ -112,6 +112,10 @@ def _sheet_vs(sp):
     """Visier-Ausnahme des Blatts (vsmount.VS_SHEET, claude-0.15.1) oder None"""
     import vsmount
     o=vsmount.VS_SHEET.get((sp.get('sheet') or {}).get('id'));return o[0] if o else None
+def _no_vs(sp):
+    """Blatt ohne Visier der Visier-Serie nach Ausnahme (vsmount.VS_SHEET mit None, claude-0.17.1: KG01 Kimme/Korn) – True/False"""
+    import vsmount
+    o=vsmount.choice_of((sp.get('sheet') or {}).get('id'),sp['weapon']['name_de']);return bool(o) and o[0] is None
 def _vs_choice(sp):
     """Visier nach Ausnahme je Blatt oder Typregel (vsmount.choice_of, claude-0.15.2) oder None"""
     import vsmount
@@ -127,7 +131,8 @@ def vs_problems(sp,vs_spec=None):
         t=wtypes.TYPES.get(sp['weapon']['name_de']) or {}
         nr=int(t['vs'][2:]) if t.get('vs') else None
     ov=_vs_choice(sp)
-    if ov:nr=int(ov[2:])   # Ausnahme je Blatt (claude-0.15.1) oder Typregel (claude-0.15.2), vsmount.choice_of
+    if _no_vs(sp):nr=None   # Kimme/Korn fest am Blatt (claude-0.17.1, KG01): kein Visier der Visier-Serie
+    elif ov:nr=int(ov[2:])   # Ausnahme je Blatt (claude-0.15.1) oder Typregel (claude-0.15.2), vsmount.choice_of
     if nr is None:return [] if v is None else ['Bogen mit Sight-Spec' if tid=='bow' else 'Sight-Spec ohne Visier-Ziel']
     pr=[]
     if v is None:return [f'kein Visier der Visier-Serie (VS{nr:02d})']
@@ -173,7 +178,7 @@ CE_SOURCE='Cube Escape Docs/EQUIPMENT.md › Visiere je Waffe (CE 0.111.1 5b97f1
 def sight_target_hints(sp):
     """Abweichungen vom CE-Zielbild als Hinweise (Liste von Texten; leer = passt oder kein Zielbild)."""
     tid=sp['weapon']['toolgen_id'];s=sp['sight']
-    if tid not in CE_SIGHTS:return []
+    if tid not in CE_SIGHTS or _no_vs(sp):return []   # KG01 (claude-0.17.1): Kimme/Korn ausdrücklich statt Reflexvisier
     ov=_sheet_vs(sp)   # Ausnahme je Blatt (claude-0.15.1): Zielbild ist die Zeile des getauschten Visiers
     nr,vis,durch,kinds,wins,typ=next(r for r in CE_SIGHTS.values() if r[0]==int(ov[2:])) if ov else CE_SIGHTS[tid];out=[]
     if s.get('type') not in (None,typ):out.append(f'Typ {s["type"]} statt {typ}')

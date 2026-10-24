@@ -19,7 +19,8 @@ VS_OF={s['weapon']:f'VS{s["num"]}' for s in V.SERIES}   # Waffe (Blattname) -> S
 import wtypes
 VS_OF.update({n:t['vs'] for n,t in wtypes.NEW.items() if t['vs']})   # neue Waffentypen (claude-0.10): Visier des verwandten Typs
 # Ausnahmen je Blatt (claude-0.15.1): Blatt -> (Visier, Begründung); vor der Typregel (VS_TYPE), KG03 behält so seinen Begründungstext
-VS_SHEET={'KG03':('VS02','Entscheidung des Nutzers 22.10.2026: Zielfernrohre nur an Präzisionswaffen (Scout, Scharfschütze, lineare Fusion, '
+VS_SHEET={'KG01':(None,'Entscheidung des Nutzers 24.10.2026: Pistole mit Kimme und Korn fest auf dem Schlitten statt Reflexvisier VS01 (Toolgen docs/ENTSCHEIDUNGEN.md, Sidearm 0.27)'),
+          'KG03':('VS02','Entscheidung des Nutzers 22.10.2026: Zielfernrohre nur an Präzisionswaffen (Scout, Scharfschütze, lineare Fusion, '
                          'Armbrust); KG03 trägt das Holo-Visier VS02 wie KG02 statt der Präzisions-Röhre VS03')}
 # Typregeln (claude-0.15.2): Waffe (Blattname) -> (Visier, Begründung) für alle Blätter des Typs; eine Ausnahme je Blatt geht vor
 VS_TYPE={'Impulsgewehr':('VS02','Typregel des Nutzers 22.10.2026: Zielfernrohre nur an Präzisionswaffen (Scout, Scharfschütze, lineare Fusion, '

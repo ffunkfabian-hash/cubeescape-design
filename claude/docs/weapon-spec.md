@@ -103,6 +103,8 @@ Bestehende Arten (`bolt`, `slide`, `hatch` beim Mikroraketen-Granatwerfer) bei n
 - `Socket_CenterOfMass`: Näherung, Hüllquader-Volumen je Teil gewichtet, Visier montiert.
 - `Socket_Sight`: Waffen 1–9 (seit claude-0.7) Oberkante der Visierschiene unter der Mitte der Halterung = `Socket_Mount` des
   Sight-Specs (bei einer Erhöhung darunter); Bögen: Unterkante Mitte der Visierbaugruppe in montierter Lage.
+- `Socket_FrontSight` (seit claude-0.17.1, nur bei fester Kimme/Korn, KG01): Kornspitze. Dort ist `Socket_Sight` die Oberkante der Kimmenkerbe, Mitte
+  zwischen den Pfosten; beide liegen auf gleicher Höhe und Seite, die Visierlinie läuft parallel zur Mündungsachse (−Y). Die übrigen Blätter haben den Anker nicht.
 - Toolgen prüft Anker gegen sein eigenes Netz; die Werte hier sind das Zielbild, kein Ersatz für diese Prüfung.
 
 ## Kanäle
@@ -241,6 +243,16 @@ Entscheidung des Nutzers (17.10.2026, claude-0.5.2), additiv: `kind` bleibt Tool
   der Hinweis „Visier weicht vom Zielbild ab“ entfällt (0 Hinweise); die Prüfung bleibt.
 - `parts[].toolgen_material`: Toolgen `surface_recipes.json` › `materials`: painted → painted, brushed → brushed, rubber → rubber,
   matte → painted_matte, lit → energy_glass, glass → `null` (claude-0.7). Die Decal-Zuordnung zu Toolgens Katalog (`decals.json`) steht seit claude-0.8 je Waffentyp im [Texturprofil](#texturprofil) (`texture_profile.decals.toolgen`); die Aufkleber des Modells (Fenster, Leuchtflächen, Markierungen) haben keine Entsprechung im Toolgen-Katalog und tragen kein Feld.
+
+## Kimme und Korn
+
+Seit claude-0.17.1 trägt **KG01** (Pistole) kein Reflexvisier VS01 mehr, sondern Kimme und Korn fest auf dem Schlitten (Entscheidung des Nutzers
+24.10.2026, Toolgen Sidearm 0.27). `sight`: `kind` und `type` `iron`, `window` `none`, kein `sight_spec`; die Teile (`sight: true`, Bezeichnung „Kimme“, „Korn“)
+laufen im Bewegungsteil `slide` mit (`moving_parts.items[].riding_parts`, ebenso die Zierleiste p09). Block `sight.iron` (additiv): `rear_parts`
+(Sockel und zwei Pfosten), `notch_posts`, `front_parts`; Maße in m: `rear_width_m` (Kimmenbreite), `notch_width_m` (Kerbenbreite), `notch_depth_m`,
+`rear_height_m`, `front_width_m`, `front_height_m`; `sight_line`: `height_above_muzzle_axis_m`, `length_m`, `parallel_to_muzzle_axis`. Ziel im Spiel: Kimme ≈ 18 % der
+Bildhöhe in der ADS-Endpose (Visierstandard 23.10.2026); die Maße hier sind nur abgeleitet, gemessen wird im Spiel. Teil-IDs: p00–p11 wie bisher, Visierschiene
+und VS01 (bisher p12–p26) entfallen, p12–p15 sind Kimme (Sockel, zwei Pfosten) und Korn.
 
 ## Visier der Visier-Serie
 
