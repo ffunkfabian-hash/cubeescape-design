@@ -58,6 +58,15 @@ class SpecFiles(unittest.TestCase):
         extra=sorted(f for f in os.listdir(OUT) if f.startswith('K') and f.endswith('.spec.json') and f[:-10] not in sheetmodels.SHEETS)   # VSnn: Sight-Spec (test_sight_spec.py)
         self.assertEqual(extra,[])
 
+    def test_support_hand_is_foregrip(self):
+        """Sheets with a part labelled Vordergriff anchor Socket_SupportHand on it (KG06: foregrip p09 was unlabelled, the anchor fell back to the barrel shroud)"""
+        for s in sheetmodels.SHEETS:
+            sp=load(s);labels={p['id']:p['label'] for p in sp['parts']}
+            if 'Vordergriff' not in labels.values():continue
+            with self.subTest(sheet=s):self.assertEqual(labels[sp['anchors']['Socket_SupportHand']['part']],'Vordergriff')
+    def test_kg06_foregrip_labelled(self):
+        sp=load('KG06');self.assertEqual(next(p['label'] for p in sp['parts'] if p['id']=='p09'),'Vordergriff')
+        self.assertEqual(sp['anchors']['Socket_SupportHand']['part'],'p09')
     def test_schema(self):
         for s in sheetmodels.SHEETS:
             with self.subTest(sheet=s):self.assertEqual(validate(load(s),SCHEMA),[])
