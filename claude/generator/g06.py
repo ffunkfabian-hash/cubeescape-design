@@ -27,7 +27,7 @@ def spec():
     C(616,652,297,8,DK,n=16),
     C(652,676,297,13,AN,n=8,cap=[(297,0,7,'#050506',False),(297,0,3,OR,True)]),
     # Vordergriff
-    P([(522,332),(560,332),(553,392),(528,392)],CR,-13,13,r=6),
+    Lb(P([(522,332),(560,332),(553,392),(528,392)],CR,-13,13,r=6),'Vordergriff'),
     # Griff mit Magazin im Griffschacht, orange Bodenplatte
     Lb(P([(300,340),(352,340),(342,442),(286,442)],AN,-18,18,r=6,
       dec=[D(roundpoly(rect(300,360+12*i,36,5),2),DK) for i in range(5)]),'Griff'),
